@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 //widgets
+import 'login_screen.dart';
 import 'navigation_management_screen.dart';
 import '../widgets/user_details_widget.dart';
 import '../widgets/settings_widget.dart';
@@ -23,7 +24,39 @@ class Profile extends StatelessWidget {
       appBar: AppBar(
         title: Text('Profile'),
         backgroundColor: Theme.of(context).primaryColor,
-        centerTitle: true,
+        centerTitle: false,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Login()),
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Wrap(
+                children: [
+                  Text(
+                    'Log Out',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'sans-serif',
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  Icon(
+                    Icons.logout_rounded,
+                    size: 20.0,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[

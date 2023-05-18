@@ -19,7 +19,7 @@ class NavigationScreen extends StatefulWidget {
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  int _currentIndex = 3;
+  int _currentIndex = 0;
   final List<Widget> _tabs = [
     Home(),
     Event(),
