@@ -1,37 +1,38 @@
 // // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 //widgets
-import '../../widgets/profile/userdetails.dart';
-import '../../widgets/profile/settings.dart';
+import 'navigation_management_screen.dart';
+import '../widgets/user_details_widget.dart';
+import '../widgets/settings_widget.dart';
+import 'event_screen.dart';
+import 'home_screen.dart';
+import 'search_screen.dart';
 
 //page import
 
-
 class Profile extends StatelessWidget {
+  static const routeName = '/profile';
   const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'), 
-        backgroundColor: Color.fromARGB(255, 135, 18, 194),
+        title: Text('Profile'),
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
       ),
       body: Column(
         children: <Widget>[
           Userdetails(),
           Settings(),
-
         ],
       ),
-
     );
     //calling the home page
     // return Home();
   }
-  
 }
-

@@ -4,11 +4,15 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
 //Pages
-import '../../widgets/login/login_modal.dart';
-import '../../widgets/navigation/navigation.dart';
-import 'google_sign_in.dart';
+import '../widgets/login_modal_widget.dart';
+
+import 'home_screen.dart';
+import 'navigation_management_screen.dart';
+import 'profile_screen.dart';
+import '../models/google_auth_model.dart';
 
 class Login extends StatefulWidget {
+  static const routeName = '/login';
   const Login({super.key});
 
   @override
@@ -26,7 +30,6 @@ class _LoginState extends State<Login> {
           Expanded(
             flex: 7,
             child: Container(
-              color: Color.fromARGB(255, 135, 18, 194),
               child: Center(
                 child: Text(
                   'Koja',
@@ -90,6 +93,8 @@ class _LoginState extends State<Login> {
 
   Future signIn() async {
     final token = await GoogleSignInApi().login();
-    print("Token: $token ");
+    if (token != null) {
+      Navigator.of(context).pushReplacementNamed(NavigationScreen.routeName);
+    }
   }
 }
