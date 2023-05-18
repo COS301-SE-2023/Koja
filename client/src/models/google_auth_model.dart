@@ -1,7 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'settings.dart';
-
 class GoogleSignInApi {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: "nope",

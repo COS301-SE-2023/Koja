@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 
-class eventmodal extends StatefulWidget {
-  const eventmodal({super.key});
+class EventModal extends StatefulWidget {
+  const EventModal({super.key});
 
   @override
-  _eventmodalState createState() => _eventmodalState();
+  _EventModalState createState() => _EventModalState();
 }
 
-class _eventmodalState extends State<eventmodal> {
+class _EventModalState extends State<EventModal> {
   List<String> parentItems = [
     'Upcoming Events',
     'Suggested Events',
