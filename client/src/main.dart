@@ -2,6 +2,7 @@
 // ignore: library_private_types_in_public_api
 
 //Packages
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 //Pages or widgets
@@ -23,7 +24,7 @@ class KojaApp extends StatelessWidget {
     return MaterialApp(
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
-        home: Login(),
+        home: (kDebugMode) ? NavigationScreen() : Login(),
         routes: {
           Login.routeName: (ctx) => Login(),
           Profile.routeName: (ctx) => Profile(),
