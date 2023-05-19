@@ -1,5 +1,4 @@
 //Packages
-// ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -52,7 +51,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
             padding: const EdgeInsets.all(16),
             gap: 8,
             iconSize: 24,
-            curve: Curves.easeInToLinear,
+            // curve: Curves.easeInToLinear,
             tabs: const [
               GButton(
                 icon: Icons.home_filled,

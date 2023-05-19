@@ -1,6 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-// ignore: library_private_types_in_public_api
-
 //Packages
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

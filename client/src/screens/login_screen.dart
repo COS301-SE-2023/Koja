@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
                 child: Text(
                   'Koja',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: const Color.fromARGB(255, 0, 0, 0),
                     fontSize: 24,
                   ),
                 ),
@@ -44,7 +44,7 @@ class _LoginState extends State<Login> {
           Expanded(
             flex: 3,
             child: Container(
-              color: Colors.deepPurpleAccent.shade700,
+              color: Colors.grey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
