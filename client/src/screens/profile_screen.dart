@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 //widgets
+import '../widgets/time_picker_widget.dart';
 import 'login_screen.dart';
 import 'navigation_management_screen.dart';
 import '../widgets/user_details_widget.dart';
@@ -15,6 +16,7 @@ import 'search_screen.dart';
 class Profile extends StatelessWidget {
   static const routeName = '/profile';
   const Profile({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +26,17 @@ class Profile extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
       ),
-      body: Column(
-        children: <Widget>[
-          Userdetails(),
-          Settings(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Userdetails(),
+            Divider(
+              thickness: 0,
+            ),
+            Settings(),
+          ],
+        ),
       ),
     );
-    //calling the home page
-    // return Home();
   }
 }
