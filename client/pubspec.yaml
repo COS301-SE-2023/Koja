@@ -39,6 +39,7 @@ dependencies:
   google_sign_in: ^6.1.0
   line_icons: ^2.0.1
   google_nav_bar: ^5.0.6
+  googleapis_auth: ^1.4.0
 
 dev_dependencies:
   flutter_test:
