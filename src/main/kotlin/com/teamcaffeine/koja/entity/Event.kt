@@ -2,8 +2,8 @@ package com.teamcaffeine.koja.entity
 
 import java.time.LocalDateTime
 
-class Event (eventID : String, name : String, summary: String, priority: Integer, dateTime : LocalDateTime, fixed : Boolean ) {
+class Event (eventID : String, heading : String, summary: String, priority: Integer, startDateTime : LocalDateTime, endDateTime : LocalDateTime, fixed : Boolean ) {
 
-    
+
 
 }
