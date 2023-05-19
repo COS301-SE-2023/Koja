@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
+import 'package:googleapis_auth/auth_browser.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -91,8 +92,21 @@ class _LoginState extends State<Login> {
     );
   }
 
+// Initialize the browser oauth2 flow functionality then use it to obtain credentials.
+  Future<AccessCredentials> obtainCredentials() async {
+    return await requestAccessCredentials(
+        clientId:
+            ""***redacted***"",
+        scopes: [
+          'email',
+          'https://www.googleapis.com/auth/calendar.events',
+        ]);
+  }
+
   Future signIn() async {
-    final token = await GoogleSignInApi().login();
+    final token = await obtainCredentials();
+    print("Access token: ${token.accessToken}");
+
     if (token != null) {
       Navigator.of(context).pushReplacementNamed(NavigationScreen.routeName);
     }
