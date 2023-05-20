@@ -17,7 +17,6 @@ class Search extends StatelessWidget {
       body: const Center(
         child: Text('Search Tab Content'),
       ),
-      bottomNavigationBar: const NavigationScreen(),
     );
   }
 }

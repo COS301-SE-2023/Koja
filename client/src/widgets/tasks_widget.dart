@@ -54,7 +54,7 @@ class _TasksWidgetState extends State<TasksWidget> {
         initialDisplayDate: provider.selectedDate,
         headerHeight: 0,
         todayHighlightColor: Colors.black,
-        selectionDecoration: BoxDecoration(
+        selectionDecoration: const BoxDecoration(
           color: Colors.transparent,
           // border: Border.all(color: Colors.black, width: 2),
           // borderRadius: BorderRadius.circular(12),

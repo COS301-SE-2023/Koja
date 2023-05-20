@@ -15,17 +15,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => EventProvider(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Home', 
-          style: TextStyle(
-            color: Colors.white,
-          ),),
+          title: const Text(
+            'Home',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           centerTitle: true,
         ),
         body: const CalendarWidget(),
@@ -39,7 +40,6 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add),
         ),
-        bottomNavigationBar: const NavigationScreen(),
       ),
     );
   }
