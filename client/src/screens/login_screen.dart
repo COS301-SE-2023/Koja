@@ -1,14 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 
 //Pages
-import '../widgets/login_modal_widget.dart';
 
-import 'home_screen.dart';
 import 'navigation_management_screen.dart';
-import 'profile_screen.dart';
 import '../models/google_auth_model.dart';
 
 class Login extends StatefulWidget {
@@ -48,7 +43,7 @@ class _LoginState extends State<Login> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
+                  SizedBox(
                     height: 40,
                     width: 150,
                     child: ElevatedButton(
@@ -59,7 +54,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Container(
+                  SizedBox(
                     height: 40,
                     width: 150,
                     //

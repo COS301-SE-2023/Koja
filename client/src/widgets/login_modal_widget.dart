@@ -3,7 +3,7 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
 class LoginModal extends StatefulWidget {
-  const LoginModal({Key? key});
+  const LoginModal({super.key});
 
   @override
   _LoginModalState createState() => _LoginModalState();
@@ -20,10 +20,10 @@ class _LoginModalState extends State<LoginModal> {
         child: ListView(
           shrinkWrap: true,
           children: [
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             ElevatedButton(
               onPressed: () {},
-              child: Container(
+              child: SizedBox(
                 height: 30,
                 width: 200,
                 child: Row(
@@ -33,8 +33,8 @@ class _LoginModalState extends State<LoginModal> {
                       size: 20.0,
                       color: Colors.red,
                     ),
-                    SizedBox(width: 10.0),
-                    Text('Sign In With Email'),
+                    const SizedBox(width: 10.0),
+                    const Text('Sign In With Email'),
                   ],
                 ),
               ),

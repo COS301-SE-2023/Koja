@@ -10,7 +10,7 @@ import 'screens/profile_screen.dart';
 import 'screens/navigation_management_screen.dart';
 
 void main() {
-  runApp(KojaApp());
+  runApp(const KojaApp());
 }
 
 class KojaApp extends StatelessWidget {
@@ -21,13 +21,13 @@ class KojaApp extends StatelessWidget {
     return MaterialApp(
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
-        home: (kDebugMode) ? NavigationScreen() : Login(),
+        home: (kDebugMode) ? const NavigationScreen() : const Login(),
         routes: {
-          Login.routeName: (ctx) => Login(),
-          Profile.routeName: (ctx) => Profile(),
-          Home.routeName: (ctx) => Home(),
+          Login.routeName: (ctx) => const Login(),
+          Profile.routeName: (ctx) => const Profile(),
+          Home.routeName: (ctx) => const Home(),
           Event.routeName: (ctx) => Event(),
-          NavigationScreen.routeName: (ctx) => NavigationScreen()
+          NavigationScreen.routeName: (ctx) => const NavigationScreen()
         });
   }
 
