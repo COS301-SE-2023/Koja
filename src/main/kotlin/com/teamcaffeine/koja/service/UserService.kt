@@ -7,7 +7,10 @@ class UserService {
 
 
     boolean authenticate(User user){
-        String oAuth = user.getOAuth();
+       User authenticatedUser = userRepository.findByAuthToken(user.getAuthToken());
+        if(user == null)
+            return false;
+        return true;
     }
 
 }

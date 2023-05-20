@@ -11,7 +11,11 @@ class UserController {
     @PostRequest('/authenticate')
     User authenticateUser(User user){
 
-    String oAuth= user.getOAuth();
+    if(userService.authenticate(user)){
+        return "homepage";
+    }
+        else
+            return "signin";
 
 
     }

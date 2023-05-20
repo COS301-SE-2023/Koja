@@ -16,13 +16,14 @@ import org.springframework.web.bind.annotation.RestController
 import java.io.File
 import java.io.InputStreamReader
 
+
 @RestController
 @RequestMapping("/api")
 class CalendarController {
 
     private val JSON_FACTORY = Utils.getDefaultJsonFactory()
     private val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
-    private val SCOPES = listOf(CalendarScopes.CALENDAR_READONLY)
+    private val SCOPES = CalendarScopes.CALENDAR_READONLY
     private val CREDENTIALS_FILE_PATH = "/path/to/your/credentials.json"
 
     @GetMapping("/calendars")
@@ -31,7 +32,7 @@ class CalendarController {
             JSON_FACTORY, InputStreamReader(File(CREDENTIALS_FILE_PATH).inputStream())
         )
         val flow: GoogleAuthorizationCodeFlow = GoogleAuthorizationCodeFlow.Builder(
-            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES
+            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES.
         ).build()
         val receiver: LocalServerReceiver = LocalServerReceiver.Builder().setPort(8888).build()
         val credential: Credential = AuthorizationCodeInstalledApp(flow, receiver).authorize(userID)
