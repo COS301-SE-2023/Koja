@@ -1,10 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/event_util.dart';
-import 'package:provider/provider.dart';
 
 import 'event_editing_widget.dart';
 import 'event_provider.dart';
@@ -26,7 +23,7 @@ class _EventViewingState extends State<EventViewing> {
       appBar: AppBar(
         title: const Text('Event'),
         centerTitle: true,
-        leading: CloseButton(),
+        leading: const CloseButton(),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -93,9 +90,9 @@ class _EventViewingState extends State<EventViewing> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 12.0),
-        Text(
+        const Text(
           'Description',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
           ),

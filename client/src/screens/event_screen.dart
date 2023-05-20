@@ -21,7 +21,6 @@ class Event extends StatelessWidget {
         title: Text('Events'),
         centerTitle: true,
       ),
-      bottomNavigationBar: NavigationScreen(),
       body: EventModal(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

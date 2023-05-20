@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../Utils/date_and_time_util.dart';
 import '../Utils/event_util.dart';
 
 class EventProvider extends ChangeNotifier {

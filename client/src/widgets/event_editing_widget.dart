@@ -20,7 +20,7 @@ class _EventEditingState extends State<EventEditing> {
   late DateTime toDate;
   
   //key which is used to validate the form
-  var _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   //controller for the title text field
   final titleController = TextEditingController();
@@ -58,11 +58,11 @@ class _EventEditingState extends State<EventEditing> {
         actions: [
           ElevatedButton(
             onPressed: saveForm,
-            child: const Text('Save'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
             ),
+            child: const Text('Save'),
           ),
           const SizedBox(width: 12),
           
@@ -76,14 +76,14 @@ class _EventEditingState extends State<EventEditing> {
       ), 
       
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               buildTitle(),
-              SizedBox(height: 12,),
+              const SizedBox(height: 12,),
               buildDateTimePickers(),
             ]),
         ),
@@ -92,8 +92,8 @@ class _EventEditingState extends State<EventEditing> {
   }
   
   Widget buildTitle() => TextFormField(
-    style: TextStyle(fontSize: 24),
-    decoration: InputDecoration(
+    style: const TextStyle(fontSize: 24),
+    decoration: const InputDecoration(
       border: UnderlineInputBorder(),
       hintText: 'Add Title',
     ),
@@ -165,7 +165,7 @@ class _EventEditingState extends State<EventEditing> {
   }) =>
       ListTile(
         title: Text(text),
-        trailing: Icon(Icons.arrow_drop_down),
+        trailing: const Icon(Icons.arrow_drop_down),
         onTap: onClicked,
       );
       
@@ -178,7 +178,7 @@ class _EventEditingState extends State<EventEditing> {
       children: [
         Text(
           header,
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         child,
       ],
