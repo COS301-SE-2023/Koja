@@ -20,10 +20,10 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   int _currentIndex = 0;
   final List<Widget> _tabs = [
-    Home(),
+    const Home(),
     Event(),
-    Search(),
-    Profile(),
+    const Search(),
+    const Profile(),
   ];
 
   @override
@@ -32,11 +32,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
       body: _tabs[_currentIndex],
       bottomNavigationBar: Container(
         // purple.shade700
-        color: Colors.deepPurpleAccent.shade700,
+        color: const Color.fromARGB(255, 24, 194, 216),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
           child: GNav(
-            backgroundColor: Colors.deepPurpleAccent.shade700,
+            backgroundColor: const Color.fromARGB(255, 24, 194, 216),
             color: Colors.white,
             activeColor: Colors.white,
             textStyle: const TextStyle(
@@ -45,7 +45,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
               fontWeight: FontWeight.w400,
               color: Colors.white,
             ),
-            tabBackgroundColor: Colors.purple.shade700,
+            tabBackgroundColor: const Color.fromARGB(255, 9, 202, 255),
             tabBorderRadius: 50,
             tabMargin: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
             padding: const EdgeInsets.all(16),

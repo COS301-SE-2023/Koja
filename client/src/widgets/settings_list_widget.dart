@@ -47,7 +47,7 @@ class _settingslistState extends State<settingslist> {
                   Icons.arrow_drop_down,
                   color: Colors.white,
                 ),
-                children: [
+                children: const [
                   Divider(
                     color: Colors.white,
                     thickness: 1,
@@ -56,7 +56,7 @@ class _settingslistState extends State<settingslist> {
                   SizedBox(height: 15),
                   Row(
                     children: [
-                      Container(
+                      SizedBox(
                         height: 120,
                         //Work Time Column
                         child: Column(
@@ -101,7 +101,7 @@ class _settingslistState extends State<settingslist> {
                         ),
                       ),
                       SizedBox(width: 20),
-                      Container(
+                      SizedBox(
                         height: 120,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
