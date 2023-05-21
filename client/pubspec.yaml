@@ -52,8 +52,17 @@ dependencies:
   #handle dates
   intl: ^0.18.1
 
+  floating_bottom_navigation_bar: ^1.5.1
+
   #state management 
   provider: ^6.0.5
+
+  #google font
+  google_fonts: ^4.0.4
+
+  #for location
+  google_maps_flutter: ^2.1.5
+  google_map_location_picker_flutter: ^2.0.5
 
 dev_dependencies:
   flutter_test:

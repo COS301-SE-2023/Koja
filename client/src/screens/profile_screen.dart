@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 //widgets
+import '../Utils/constants_util.dart';
 import 'navigation_management_screen.dart';
 import '../widgets/user_details_widget.dart';
 import '../widgets/settings_widget.dart';
@@ -16,9 +17,13 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text('Profile',
+            style: TextStyle(
+              color: Colors.white,
+            )),
+        backgroundColor: darkBlue,
         centerTitle: true,
+        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -26,12 +31,13 @@ class Profile extends StatelessWidget {
             Userdetails(),
             const Divider(
               thickness: 0,
+              color: Colors.white,
+              height: 40,
             ),
             Settings(),
           ],
         ),
       ),
-      bottomNavigationBar: const NavigationScreen(),
     );
   }
 }

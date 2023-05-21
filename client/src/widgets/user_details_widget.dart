@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../Utils/constants_util.dart';
 import '../screens/login_screen.dart';
 
 class Userdetails extends StatelessWidget {
@@ -12,7 +13,7 @@ class Userdetails extends StatelessWidget {
       height: 170,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
+        color: darkBlue,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -29,9 +30,10 @@ class Userdetails extends StatelessWidget {
                 width: 44,
                 color: Color.fromRGBO(250, 250, 250, 0.1),
                 child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromRGBO(42, 111, 240, 1)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    side: BorderSide(width: 2, color: Colors.white),
                   ),
                   onPressed: () {
                     Navigator.push(
@@ -57,10 +59,10 @@ class Userdetails extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  child: Image.asset(
-                    './icons/schedule.png',
-                    fit: BoxFit.cover,
-                  ),
+                  // child: Image.asset(
+                  //   './icons/schedule.png',
+                  //   // fit: BoxFit.cover,
+                  // ),
                 ),
                 Text(
                   'koja@example.com',
