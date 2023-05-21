@@ -92,19 +92,8 @@ class _LoginState extends State<Login> {
     );
   }
 
-// Initialize the browser oauth2 flow functionality then use it to obtain credentials.
-  Future<AccessCredentials> obtainCredentials() async {
-    return await requestAccessCredentials(
-        clientId:
-            ""***redacted***"",
-        scopes: [
-          'email',
-          'https://www.googleapis.com/auth/calendar.events',
-        ]);
-  }
-
   Future signIn() async {
-    final token = await obtainCredentials();
+    final token = await GoogleSignInApi().obtainCredentials();
     print("Access token: ${token.accessToken}");
 
     if (token != null) {
