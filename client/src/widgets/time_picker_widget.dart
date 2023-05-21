@@ -30,7 +30,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     return GestureDetector(
       onTap: () => _selectTime(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

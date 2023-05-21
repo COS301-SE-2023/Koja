@@ -7,7 +7,6 @@ import '../Utils/constants_util.dart';
 import '../Utils/event_data_source_util.dart';
 import 'event_editing_widget.dart';
 import 'event_provider.dart';
-import 'event_viewing_widget.dart';
 
 class TasksWidget extends StatefulWidget {
   const TasksWidget({Key? key}) : super(key: key);

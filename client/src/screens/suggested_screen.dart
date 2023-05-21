@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../Utils/constants_util.dart';
-import 'navigation_management_screen.dart';
 
 class Suggestions extends StatelessWidget {
   static const routeName = '/suggestions';

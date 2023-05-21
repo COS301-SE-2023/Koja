@@ -23,6 +23,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       //This sets the view of the calendar to month view
       view: CalendarView.month,
 
+      showNavigationArrow: true,
+      showDatePickerButton: true,
+      showWeekNumber: true,
+
+      allowDragAndDrop: true,
+
       //Ths displays the events on the calendar
       dataSource: EventDataSource(events),
 
