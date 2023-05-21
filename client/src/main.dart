@@ -1,10 +1,7 @@
-//Packages
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-//Pages or widgets
 import 'screens/login_screen.dart';
-import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/navigation_management_screen.dart';
@@ -26,7 +23,6 @@ class KojaApp extends StatelessWidget {
           Login.routeName: (ctx) => const Login(),
           Profile.routeName: (ctx) => const Profile(),
           Home.routeName: (ctx) => const Home(),
-          Event.routeName: (ctx) => Event(),
           NavigationScreen.routeName: (ctx) => const NavigationScreen()
         });
   }
