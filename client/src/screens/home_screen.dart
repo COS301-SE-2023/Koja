@@ -9,7 +9,8 @@ import 'navigation_management_screen.dart';
 class Home extends StatefulWidget {
   static const routeName = '/home';
 
-  const Home({super.key});
+  const Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -17,29 +18,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => EventProvider(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Home',
-            style: TextStyle(
-              color: Colors.white,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Home',
+          style: TextStyle(
+            color: Colors.white,
           ),
-          centerTitle: true,
         ),
-        body: const CalendarWidget(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EventEditing()),
-            );
-          },
-          backgroundColor: Colors.blue,
-          child: const Icon(Icons.add),
-        ),
+        centerTitle: true,
+      ),
+      body: const CalendarWidget(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const EventEditing()),
+          );
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
       ),
     );
   }

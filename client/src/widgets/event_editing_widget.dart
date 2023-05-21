@@ -97,10 +97,11 @@ class _EventEditingState extends State<EventEditing> {
       border: UnderlineInputBorder(),
       hintText: 'Add Title',
     ),
-    onFieldSubmitted: (_) { saveForm(); },
-    controller: titleController,
+    onFieldSubmitted: (_) => saveForm(),
+    
     validator: (title) =>
         title != null && title.isEmpty ? 'Title cannot be empty' : null,
+    controller: titleController,
   );
   
   Widget buildDateTimePickers() => Column(

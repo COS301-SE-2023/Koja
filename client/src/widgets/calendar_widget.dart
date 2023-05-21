@@ -30,7 +30,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       initialSelectedDate: DateTime.now(),
 
       //Save the date of the event when the user taps on the calendar
-      onLongPress: (details) {
+      onTap: (details) {
         final provider = Provider.of<EventProvider>(context, listen: false);
         provider.setDate(details.date!);
         showModalBottomSheet(
