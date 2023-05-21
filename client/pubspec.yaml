@@ -64,6 +64,9 @@ dependencies:
   google_maps_flutter: ^2.1.5
   google_map_location_picker_flutter: ^2.0.5
 
+  #animated text
+  animated_text_kit: ^4.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
