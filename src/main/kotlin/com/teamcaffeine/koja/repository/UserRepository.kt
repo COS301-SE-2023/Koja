@@ -1,5 +1,11 @@
 package com.teamcaffeine.koja.repository
 
-class UserRepository {
-User findByAuthToken(String authToken) ;
+import com.teamcaffeine.koja.entity.User
+import org.springframework.stereotype.Repository
+
+@Repository
+public interface UserRepository extends JpaRepository<Project,Integer>{
+
+public fun findByAuthToken(String authToken): User;
+
 }

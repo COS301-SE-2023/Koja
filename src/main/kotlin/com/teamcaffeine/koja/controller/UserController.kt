@@ -1,24 +1,25 @@
 package com.teamcaffeine.koja.controller
+import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.service.UserService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RestController
 import java.security.SecureRandom;
 import java.util.Base64;
 
 
 @RestController
-class UserController {
+class UserController(val userService: UserService) {
 
-    @Autowired
-    UserService userService;
-    @PostRequest('/authenticate')
-    User authenticateUser(User user){
+    @PostMapping("/authenticate")
+   fun  authenticateUser(user: User): User{
 
     if(userService.authenticate(user)){
         return "homepage";
     }
         else
             return "signin";
-
-
-    }
+   }
 
     public  String generateToken(int length)
     SecureRandom random = new SecureRandom();
