@@ -6,6 +6,10 @@ import '../Utils/constants_util.dart';
 import '../screens/login_screen.dart';
 
 class Userdetails extends StatelessWidget {
+
+  String profile = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
+  String email = "koja@epi-use.com";
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,15 +61,18 @@ class Userdetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  // child: Image.asset(
-                  //   './icons/schedule.png',
-                  //   // fit: BoxFit.cover,
-                  // ),
+                ClipOval(
+                  //This is the profile picture 
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(
+                      '$profile',
+                    ),
+                  ),
                 ),
+                //This is the name of the user
                 Text(
-                  'koja@example.com',
+                  '$email',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 20,

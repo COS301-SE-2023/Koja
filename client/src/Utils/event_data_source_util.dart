@@ -7,7 +7,7 @@ import 'event_util.dart';
 class EventDataSource extends CalendarDataSource {
 
   EventDataSource(List<Event> source) {
-    this.appointments = source;
+    appointments = source;
   }
 
   //DataSource is dynamic so this returns the "event" at the given index

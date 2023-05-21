@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import '../Utils/constants_util.dart';
 import 'location_auto_complete.dart';
 import 'location_tile.dart';
-import 'settings_widget.dart';
 
 class LocationSearch extends StatefulWidget {
   const LocationSearch({super.key});
@@ -94,8 +93,9 @@ class _LocationSearchState extends State<LocationSearch> {
                   LocationListTile(
                     press: () {},
                     location: predictions[index].description!,
-                    key: Key('Hatfield, Pretoria, South Africa'),
+                    key: const Key('Hatfield, Pretoria, South Africa'),
                   );
+                  return null;
                },
           
             ),
