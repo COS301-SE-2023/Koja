@@ -22,7 +22,7 @@ class KojaApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
-        home: (kDebugMode) ? const NavigationScreen() : const Login(),
+        home: Login(),
         routes: {
           Login.routeName: (ctx) => const Login(),
           Profile.routeName: (ctx) => const Profile(),

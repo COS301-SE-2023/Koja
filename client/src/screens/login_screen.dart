@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 //Pages
 
+import '../Utils/constants_util.dart';
+import '../widgets/login_modal_widget.dart';
 import 'navigation_management_screen.dart';
 import '../models/google_auth_model.dart';
 
@@ -25,21 +28,14 @@ class _LoginState extends State<Login> {
           Expanded(
             flex: 7,
             child: Container(
-              child: Center(
-                child: Text(
-                  'Koja',
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 0, 0, 0),
-                    fontSize: 24,
-                  ),
-                ),
-              ),
+              color: darkBlue,
+              
             ),
           ),
           Expanded(
             flex: 3,
             child: Container(
-              color: Colors.grey,
+              color: darkBlue,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -50,7 +46,15 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         // Handle button 1 press
                       },
-                      child: Text('Get Started'),
+                      child: Text('Get Started',
+                          style: GoogleFonts.roboto(
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                              // fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                          textAlign: TextAlign.center),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -59,22 +63,32 @@ class _LoginState extends State<Login> {
                     width: 150,
                     //
                     child: ElevatedButton(
-                      onPressed: signIn, // {
-                      // showModalBottomSheet(
-                      // context: context,
-                      // isDismissible: true,
-                      // shape: RoundedRectangleBorder(
-                      //   borderRadius: BorderRadius.only(
-                      //     topLeft: Radius.circular(30.0),
-                      //     topRight: Radius.circular(30.0),
-                      //   ),
-                      // ),
-                      // // builder: (BuildContext context) {
-                      // //   return LoginModal();
-                      // // },
-                      // );
-                      //},
-                      child: Text('Sign In'),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isDismissible: true,
+                          isScrollControlled: true,
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30.0),
+                              topRight: Radius.circular(30.0),
+                            ),
+                          ),
+                          builder: (BuildContext context) {
+                            return LoginModal();
+                          },
+                        );
+                      },
+                      child: Text('Sign In',
+                          style: GoogleFonts.roboto(
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                              // fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                          textAlign: TextAlign.center),
                     ),
                   ),
                 ],
