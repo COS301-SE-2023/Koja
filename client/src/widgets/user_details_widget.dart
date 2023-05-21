@@ -66,13 +66,13 @@ class Userdetails extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: NetworkImage(
-                      '$profile',
+                      profile,
                     ),
                   ),
                 ),
                 //This is the name of the user
                 Text(
-                  '$email',
+                  email,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 20,

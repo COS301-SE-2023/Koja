@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +21,7 @@ class KojaApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
-        home: Login(),
+        home: const Login(),
         routes: {
           Login.routeName: (ctx) => const Login(),
           Profile.routeName: (ctx) => const Profile(),
