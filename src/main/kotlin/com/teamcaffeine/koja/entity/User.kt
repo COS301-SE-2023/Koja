@@ -1,15 +1,17 @@
 package com.teamcaffeine.koja.entity
 
+import com.google.api.client.util.DateTime
 import jakarta.persistence.*
 
 
 @Entity
 @Table(name = "users")
-class User(@Id @GeneratedValue(strategy = GenerationType.AUTO) private var id: Int)  {
-
-
+class User  {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private var id: Int? = null
     private var authToken: String = "";
-    private var slotGroups: List<TimeSlot>? = null
+    //private var slotGroups: List<TimeSlot>? = null
     private var email: String? = null
     private var locations: List<String>? = null
 
