@@ -28,11 +28,8 @@ dependencies {
 	implementation("com.google.api-client:google-api-client:1.32.1")
 	implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 	implementation("com.google.api-client:google-api-client-java6:1.31.0")
-	implementation("com.codingapi.springboot:springboot-starter:2.0.4")
+	implementation ("org.springframework.boot:spring-boot-starter")
 	implementation ("io.github.cdimascio:java-dotenv:5.2.1")
-
-
-
 
 }
 
