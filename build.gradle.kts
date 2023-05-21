@@ -21,7 +21,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("io.github.cdimascio:java-dotenv:5.2.2")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -29,6 +28,9 @@ dependencies {
 	implementation("com.google.api-client:google-api-client:1.32.1")
 	implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 	implementation("com.google.api-client:google-api-client-java6:1.31.0")
+	implementation("com.codingapi.springboot:springboot-starter:2.0.4")
+	implementation ("io.github.cdimascio:java-dotenv:5.2.1")
+
 
 
 
