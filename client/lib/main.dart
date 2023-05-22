@@ -1,34 +1,36 @@
-//Packages
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-//Pages or widgets
 import 'screens/login_screen.dart';
-import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/navigation_management_screen.dart';
+import 'widgets/event_provider.dart';
 
 void main() {
-  runApp(KojaApp());
+  runApp(const KojaApp());
 }
 
 class KojaApp extends StatelessWidget {
-  const KojaApp({super.key});
+  const KojaApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ChangeNotifierProvider(
+      create: (context) => EventProvider(),
+      child: MaterialApp(
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
-        home: (kDebugMode) ? NavigationScreen() : Login(),
+        home: (kDebugMode) ? const NavigationScreen() : const Login(),
         routes: {
-          Login.routeName: (ctx) => Login(),
-          Profile.routeName: (ctx) => Profile(),
-          Home.routeName: (ctx) => Home(),
-          Event.routeName: (ctx) => Event(),
-          NavigationScreen.routeName: (ctx) => NavigationScreen()
-        });
+          Login.routeName: (ctx) => const Login(),
+          Profile.routeName: (ctx) => const Profile(),
+          Home.routeName: (ctx) => const Home(),
+          NavigationScreen.routeName: (ctx) => const NavigationScreen(),
+        },
+      ),
+    );
   }
 
   static const ColorScheme lightColorScheme = ColorScheme(
