@@ -14,7 +14,7 @@ class UserController(val service: UserService) {
         return service.retriveUsers()
     }
 
-    @PostMapping("/")
+    @PostMapping("/addUser")
     fun post(@RequestBody user: User) {
         service.saveUser(user)
     }
