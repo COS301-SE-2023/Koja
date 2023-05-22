@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 
+import '../Utils/constants_util.dart';
 import '../screens/login_screen.dart';
 
 class Userdetails extends StatelessWidget {
+
+  String profile = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
+  String email = "koja@epi-use.com";
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -12,7 +17,7 @@ class Userdetails extends StatelessWidget {
       height: 170,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
+        color: darkBlue,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -29,9 +34,10 @@ class Userdetails extends StatelessWidget {
                 width: 44,
                 color: Color.fromRGBO(250, 250, 250, 0.1),
                 child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromRGBO(42, 111, 240, 1)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    side: BorderSide(width: 2, color: Colors.white),
                   ),
                   onPressed: () {
                     Navigator.push(
@@ -55,15 +61,18 @@ class Userdetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  child: Image.asset(
-                    './icons/schedule.png',
-                    fit: BoxFit.cover,
+                ClipOval(
+                  //This is the profile picture 
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(
+                      profile,
+                    ),
                   ),
                 ),
+                //This is the name of the user
                 Text(
-                  'koja@example.com',
+                  email,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 20,
