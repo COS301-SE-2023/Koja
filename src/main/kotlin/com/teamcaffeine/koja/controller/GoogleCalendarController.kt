@@ -55,7 +55,7 @@ class GoogleCalendarController() {
         return RedirectView(authorize())
     }
 
-    @GetMapping("/calendar")
+    @GetMapping("/")
     fun oauth2Callback(@RequestParam(value = "code") @Param("code") code: String?): ResponseEntity<String> {
         val eventList: Events
         var message = ""
