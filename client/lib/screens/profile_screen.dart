@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
-//widgets
 import '../Utils/constants_util.dart';
 import '../widgets/user_details_widget.dart';
 import '../widgets/settings_widget.dart';
-
-//page import
 
 class Profile extends StatelessWidget {
   static const routeName = '/profile';
