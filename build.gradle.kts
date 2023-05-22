@@ -29,7 +29,7 @@ dependencies {
 	implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 	implementation("com.google.api-client:google-api-client-java6:1.31.0")
 	implementation ("org.springframework.boot:spring-boot-starter")
-	implementation ("io.github.cdimascio:java-dotenv:5.2.1")
+	implementation ("io.github.cdimascio:java-dotenv:5.2.2")
 	implementation ("com.google.apis:google-api-services-sqladmin:v1beta4-rev35-1.22.0")
 	implementation ("com.google.api-client:google-api-client:1.31.1")
 }
