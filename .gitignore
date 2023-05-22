@@ -98,4 +98,4 @@ secrets.yml
 env
 */amplify
 */node_modules
-
+!client/lib/

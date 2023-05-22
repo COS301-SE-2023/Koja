@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 class TimePickerWidget extends StatefulWidget {
+  const TimePickerWidget({super.key});
+
   @override
   _TimePickerWidgetState createState() => _TimePickerWidgetState();
 }
@@ -29,23 +30,19 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     return GestureDetector(
       onTap: () => _selectTime(context),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        // decoration: BoxDecoration(
-        //   borderRadius: BorderRadius.circular(8),
-        //   border: Border.all(color: Colors.grey),
-        // ),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               _selectedTime != null
-                  ? '${_selectedTime.format(context)}'
+                  ? _selectedTime.format(context)
                   : 'Tap to select time',
-              style: TextStyle(fontSize: 16,
+              style: const TextStyle(fontSize: 16,
                 color: Colors.white,
               ),
             ),
-            Icon(Icons.arrow_drop_down),
+            const Icon(Icons.arrow_drop_down),
           ],
         ),
       ),
