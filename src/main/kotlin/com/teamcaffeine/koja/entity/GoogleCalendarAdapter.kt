@@ -1,5 +1,8 @@
 package com.teamcaffeine.koja.entity
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.googleapis.util.Utils
+import com.google.api.client.http.HttpTransport
 import com.google.api.client.util.DateTime
 import com.google.api.services.sqladmin.SQLAdmin
 import com.google.api.services.sqladmin.SQLAdminScopes
@@ -24,7 +27,11 @@ class GoogleCalendarAdapter (override val calendarID :String) : CalendarAdapter(
 
         return null;
     }
-    var sqladmin: SQLAdmin = Builder(httpTransport, JSON_FACTORY, credential).build()
+
+    private val credential = loadCredentials();
+    private val JSON_FACTORY = Utils.getDefaultJsonFactory()
+    private val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
+    var sqladmin: SQLAdmin = SQLAdmin.Builder(HTTP_TRANSPORT, JSON_FACTORY, GoogleNetHttpTransport.newTrustedTransport()).build()
 
     override fun createEvent(title: String, start: DateTime, end: DateTime): Event{
 

@@ -26,8 +26,6 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	implementation ("com.google.auth:google-auth-library-oauth2-http:1.3.0")
-
-	implementation ("com.google.api-client:google-api-client:1.31.1")
 	implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 	implementation("com.google.api-client:google-api-client-java6:1.31.0")
 	implementation ("org.springframework.boot:spring-boot-starter")
