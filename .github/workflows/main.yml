@@ -15,9 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: List directory contents
-        run: ls -la
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v1
         with:
@@ -25,15 +22,15 @@ jobs:
 
       - name: Install Flutter dependencies
         run: flutter pub get
-        working-directory: client
+        working-directory: src/client
 
       - name: Run Flutter tests
         run: flutter test
-        working-directory: client
+        working-directory: src/client
 
       - name: Build Flutter app
         run: flutter build apk
-        working-directory: client
+        working-directory: src/client
 
   build_and_test_springboot:
     runs-on: ubuntu-latest
