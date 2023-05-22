@@ -22,13 +22,15 @@ jobs:
 
       - name: Install Flutter dependencies
         run: flutter pub get
-        working-directory: client
+        working-directory: Koja/client
 
       - name: Run Flutter tests
         run: flutter test
+        working-directory: Koja/client
 
       - name: Build Flutter app
         run: flutter build apk
+        working-directory: Koja/client
 
   build_and_test_springboot:
     runs-on: ubuntu-latest
