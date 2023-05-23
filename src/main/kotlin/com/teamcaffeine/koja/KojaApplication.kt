@@ -1,8 +1,8 @@
 package com.teamcaffeine.koja
 
 import io.github.cdimascio.dotenv.Dotenv
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import java.lang.System.setProperty
 
 @SpringBootApplication
