@@ -48,7 +48,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
             icon: const Icon(Icons.person),
             label: 'Profile',
             backgroundColor: ThemeData().colorScheme.primary,
-            
           ),
         ],
         onTap: (index){

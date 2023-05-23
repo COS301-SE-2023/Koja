@@ -21,6 +21,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.view.RedirectView
@@ -48,10 +49,20 @@ class GoogleCalendarController() {
     var events: Set<Event> = HashSet()
     val date1 = DateTime("2023-05-01T16:30:00.000+05:30")
     val date2 = DateTime(Date())
+    val userMap = {};
 
+    @CrossOrigin(origins = ["*"])
+    @GetMapping("/login/")
+    @Throws(Exception::class)
+    fun setupConnection(request: HttpServletRequest?): RedirectView {
+        return RedirectView(authorize())
+    }
+
+    @CrossOrigin(origins = ["*"])
     @GetMapping("/login/google")
     @Throws(Exception::class)
     fun googleConnectionStatus(request: HttpServletRequest?): RedirectView {
+
         return RedirectView(authorize())
     }
 
