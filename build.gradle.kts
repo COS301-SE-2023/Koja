@@ -32,7 +32,10 @@ dependencies {
 	implementation ("io.github.cdimascio:java-dotenv:5.2.2")
 	implementation ("com.google.apis:google-api-services-sqladmin:v1beta4-rev35-1.22.0")
 	implementation ("com.google.api-client:google-api-client:1.31.1")
+
+	testImplementation("com.h2database:h2")
 }
+
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
