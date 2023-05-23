@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import '../models/google_auth_model.dart';
+import '../screens/google_auth_screen.dart';
 
 import '../Utils/constants_util.dart';
 import '../screens/navigation_management_screen.dart';
@@ -26,7 +26,7 @@ class _LoginModalState extends State<LoginModal> {
           children: [
             ElevatedButton(
               onPressed: () {
-                signIn();
+                signIn(context);
               },
               child: SizedBox(
                 height: 30,
@@ -69,10 +69,15 @@ class _LoginModalState extends State<LoginModal> {
     );
   }
 
-  Future signIn() async {
-    final token = await GoogleSignInApi().login();
-    if (token != null) {
-      Navigator.of(context).pushReplacementNamed(NavigationScreen.routeName);
-    }
+  Future signIn(context) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const GoogleAuthScreen(),
+      ),
+    );
+    // print("Evetns: $events");
+    // if (events != null) {
+    //   Navigator.of(context).pushReplacementNamed(NavigationScreen.routeName);
+    // }
   }
 }
