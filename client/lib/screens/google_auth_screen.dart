@@ -23,7 +23,7 @@ class _GoogleAuthScreenState extends State<GoogleAuthScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Auth Example'),
+          title: Text('Google Auth'),
         ),
         body: InAppWebView(
           initialUrlRequest: URLRequest(
