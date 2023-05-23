@@ -5,20 +5,20 @@
 [![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja)
 [![Koja Build Status](https://github.com/COS301-SE-2023/Koja/actions/workflows/main.yml/badge.svg)](https://github.com/COS301-SE-2023/Koja/actions/workflows/main.yml)
 
-## [Project Description:](https://github.com/COS301-SE-2023/Koja#project-description)
+## Project Description:
 Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
 
-## [Documentation:](https://github.com/COS301-SE-2023/Koja#documentation)
-## [SRS Documentation](https://github.com/COS301-SE-2023/Koja#srs-documentation)
+## Documentation:
+## SRS Documentation
 [SRS Documentation](https://docs.google.com/document/d/1V_2xfNcoMl7heFIU94IDjCwrQeWwZM3zzlxb1wnSpU0/edit?usp=sharing)
 
-## [Demo Videos](https://github.com/COS301-SE-2023/Koja#demo-videos)
+## Demo Videos
 [Demo 1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
 
-## [Team](https://github.com/COS301-SE-2023/Koja#team)
+## Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
-## [Group Members:](https://github.com/COS301-SE-2023/Koja#group-members)
+## Group Members:
 
 ## [Marthinus Ettienne van Zyl(u19012366)](https://github.com/u19012366) 
 Ettienne has two years of experience in using and building projects with Flutter. One of these projects was successfully deployed and is still in use by the company it was built for. This project also utilised Firebase's Firestore database.
