@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
+import '../models/event_wrapper_module.dart';
 
 class EventProvider extends ChangeNotifier {
+  List<EventWrapper> _eventWrappers = [];
+
   //This is the list of events
   final List<Event> _events = [];
 
@@ -46,5 +50,30 @@ class EventProvider extends ChangeNotifier {
     //delete event from the list
     _events.remove(event);
     notifyListeners();
+  }
+
+  void setEventWrappers(List<EventWrapper> r) {
+    _eventWrappers = r;
+    for (EventWrapper e in _eventWrappers) {
+      _events.add(Event(
+        title: e.summary,
+        description: e.description ?? '',
+        from: e.startDateTime,
+        to: e.endDateTime,
+      ));
+    }
+    notifyListeners();
+  }
+
+  DateTime convertStringToDateTime(String dateTimeString) {
+    // Remove the time zone offset from the string
+    String formattedString =
+        dateTimeString.replaceAll(RegExp(r'[+-]\d{2}:\d{2}$'), '');
+
+    // Define the date format based on the input string
+    DateFormat format = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+    // Parse the string and return the DateTime object
+    return format.parse(formattedString);
   }
 }
