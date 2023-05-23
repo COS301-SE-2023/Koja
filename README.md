@@ -15,7 +15,7 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 ## [Demo Videos](https://github.com/COS301-SE-2023/Koja#demo-videos)
 [Demo 1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
 
-## Team
+## [Team](https://github.com/COS301-SE-2023/Koja#team)
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
 ## [Group Members:](https://github.com/COS301-SE-2023/Koja#group-members)
