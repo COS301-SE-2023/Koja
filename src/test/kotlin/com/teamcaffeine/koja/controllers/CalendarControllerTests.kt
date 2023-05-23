@@ -1,52 +1,44 @@
-package com.teamcaffeine.koja.controllers
+package com.teamcaffeine.koja.controller
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
-import com.google.api.client.util.DateTime
-import com.google.auth.oauth2.GoogleCredentials
-import com.teamcaffeine.koja.controller.GoogleCalendarController
-import com.teamcaffeine.koja.entity.Event
-import com.teamcaffeine.koja.service.GoogleCalendarService
+import io.github.cdimascio.dotenv.Dotenv
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.junit.jupiter.api.Assertions.*
-import org.mockito.Mockito.*
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import java.util.*
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-
+@ExtendWith(SpringExtension::class)
 @SpringBootTest
-class CalendarControllerTests {
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class GoogleCalendarControllerTests {
 
-    @Test
-    fun contextLoads() {
+    @Autowired
+    private lateinit var mockMvc: MockMvc
+
+    @MockBean
+    private lateinit var dotenv: Dotenv
+
+    @BeforeEach
+    fun setup() {
+        Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_URL"]).thenReturn("your_test_database_url")
+        Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]).thenReturn("your_test_username")
+        Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]).thenReturn("your_test_password")
     }
 
 
-
     @Test
-    fun `oauth2Callback should return ResponseEntity with message and HttpStatus OK`() {
-        // Mock the necessary dependencies
-        val flowMock = mock(GoogleAuthorizationCodeFlow::class.java)
-        val credentialMock = mock(GoogleCredentials::class.java)
-        val clientMock = mock(GoogleCalendarController::class.java)
-        val eventsListMock = mock(Event::class.java)
-
-        // Create an instance of the class under test
-
-        // Set up the necessary data and inputs
-        val code = "testCode"
-        val redirectURI = "testRedirectURI"
-
-        val date1 = DateTime("2023-05-01T16:30:00.000+05:30")
-        val date2 = DateTime(Date())
-        val expectedMessage = "Test Message"
-
-        val result = clientMock.oauth2Callback(code)
-
-        // Assert the result
-        assertEquals(expectedMessage, result.body)
-        assertEquals(HttpStatus.OK, result.statusCode)
+    fun `oauth2Callback should return HttpStatus OK`() {
+        mockMvc.perform(get("/").param("code", "testCode").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
     }
 }
-
