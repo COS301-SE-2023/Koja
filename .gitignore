@@ -95,3 +95,7 @@ secrets.yml
 
 # Other:
 .env
+env
+*/amplify
+*/node_modules
+!client/lib/
