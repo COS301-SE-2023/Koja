@@ -22,11 +22,11 @@ jobs:
 
       - name: Install Flutter dependencies
         run: flutter pub get
-        working-directory: src/client
+        working-directory: client
 
       - name: Build Flutter app
         run: flutter build apk
-        working-directory: src/client
+        working-directory: client
 
   build_and_test_springboot:
     runs-on: ubuntu-latest
@@ -41,4 +41,4 @@ jobs:
           java-version: 17
 
       - name: Build Spring Boot project
-        run: ./gradlew build -x test
+        run: ./gradlew build
