@@ -9,6 +9,8 @@
 Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
 
 ## [Documentation:](https://github.com/COS301-SE-2023/Koja#documentation)
+## [SRS Documentation](https:/github.com/COS301-SE-2023/Koja#srs-documentation)
+[SRS Documentation](https://docs.google.com/document/d/1V_2xfNcoMl7heFIU94IDjCwrQeWwZM3zzlxb1wnSpU0/edit?usp=sharing)
 
 ## Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
