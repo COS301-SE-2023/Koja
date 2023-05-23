@@ -1,4 +1,4 @@
-# [Koja](https://github.com/COS301-SE-2023/Koja)
+# [Team Caffeine-Koja](https://github.com/COS301-SE-2023/Koja)
 
 [![Pull Requests](https://img.shields.io/github/issues-pr/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/pulls)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/issues)
@@ -14,6 +14,9 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 
 ## Demo Videos
 [Team Caffeine-Demo1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
+
+## Project Board
+[Project-Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
 ## Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
