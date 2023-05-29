@@ -99,3 +99,4 @@ env
 */amplify
 */node_modules
 !client/lib/
+!gradle-wrapper.jar
