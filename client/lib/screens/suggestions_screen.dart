@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import '../Utils/constants_util.dart';
 
@@ -18,8 +19,13 @@ class Suggestions extends StatelessWidget {
         centerTitle: true,
         
       ),
-      body: const Center(
-        child: Text('Page Still Under Construction'),
+      body: Center(
+        child: 
+        Lottie.asset(
+          'assets/animations/under-construction.json',
+          height: 550,
+          width: 300,
+        ),
       ),
     );
   }

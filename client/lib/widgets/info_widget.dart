@@ -5,10 +5,9 @@ import 'package:lottie/lottie.dart';
 
 import '../Utils/constants_util.dart';
 import '../widgets/login_modal_widget.dart';
-import '../widgets/info_widget.dart';
 
 class Info extends StatefulWidget {
-  const Info({Key? key});
+  const Info({super.key});
 
   @override
   _InfoState createState() => _InfoState();
@@ -53,11 +52,11 @@ class _InfoState extends State<Info> {
                       stopPauseOnTap: true,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Koja is an advanced schedule management tool',
                     style: GoogleFonts.openSans(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -68,7 +67,7 @@ class _InfoState extends State<Info> {
                   Text(
                     'that seamlessly integrates with Google Calendar.',
                     style: GoogleFonts.openSans(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -77,18 +76,18 @@ class _InfoState extends State<Info> {
                     textAlign: TextAlign.center,
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 20),
+                    margin: const EdgeInsets.only(top: 20),
                     child: Lottie.asset(
                       'assets/animations/schedule.json',
                       height: 250,
                       width: 300,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     'It goes beyond traditional scheduling by offering',
                     style: GoogleFonts.openSans(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -99,7 +98,7 @@ class _InfoState extends State<Info> {
                   Text(
                     'dynamic task allocation and intelligent travel time calculations.',
                     style: GoogleFonts.openSans(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -110,7 +109,7 @@ class _InfoState extends State<Info> {
                   Text(
                     'With Koja, you can effortlessly manage your schedule, optimize your tasks,',
                     style: GoogleFonts.openSans(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -121,7 +120,7 @@ class _InfoState extends State<Info> {
                   Text(
                     'and ensure efficient use of your time.',
                     style: GoogleFonts.openSans(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -151,8 +150,8 @@ class _InfoState extends State<Info> {
                             clipBehavior: Clip.antiAliasWithSaveLayer,
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30.0),
-                                topRight: Radius.circular(30.0),
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular(10.0),
                               ),
                             ),
                             builder: (BuildContext context) {

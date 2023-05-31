@@ -1,3 +1,4 @@
+import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -6,13 +7,23 @@ import 'location_search_widget.dart';
 import 'time_picker_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Settings extends StatelessWidget {
-  var contexzz;
-  Widget spacer = const SizedBox(width: 30, height: 8);
-  Widget inline = const SizedBox(width: 10);
-  Widget forwardarrow = const SizedBox(width: 60);
 
-  Settings({Key? key}) : super(key: key);
+class Settings extends StatefulWidget {
+  const Settings({Key? key}) : super(key: key);
+
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+
+  late BuildContext contexzz;
+
+  final TextEditingController _textController = TextEditingController();
+  TextEditingController _homeTextController = TextEditingController();
+  TextEditingController _workTextController = TextEditingController();
+
+  String home = '', work = '';
 
   @override
   Widget build(BuildContext context) {
@@ -52,24 +63,26 @@ class Settings extends StatelessWidget {
               Header(LineIcons.directions, 'Set Your Location'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
-              Container(
-                height: 180,
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 90, 126, 165),
-                  borderRadius: BorderRadius.circular(8.0),
+              SingleChildScrollView(
+                child: Container(
+                  width: constraints.maxWidth * 0.95,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 90, 126, 165),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: HomeLocation("Home Location"),
                 ),
-                child: Location(" Home Location"),
               ),
               const SizedBox(height: 15),
-              Container(
-                height: 180,
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 90, 126, 165),
-                  borderRadius: BorderRadius.circular(8.0),
+              SingleChildScrollView(
+                child: Container(
+                  width: constraints.maxWidth * 0.95,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 90, 126, 165),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: WorkLocation("Work Location"),
                 ),
-                child: Location(" Work Location"),
               ),
 
               /*  This is the About Us Section  */
@@ -101,8 +114,7 @@ class Settings extends StatelessWidget {
     return Row(
       children: [
         Icon(iconData),
-        const SizedBox(
-            width: 2), // Add SizedBox for spacing between the icon and text
+        const SizedBox(width: 2),
         Text(text,
             style: GoogleFonts.lato(
               fontSize: 18,
@@ -253,9 +265,9 @@ class Settings extends StatelessWidget {
             );
           },
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
+            // foregroundColor: Colors.white,
             backgroundColor: Colors.transparent,
-            elevation: 0,
+            elevation: 10,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -275,7 +287,6 @@ class Settings extends StatelessWidget {
               ),
             ],
           ),
-          // onHover: ,
         ),
         Text("Version 1.0.5",
             style: GoogleFonts.ubuntu(
@@ -287,98 +298,137 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget Location(String where) {
+  Widget HomeLocation(String where) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 15),
-        Text(
-          ' $where',
-          style: const TextStyle(
-              fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-        ),
-        const SizedBox(height: 24),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(width: 3),
-            Address("Tap Change"),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    contexzz,
-                    MaterialPageRoute(
-                        builder: (context) => const LocationSearch()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  side: const BorderSide(width: 2, color: Colors.white),
-                ),
-                child: const Text(
-                  'Change',
-                  style: TextStyle(
-                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // TextInputType.text,
-            Container(
-              margin: const EdgeInsets.only(right: 10),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  side: const BorderSide(width: 2, color: Colors.white),
-                ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                ),
-              ),
+            SizedBox(width: 5),
+            Text(
+              ' $where : $home',
+              style: const TextStyle(
+                  fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
             ),
           ],
         ),
+        
+        SizedBox(height: 4),
+        Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _homeTextController,
+                
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter Your Home Address',
+                  hintStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      _homeTextController.clear();
+                    },
+                    icon: Icon(Icons.clear),
+                  ),
+                  
+                ),
+              ),
+              SizedBox(height: 3),
+               MaterialButton(onPressed: () {
+                setState(() {
+                  home = _homeTextController.text;
+                });
+               }, 
+                child: Text('Save',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                color: Colors.blue,
+              ),
+            ],
+          ),
+          
+        ),
+       
       ],
     );
   }
 
-  Widget Address(String address) {
-    return SizedBox(
-      width: 250,
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.white),
-          ),
+  Widget WorkLocation(String where) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            SizedBox(width: 5),
+            Text(
+              ' $where : $work',
+              style: const TextStyle(
+                  fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+            ),
+          ],
         ),
-        child: Text(
-          '  $address',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
+        SizedBox(height: 4),
+        Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _workTextController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter Your Work Address',
+                  hintStyle: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      _workTextController.clear();
+                    },
+                    icon: Icon(Icons.clear),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 3),
+               MaterialButton(onPressed: () {
+                setState(() {
+                  work = _workTextController.text;
+                });
+               },
+                color: Colors.blue, 
+                child: const Text('Save',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
           ),
+          
         ),
-      ),
+      ],
     );
   }
+  
+  Widget Weekdays() {}
+
+  
 }
+
+
+
+/*
+
+*/

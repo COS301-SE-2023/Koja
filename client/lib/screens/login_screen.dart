@@ -33,19 +33,19 @@ class _LoginState extends State<Login> {
                 children: [
                   Container(
                     // color: darkBlue,
-                    child:AnimatedTextKit(
-                        animatedTexts: [
-                          TyperAnimatedText(
-                            'KOJA',
-                            textStyle: GoogleFonts.oswald(
-                              textStyle: const TextStyle(
-                                fontSize: 50,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white,
-                              ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TyperAnimatedText(
+                          'KOJA',
+                          textStyle: GoogleFonts.oswald(
+                            textStyle: const TextStyle(
+                              fontSize: 50,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
                             ),
-                            textAlign: TextAlign.center,
-                            speed: const Duration(milliseconds: 200),
+                          ),
+                          textAlign: TextAlign.center,
+                          speed: const Duration(milliseconds: 200),
                         ),
                       ],
                       totalRepeatCount: 1,
@@ -57,7 +57,7 @@ class _LoginState extends State<Login> {
                   Center(
                     child: Lottie.asset('assets/animations/9069-time.json',
                         height: 200, width: 200),
-                  ),          
+                  ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,7 +67,7 @@ class _LoginState extends State<Login> {
                         child: Text(
                           'Unlike Any Other Scheduler That You Have Ever Used',
                           style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
+                            textStyle: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
                               color: Colors.white,
@@ -77,36 +77,36 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                       Container(
-                      color: darkBlue,
-                      child: Text(
-                        'This One Is More Advanced And More Efficient',
-                        style: GoogleFonts.roboto(
-                          textStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                        color: darkBlue,
+                        child: Text(
+                          'This One Is More Advanced And More Efficient',
+                          style: GoogleFonts.roboto(
+                            textStyle: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
                           ),
+                          textAlign: TextAlign.left,
                         ),
-                        textAlign: TextAlign.left,
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      color: darkBlue,
-                      child: Text(
-                        'Sign In To Get Started',
-                        style: GoogleFonts.roboto(
-                          textStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                      const SizedBox(height: 20),
+                      Container(
+                        color: darkBlue,
+                        child: Text(
+                          'Click Get Started  To Know More',
+                          style: GoogleFonts.roboto(
+                            textStyle: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
                           ),
+                          textAlign: TextAlign.left,
                         ),
-                        textAlign: TextAlign.left,
                       ),
-                    ),
                     ],
-                  ),          
+                  ),
                 ],
               ),
             ),
@@ -124,7 +124,8 @@ class _LoginState extends State<Login> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const Info()),
+                            MaterialPageRoute(
+                                builder: (context) => const Info()),
                           );
                         },
                         child: Text('Get Started',
@@ -152,8 +153,8 @@ class _LoginState extends State<Login> {
                             clipBehavior: Clip.antiAliasWithSaveLayer,
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30.0),
-                                topRight: Radius.circular(30.0),
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular(10.0),
                               ),
                             ),
                             builder: (BuildContext context) {

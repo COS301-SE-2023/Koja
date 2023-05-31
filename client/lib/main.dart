@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+
 
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -21,7 +23,7 @@ class KojaApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
-        home: const Login(),
+        home: (kDebugMode) ? const NavigationScreen() : const Login(),
         routes: {
           Login.routeName: (ctx) => const Login(),
           Profile.routeName: (ctx) => const Profile(),

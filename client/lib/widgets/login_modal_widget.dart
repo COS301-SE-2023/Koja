@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:icons_plus/icons_plus.dart';
 import '../models/google_auth_model.dart';
 
 import '../Utils/constants_util.dart';
-import '../screens/navigation_management_screen.dart';
 
 class LoginModal extends StatefulWidget {
   const LoginModal({super.key});
@@ -26,20 +24,22 @@ class _LoginModalState extends State<LoginModal> {
           children: [
             ElevatedButton(
               onPressed: () {
-                signIn();
+                print('Redirecting to Google Sign In');
+                // GoogleAuthModel().signInWithGoogle();
               },
-              child: SizedBox(
+              child: const SizedBox(
                 height: 30,
                 width: 200,
                 child: Row(
                   children: [
-                    LineIcon(
-                      LineIcons.googlePlus,
-                      size: 20.0,
+                    Icon(
+                      Bootstrap.google,
+                      size: 16.0,
                       color: Colors.red,
                     ),
-                    const SizedBox(width: 10.0),
-                    const Text('Sign In With Google'),
+                    SizedBox(width: 10.0),
+                    Text('Sign In With Google',
+                        style: TextStyle(color: Colors.white, fontSize: 16.0)),
                   ],
                 ),
               ),
@@ -67,12 +67,5 @@ class _LoginModalState extends State<LoginModal> {
         ),
       ),
     );
-  }
-
-  Future signIn() async {
-    final token = await GoogleSignInApi().login();
-    if (token != null) {
-      Navigator.of(context).pushReplacementNamed(NavigationScreen.routeName);
-    }
   }
 }
