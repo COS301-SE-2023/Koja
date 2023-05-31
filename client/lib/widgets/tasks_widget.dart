@@ -29,6 +29,7 @@ class _TasksWidgetState extends State<TasksWidget> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
+            fontFamily: 'Raleway'
           ),
         ),
       );
@@ -47,7 +48,6 @@ class _TasksWidgetState extends State<TasksWidget> {
         ),
       ),
       child: SfCalendar(
-        view: CalendarView.timelineDay,
         dataSource: EventDataSource(provider.events),
         initialSelectedDate: provider.selectedDate,
         //Builds the events on the calendar
@@ -56,7 +56,7 @@ class _TasksWidgetState extends State<TasksWidget> {
         headerHeight: 0,
         todayHighlightColor: Colors.black,
         selectionDecoration: const BoxDecoration(
-          color: Colors.transparent,
+          color: Color.fromARGB(0, 255, 0, 0),
           // border: Border.all(color: Colors.black, width: 2),
           // borderRadius: BorderRadius.circular(12),
         ),
@@ -80,22 +80,22 @@ class _TasksWidgetState extends State<TasksWidget> {
   }
 
   Widget appointmentBuilder(
-      BuildContext context, CalendarAppointmentDetails details) {
+    BuildContext context, CalendarAppointmentDetails details) {
     final event = details.appointments.first;
     return Container(
       width: details.bounds.width,
       height: details.bounds.height,
       decoration: BoxDecoration(
         color: darkBlue,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
         child: Text(
           event.title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            fontFamily: 'Raleway'
           ),
         ),
       ),

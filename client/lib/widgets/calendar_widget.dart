@@ -25,7 +25,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
       showNavigationArrow: true,
       showDatePickerButton: true,
-      showWeekNumber: true,
 
       allowDragAndDrop: true,
 

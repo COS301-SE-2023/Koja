@@ -620,7 +620,8 @@ class _SettingsState extends State<Settings> {
                 style: const TextStyle(
                     fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
               ),
-              Column(
+              if (home.isNotEmpty)
+                Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -702,23 +703,24 @@ class _SettingsState extends State<Settings> {
                 style: const TextStyle(
                     fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        work = '';
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.clear,
-                      color: Colors.white,
+              if (work.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          work = '';
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.clear,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
           SizedBox(height: 4),
