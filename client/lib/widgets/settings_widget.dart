@@ -47,7 +47,6 @@ class _SettingsState extends State<Settings> {
                   /* This is the Expansion Tile for the days */
                 ),
               ),
-
               const SizedBox(height: 20),
 
               /*  This is the Location Section  */
@@ -86,15 +85,16 @@ class _SettingsState extends State<Settings> {
               Header(LineIcons.tags, ' About Us'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
-              Container(
-                height: 161,
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 90, 126, 165),
-                  borderRadius: BorderRadius.circular(8.0),
+              SingleChildScrollView(
+                child: Container(
+                  width: constraints.maxWidth * 0.95,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 90, 126, 165),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: const EdgeInsets.all(10.0),
+                  child: AboutUs(),
                 ),
-                padding: const EdgeInsets.all(10.0),
-                child: AboutUs(),
               ),
             ],
           ),
@@ -112,13 +112,12 @@ class _SettingsState extends State<Settings> {
           Icons.arrow_drop_down,
           color: Colors.white,
         ),
-        title: Text("Click To Set Active Times For Everyday", 
-          style: GoogleFonts.ubuntu(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: Colors.white,
-          )
-        ),
+        title: Text("Click To Set Active Times For Everyday",
+            style: GoogleFonts.ubuntu(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+            )),
         children: [
           Container(
             decoration: BoxDecoration(
@@ -127,7 +126,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -159,7 +158,7 @@ class _SettingsState extends State<Settings> {
                 ),
               ],
             ),
-          ), 
+          ),
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
@@ -168,7 +167,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -209,7 +208,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -250,7 +249,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -291,7 +290,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -332,7 +331,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -373,7 +372,7 @@ class _SettingsState extends State<Settings> {
               border: Border.all(color: Colors.white),
             ),
             child: ExpansionTile(
-              backgroundColor: darkBlue,          
+              backgroundColor: darkBlue,
               trailing: const Icon(
                 Icons.arrow_drop_down,
                 color: Colors.white,
@@ -406,7 +405,6 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-                               
         ],
       ),
     );
@@ -480,291 +478,294 @@ class _SettingsState extends State<Settings> {
   /* This is the Personal Time Input Section  - only difference is the Text */
 
   Widget PersonalTimePicker(String label) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 10),
-        Text(
-          '  $label',
-          style: const TextStyle(
-              fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-        ),
-        const SizedBox(height: 5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TimePickers('Start Time'),
-            TimePickers('End Time'),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10),
+          Text(
+            '  $label',
+            style: const TextStyle(
+                fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+          ),
+          const SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  side: const BorderSide(width: 2, color: Colors.white),
-                ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                ),
-              ),
+              TimePickers('Start Time'),
+              TimePickers('End Time'),
             ],
           ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    side: const BorderSide(width: 2, color: Colors.white),
+                  ),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontFamily: 'Roboto'),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
   Widget TimePickers(String label) {
-    return Row(
-      children: [
-        // const SizedBox(width: 3),//Don't Change this
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
+    return SingleChildScrollView(
+      child: Row(
+        children: [
+          // const SizedBox(width: 3),//Don't Change this
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
-        ),
-        const TimePickerWidget(),
-      ],
+          const TimePickerWidget(),
+        ],
+      ),
     );
   }
 
   /* This is About Us Section */
   Widget AboutUs() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Koja',
-          style: GoogleFonts.ubuntu(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Koja',
+            style: GoogleFonts.ubuntu(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'Thanks for choosing Koja, with our application you will get dynamic and personalized recommendations for your next task.',
-          style: GoogleFonts.ubuntu(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              contexzz,
-              MaterialPageRoute(builder: (contexzz) => const AboutUsPage()),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            // foregroundColor: Colors.white,
-            backgroundColor: Colors.transparent,
-            elevation: 10,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Learn More',
-                style: GoogleFonts.ubuntu(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white,
-              ),
-            ],
-          ),
-        ),
-        Text("Version 1.0.5",
+          const SizedBox(height: 10),
+          Text(
+            'Thanks for choosing Koja, with our application you will get dynamic and personalized recommendations for your next task.',
             style: GoogleFonts.ubuntu(
               fontSize: 15,
               fontWeight: FontWeight.w400,
               color: Colors.white,
-            )),
-      ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          MaterialButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutUsPage()),
+              );
+            },
+            elevation: 10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Learn More',
+                  style: GoogleFonts.ubuntu(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+          Text("Version 2.0.2",
+              style: GoogleFonts.raleway(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              )),
+        ],
+      ),
     );
   }
 
 /* This is the Home Location Input Section */
   Widget HomeLocation(String where) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 15),
-        Row(
-          children: [
-            SizedBox(width: 5),
-            Text(
-              ' $where : $home',
-              style: const TextStyle(
-                  fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                onPressed: () {
-                  setState(() {
-                    home = '';
-                  });
-                },
-                icon: const Icon(
-                  Icons.clear,
-                  color: Colors.white,
-                ),
-              ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 15),
+          Row(
             children: [
-              TextField(
-                controller: _homeTextController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter Your Home Address',
-                  hintStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                  suffixIcon: IconButton(
+              SizedBox(width: 5),
+              Text(
+                ' $where : $home',
+                style: const TextStyle(
+                    fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
                     onPressed: () {
-                      _homeTextController.clear();
+                      setState(() {
+                        home = '';
+                      });
                     },
-                    icon: Icon(Icons.clear,
-                    color: Colors.white
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.white,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 3),
-              MaterialButton(
-                onPressed: () {
-                  setState(() {
-                    home = _homeTextController.text;
-                  });
-                },
-                child: Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                color: Colors.blue,
+                ],
               ),
             ],
           ),
-        ),
-      ],
+          SizedBox(height: 4),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: _homeTextController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter Your Home Address',
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _homeTextController.clear();
+                      },
+                      icon: Icon(Icons.clear, color: Colors.white),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 3),
+                MaterialButton(
+                  onPressed: () {
+                    setState(() {
+                      home = _homeTextController.text;
+                    });
+                  },
+                  child: Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
 /* This is the Personal Time Input Section  - only difference is the Text */
   Widget WorkLocation(String where) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 15),
-        Row(
-          children: [
-            SizedBox(width: 5),
-            Text(
-              ' $where : $work',
-              style: const TextStyle(
-                  fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                onPressed: () {
-                  setState(() {
-                    work = '';
-                  });
-                },
-                icon: const Icon(
-                  Icons.clear,
-                  color: Colors.white,
-                ),
-              ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 15),
+          Row(
             children: [
-              TextField(
-                controller: _workTextController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter Your Work Address',
-                  hintStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
-                  suffixIcon: IconButton(
+              SizedBox(width: 5),
+              Text(
+                ' $where : $work',
+                style: const TextStyle(
+                    fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
                     onPressed: () {
-                      _workTextController.clear();
+                      setState(() {
+                        work = '';
+                      });
                     },
-                    icon: Icon(Icons.clear,
-                      color: Colors.white
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.white,
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 3),
-              MaterialButton(
-                onPressed: () {
-                  setState(() {
-                    work = _workTextController.text;
-                  });
-                },
-                color: Colors.blue,
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
+                ],
               ),
             ],
           ),
-        ),
-      ],
+          SizedBox(height: 4),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: _workTextController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter Your Work Address',
+                    hintStyle: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _workTextController.clear();
+                      },
+                      icon: Icon(Icons.clear, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 3),
+                MaterialButton(
+                  onPressed: () {
+                    setState(() {
+                      work = _workTextController.text;
+                    });
+                  },
+                  color: Colors.blue,
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
-  
 }

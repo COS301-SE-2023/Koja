@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../models/google_auth_model.dart';
 
+
 import '../Utils/constants_util.dart';
 
 class LoginModal extends StatefulWidget {
@@ -23,9 +24,17 @@ class _LoginModalState extends State<LoginModal> {
           shrinkWrap: true,
           children: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 print('Redirecting to Google Sign In');
-                // GoogleAuthModel().signInWithGoogle();
+                var user = await GoogleAuthModel.login();
+                if (user != null) {
+                  print('User is logged in');
+                  print(user.displayName);
+                  print(user.email);
+                  // Navigator.pushNamed(context, NavigationScreen.routeName);
+                } else {
+                  print('User is not logged in');
+                }
               },
               child: const SizedBox(
                 height: 30,
@@ -44,25 +53,6 @@ class _LoginModalState extends State<LoginModal> {
                 ),
               ),
             ),
-            const SizedBox(height: 10.0),
-            // ElevatedButton(
-            //   onPressed: () {},
-            //   child: Container(
-            //     height: 30,
-            //     width: 200,
-            //     child: Row(
-            //       children: [
-            //         LineIcon(
-            //           LineIcons.mailBulk,
-            //           size: 20.0,
-            //           color: Colors.red,
-            //         ),
-            //         SizedBox(width: 10.0),
-            //         Text('Sign In With Email'),
-            //       ],
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

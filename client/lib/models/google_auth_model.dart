@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class GoogleAuthModel extends ChangeNotifier {
-  
+class GoogleAuthModel {
+  static GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: [
-      'email',
-      // 'https://www.googleapis.com/auth/contacts.readonly',
-    ],
-  );
+  static Future<GoogleSignInAccount?> login() async {
+    return await _googleSignIn.signIn();
+  }
 
-  
-
-  
+  // static Future logout() => _googleSignIn.signOut();
 }

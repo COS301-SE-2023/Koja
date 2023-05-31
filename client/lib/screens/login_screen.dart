@@ -54,7 +54,7 @@ class _LoginState extends State<Login> {
                       stopPauseOnTap: true,
                     ),
                   ),
-                  Center(
+                  Container(
                     child: Lottie.asset('assets/animations/9069-time.json',
                         height: 200, width: 200),
                   ),
@@ -66,7 +66,7 @@ class _LoginState extends State<Login> {
                         color: darkBlue,
                         child: Text(
                           'Unlike Any Other Scheduler That You Have Ever Used',
-                          style: GoogleFonts.roboto(
+                          style: GoogleFonts.raleway(
                             textStyle: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
@@ -80,7 +80,7 @@ class _LoginState extends State<Login> {
                         color: darkBlue,
                         child: Text(
                           'This One Is More Advanced And More Efficient',
-                          style: GoogleFonts.roboto(
+                          style: GoogleFonts.raleway(
                             textStyle: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
@@ -94,8 +94,8 @@ class _LoginState extends State<Login> {
                       Container(
                         color: darkBlue,
                         child: Text(
-                          'Click Get Started  To Know More',
-                          style: GoogleFonts.roboto(
+                          'Click "Get Started" To Know More',
+                          style: GoogleFonts.ubuntu(
                             textStyle: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
