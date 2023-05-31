@@ -1,11 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class GoogleSignInApi {
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: "nope",
-    scopes: ['email', 'https://www.googleapis.com/auth/calendar'],
-  );
-  Future<GoogleSignInAccount?> login() => _googleSignIn.signIn();
+class GoogleAuthModel extends ChangeNotifier {
+  
 
-  Future logout() => _googleSignIn.signOut();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      // 'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
+
+  
+
+  
 }

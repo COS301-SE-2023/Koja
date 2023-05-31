@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 //Pages or widgets
 import 'home_screen.dart';
 import 'profile_screen.dart';
-import 'suggested_screen.dart';
+import 'suggestions_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
   static const routeName = '/navigation';

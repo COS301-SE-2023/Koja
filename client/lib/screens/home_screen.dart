@@ -1,3 +1,4 @@
+import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/calendar_widget.dart';
@@ -24,6 +25,8 @@ class _HomeState extends State<Home> {
           ),
         ),
         centerTitle: true,
+        backgroundColor: darkBlue,
+        
       ),
       body: const CalendarWidget(),
       floatingActionButton: FloatingActionButton(
