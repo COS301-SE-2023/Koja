@@ -1,5 +1,6 @@
 //Packages
 
+import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 
 //Pages or widgets
@@ -32,12 +33,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 25,
         currentIndex: _currentIndex,
-        
+        // backgroundColor: darkBlue,
         items: [ 
           BottomNavigationBarItem(
             icon: const Icon(Icons.home),
             label: 'Home',
-            backgroundColor: ThemeData().colorScheme.primary,
+            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings_suggest),
