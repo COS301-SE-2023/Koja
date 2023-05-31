@@ -86,7 +86,7 @@ class _InfoState extends State<Info> {
                   const SizedBox(height: 20),
                   Text(
                     'It goes beyond traditional scheduling by offering',
-                    style: GoogleFonts.openSans(
+                    style: GoogleFonts.ubuntu(
                       textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
@@ -97,7 +97,7 @@ class _InfoState extends State<Info> {
                   ),
                   Text(
                     'dynamic task allocation and intelligent travel time calculations.',
-                    style: GoogleFonts.openSans(
+                    style: GoogleFonts.ubuntu(
                       textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
@@ -108,7 +108,7 @@ class _InfoState extends State<Info> {
                   ),
                   Text(
                     'With Koja, you can effortlessly manage your schedule, optimize your tasks,',
-                    style: GoogleFonts.openSans(
+                    style: GoogleFonts.ubuntu(
                       textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
@@ -119,7 +119,7 @@ class _InfoState extends State<Info> {
                   ),
                   Text(
                     'and ensure efficient use of your time.',
-                    style: GoogleFonts.openSans(
+                    style: GoogleFonts.ubuntu(
                       textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
