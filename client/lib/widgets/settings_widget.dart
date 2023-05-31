@@ -103,11 +103,12 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  /*  This consists of all the days from Monday To Sunday */
   Padding AllDays(BoxConstraints constraints) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ExpansionTile(
-        trailing: Icon(
+        trailing: const Icon(
           Icons.arrow_drop_down,
           color: Colors.white,
         ),
@@ -117,7 +118,7 @@ class _SettingsState extends State<Settings> {
             fontWeight: FontWeight.w400,
             color: Colors.white,
           )
-        ),  
+        ),
         children: [
           Container(
             decoration: BoxDecoration(
@@ -616,6 +617,23 @@ class _SettingsState extends State<Settings> {
               style: const TextStyle(
                   fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
             ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                onPressed: () {
+                  setState(() {
+                    home = '';
+                  });
+                },
+                icon: const Icon(
+                  Icons.clear,
+                  color: Colors.white,
+                ),
+              ),
+              ],
+            ),
           ],
         ),
         SizedBox(height: 4),
@@ -638,7 +656,9 @@ class _SettingsState extends State<Settings> {
                     onPressed: () {
                       _homeTextController.clear();
                     },
-                    icon: Icon(Icons.clear),
+                    icon: Icon(Icons.clear,
+                    color: Colors.white
+                    ),
                   ),
                 ),
               ),
@@ -679,6 +699,23 @@ class _SettingsState extends State<Settings> {
               style: const TextStyle(
                   fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
             ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                onPressed: () {
+                  setState(() {
+                    work = '';
+                  });
+                },
+                icon: const Icon(
+                  Icons.clear,
+                  color: Colors.white,
+                ),
+              ),
+              ],
+            ),
           ],
         ),
         SizedBox(height: 4),
@@ -701,7 +738,9 @@ class _SettingsState extends State<Settings> {
                     onPressed: () {
                       _workTextController.clear();
                     },
-                    icon: Icon(Icons.clear),
+                    icon: Icon(Icons.clear,
+                      color: Colors.white
+                    ),
                   ),
                 ),
               ),
