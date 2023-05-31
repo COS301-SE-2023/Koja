@@ -7,7 +7,6 @@ import 'location_search_widget.dart';
 import 'time_picker_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
@@ -16,7 +15,6 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
   late BuildContext contexzz;
 
   final TextEditingController _textController = TextEditingController();
@@ -28,6 +26,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     contexzz = context;
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
@@ -37,32 +36,26 @@ class _SettingsState extends State<Settings> {
               Header(LineIcons.hourglassEnd, 'Set Your Active Times'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
-              Container(
-                height: 120,
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 90, 126, 165),
-                  borderRadius: BorderRadius.circular(8.0),
+              SingleChildScrollView(
+                child: Container(
+                  width: constraints.maxWidth * 0.95,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 90, 126, 165),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: AllDays(constraints),
+                  /* This is the Expansion Tile for the days */
                 ),
-                child: WorkTimePicker(),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 123,
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 90, 126, 165),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: PersonalTimePicker('Personal Time'),
               ),
 
-              /*  This is the Location Input Section  */
+              const SizedBox(height: 20),
 
-              const SizedBox(height: 15),
+              /*  This is the Location Section  */
               Header(LineIcons.directions, 'Set Your Location'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
+
+              /*  This is the Home Location Section - redirects to HomeLocation Widget  */
               SingleChildScrollView(
                 child: Container(
                   width: constraints.maxWidth * 0.95,
@@ -74,6 +67,8 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               const SizedBox(height: 15),
+
+              /*  This is the Work Location Section - redirects to WorkLocation Widget  */
               SingleChildScrollView(
                 child: Container(
                   width: constraints.maxWidth * 0.95,
@@ -105,6 +100,314 @@ class _SettingsState extends State<Settings> {
           ),
         );
       },
+    );
+  }
+
+  Padding AllDays(BoxConstraints constraints) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ExpansionTile(
+        trailing: Icon(
+          Icons.arrow_drop_down,
+          color: Colors.white,
+        ),
+        title: Text("Click To Set Active Times For Everyday", 
+          style: GoogleFonts.ubuntu(
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+          )
+        ),  
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Monday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ), 
+          SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Tuesday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Wednesday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Thursday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Friday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Saturday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 126, 165),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              backgroundColor: darkBlue,          
+              trailing: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Sunday',
+                style: GoogleFonts.ubuntu(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    width: constraints.maxWidth * 0.95,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 90, 126, 165),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        WorkTimePicker(),
+                        PersonalTimePicker('Personal Time'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+                               
+        ],
+      ),
     );
   }
 
@@ -234,6 +537,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  /* This is About Us Section */
   Widget AboutUs() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -298,6 +602,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+/* This is the Home Location Input Section */
   Widget HomeLocation(String where) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,7 +618,6 @@ class _SettingsState extends State<Settings> {
             ),
           ],
         ),
-        
         SizedBox(height: 4),
         Padding(
           padding: EdgeInsets.all(10.0),
@@ -323,7 +627,7 @@ class _SettingsState extends State<Settings> {
             children: [
               TextField(
                 controller: _homeTextController,
-                
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Enter Your Home Address',
@@ -336,16 +640,17 @@ class _SettingsState extends State<Settings> {
                     },
                     icon: Icon(Icons.clear),
                   ),
-                  
                 ),
               ),
               SizedBox(height: 3),
-               MaterialButton(onPressed: () {
-                setState(() {
-                  home = _homeTextController.text;
-                });
-               }, 
-                child: Text('Save',
+              MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    home = _homeTextController.text;
+                  });
+                },
+                child: Text(
+                  'Save',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -355,13 +660,12 @@ class _SettingsState extends State<Settings> {
               ),
             ],
           ),
-          
         ),
-       
       ],
     );
   }
 
+/* This is the Personal Time Input Section  - only difference is the Text */
   Widget WorkLocation(String where) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,6 +690,7 @@ class _SettingsState extends State<Settings> {
             children: [
               TextField(
                 controller: _workTextController,
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Enter Your Work Address',
@@ -401,13 +706,15 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               const SizedBox(height: 3),
-               MaterialButton(onPressed: () {
-                setState(() {
-                  work = _workTextController.text;
-                });
-               },
-                color: Colors.blue, 
-                child: const Text('Save',
+              MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    work = _workTextController.text;
+                  });
+                },
+                color: Colors.blue,
+                child: const Text(
+                  'Save',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -416,19 +723,9 @@ class _SettingsState extends State<Settings> {
               ),
             ],
           ),
-          
         ),
       ],
     );
   }
   
-  Widget Weekdays() {}
-
-  
 }
-
-
-
-/*
-
-*/
