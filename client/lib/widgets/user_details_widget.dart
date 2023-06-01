@@ -7,7 +7,7 @@ import '../screens/login_screen.dart';
 
 class Userdetails extends StatelessWidget {
 
-  String profile = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
+  // String profile = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
   String email = "koja@epi-use.com";
 
   @override
@@ -65,9 +65,9 @@ class Userdetails extends StatelessWidget {
                   //This is the profile picture 
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage(
-                      profile,
-                    ),
+                    // backgroundImage: NetworkImage(
+                    //   // profile,
+                    // ),
                   ),
                 ),
                 //This is the name of the user
