@@ -21,6 +21,7 @@ class KojaApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => EventProvider(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Koja',
         theme: ThemeData(colorScheme: lightColorScheme),
         home: (kDebugMode) ? const NavigationScreen() : const Login(),
