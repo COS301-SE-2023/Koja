@@ -1,9 +1,12 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'dart:convert';
 
+import '../models/autocomplete_predict_model.dart';
+import '../models/place_auto_response_model.dart';
 import '../screens/about_us_screen.dart';
-import 'location_search_widget.dart';
+import './location_predict_widget.dart';
 import 'time_picker_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,7 +20,24 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   late BuildContext contexzz;
 
-  final TextEditingController _textController = TextEditingController();
+  List<AutocompletePrediction> Placepredictions = [];
+
+  Future<void> PlaceAutocomplete(String query) async {
+    Uri uri = Uri.https("maps.googleapis.com",
+        'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
+
+    String? response = await LocationPredict.fetchUrl(uri);
+    if (response != null) {
+      placeAutocompleteResponse result = placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
+      if(result.predictions != null)
+      {
+        setState(() {
+          Placepredictions = result.predictions!.cast<AutocompletePrediction>();
+        });
+      }
+    }
+  }
+
   TextEditingController _homeTextController = TextEditingController();
   TextEditingController _workTextController = TextEditingController();
 
@@ -40,7 +60,7 @@ class _SettingsState extends State<Settings> {
                 child: Container(
                   width: constraints.maxWidth * 0.95,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 90, 126, 165),
+                    color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: AllDays(constraints),
@@ -59,7 +79,7 @@ class _SettingsState extends State<Settings> {
                 child: Container(
                   width: constraints.maxWidth * 0.95,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 90, 126, 165),
+                    color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: HomeLocation("Home Location"),
@@ -72,7 +92,7 @@ class _SettingsState extends State<Settings> {
                 child: Container(
                   width: constraints.maxWidth * 0.95,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 90, 126, 165),
+                    color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: WorkLocation("Work Location"),
@@ -89,7 +109,7 @@ class _SettingsState extends State<Settings> {
                 child: Container(
                   width: constraints.maxWidth * 0.95,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 90, 126, 165),
+                    color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   padding: const EdgeInsets.all(10.0),
@@ -104,6 +124,7 @@ class _SettingsState extends State<Settings> {
   }
 
   /*  This consists of all the days from Monday To Sunday */
+  
   Padding AllDays(BoxConstraints constraints) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -121,7 +142,7 @@ class _SettingsState extends State<Settings> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -145,7 +166,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -159,10 +180,11 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
+
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -186,7 +208,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -203,7 +225,7 @@ class _SettingsState extends State<Settings> {
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -227,7 +249,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -244,7 +266,7 @@ class _SettingsState extends State<Settings> {
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -268,7 +290,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -285,7 +307,7 @@ class _SettingsState extends State<Settings> {
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -309,7 +331,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -326,7 +348,7 @@ class _SettingsState extends State<Settings> {
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -350,7 +372,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -367,7 +389,7 @@ class _SettingsState extends State<Settings> {
           SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 90, 126, 165),
+              color: darkBlue,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(color: Colors.white),
             ),
@@ -391,7 +413,7 @@ class _SettingsState extends State<Settings> {
                     width: constraints.maxWidth * 0.95,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 90, 126, 165),
+                      color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -405,9 +427,12 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
+       
         ],
+        
       ),
     );
+    
   }
 
   /* This is the Header Section */
@@ -608,82 +633,108 @@ class _SettingsState extends State<Settings> {
 /* This is the Home Location Input Section */
   Widget HomeLocation(String where) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 15),
-          Row(
-            children: [
-              SizedBox(width: 5),
-              Text(
-                ' $where : $home',
-                style: const TextStyle(
-                    fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-              ),
-              if (home.isNotEmpty)
-                Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        home = '';
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.clear,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 4),
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
+      // scrollDirection: Axis.horizontal,
+      child: Container(
+        // height: 600,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 15),
+            Row(
               children: [
-                TextField(
-                  controller: _homeTextController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter Your Home Address',
-                    hintStyle: TextStyle(
-                      color: Colors.white,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        _homeTextController.clear();
-                      },
-                      icon: Icon(Icons.clear, color: Colors.white),
-                    ),
-                  ),
+                SizedBox(width: 5),
+                Text(
+                  ' $where : $home',
+                  style: const TextStyle(
+                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+                    softWrap: true,
                 ),
-                SizedBox(height: 3),
-                MaterialButton(
-                  onPressed: () {
-                    setState(() {
-                      home = _homeTextController.text;
-                    });
-                  },
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                if (home.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            home = '';
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                  color: Colors.blue,
-                ),
               ],
             ),
-          ),
-        ],
+            SizedBox(height: 4),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    onChanged: (value) {
+                      if (value.length > 2) {
+                        PlaceAutocomplete(value);
+                      }
+                      else {
+                        setState(() {
+                          Placepredictions = [];
+                        });
+                      }
+                    },
+                    cursorColor: Colors.white,
+                    controller: _homeTextController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter Your Home Address',
+                      hintStyle: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          _homeTextController.clear();
+                        },
+                        icon: Icon(Icons.clear, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 1),                        
+                  SizedBox(
+                    child: Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: Placepredictions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              Placepredictions[index].description!,
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                home = Placepredictions[index].description!;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),                     
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -731,9 +782,23 @@ class _SettingsState extends State<Settings> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
+                  onChanged: (value) {
+                      if (value.length > 2) {
+                        PlaceAutocomplete(value);
+                      }
+                      else {
+                        setState(() {
+                          Placepredictions = [];
+                        });
+                      }
+                    },
                   controller: _workTextController,
                   style: const TextStyle(color: Colors.white),
+                  cursorColor: Colors.white,
                   decoration: InputDecoration(
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
                     border: OutlineInputBorder(),
                     hintText: 'Enter Your Work Address',
                     hintStyle: const TextStyle(
@@ -746,28 +811,36 @@ class _SettingsState extends State<Settings> {
                       icon: Icon(Icons.clear, color: Colors.white),
                     ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                MaterialButton(
-                  onPressed: () {
-                    setState(() {
-                      work = _workTextController.text;
-                    });
-                  },
-                  color: Colors.blue,
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                ), 
+                SizedBox(height: 1),                        
+                SizedBox(
+                  child: Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: Placepredictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            Placepredictions[index].description!,
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              home = Placepredictions[index].description!;
+                            });
+                          },
+                        );
+                      },
                     ),
                   ),
-                ),
+                ),       
               ],
-            ),
+            ), 
           ),
         ],
       ),
     );
   }
+
 }
