@@ -65,7 +65,7 @@ class CurrentTasksScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const EventEditing()),
             );
           },
-          backgroundColor: Colors.blue,
+          backgroundColor: darkBlue,
           child: const Icon(Icons.add),
         ),
     );
