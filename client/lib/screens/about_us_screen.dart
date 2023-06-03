@@ -1,5 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:lottie/lottie.dart';
 
 class AboutUsPage extends StatefulWidget {
@@ -23,6 +24,14 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
       backgroundColor: darkBlue,
       appBar: AppBar(
         backgroundColor: darkBlue,
+        leading: IconButton(
+          icon: const Icon(
+            Bootstrap.back,
+            color: Colors.white,),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body:  SingleChildScrollView(
         child: Padding(
