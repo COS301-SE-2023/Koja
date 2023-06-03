@@ -20,6 +20,24 @@ class _SettingsState extends State<Settings> {
   late BuildContext contexzz;
 
   List<AutocompletePrediction> Placepredictions = [];
+  List<AutocompletePrediction> Workplacepredictions = [];
+
+
+  Future<void> workplaceAutocomplete(String query) async {
+    Uri uri = Uri.https("maps.googleapis.com",
+        'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
+
+    String? response = await LocationPredict.fetchUrl(uri);
+    if (response != null) {
+      placeAutocompleteResponse result =
+          placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
+      if (result.predictions != null) {
+        setState(() {
+          Workplacepredictions = result.predictions!.cast<AutocompletePrediction>();
+        });
+      }
+    }
+  }
 
   Future<void> PlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -27,9 +45,9 @@ class _SettingsState extends State<Settings> {
 
     String? response = await LocationPredict.fetchUrl(uri);
     if (response != null) {
-      placeAutocompleteResponse result = placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
-      if(result.predictions != null)
-      {
+      placeAutocompleteResponse result =
+          placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
+      if (result.predictions != null) {
         setState(() {
           Placepredictions = result.predictions!.cast<AutocompletePrediction>();
         });
@@ -81,7 +99,8 @@ class _SettingsState extends State<Settings> {
                     color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  child: HomeLocation("Home Location"),
+                  child: SingleChildScrollView(
+                      child: HomeLocation("Home Location")),
                 ),
               ),
               const SizedBox(height: 15),
@@ -94,7 +113,8 @@ class _SettingsState extends State<Settings> {
                     color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  child: WorkLocation("Work Location"),
+                  child: SingleChildScrollView(
+                      child: WorkLocation("Work Location")),
                 ),
               ),
 
@@ -123,7 +143,7 @@ class _SettingsState extends State<Settings> {
   }
 
   /*  This consists of all the days from Monday To Sunday */
-  
+
   Padding AllDays(BoxConstraints constraints) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -179,7 +199,6 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
@@ -426,12 +445,9 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-       
         ],
-        
       ),
     );
-    
   }
 
   /* This is the Header Section */
@@ -632,108 +648,110 @@ class _SettingsState extends State<Settings> {
 /* This is the Home Location Input Section */
   Widget HomeLocation(String where) {
     return SingleChildScrollView(
-      // scrollDirection: Axis.horizontal,
-      child: Container(
-        // height: 600,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                const SizedBox(width: 5),
-                Text(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 15),
+          Row(
+            children: [
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
                   ' $where : $home',
+                  maxLines: 1,
                   style: const TextStyle(
                       fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                    softWrap: true,
+                  softWrap: true,
                 ),
-                if (home.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            home = '';
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.clear,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    onChanged: (value) {
-                      if (value.length > 2) {
-                        PlaceAutocomplete(value);
-                      }
-                      else {
+              ),
+              if (home.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
                         setState(() {
-                          Placepredictions = [];
+                          home = '';
                         });
-                      }
-                    },
-                    cursorColor: Colors.white,
-                    controller: _homeTextController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                      border: const OutlineInputBorder(),
-                      hintText: 'Enter Your Home Address',
-                      hintStyle: const TextStyle(
+                      },
+                      icon: const Icon(
+                        Icons.clear,
                         color: Colors.white,
                       ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          _homeTextController.clear();
-                        },
-                        icon: const Icon(Icons.clear, color: Colors.white),
-                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  onChanged: (value) {
+                    if (value.length > 2) {
+                      PlaceAutocomplete(value);
+                    } else {
+                      setState(() {
+                        PlaceAutocomplete("");
+                      });
+                    }
+                  },
+                  cursorColor: Colors.white,
+                  controller: _homeTextController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    border: const OutlineInputBorder(),
+                    hintText: 'Enter Your Home Address',
+                    hintStyle: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _homeTextController.clear();
+                        setState(() {
+                          PlaceAutocomplete("");
+                        });
+                      },
+                      icon: const Icon(Icons.clear, color: Colors.white),
                     ),
                   ),
-                  const SizedBox(height: 1),                        
-                  SizedBox(
-                    child: Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: Placepredictions.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(
-                              Placepredictions[index].description!,
-                              textAlign: TextAlign.start,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {
-                              setState(() {
-                                home = Placepredictions[index].description!;
-                              });
-                            },
-                          );
-                        },
-                      ),
+                ),
+                const SizedBox(height: 1),
+                SizedBox(
+                  child: Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: Placepredictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            Placepredictions[index].description!,
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              home = Placepredictions[index].description!;
+                              PlaceAutocomplete("");
+                            });
+                          },
+                        );
+                      },
                     ),
-                  ),                     
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -748,10 +766,13 @@ class _SettingsState extends State<Settings> {
           Row(
             children: [
               const SizedBox(width: 5),
-              Text(
-                ' $where : $work',
-                style: const TextStyle(
-                    fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+              Expanded(
+                child: Text(
+                  ' $where : $work',
+                  maxLines: 1,
+                  style: const TextStyle(
+                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
+                ),
               ),
               if (work.isNotEmpty)
                 Column(
@@ -781,16 +802,15 @@ class _SettingsState extends State<Settings> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
-                  onChanged: (value) {
-                      if (value.length > 2) {
-                        PlaceAutocomplete(value);
-                      }
-                      else {
-                        setState(() {
-                          Placepredictions = [];
-                        });
-                      }
-                    },
+                  onChanged: (wvalue) {
+                    if(wvalue.length > 2){
+                      workplaceAutocomplete(wvalue);
+                    }else{
+                      setState(() {
+                        workplaceAutocomplete("");
+                      });
+                    }
+                  },
                   controller: _workTextController,
                   style: const TextStyle(color: Colors.white),
                   cursorColor: Colors.white,
@@ -799,47 +819,50 @@ class _SettingsState extends State<Settings> {
                       borderSide: BorderSide(color: Colors.white),
                     ),
                     border: const OutlineInputBorder(),
-                    hintText: 'Enter Your Work Address',
+                    hintText: 'Enter Your Works Address',
                     hintStyle: const TextStyle(
                       color: Colors.white,
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _workTextController.clear();
+                        setState(() {
+                          workplaceAutocomplete("");
+                        });
                       },
                       icon: const Icon(Icons.clear, color: Colors.white),
                     ),
                   ),
-                ), 
-                const SizedBox(height: 1),                        
+                ),
+                const SizedBox(height: 1),
                 SizedBox(
                   child: Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: Placepredictions.length,
+                      itemCount: Workplacepredictions.length,
                       itemBuilder: (context, index) {
                         return ListTile(
                           title: Text(
-                            Placepredictions[index].description!,
+                            Workplacepredictions[index].description!,
                             textAlign: TextAlign.start,
                             style: const TextStyle(color: Colors.white),
                           ),
                           onTap: () {
                             setState(() {
-                              home = Placepredictions[index].description!;
+                              work = Workplacepredictions[index].description!;
+                              workplaceAutocomplete("");
                             });
                           },
                         );
                       },
                     ),
                   ),
-                ),       
+                ),
               ],
-            ), 
+            ),
           ),
         ],
       ),
     );
   }
-
 }

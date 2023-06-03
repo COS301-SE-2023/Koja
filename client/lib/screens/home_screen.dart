@@ -330,7 +330,7 @@ class TasksBlock extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Total Tasks",
+                          "This Week's Tasks",
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black,
