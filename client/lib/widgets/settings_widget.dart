@@ -66,77 +66,75 @@ class _SettingsState extends State<Settings> {
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              /*  This is the Time Input Section  */
-              Header(LineIcons.hourglassEnd, 'Set Your Active Times'),
-              const Divider(height: 1, color: Colors.grey),
-              const SizedBox(height: 15),
-              SingleChildScrollView(
-                child: Container(
-                  width: constraints.maxWidth * 0.95,
-                  decoration: BoxDecoration(
-                    color: darkBlue,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: AllDays(constraints),
-                  /* This is the Expansion Tile for the days */
+        return Column(
+          children: [
+            /*  This is the Time Input Section  */
+            Header(LineIcons.hourglassEnd, 'Set Your Active Times'),
+            const Divider(height: 1, color: Colors.grey),
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              child: Container(
+                width: constraints.maxWidth * 0.95,
+                decoration: BoxDecoration(
+                  color: darkBlue,
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
+                child: AllDays(constraints),
+                /* This is the Expansion Tile for the days */
               ),
-              const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 20),
 
-              /*  This is the Location Section  */
-              Header(LineIcons.directions, 'Set Your Location'),
-              const Divider(height: 1, color: Colors.grey),
-              const SizedBox(height: 15),
+            /*  This is the Location Section  */
+            Header(LineIcons.directions, 'Set Your Location'),
+            const Divider(height: 1, color: Colors.grey),
+            const SizedBox(height: 15),
 
-              /*  This is the Home Location Section - redirects to HomeLocation Widget  */
-              SingleChildScrollView(
-                child: Container(
-                  width: constraints.maxWidth * 0.95,
-                  decoration: BoxDecoration(
-                    color: darkBlue,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: SingleChildScrollView(
-                      child: HomeLocation("Home Location")),
+            /*  This is the Home Location Section - redirects to HomeLocation Widget  */
+            SingleChildScrollView(
+              child: Container(
+                width: constraints.maxWidth * 0.95,
+                decoration: BoxDecoration(
+                  color: darkBlue,
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
+                child: SingleChildScrollView(
+                    child: HomeLocation("Home Location")),
               ),
-              const SizedBox(height: 15),
+            ),
+            const SizedBox(height: 15),
 
-              /*  This is the Work Location Section - redirects to WorkLocation Widget  */
-              SingleChildScrollView(
-                child: Container(
-                  width: constraints.maxWidth * 0.95,
-                  decoration: BoxDecoration(
-                    color: darkBlue,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: SingleChildScrollView(
-                      child: WorkLocation("Work Location")),
+            /*  This is the Work Location Section - redirects to WorkLocation Widget  */
+            SingleChildScrollView(
+              child: Container(
+                width: constraints.maxWidth * 0.95,
+                decoration: BoxDecoration(
+                  color: darkBlue,
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
+                child: SingleChildScrollView(
+                    child: WorkLocation("Work Location")),
               ),
+            ),
 
-              /*  This is the About Us Section  */
+            /*  This is the About Us Section  */
 
-              const SizedBox(height: 15),
-              Header(LineIcons.tags, ' About Us'),
-              const Divider(height: 1, color: Colors.grey),
-              const SizedBox(height: 15),
-              SingleChildScrollView(
-                child: Container(
-                  width: constraints.maxWidth * 0.95,
-                  decoration: BoxDecoration(
-                    color: darkBlue,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  padding: const EdgeInsets.all(10.0),
-                  child: AboutUs(),
+            const SizedBox(height: 15),
+            Header(LineIcons.tags, ' About Us'),
+            const Divider(height: 1, color: Colors.grey),
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              child: Container(
+                width: constraints.maxWidth * 0.95,
+                decoration: BoxDecoration(
+                  color: darkBlue,
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
+                padding: const EdgeInsets.all(10.0),
+                child: AboutUs(),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
@@ -634,8 +632,8 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          Text("Version 2.0.2",
-              style: GoogleFonts.raleway(
+          Text("Version 0.1.58",
+              style: GoogleFonts.ubuntu(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
@@ -661,7 +659,6 @@ class _SettingsState extends State<Settings> {
                   maxLines: 1,
                   style: const TextStyle(
                       fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                  softWrap: true,
                 ),
               ),
               if (home.isNotEmpty)
@@ -725,28 +722,24 @@ class _SettingsState extends State<Settings> {
                   ),
                 ),
                 const SizedBox(height: 1),
-                SizedBox(
-                  child: Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: Placepredictions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            Placepredictions[index].description!,
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          onTap: () {
-                            setState(() {
-                              home = Placepredictions[index].description!;
-                              PlaceAutocomplete("");
-                            });
-                          },
-                        );
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: Placepredictions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        Placepredictions[index].description!,
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          home = Placepredictions[index].description!;
+                          PlaceAutocomplete("");
+                        });
                       },
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -819,7 +812,7 @@ class _SettingsState extends State<Settings> {
                       borderSide: BorderSide(color: Colors.white),
                     ),
                     border: const OutlineInputBorder(),
-                    hintText: 'Enter Your Works Address',
+                    hintText: 'Enter Your Work Address',
                     hintStyle: const TextStyle(
                       color: Colors.white,
                     ),
@@ -835,28 +828,24 @@ class _SettingsState extends State<Settings> {
                   ),
                 ),
                 const SizedBox(height: 1),
-                SizedBox(
-                  child: Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: Workplacepredictions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            Workplacepredictions[index].description!,
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          onTap: () {
-                            setState(() {
-                              work = Workplacepredictions[index].description!;
-                              workplaceAutocomplete("");
-                            });
-                          },
-                        );
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: Workplacepredictions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        Workplacepredictions[index].description!,
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          work = Workplacepredictions[index].description!;
+                          workplaceAutocomplete("");
+                        });
                       },
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
