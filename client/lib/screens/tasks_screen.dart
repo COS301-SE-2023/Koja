@@ -48,26 +48,29 @@ class CurrentTasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: const Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: const CalendarWidget()
-          ),
+          CalendarWidget(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EventEditing()),
-            );
-          },
-          backgroundColor: darkBlue,
-          child: const Icon(Icons.add),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const EventEditing();
+            },
+          );
+        },
+        backgroundColor: darkBlue,
+        child: const Icon(Icons.add,
+            color: Colors.white, 
+            size: 25.0
         ),
+    ),
+
     );
     
   }
