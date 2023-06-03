@@ -5,7 +5,7 @@ import 'package:line_icons/line_icons.dart';
 import '../models/autocomplete_predict_model.dart';
 import '../models/place_auto_response_model.dart';
 import '../screens/about_us_screen.dart';
-import './location_predict_widget.dart';
+import '../models/location_predict_widget.dart';
 import 'time_picker_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 

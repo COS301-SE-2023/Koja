@@ -49,13 +49,14 @@ dependencies:
   #custom icons
   line_icons: ^2.0.1
 
+  #bar_chart in homepage
+  syncfusion_flutter_charts: ^21.2.8
+
   #calendar
   syncfusion_flutter_calendar: ^21.2.4
 
   #handle dates
   intl: ^0.18.1
-
-  floating_bottom_navigation_bar: ^1.5.1
 
   #state management 
   provider: ^6.0.5
@@ -63,13 +64,14 @@ dependencies:
   #google font
   google_fonts: ^4.0.4
 
-  #for location
+  # for location
   # google_maps_flutter: ^2.1.5
   # google_map_location_picker_flutter: ^2.0.5
 
   #animated text
   animated_text_kit: ^4.2.2
 
+  # for animations
   lottie: ^2.3.2
 
 dev_dependencies:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 import '../Utils/constants_util.dart';
+import '../widgets/chart_widget.dart';
 
 class Home extends StatefulWidget {
   static const routeName = '/home';
@@ -16,7 +17,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: darkBlue,
       appBar: AppBar(
         title: const Text(
           'Home',
@@ -72,6 +72,10 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.all(8.0),
             child: Summary(),
           ), 
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: ChartWidget(),
+          ),
         ],
       ),
     );
@@ -147,7 +151,7 @@ class BusyDaysBlock extends StatelessWidget {
                     Icon(
                       Bootstrap.activity,
                       color: Colors.black,
-                      size: 30,
+                      size: 26,
                     ),
                     SizedBox(
                       width: 10,
@@ -199,7 +203,7 @@ class BusyDaysBlock extends StatelessWidget {
                   Icon(
                     Bootstrap.battery_charging,
                     color: Colors.black,
-                    size: 30,
+                    size: 26,
                   ),
                   SizedBox(
                     width: 10,
@@ -264,7 +268,7 @@ class TasksBlock extends StatelessWidget {
                     Icon(
                       Icons.pending_actions,
                       color: Colors.black,
-                      size: 30,
+                      size: 26,
                     ),
                     SizedBox(
                       width: 10,
@@ -284,7 +288,7 @@ class TasksBlock extends StatelessWidget {
                           height: 1,
                         ),
                         Text(
-                          '12',
+                          '5',
                           style: TextStyle(
                             fontSize: 19,
                             fontWeight: FontWeight.bold,
@@ -314,9 +318,9 @@ class TasksBlock extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Bootstrap.x_circle,
+                      Bootstrap.calendar4_range,
                       color: Colors.black,
-                      size: 30,
+                      size: 26,
                     ),
                     SizedBox(
                       width: 10,
@@ -326,7 +330,7 @@ class TasksBlock extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Overdue Tasks",
+                          "Total Tasks",
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black,
@@ -336,7 +340,7 @@ class TasksBlock extends StatelessWidget {
                           height: 1,
                         ),
                         Text(
-                          '5',
+                          '35',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

@@ -121,14 +121,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
-  floating_bottom_navigation_bar:
-    dependency: "direct main"
-    description:
-      name: floating_bottom_navigation_bar
-      sha256: "2ecffcb10841c8bf1a084adaef544ecd5451577b31bd80767e6bab1875c941a6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -482,6 +474,14 @@ packages:
     description:
       name: syncfusion_flutter_calendar
       sha256: "95fddd57f4e5000cd602de9802c794c80764ab2f4ca606bdb529dc3c6b079490"
+      url: "https://pub.dev"
+    source: hosted
+    version: "21.2.8"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: "85bac56da967d6943d742b3c75a4a1bd4d4d017f03b4016042898d9de6c36284"
       url: "https://pub.dev"
     source: hosted
     version: "21.2.8"
