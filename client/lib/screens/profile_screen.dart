@@ -24,7 +24,7 @@ class Profile extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Userdetails(),
+            Userdetails("assets/icons/coffee.png", "koja@epi-use.io"),
             const Divider(
               thickness: 0,
               color: Colors.white,

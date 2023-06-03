@@ -1,3 +1,4 @@
+import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,40 +53,43 @@ class _EventEditingState extends State<EventEditing> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        actions: [
-          ElevatedButton(
-            onPressed: saveForm,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-            ),
-            child: const Text('Save'),
+    return AlertDialog(
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.black),
           ),
-          const SizedBox(width: 12),
-          
-        ],
-        title: const Text('Event Editing',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          child: const Text('Cancel')
         ),
-        centerTitle: true,
-      ), 
-      
-      body: SingleChildScrollView(
+        TextButton(
+          onPressed: saveForm,
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.black),
+          ),
+          child: const Text('Save',
+            style: TextStyle(fontFamily: 'Railway',  
+            color: Colors.black)
+          )
+        ),
+      ],
+      backgroundColor: Colors.grey[300],
+      contentPadding: const EdgeInsets.all(16),
+      content: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              buildTitle(),
-              const SizedBox(height: 12,),
-              buildDateTimePickers(),
-            ]),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                buildTitle(),
+                const SizedBox(height: 12),
+                buildDateTimePickers(),
+              ]),
+          ),
         ),
       ),   
     );

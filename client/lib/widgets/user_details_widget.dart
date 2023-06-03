@@ -1,14 +1,18 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors
-
 import 'package:flutter/material.dart';
 
 import '../Utils/constants_util.dart';
 import '../screens/login_screen.dart';
 
 class Userdetails extends StatelessWidget {
+  
+  String profile = "", email = "";
 
-  // String profile = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
-  String email = "koja@epi-use.com";
+  Userdetails(String profile, String email)
+  {
+    this.profile = profile;
+    this.email = email;
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -61,19 +65,20 @@ class Userdetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ClipOval(
-                  //This is the profile picture 
+                const ClipOval(
+                  //This is the profile picture
                   child: CircleAvatar(
                     radius: 50,
-                    // backgroundImage: NetworkImage(
-                    //   // profile,
-                    // ),
+                    backgroundImage: AssetImage(
+                      'assets/icons/coffee.png',
+                      
+                    ),
                   ),
                 ),
                 //This is the name of the user
                 Text(
                   email,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 20,
                     color: Colors.white,

@@ -23,27 +23,22 @@ class EventProvider extends ChangeNotifier {
 
   //This returns the events of the selected date
   List<Event> get eventsOfSelectedDate => _events;
-  // where((event) {
-  //   //This returns the events of the selected date
-  //   return isSameDay(event.from, _selectedDate);
-  // }).toList();
 
-  void addEvent(Event event) {
-    //add event to the list
+  //This adds an event to the list
+  void addEvent(Event event) {  
     _events.add(event);
-
     notifyListeners();
   }
 
+  //This edits an event in the list
   void editEvent(Event newEvent, Event oldEvent) {
-    //edit event in the list
     final index = _events.indexOf(oldEvent);
     _events[index] = newEvent;
     notifyListeners();
   }
 
+  //This deletes an event from the list
   void deleteEvent(Event event) {
-    //delete event from the list
     _events.remove(event);
     notifyListeners();
   }

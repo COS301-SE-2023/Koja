@@ -104,6 +104,7 @@ class TaskOverviewBlock extends StatelessWidget {
   }
 }
 
+/* Summary Section with pie chart */
 class Summary extends StatelessWidget {
   const Summary({
     super.key,
@@ -126,6 +127,7 @@ class Summary extends StatelessWidget {
   }
 }
 
+/*  The Second Block which gives a summary of the Days with tight and flexible schedules */
 class BusyDaysBlock extends StatelessWidget {
   const BusyDaysBlock({
     super.key,
@@ -243,6 +245,7 @@ class BusyDaysBlock extends StatelessWidget {
   }
 }
 
+/*  The First Block which gives a summary of the tasks pending and total*/
 class TasksBlock extends StatelessWidget {
   const TasksBlock({
     super.key,
