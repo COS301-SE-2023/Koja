@@ -1,38 +1,27 @@
-package com.teamcaffeine.koja.entity
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.ResponseEntity
 
-import com.google.api.client.util.DateTime
-import com.google.auth.Credentials
-import java.io.IOException
 
-class GoogleCalendarAdapter (override val calendarID :String) : CalendarAdapter(calendarID) {
+class GoogleCalendarAdapter() : CalendarAdapter {
 
-    override fun loadCredentials(): Credentials?{
-        try {
-//            val credential: Credentials = GoogleCredentials.fromStream(FileInputStream("C://Users/JOHANES MATSEBA/Documents/3rd year/Semester 1/COS 301/koja-cos301-971f41945cca"))
-//                .createScoped(Collections.singleton(SQLAdminScopes.SQLSERVICE_ADMIN))
-//                .createDelegated("koja-service-account@koja-cos301.iam.gserviceaccount.com")
-//            return credential;
-            // use the credentials
-        } catch ( e: IOException) {
-            e.printStackTrace();
-        }
-
-        return null;
+    // ... existing GoogleCalendarController fields ...
+    override fun setupConnection(request: HttpServletRequest?) {
+        // ... code from the setupConnection method ...
     }
 
-//    private val credential = loadCredentials();
-//    private val JSON_FACTORY = Utils.getDefaultJsonFactory()
-//    private val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
-//    var sqladmin: SQLAdmin = SQLAdmin.Builder(HTTP_TRANSPORT, JSON_FACTORY, GoogleNetHttpTransport.newTrustedTransport()).build()
-
-    override fun createEvent(title: String, start: DateTime, end: DateTime): Event{
-
-        return Event(title,start,end);
-
+    override fun authorize(): String? {
+        // ... code from the authorize method ...
     }
-    override fun getCalendar(id: Int){
 
+    override fun oauth2Callback(code: String?): ResponseEntity<String?>? {
+        // ... code from the oauth2Callback method ...
     }
-    override fun updateEvent(id: String){}
-    override fun deleteEvent(id: String){}
+
+    override fun getEvents(): Set<Event?>? {
+        // ... code from the getEvents method ...
+    } // ... remaining methods, constructors, and fields ...
+
+    override fun getUserEvents(userId: String?): List<Event?>? {
+        // Your code here to interact with Google API and return user events
+    }
 }

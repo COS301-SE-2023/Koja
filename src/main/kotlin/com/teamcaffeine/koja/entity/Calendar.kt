@@ -1,24 +1,17 @@
-package com.teamcaffeine.koja.entity
+import com.teamcaffeine.koja.entity.Event
+import org.springframework.stereotype.Component
 
-import com.google.api.client.util.DateTime
-import com.teamcaffeine.koja.enums.Months
-import jakarta.persistence.*
-
-@Entity
-@Table(name= "calendars")
-class Calendar() {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Int? = null;
-    var month: Months? = null;
-
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinColumn(name = "event_id")
-    private var eventList: List<Event> = ArrayList<Event>()
-
-    public fun createEvent(title: String, start: DateTime, end: DateTime): Event{
-
-        return Event(title,start,end);
-
+@Component
+class UserCalendar() {
+    public val events: ArrayList<Event> = arrayListOf();
+    public val calendarAdapters: ArrayList<CalendarAdapter> = arrayListOf();
+    public val issues: ArrayList<Issues> = arrayListOf();
+    fun addCalendarAdapter(adapter: CalendarAdapter){
+        this.calendarAdapters.add(adapter);
+        for( event in adapter.getEvents()!!)
+        {
+            consolidateEvents(event);
+        }
     }
+
 }
