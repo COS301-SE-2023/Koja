@@ -26,7 +26,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
         backgroundColor: darkBlue,
         leading: IconButton(
           icon: const Icon(
-            Bootstrap.back,
+            Icons.arrow_back_ios,
             color: Colors.white,),
           onPressed: () {
             Navigator.pop(context);
