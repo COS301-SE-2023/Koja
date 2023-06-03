@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
               Container(
                 width: MediaQuery.of(context).size.width * 0.98,
                 height: 75,
-                margin: EdgeInsets.all(4.0),
+                margin: const EdgeInsets.all(4.0),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10),
@@ -164,7 +164,7 @@ class _HomeState extends State<Home> {
               Container(
             width: MediaQuery.of(context).size.width * 0.98,
             height: 75,
-            margin: EdgeInsets.all(4.0),
+            margin: const EdgeInsets.all(4.0),
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(10),
