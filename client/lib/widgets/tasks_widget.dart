@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -23,15 +24,31 @@ class _TasksWidgetState extends State<TasksWidget> {
 
     //This checks if the selected date has any events
     if (selectedEvents.isEmpty) {
-      return const Center(
-        child: Text(
-          'No events',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Raleway'
+      return Column(
+        children: [
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+                'No Tasks Found',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Raleway'
+                ),
+              ),
+            ),
           ),
-        ),
+          Container(
+            alignment: Alignment.center,
+            child: Lottie.asset(
+              'assets/animations/empty.json',
+              height: 200, width: 300,
+              // repeat: false,
+            ),
+          ),
+        ],
       );
     }
 

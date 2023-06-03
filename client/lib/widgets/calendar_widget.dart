@@ -21,18 +21,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
     return SfCalendar(
       //This sets the view of the calendar to month view
-      view: CalendarView.month,
+      view: CalendarView.week,
 
       showNavigationArrow: true,
       showDatePickerButton: true,
 
       allowDragAndDrop: true,
-
+      firstDayOfWeek: 1,
       //Ths displays the events on the calendar
       dataSource: EventDataSource(events),
 
       //This initialises the calendar to the current date
       initialSelectedDate: DateTime.now(),
+      
 
       //Save the date of the event when the user taps on the calendar
       onTap: (details) {

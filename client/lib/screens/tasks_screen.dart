@@ -48,11 +48,14 @@ class CurrentTasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CalendarWidget(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: const CalendarWidget()
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
