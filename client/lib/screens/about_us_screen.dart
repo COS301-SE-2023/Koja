@@ -16,10 +16,6 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +26,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
       ),
       body:  SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -64,7 +60,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
                   height: 200, width: 300
                 ),
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width*0.95,
                 child: const Text(
                  'Welcome to our Scheduler App!',
@@ -77,7 +73,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
                  textAlign: TextAlign.center,
                     ),
               ),
-              Divider(
+              const Divider(
                 color: Colors.white,
                 thickness: 1.0,
               ),
@@ -100,7 +96,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
               ),
 
               /* Key Features */
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width*0.95,
                 child: const Text(
                   'Key Features:',
@@ -138,7 +134,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width*0.95,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: darkBlue,
                       // borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -176,7 +172,7 @@ class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStat
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width*0.95,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: darkBlue,
                       // borderRadius: BorderRadius.circular(8.0),
                     ),

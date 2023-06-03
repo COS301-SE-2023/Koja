@@ -1,7 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:client/screens/suggestions_screens.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../widgets/calendar_widget.dart';
 import '../widgets/event_editing_widget.dart';
@@ -32,7 +31,7 @@ class Tasks extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             CurrentTasksScreen(),
             SuggestionsTasksScreen(),
@@ -44,6 +43,8 @@ class Tasks extends StatelessWidget {
 }
 
 class CurrentTasksScreen extends StatelessWidget {
+  const CurrentTasksScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

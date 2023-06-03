@@ -30,7 +30,7 @@ class Profile extends StatelessWidget {
               color: Colors.white,
               height: 40,
             ),
-            Settings(),
+            const Settings(),
           ],
         ),
       ),

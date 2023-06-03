@@ -1,7 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'dart:convert';
 
 import '../models/autocomplete_predict_model.dart';
 import '../models/place_auto_response_model.dart';
@@ -38,8 +37,8 @@ class _SettingsState extends State<Settings> {
     }
   }
 
-  TextEditingController _homeTextController = TextEditingController();
-  TextEditingController _workTextController = TextEditingController();
+  final TextEditingController _homeTextController = TextEditingController();
+  final TextEditingController _workTextController = TextEditingController();
 
   String home = '', work = '';
 
@@ -164,7 +163,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -181,7 +180,7 @@ class _SettingsState extends State<Settings> {
             ),
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: darkBlue,
@@ -206,7 +205,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -222,7 +221,7 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: darkBlue,
@@ -247,7 +246,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -263,7 +262,7 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: darkBlue,
@@ -288,7 +287,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -304,7 +303,7 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: darkBlue,
@@ -329,7 +328,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -345,7 +344,7 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: darkBlue,
@@ -370,7 +369,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -386,7 +385,7 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: darkBlue,
@@ -411,7 +410,7 @@ class _SettingsState extends State<Settings> {
                 SingleChildScrollView(
                   child: Container(
                     width: constraints.maxWidth * 0.95,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: darkBlue,
                       borderRadius: BorderRadius.circular(8.0),
@@ -642,7 +641,7 @@ class _SettingsState extends State<Settings> {
             const SizedBox(height: 15),
             Row(
               children: [
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 Text(
                   ' $where : $home',
                   style: const TextStyle(
@@ -669,9 +668,9 @@ class _SettingsState extends State<Settings> {
                   ),
               ],
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -694,7 +693,7 @@ class _SettingsState extends State<Settings> {
                       focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       hintText: 'Enter Your Home Address',
                       hintStyle: const TextStyle(
                         color: Colors.white,
@@ -703,11 +702,11 @@ class _SettingsState extends State<Settings> {
                         onPressed: () {
                           _homeTextController.clear();
                         },
-                        icon: Icon(Icons.clear, color: Colors.white),
+                        icon: const Icon(Icons.clear, color: Colors.white),
                       ),
                     ),
                   ),
-                  SizedBox(height: 1),                        
+                  const SizedBox(height: 1),                        
                   SizedBox(
                     child: Expanded(
                       child: ListView.builder(
@@ -748,7 +747,7 @@ class _SettingsState extends State<Settings> {
           const SizedBox(height: 15),
           Row(
             children: [
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               Text(
                 ' $where : $work',
                 style: const TextStyle(
@@ -774,9 +773,9 @@ class _SettingsState extends State<Settings> {
                 ),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -799,7 +798,7 @@ class _SettingsState extends State<Settings> {
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white),
                     ),
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     hintText: 'Enter Your Work Address',
                     hintStyle: const TextStyle(
                       color: Colors.white,
@@ -808,11 +807,11 @@ class _SettingsState extends State<Settings> {
                       onPressed: () {
                         _workTextController.clear();
                       },
-                      icon: Icon(Icons.clear, color: Colors.white),
+                      icon: const Icon(Icons.clear, color: Colors.white),
                     ),
                   ),
                 ), 
-                SizedBox(height: 1),                        
+                const SizedBox(height: 1),                        
                 SizedBox(
                   child: Expanded(
                     child: ListView.builder(

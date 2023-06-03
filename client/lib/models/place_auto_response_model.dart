@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import '../widgets/settings_widget.dart';
 import './autocomplete_predict_model.dart';
 
 class placeAutocompleteResponse 

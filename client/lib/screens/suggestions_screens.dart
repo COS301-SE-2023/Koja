@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import '../Utils/constants_util.dart';
 
 class SuggestionsTasksScreen extends StatelessWidget {
   static const routeName = '/suggestions';
