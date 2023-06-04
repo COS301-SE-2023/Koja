@@ -1,3 +1,4 @@
+package com.teamcaffeine.koja.entity
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl
 import com.google.api.client.auth.oauth2.Credential
