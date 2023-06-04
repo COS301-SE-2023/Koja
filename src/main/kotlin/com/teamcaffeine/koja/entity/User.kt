@@ -1,6 +1,5 @@
 package com.teamcaffeine.koja.entity
 
-import com.google.api.client.util.DateTime
 import jakarta.persistence.*
 
 
@@ -17,7 +16,7 @@ class User  {
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinColumn(name = "calendar_id")
-    private var calendarList: List<Calendar> = ArrayList<Calendar>()
+    private var calendarList: List<UserCalendar> = ArrayList<UserCalendar>()
 
 
 

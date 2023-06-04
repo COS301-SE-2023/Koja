@@ -17,10 +17,10 @@ class UserController(val userService: UserService) {
 
     @PostMapping("/authenticate")
     fun authenticateUser(user: User): String {
-        if(userService.authenticate(user)){
-            return "homepage"
+        return if(userService.authenticate(user)){
+            "homepage"
         } else {
-            return "signin"
+            "signin"
         }
     }
 

@@ -1,11 +1,11 @@
 package com.teamcaffeine.koja.service
 
-import com.teamcaffeine.koja.entity.Calendar
+import com.teamcaffeine.koja.entity.UserCalendar
 
 class CalendarService {
 
 
-    public fun createCalendar( ): Calendar{
-        return Calendar()
+    public fun createCalendar( ): UserCalendar {
+        return UserCalendar()
     }
 }

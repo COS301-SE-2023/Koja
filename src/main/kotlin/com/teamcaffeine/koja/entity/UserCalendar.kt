@@ -1,18 +1,26 @@
-import com.teamcaffeine.koja.entity.Event
+package com.teamcaffeine.koja.entity
+
+import CalendarAdapter
 import org.springframework.stereotype.Component
 
 @Component
 class UserCalendar() {
     public val events: ArrayList<Event> = arrayListOf();
     public val calendarAdapters: ArrayList<CalendarAdapter> = arrayListOf();
-    public val issues: ArrayList<Issues> = arrayListOf();
+    public val issues: ArrayList<Issue> = arrayListOf();
 
     fun addCalendarAdapter(adapter: CalendarAdapter){
         this.calendarAdapters.add(adapter);
         for( event in adapter.getEvents()!!)
         {
-            consolidateEvents(event);
+            if (event != null) {
+                consolidateEvents(event)
+            };
         }
+    }
+
+    private fun consolidateEvents(event: Event) {
+
     }
 
 }
