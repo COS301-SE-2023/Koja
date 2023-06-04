@@ -1,6 +1,5 @@
 package com.teamcaffeine.koja.entity
 
-import CalendarAdapter
 import org.springframework.stereotype.Component
 
 @Component
