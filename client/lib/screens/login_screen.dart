@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
-import '../Utils/constants_util.dart';
 import '../widgets/login_modal_widget.dart';
 import '../widgets/info_widget.dart';
 
@@ -19,87 +18,73 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: darkBlue,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 7,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    // color: darkBlue,
-                    child: AnimatedTextKit(
-                      animatedTexts: [
-                        TyperAnimatedText(
-                          'KOJA',
-                          textStyle: GoogleFonts.oswald(
-                            textStyle: const TextStyle(
-                              fontSize: 50,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                            ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 8,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+          
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        'KOJA',
+                        textStyle: GoogleFonts.raleway(
+                          textStyle: const TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
                           ),
-                          textAlign: TextAlign.center,
-                          speed: const Duration(milliseconds: 200),
                         ),
-                      ],
-                      totalRepeatCount: 1,
-                      pause: const Duration(milliseconds: 1000),
-                      displayFullTextOnTap: true,
-                      stopPauseOnTap: true,
-                    ),
+                        textAlign: TextAlign.center,
+                        speed: const Duration(milliseconds: 200),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
+                    pause: const Duration(milliseconds: 1000),
+                    displayFullTextOnTap: true,
+                    stopPauseOnTap: true,
                   ),
-                  Container(
-                    child: Lottie.asset('assets/animations/9069-time.json',
-                        height: 200, width: 200),
-                  ),
-                  Column(
+                ),
+                Container(
+                  child: Lottie.asset('assets/animations/9069-time.json',
+                      height: 200, width: 200),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        color: darkBlue,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Unlike Any Other Scheduler That You Have Ever Used',
+                          'Unlike Any Other Scheduler That You Have Ever Used. This One Is More Advanced And More Efficient',
                           style: GoogleFonts.raleway(
                             textStyle: const TextStyle(
-                              fontSize: 15,
+                              fontSize: 16,
                               fontWeight: FontWeight.w400,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      Container(
-                        color: darkBlue,
-                        child: Text(
-                          'This One Is More Advanced And More Efficient',
-                          style: GoogleFonts.raleway(
-                            textStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                            ),
-                          ),
-                          textAlign: TextAlign.left,
+                          textAlign: TextAlign.center,
                         ),
                       ),
                       const SizedBox(height: 20),
                       Container(
-                        color: darkBlue,
+                
                         child: Text(
                           'Click "Get Started" To Know More',
                           style: GoogleFonts.ubuntu(
                             textStyle: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
                           textAlign: TextAlign.left,
@@ -107,78 +92,75 @@ class _LoginState extends State<Login> {
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Container(
-                color: darkBlue,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Info()),
-                          );
-                        },
-                        child: Text('Get Started',
-                            style: GoogleFonts.roboto(
-                              textStyle: const TextStyle(
-                                fontSize: 16,
-                                // fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                            textAlign: TextAlign.center),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 40,
-                      width: 150,
-                      //
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isDismissible: true,
-                            isScrollControlled: true,
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                topRight: Radius.circular(10.0),
-                              ),
-                            ),
-                            builder: (BuildContext context) {
-                              return const LoginModal();
-                            },
-                          );
-                        },
-                        child: Text('Sign In',
-                            style: GoogleFonts.roboto(
-                              textStyle: const TextStyle(
-                                fontSize: 16,
-                                // fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                            textAlign: TextAlign.center),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 40,
+                  width: 150,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Info()),
+                      );
+                    },
+                    child: Text('Get Started',
+                        style: GoogleFonts.roboto(
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            // fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 40,
+                  width: 150,
+                  //
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isDismissible: true,
+                        isScrollControlled: true,
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0),
+                          ),
+                        ),
+                        builder: (BuildContext context) {
+                          return const LoginModal();
+                        },
+                      );
+                    },
+                    child: Text('Sign In',
+                        style: GoogleFonts.roboto(
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            // fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

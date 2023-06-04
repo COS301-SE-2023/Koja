@@ -20,7 +20,7 @@ class Userdetails extends StatelessWidget {
       width: double.infinity,
       height: 170,
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: darkBlue,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -31,33 +31,29 @@ class Userdetails extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.topRight,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(7),
-              child: Container(
-                height: 40,
-                width: 44,
-                color: Color.fromRGBO(250, 250, 250, 0.1),
-                child: ElevatedButton(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     elevation: 0,
-                    side: BorderSide(width: 2, color: Colors.white),
+                    // side: const BorderSide(width: 1, color: Colors.white),
                   ),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Login()),
+                      MaterialPageRoute(builder: (context) => const Login()),
                     );
                   },
-                  child: Center(
-                    child: Icon(
-                      Icons.logout_outlined,
-                      size: 19,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                    ),
+                  child: const Icon(
+                    Icons.logout_outlined,
+                    size: 30,
+                    color:Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
           Align(
@@ -70,8 +66,7 @@ class Userdetails extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: AssetImage(
-                      'assets/icons/coffee.png',
-                      
+                      'assets/icons/coffee.png',         
                     ),
                   ),
                 ),

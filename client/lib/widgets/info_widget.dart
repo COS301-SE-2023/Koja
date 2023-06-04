@@ -18,7 +18,6 @@ class _InfoState extends State<Info> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: darkBlue,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -30,7 +29,6 @@ class _InfoState extends State<Info> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    // color: darkBlue,
                     child: AnimatedTextKit(
                       animatedTexts: [
                         TyperAnimatedText(
@@ -39,7 +37,7 @@ class _InfoState extends State<Info> {
                             textStyle: const TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.w400,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
                           textAlign: TextAlign.center,
@@ -52,81 +50,54 @@ class _InfoState extends State<Info> {
                       stopPauseOnTap: true,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Koja is an advanced schedule management tool',
-                    style: GoogleFonts.openSans(
-                      textStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
+                  const SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Koja is an advanced schedule management tool that seamlessly integrates with Google Calendar.',
+                      style: GoogleFonts.openSans(
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    'that seamlessly integrates with Google Calendar.',
-                    style: GoogleFonts.openSans(
-                      textStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: 20),
                     child: Lottie.asset(
-                      'assets/animations/schedule.json',
-                      height: 250,
+                      'assets/animations/robot.json',
+                      height: 300,
                       width: 300,
+                      repeat: false,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 5),
                   Text(
-                    'It goes beyond traditional scheduling by offering',
+                    'It goes beyond traditional scheduling by offering dynamic task allocation and intelligent travel time calculations.',
                     style: GoogleFonts.ubuntu(
                       textStyle: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  Text(
-                    'dynamic task allocation and intelligent travel time calculations.',
-                    style: GoogleFonts.ubuntu(
-                      textStyle: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'With Koja, you can effortlessly manage your schedule, optimize your tasks,and ensure efficient use of your time.',
+                      style: GoogleFonts.ubuntu(
+                        textStyle: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    'With Koja, you can effortlessly manage your schedule, optimize your tasks,',
-                    style: GoogleFonts.ubuntu(
-                      textStyle: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    'and ensure efficient use of your time.',
-                    style: GoogleFonts.ubuntu(
-                      textStyle: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -134,7 +105,6 @@ class _InfoState extends State<Info> {
             Expanded(
               flex: 1,
               child: Container(
-                color: darkBlue,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -165,7 +135,7 @@ class _InfoState extends State<Info> {
                             textStyle: const TextStyle(
                               fontSize: 16,
                               // fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
                           textAlign: TextAlign.center,

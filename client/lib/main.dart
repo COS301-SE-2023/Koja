@@ -23,7 +23,10 @@ class KojaApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Koja',
-        theme: ThemeData(colorScheme: lightColorScheme),
+        theme: ThemeData(
+          colorScheme: lightColorScheme,
+          useMaterial3: true
+        ),
         home: (kDebugMode) ? const NavigationScreen() : const Login(),
         routes: {
           Login.routeName: (ctx) => const Login(),

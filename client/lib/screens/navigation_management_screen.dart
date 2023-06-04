@@ -27,40 +27,34 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _tabs[_currentIndex],
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BottomNavigationBar(
-            iconSize: 18,
-            currentIndex: _currentIndex,
-            backgroundColor: Colors.blueAccent,
-            unselectedItemColor: Colors.white,
-            selectedItemColor: Colors.black,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Bootstrap.house),
-                label: 'Home',
-                activeIcon: Icon(Bootstrap.house_fill)
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Bootstrap.calendar2),
-                label: 'Tasks',
-                activeIcon: Icon(Bootstrap.calendar2_check)
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Bootstrap.person_badge),
-                label: 'Profile',
-                activeIcon: Icon(Bootstrap.person_badge_fill)
-              ),
-            ],
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
+      bottomNavigationBar: BottomNavigationBar(
+        iconSize: 18,
+        currentIndex: _currentIndex,
+        backgroundColor: Colors.blueAccent,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.black,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Bootstrap.house),
+            label: 'Home',
+            activeIcon: Icon(Bootstrap.house_fill)
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Bootstrap.calendar2),
+            label: 'Tasks',
+            activeIcon: Icon(Bootstrap.calendar2_check)
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Bootstrap.person_badge),
+            label: 'Profile',
+            activeIcon: Icon(Bootstrap.person_badge_fill)
+          ),
+        ],
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }

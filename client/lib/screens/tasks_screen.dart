@@ -25,11 +25,22 @@ class Tasks extends StatelessWidget {
           centerTitle: true,
           backgroundColor: darkBlue,
           bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Current'),
-              Tab(text: 'Suggestions'),
-            ],
-          ),
+          tabs: [
+            Tab(
+              child: Text(
+                'Current',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Tab(
+              child: Text(
+                'Suggestions',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+
         ),
         body: const TabBarView(
           children: [
