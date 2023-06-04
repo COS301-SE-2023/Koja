@@ -89,19 +89,24 @@ class _EventEditingState extends State<EventEditing> {
                 style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
       ],
       backgroundColor: Colors.grey[300],
-      contentPadding: const EdgeInsets.all(16),
-      content: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          height: MediaQuery.of(context).size.height * 0.7,
-          child: Form(
-            key: _formKey,
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      contentPadding: const EdgeInsets.all(0),
+      content: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            reverse: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start, 
+              children: <Widget>[
               buildTitle(),
               const SizedBox(height: 12),
               buildDateTimePickers(),
-              Location()
+              Location(),
+              DeleteEventButton(),
             ]),
           ),
         ),
@@ -109,63 +114,80 @@ class _EventEditingState extends State<EventEditing> {
     );
   }
 
+  Widget DeleteEventButton(){
+
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          Provider.of<EventProvider>(context, listen: false).deleteEvent(widget.event!);
+          Navigator.of(context).pop();
+        },
+        child: const Text('Delete Event'),
+      ),
+    );
+  }
+
   Widget Location() {
-    return Column(
-      children: [
-        TextField(
-          onChanged: (value) {
-              if (value.length > 2) {
-                eventplaceAutocomplete(value);
-              } else {
-                setState(() {
-                  eventplaceAutocomplete("");
-                });
-              }
-          },
-          cursorColor: Colors.white,
-            controller: _Eventplace,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-            ),
-            border: const OutlineInputBorder(),
-            hintText: 'Enter Your Home Address',
-            hintStyle: const TextStyle(
-              color: Colors.white,
-            ),
-            suffixIcon: IconButton(
-              onPressed: () {
-                _Eventplace.clear();
-                setState(() {
-                  eventplaceAutocomplete("");
-                });
-              },
-              icon: const Icon(Icons.clear, color: Colors.white),
+    return SingleChildScrollView(
+      reverse: true,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          TextField(
+            onChanged: (value) {
+                if (value.length > 2) {
+                  eventplaceAutocomplete(value);
+                } else {
+                  setState(() {
+                    eventplaceAutocomplete("");
+                  });
+                }
+            },
+            cursorColor: Colors.white,
+              controller: _Eventplace,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              border: const OutlineInputBorder(),
+              hintText: 'Enter Your Home Address',
+              hintStyle: const TextStyle(
+                color: Colors.white,
+              ),
+              suffixIcon: IconButton(
+                onPressed: () {
+                  _Eventplace.clear();
+                  setState(() {
+                    eventplaceAutocomplete("");
+                  });
+                },
+                icon: const Icon(Icons.clear, color: Colors.white),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 1),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: Eventplacepredictions.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(
-                Eventplacepredictions[index].description!,
-                textAlign: TextAlign.start,
-                style: const TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                setState(() {
-                  _Eventplace.text = Eventplacepredictions[index].description!;
-                  eventplaceAutocomplete("");
-                });
-              },
-            );
-          },
-        ),
-      ],
+          const SizedBox(height: 1),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: Eventplacepredictions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(
+                  Eventplacepredictions[index].description!,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  setState(() {
+                    _Eventplace.text = Eventplacepredictions[index].description!;
+                    eventplaceAutocomplete("");
+                  });
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -193,7 +215,6 @@ class _EventEditingState extends State<EventEditing> {
         child: Row(
           children: [
             Expanded(
-              flex: 2,
               child: buildDropdownField(
                 text: DateAndTimeUtil.toDate(fromDate),
                 //If the user clicked the date the new date is saved in the fromDate variable
@@ -215,7 +236,6 @@ class _EventEditingState extends State<EventEditing> {
         child: Row(
           children: [
             Expanded(
-              flex: 2,
               child: buildDropdownField(
                   text: DateAndTimeUtil.toDate(toDate),
                   onClicked: () => pickToDateTime(pickDate: true)),

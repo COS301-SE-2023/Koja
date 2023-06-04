@@ -13,7 +13,7 @@ class Event{
 
     const Event({
         required this.title,
-        required this.description,
+        this.description = '',
         this.location = '',
         required this.from,
         required this.to,

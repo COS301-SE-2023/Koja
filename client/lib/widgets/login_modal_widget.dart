@@ -19,7 +19,6 @@ class _LoginModalState extends State<LoginModal> {
       child: Container(
         height: 130,
         padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
-        color: darkBlue,
         child: ListView(
           shrinkWrap: true,
           children: [
@@ -48,7 +47,11 @@ class _LoginModalState extends State<LoginModal> {
                     ),
                     SizedBox(width: 10.0),
                     Text('Sign In With Google',
-                        style: TextStyle(color: Colors.white, fontSize: 16.0)),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.0
+                         )
+                    ),
                   ],
                 ),
               ),
