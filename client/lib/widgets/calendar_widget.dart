@@ -23,8 +23,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       //This sets the view of the calendar to month view
       view: CalendarView.week,
 
+      allowedViews: const [
+        CalendarView.day,
+        CalendarView.week,
+        CalendarView.month,
+      ],
+
       showNavigationArrow: true,
-      showDatePickerButton: true,
 
       allowDragAndDrop: true,
       firstDayOfWeek: 1,
@@ -33,7 +38,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
       //This initialises the calendar to the current date
       initialSelectedDate: DateTime.now(),
-      
 
       //Save the date of the event when the user taps on the calendar
       onTap: (details) {
@@ -45,7 +49,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         );
       }
 
-    );
-    
+    ); 
   }
 }

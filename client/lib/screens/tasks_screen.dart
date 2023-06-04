@@ -61,7 +61,7 @@ class CurrentTasksScreen extends StatelessWidget {
     return Scaffold(
       body: const Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           CalendarWidget(),
         ],
