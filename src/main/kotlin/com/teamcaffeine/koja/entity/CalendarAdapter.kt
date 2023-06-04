@@ -1,3 +1,5 @@
+package com.teamcaffeine.koja.entity
+
 import com.teamcaffeine.koja.entity.Event
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
