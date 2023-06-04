@@ -1,5 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -90,14 +91,12 @@ class _EventEditingState extends State<EventEditing> {
       ],
       backgroundColor: Colors.grey[300],
       contentPadding: const EdgeInsets.all(0),
-      content: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: MediaQuery.of(context).size.height * 0.7,
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            reverse: true,
+      content: SingleChildScrollView(
+        // reverse: true,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Form(
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start, 
