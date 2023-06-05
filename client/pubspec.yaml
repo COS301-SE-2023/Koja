@@ -74,6 +74,8 @@ dependencies:
   # for animations
   lottie: ^2.3.2
 
+  syncfusion_flutter_core: ^21.2.8
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

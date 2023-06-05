@@ -13,14 +13,14 @@ class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
   @override
-  _SettingsState createState() => _SettingsState();
+  SettingsState createState() => SettingsState();
 }
 
-class _SettingsState extends State<Settings> {
-  late BuildContext contexzz;
+class SettingsState extends State<Settings> {
+  late BuildContext ctx;
 
-  List<AutocompletePrediction> Placepredictions = [];
-  List<AutocompletePrediction> Workplacepredictions = [];
+  List<AutocompletePrediction> placePredictions = [];
+  List<AutocompletePrediction> workplacePredictions = [];
 
   Future<void> workplaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -32,14 +32,14 @@ class _SettingsState extends State<Settings> {
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          Workplacepredictions =
+          workplacePredictions =
               result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
   }
 
-  Future<void> PlaceAutocomplete(String query) async {
+  Future<void> placeAutoComplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
         'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
 
@@ -49,7 +49,7 @@ class _SettingsState extends State<Settings> {
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          Placepredictions = result.predictions!.cast<AutocompletePrediction>();
+          placePredictions = result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
@@ -62,14 +62,14 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    contexzz = context;
+    ctx = context;
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Column(
           children: [
             /*  This is the Time Input Section  */
-            Header(LineIcons.hourglassEnd, 'Set Your Active Times'),
+            header(LineIcons.hourglassEnd, 'Set Your Active Times'),
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
             SingleChildScrollView(
@@ -79,14 +79,14 @@ class _SettingsState extends State<Settings> {
                   color: darkBlue,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: AllDays(constraints),
+                child: allDays(constraints),
                 /* This is the Expansion Tile for the days */
               ),
             ),
             const SizedBox(height: 20),
 
             /*  This is the Location Section  */
-            Header(LineIcons.directions, 'Set Your Location'),
+            header(LineIcons.directions, 'Set Your Location'),
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
 
@@ -99,7 +99,7 @@ class _SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child:
-                    SingleChildScrollView(child: HomeLocation("Home Location")),
+                    SingleChildScrollView(child: homeLocation("Home Location")),
               ),
             ),
             const SizedBox(height: 15),
@@ -113,14 +113,14 @@ class _SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child:
-                    SingleChildScrollView(child: WorkLocation("Work Location")),
+                    SingleChildScrollView(child: workLocation("Work Location")),
               ),
             ),
 
             /*  This is the About Us Section  */
 
             const SizedBox(height: 15),
-            Header(LineIcons.tags, ' About Us'),
+            header(LineIcons.tags, ' About Us'),
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
             SingleChildScrollView(
@@ -131,7 +131,7 @@ class _SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 padding: const EdgeInsets.all(10.0),
-                child: AboutUs(),
+                child: aboutUs(),
               ),
             ),
           ],
@@ -142,7 +142,7 @@ class _SettingsState extends State<Settings> {
 
   /*  This consists of all the days from Monday To Sunday */
 
-  Padding AllDays(BoxConstraints constraints) {
+  Padding allDays(BoxConstraints constraints) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ExpansionTile(
@@ -188,8 +188,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -229,8 +229,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -270,8 +270,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -311,8 +311,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -352,8 +352,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -393,8 +393,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -434,8 +434,8 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Column(
                       children: [
-                        WorkTimePicker(),
-                        PersonalTimePicker('Personal Time'),
+                        workTimePicker(),
+                        personalTimePicker('Personal Time'),
                       ],
                     ),
                   ),
@@ -450,7 +450,7 @@ class _SettingsState extends State<Settings> {
 
   /* This is the Header Section */
 
-  Widget Header(IconData iconData, String text) {
+  Widget header(IconData iconData, String text) {
     return Row(
       children: [
         Icon(iconData),
@@ -467,7 +467,7 @@ class _SettingsState extends State<Settings> {
 
   /* This is the Work Time Input Section - only difference is the Text*/
 
-  Widget WorkTimePicker() {
+  Widget workTimePicker() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -484,8 +484,8 @@ class _SettingsState extends State<Settings> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TimePickers('Start Time'),
-            TimePickers('End Time'),
+            timePickers('Start Time'),
+            timePickers('End Time'),
           ],
         ),
         Padding(
@@ -515,7 +515,7 @@ class _SettingsState extends State<Settings> {
 
   /* This is the Personal Time Input Section  - only difference is the Text */
 
-  Widget PersonalTimePicker(String label) {
+  Widget personalTimePicker(String label) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,8 +530,8 @@ class _SettingsState extends State<Settings> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TimePickers('Start Time'),
-              TimePickers('End Time'),
+              timePickers('Start Time'),
+              timePickers('End Time'),
             ],
           ),
           Padding(
@@ -562,7 +562,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Widget TimePickers(String label) {
+  Widget timePickers(String label) {
     return SingleChildScrollView(
       child: Row(
         children: [
@@ -581,7 +581,7 @@ class _SettingsState extends State<Settings> {
   }
 
   /* This is About Us Section */
-  Widget AboutUs() {
+  Widget aboutUs() {
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -644,7 +644,7 @@ class _SettingsState extends State<Settings> {
   }
 
 /* This is the Home Location Input Section */
-  Widget HomeLocation(String where) {
+  Widget homeLocation(String where) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -691,10 +691,10 @@ class _SettingsState extends State<Settings> {
                 TextField(
                   onChanged: (value) {
                     if (value.length > 2) {
-                      PlaceAutocomplete(value);
+                      placeAutoComplete(value);
                     } else {
                       setState(() {
-                        PlaceAutocomplete("");
+                        placeAutoComplete("");
                       });
                     }
                   },
@@ -714,7 +714,7 @@ class _SettingsState extends State<Settings> {
                       onPressed: () {
                         _homeTextController.clear();
                         setState(() {
-                          PlaceAutocomplete("");
+                          placeAutoComplete("");
                         });
                       },
                       icon: const Icon(Icons.clear, color: Colors.white),
@@ -724,18 +724,18 @@ class _SettingsState extends State<Settings> {
                 const SizedBox(height: 1),
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: Placepredictions.length,
+                  itemCount: placePredictions.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        Placepredictions[index].description!,
+                        placePredictions[index].description!,
                         textAlign: TextAlign.start,
                         style: const TextStyle(color: Colors.white),
                       ),
                       onTap: () {
                         setState(() {
-                          home = Placepredictions[index].description!;
-                          PlaceAutocomplete("");
+                          home = placePredictions[index].description!;
+                          placeAutoComplete("");
                         });
                       },
                     );
@@ -750,7 +750,7 @@ class _SettingsState extends State<Settings> {
   }
 
 /* This is the Personal Time Input Section  - only difference is the Text */
-  Widget WorkLocation(String where) {
+  Widget workLocation(String where) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -830,17 +830,17 @@ class _SettingsState extends State<Settings> {
                 const SizedBox(height: 1),
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: Workplacepredictions.length,
+                  itemCount: workplacePredictions.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        Workplacepredictions[index].description!,
+                        workplacePredictions[index].description!,
                         textAlign: TextAlign.start,
                         style: const TextStyle(color: Colors.white),
                       ),
                       onTap: () {
                         setState(() {
-                          work = Workplacepredictions[index].description!;
+                          work = workplacePredictions[index].description!;
                           workplaceAutocomplete("");
                         });
                       },

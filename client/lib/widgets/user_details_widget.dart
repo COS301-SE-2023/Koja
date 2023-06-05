@@ -3,16 +3,10 @@ import 'package:flutter/material.dart';
 import '../Utils/constants_util.dart';
 import '../screens/login_screen.dart';
 
-class Userdetails extends StatelessWidget {
-  
-  String profile = "", email = "";
+class UserDetails extends StatelessWidget {
+  final String profile, email;
 
-  Userdetails(String profile, String email)
-  {
-    this.profile = profile;
-    this.email = email;
-  }
-  
+  UserDetails({required this.profile, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +44,7 @@ class Userdetails extends StatelessWidget {
                   child: const Icon(
                     Icons.logout_outlined,
                     size: 30,
-                    color:Color.fromARGB(255, 255, 255, 255),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ],
@@ -66,7 +60,7 @@ class Userdetails extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: AssetImage(
-                      'assets/icons/coffee.png',         
+                      'assets/icons/coffee.png',
                     ),
                   ),
                 ),

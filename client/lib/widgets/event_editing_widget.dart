@@ -103,8 +103,8 @@ class EventEditingState extends State<EventEditing> {
                   buildTitle(),
                   const SizedBox(height: 12),
                   buildDateTimePickers(),
-                  Location(),
-                  DeleteEventButton(),
+                  location(),
+                  DeleteEventButtonWidget(widget: widget),
                 ]),
           ),
         ),
@@ -112,20 +112,7 @@ class EventEditingState extends State<EventEditing> {
     );
   }
 
-  Widget DeleteEventButton() {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          Provider.of<EventProvider>(context, listen: false)
-              .deleteEvent(widget.event!);
-          Navigator.of(context).pop();
-        },
-        child: const Text('Delete Event'),
-      ),
-    );
-  }
-
-  Widget Location() {
+  Widget location() {
     return SingleChildScrollView(
       reverse: true,
       padding: const EdgeInsets.all(12),
@@ -177,8 +164,7 @@ class EventEditingState extends State<EventEditing> {
                 ),
                 onTap: () {
                   setState(() {
-                    eventPlace.text =
-                        eventPlacePredictions[index].description!;
+                    eventPlace.text = eventPlacePredictions[index].description!;
                     eventPlaceAutoComplete("");
                   });
                 },
@@ -209,7 +195,7 @@ class EventEditingState extends State<EventEditing> {
         ],
       );
 
-  Widget buildFrom() => BuildHeader(
+  Widget buildFrom() => buildHeader(
         header: 'FROM',
         child: Row(
           children: [
@@ -230,7 +216,7 @@ class EventEditingState extends State<EventEditing> {
         ),
       );
 
-  Widget buildTo() => BuildHeader(
+  Widget buildTo() => buildHeader(
         header: 'TO',
         child: Row(
           children: [
@@ -258,7 +244,7 @@ class EventEditingState extends State<EventEditing> {
         onTap: onClicked,
       );
 
-  Widget BuildHeader({
+  Widget buildHeader({
     required String header,
     required Widget child,
   }) =>
@@ -387,5 +373,28 @@ class EventEditingState extends State<EventEditing> {
         Navigator.of(context).pop();
       }
     }
+  }
+}
+
+class DeleteEventButtonWidget extends StatelessWidget {
+  const DeleteEventButtonWidget({
+    super.key,
+    required this.widget,
+  });
+
+  final EventEditing widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          Provider.of<EventProvider>(context, listen: false)
+              .deleteEvent(widget.event!);
+          Navigator.of(context).pop();
+        },
+        child: const Text('Delete Event'),
+      ),
+    );
   }
 }
