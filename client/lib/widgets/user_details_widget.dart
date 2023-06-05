@@ -24,33 +24,6 @@ class UserDetails extends StatelessWidget {
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.topRight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    // side: const BorderSide(width: 1, color: Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.logout_outlined,
-                    size: 30,
-                    color: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Align(
             alignment: Alignment.topCenter,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
