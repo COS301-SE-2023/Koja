@@ -1,5 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -15,14 +16,15 @@ class EventEditing extends StatefulWidget {
   const EventEditing({Key? key, this.event}) : super(key: key);
 
   @override
-  EventEditingState createState() => EventEditingState();
+  _EventEditingState createState() => _EventEditingState();
 }
 
-class EventEditingState extends State<EventEditing> {
-  List<AutocompletePrediction> eventPlacePredictions = [];
-  final TextEditingController eventPlace = TextEditingController();
+class _EventEditingState extends State<EventEditing> {
 
-  Future<void> eventPlaceAutoComplete(String query) async {
+  List<AutocompletePrediction> Eventplacepredictions = [];
+  final TextEditingController _Eventplace = TextEditingController();
+
+  Future<void> eventplaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
         'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
 
@@ -32,8 +34,7 @@ class EventEditingState extends State<EventEditing> {
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          eventPlacePredictions =
-              result.predictions!.cast<AutocompletePrediction>();
+          Eventplacepredictions = result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
@@ -97,17 +98,30 @@ class EventEditingState extends State<EventEditing> {
           child: Form(
             key: _formKey,
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  buildTitle(),
-                  const SizedBox(height: 12),
-                  buildDateTimePickers(),
-                  location(),
-                  DeleteEventButtonWidget(widget: widget),
-                ]),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start, 
+              children: <Widget>[
+              buildTitle(),
+              const SizedBox(height: 12),
+              buildDateTimePickers(),
+              location(),
+              deleteEventButton(),
+            ]),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget deleteEventButton(){
+
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          Provider.of<EventProvider>(context, listen: false).deleteEvent(widget.event!);
+          Navigator.of(context).pop();
+        },
+        child: const Text('Delete Event'),
       ),
     );
   }
@@ -120,18 +134,18 @@ class EventEditingState extends State<EventEditing> {
         children: [
           TextField(
             onChanged: (value) {
-              if (value.length > 2) {
-                eventPlaceAutoComplete(value);
-              } else {
-                setState(() {
-                  eventPlaceAutoComplete("");
-                });
-              }
+                if (value.length > 2) {
+                  eventplaceAutocomplete(value);
+                } else {
+                  setState(() {
+                    eventplaceAutocomplete("");
+                  });
+                }
             },
             cursorColor: Colors.white,
-            controller: eventPlace,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
+              controller: _Eventplace,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
@@ -142,9 +156,9 @@ class EventEditingState extends State<EventEditing> {
               ),
               suffixIcon: IconButton(
                 onPressed: () {
-                  eventPlace.clear();
+                  _Eventplace.clear();
                   setState(() {
-                    eventPlaceAutoComplete("");
+                    eventplaceAutocomplete("");
                   });
                 },
                 icon: const Icon(Icons.clear, color: Colors.white),
@@ -154,18 +168,18 @@ class EventEditingState extends State<EventEditing> {
           const SizedBox(height: 1),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: eventPlacePredictions.length,
+            itemCount: Eventplacepredictions.length,
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
-                  eventPlacePredictions[index].description!,
+                  Eventplacepredictions[index].description!,
                   textAlign: TextAlign.start,
                   style: const TextStyle(color: Colors.white),
                 ),
                 onTap: () {
                   setState(() {
-                    eventPlace.text = eventPlacePredictions[index].description!;
-                    eventPlaceAutoComplete("");
+                    _Eventplace.text = Eventplacepredictions[index].description!;
+                    eventplaceAutocomplete("");
                   });
                 },
               );
@@ -176,6 +190,8 @@ class EventEditingState extends State<EventEditing> {
     );
   }
 
+
+  /*This method is used to build the Title of the event*/
   Widget buildTitle() => TextFormField(
         style: const TextStyle(fontSize: 24),
         decoration: const InputDecoration(
@@ -195,7 +211,9 @@ class EventEditingState extends State<EventEditing> {
         ],
       );
 
-  Widget buildFrom() => buildHeader(
+
+  /*This method is used to pick the date and time for the FROM section*/
+  Widget buildFrom() => BuildHeader(
         header: 'FROM',
         child: Row(
           children: [
@@ -216,7 +234,9 @@ class EventEditingState extends State<EventEditing> {
         ),
       );
 
-  Widget buildTo() => buildHeader(
+
+  /*This method is used to pick the date and time for the TO section*/
+  Widget buildTo() => BuildHeader(
         header: 'TO',
         child: Row(
           children: [
@@ -244,7 +264,7 @@ class EventEditingState extends State<EventEditing> {
         onTap: onClicked,
       );
 
-  Widget buildHeader({
+  Widget BuildHeader({
     required String header,
     required Widget child,
   }) =>
@@ -334,16 +354,6 @@ class EventEditingState extends State<EventEditing> {
 
     if (date == null) return;
 
-    // if (date.isAfter(toDate)) {
-    //   toDate = DateTime(
-    //     date.year,
-    //     date.month,
-    //     date.day,
-    //     toDate.hour,
-    //     toDate.minute,
-    //   );
-    // }
-
     setState(() {
       toDate = date;
     });
@@ -373,28 +383,5 @@ class EventEditingState extends State<EventEditing> {
         Navigator.of(context).pop();
       }
     }
-  }
-}
-
-class DeleteEventButtonWidget extends StatelessWidget {
-  const DeleteEventButtonWidget({
-    super.key,
-    required this.widget,
-  });
-
-  final EventEditing widget;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          Provider.of<EventProvider>(context, listen: false)
-              .deleteEvent(widget.event!);
-          Navigator.of(context).pop();
-        },
-        child: const Text('Delete Event'),
-      ),
-    );
   }
 }
