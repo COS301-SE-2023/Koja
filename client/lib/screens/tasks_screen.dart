@@ -1,6 +1,8 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:client/screens/suggestions_screens.dart';
+import 'package:client/widgets/change_theme_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 import '../widgets/calendar_widget.dart';
 import '../widgets/event_editing_widget.dart';
@@ -22,25 +24,33 @@ class Tasks extends StatelessWidget {
               color: Colors.white,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Bootstrap.moon),
+              onPressed: () {
+                ChangeTheme();
+              },
+              selectedIcon: Icon(Bootstrap.sun),
+            )
+          ],
           centerTitle: true,
           backgroundColor: darkBlue,
           bottom: const TabBar(
-          tabs: [
-            Tab(
-              child: Text(
-                'Current',
-                style: TextStyle(color: Colors.white),
+            tabs: [
+              Tab(
+                child: Text(
+                  'Current',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-            Tab(
-              child: Text(
-                'Suggestions',
-                style: TextStyle(color: Colors.white),
+              Tab(
+                child: Text(
+                  'Suggestions',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-          ],
-        ),
-
+            ],
+          ),
         ),
         body: const TabBarView(
           children: [
@@ -76,15 +86,8 @@ class CurrentTasksScreen extends StatelessWidget {
           );
         },
         backgroundColor: darkBlue,
-        child: const Icon(Icons.add,
-            color: Colors.white, 
-            size: 25.0
-        ),
-    ),
-
+        child: const Icon(Icons.add, color: Colors.white, size: 25.0),
+      ),
     );
-    
   }
-  
 }
-
