@@ -21,8 +21,8 @@ class EventEditing extends StatefulWidget {
 
 class _EventEditingState extends State<EventEditing> {
 
-  List<AutocompletePrediction> Eventplacepredictions = [];
-  final TextEditingController _Eventplace = TextEditingController();
+  List<AutocompletePrediction> eventplacepredictions = [];
+  final TextEditingController _eventplace = TextEditingController();
 
   Future<void> eventplaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -34,7 +34,7 @@ class _EventEditingState extends State<EventEditing> {
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          Eventplacepredictions = result.predictions!.cast<AutocompletePrediction>();
+          eventplacepredictions = result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
@@ -143,7 +143,7 @@ class _EventEditingState extends State<EventEditing> {
                 }
             },
             cursorColor: Colors.white,
-              controller: _Eventplace,
+              controller: _eventplace,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
               focusedBorder: const OutlineInputBorder(
@@ -156,7 +156,7 @@ class _EventEditingState extends State<EventEditing> {
               ),
               suffixIcon: IconButton(
                 onPressed: () {
-                  _Eventplace.clear();
+                  _eventplace.clear();
                   setState(() {
                     eventplaceAutocomplete("");
                   });
@@ -168,17 +168,17 @@ class _EventEditingState extends State<EventEditing> {
           const SizedBox(height: 1),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: Eventplacepredictions.length,
+            itemCount: eventplacepredictions.length,
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
-                  Eventplacepredictions[index].description!,
+                  eventplacepredictions[index].description!,
                   textAlign: TextAlign.start,
                   style: const TextStyle(color: Colors.white),
                 ),
                 onTap: () {
                   setState(() {
-                    _Eventplace.text = Eventplacepredictions[index].description!;
+                    _eventplace.text = eventplacepredictions[index].description!;
                     eventplaceAutocomplete("");
                   });
                 },

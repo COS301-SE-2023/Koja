@@ -23,20 +23,26 @@ class KojaApp extends StatelessWidget {
         ChangeNotifierProvider<EventProvider>(create: (context) => EventProvider()),
         ChangeNotifierProvider<ThemeProvider>(create: (context) => ThemeProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Koja',
-        themeMode: ThemeMode.light,
-        theme: MyTheme.lightTheme,
-        darkTheme: MyTheme.darkTheme,
-        home: (kDebugMode) ? const NavigationScreen() : const Login(),
-        routes: {
-          Login.routeName: (ctx) => const Login(),
-          Profile.routeName: (ctx) => const Profile(),
-          Home.routeName: (ctx) => const Home(),
-          NavigationScreen.routeName: (ctx) => const NavigationScreen(),
-        },
-      ),
+      builder: (context, _) {
+        
+        final themeProvider = Provider.of<ThemeProvider>(context);
+
+        return MaterialApp
+        (
+            debugShowCheckedModeBanner: false,
+            title: 'Koja',
+            themeMode: themeProvider.themeMode,
+            theme: MyTheme.lightTheme,
+            darkTheme: MyTheme.darkTheme,
+            home: (kDebugMode) ? const NavigationScreen() : const Login(),
+            routes: {
+              Login.routeName: (ctx) => const Login(),
+              Profile.routeName: (ctx) => const Profile(),
+              Home.routeName: (ctx) => const Home(),
+              NavigationScreen.routeName: (ctx) => const NavigationScreen(),
+            },   
+        );
+      },
     );
   }
 }

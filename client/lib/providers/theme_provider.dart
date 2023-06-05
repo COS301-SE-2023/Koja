@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier
 {
-  ThemeMode themeMode = ThemeMode.system;
+  ThemeMode themeMode = ThemeMode.light;
 
   bool get isDarkMode => themeMode == ThemeMode.dark;
 
@@ -28,7 +28,7 @@ class MyTheme {
 
   static final darkTheme = ThemeData
   (
-    scaffoldBackgroundColor: Color.fromARGB(255, 76, 85, 190),
+    scaffoldBackgroundColor: Color.fromARGB(255, 151, 152, 165),
     colorScheme: ColorScheme.dark(
       primary: Color.fromARGB(255, 76, 85, 190),
       secondary: Colors.white,
