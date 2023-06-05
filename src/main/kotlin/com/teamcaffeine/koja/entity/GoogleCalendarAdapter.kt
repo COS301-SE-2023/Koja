@@ -13,7 +13,6 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Events
-import com.teamcaffeine.koja.entity.Event
 import jakarta.servlet.http.HttpServletRequest
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Value
