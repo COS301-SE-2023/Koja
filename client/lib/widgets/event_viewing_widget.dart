@@ -11,10 +11,10 @@ class EventViewing extends StatefulWidget {
   const EventViewing({Key? key, required this.event}) : super(key: key);
 
   @override
-  _EventViewingState createState() => _EventViewingState();
+  EventViewingState createState() => EventViewingState();
 }
 
-class _EventViewingState extends State<EventViewing> {
+class EventViewingState extends State<EventViewing> {
   late Event event;
 
   @override

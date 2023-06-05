@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../models/google_auth_model.dart';
 
-
-
 class LoginModal extends StatefulWidget {
   const LoginModal({super.key});
 
   @override
-  _LoginModalState createState() => _LoginModalState();
+  LoginModalState createState() => LoginModalState();
 }
 
-class _LoginModalState extends State<LoginModal> {
+class LoginModalState extends State<LoginModal> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -23,16 +21,10 @@ class _LoginModalState extends State<LoginModal> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                print('Redirecting to Google Sign In');
                 var user = await GoogleAuthModel.login();
                 if (user != null) {
-                  print('User is logged in');
-                  print(user.displayName);
-                  print(user.email);
                   // Navigator.pushNamed(context, NavigationScreen.routeName);
-                } else {
-                  print('User is not logged in');
-                }
+                } else {}
               },
               child: const SizedBox(
                 height: 30,
@@ -46,11 +38,7 @@ class _LoginModalState extends State<LoginModal> {
                     ),
                     SizedBox(width: 10.0),
                     Text('Sign In With Google',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.0
-                         )
-                    ),
+                        style: TextStyle(color: Colors.black, fontSize: 16.0)),
                   ],
                 ),
               ),
