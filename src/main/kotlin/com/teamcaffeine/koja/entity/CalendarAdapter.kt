@@ -1,9 +1,9 @@
 package com.teamcaffeine.koja.entity
 
-import com.teamcaffeine.koja.entity.Event
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.view.RedirectView
+
 
 interface CalendarAdapter {
     fun setupConnection(request: HttpServletRequest?) : RedirectView
