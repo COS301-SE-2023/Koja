@@ -8,7 +8,7 @@ import '../Utils/event_util.dart';
 import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
-import 'event_provider.dart';
+import '../providers/event_provider.dart';
 
 class EventEditing extends StatefulWidget {
   final Event? event;
