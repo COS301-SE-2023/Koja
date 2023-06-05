@@ -10,10 +10,10 @@ class CalendarWidget extends StatefulWidget {
   const CalendarWidget({super.key});
 
   @override
-  _CalendarWidgetState createState() => _CalendarWidgetState();
+  CalendarWidgetState createState() => CalendarWidgetState();
 }
 
-class _CalendarWidgetState extends State<CalendarWidget> {
+class CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {

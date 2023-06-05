@@ -1,16 +1,15 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
 import 'package:lottie/lottie.dart';
 
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key});
 
   @override
-  _AboutUsPageState createState() => _AboutUsPageState();
+  AboutUsPageState createState() => AboutUsPageState();
 }
 
-class _AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStateMixin 
+class AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderStateMixin 
 {
   @override
   void initState() {

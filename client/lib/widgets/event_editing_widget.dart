@@ -1,6 +1,5 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -16,25 +15,25 @@ class EventEditing extends StatefulWidget {
   const EventEditing({Key? key, this.event}) : super(key: key);
 
   @override
-  _EventEditingState createState() => _EventEditingState();
+  EventEditingState createState() => EventEditingState();
 }
 
-class _EventEditingState extends State<EventEditing> {
+class EventEditingState extends State<EventEditing> {
+  List<AutocompletePrediction> eventPlacePredictions = [];
+  final TextEditingController eventPlace = TextEditingController();
 
-  List<AutocompletePrediction> Eventplacepredictions = [];
-  final TextEditingController _Eventplace = TextEditingController();
-
-  Future<void> eventplaceAutocomplete(String query) async {
+  Future<void> eventPlaceAutoComplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
         'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
 
     String? response = await LocationPredict.fetchUrl(uri);
     if (response != null) {
-      placeAutocompleteResponse result =
-          placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
+      PlaceAutocompleteResponse result =
+          PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          Eventplacepredictions = result.predictions!.cast<AutocompletePrediction>();
+          eventPlacePredictions =
+              result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
@@ -98,27 +97,27 @@ class _EventEditingState extends State<EventEditing> {
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start, 
-              children: <Widget>[
-              buildTitle(),
-              const SizedBox(height: 12),
-              buildDateTimePickers(),
-              Location(),
-              DeleteEventButton(),
-            ]),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  buildTitle(),
+                  const SizedBox(height: 12),
+                  buildDateTimePickers(),
+                  Location(),
+                  DeleteEventButton(),
+                ]),
           ),
         ),
       ),
     );
   }
 
-  Widget DeleteEventButton(){
-
+  Widget DeleteEventButton() {
     return Center(
       child: ElevatedButton(
         onPressed: () {
-          Provider.of<EventProvider>(context, listen: false).deleteEvent(widget.event!);
+          Provider.of<EventProvider>(context, listen: false)
+              .deleteEvent(widget.event!);
           Navigator.of(context).pop();
         },
         child: const Text('Delete Event'),
@@ -134,18 +133,18 @@ class _EventEditingState extends State<EventEditing> {
         children: [
           TextField(
             onChanged: (value) {
-                if (value.length > 2) {
-                  eventplaceAutocomplete(value);
-                } else {
-                  setState(() {
-                    eventplaceAutocomplete("");
-                  });
-                }
+              if (value.length > 2) {
+                eventPlaceAutoComplete(value);
+              } else {
+                setState(() {
+                  eventPlaceAutoComplete("");
+                });
+              }
             },
             cursorColor: Colors.white,
-              controller: _Eventplace,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
+            controller: eventPlace,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
@@ -156,9 +155,9 @@ class _EventEditingState extends State<EventEditing> {
               ),
               suffixIcon: IconButton(
                 onPressed: () {
-                  _Eventplace.clear();
+                  eventPlace.clear();
                   setState(() {
-                    eventplaceAutocomplete("");
+                    eventPlaceAutoComplete("");
                   });
                 },
                 icon: const Icon(Icons.clear, color: Colors.white),
@@ -168,18 +167,19 @@ class _EventEditingState extends State<EventEditing> {
           const SizedBox(height: 1),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: Eventplacepredictions.length,
+            itemCount: eventPlacePredictions.length,
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
-                  Eventplacepredictions[index].description!,
+                  eventPlacePredictions[index].description!,
                   textAlign: TextAlign.start,
                   style: const TextStyle(color: Colors.white),
                 ),
                 onTap: () {
                   setState(() {
-                    _Eventplace.text = Eventplacepredictions[index].description!;
-                    eventplaceAutocomplete("");
+                    eventPlace.text =
+                        eventPlacePredictions[index].description!;
+                    eventPlaceAutoComplete("");
                   });
                 },
               );

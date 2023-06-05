@@ -4,10 +4,10 @@ class ChartWidget extends StatefulWidget {
   const ChartWidget({Key? key}) : super(key: key);
 
   @override
-  _ChartWidgetState createState() => _ChartWidgetState();
+  ChartWidgetState createState() => ChartWidgetState();
 }
 
-class _ChartWidgetState extends State<ChartWidget> {
+class ChartWidgetState extends State<ChartWidget> {
   final List<ChartData> data = [
     ChartData('Mon', 5),
     ChartData('Tue', 25),
