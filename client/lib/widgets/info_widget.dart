@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
-import '../Utils/constants_util.dart';
 import '../widgets/login_modal_widget.dart';
 
 class Info extends StatefulWidget {

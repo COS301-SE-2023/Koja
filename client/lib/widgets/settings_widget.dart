@@ -22,18 +22,18 @@ class _SettingsState extends State<Settings> {
   List<AutocompletePrediction> Placepredictions = [];
   List<AutocompletePrediction> Workplacepredictions = [];
 
-
   Future<void> workplaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
         'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
 
     String? response = await LocationPredict.fetchUrl(uri);
     if (response != null) {
-      placeAutocompleteResponse result =
-          placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
+      PlaceAutocompleteResponse result =
+          PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          Workplacepredictions = result.predictions!.cast<AutocompletePrediction>();
+          Workplacepredictions =
+              result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
@@ -45,8 +45,8 @@ class _SettingsState extends State<Settings> {
 
     String? response = await LocationPredict.fetchUrl(uri);
     if (response != null) {
-      placeAutocompleteResponse result =
-          placeAutocompleteResponse.parsePlaceAutocompleteResponse(response);
+      PlaceAutocompleteResponse result =
+          PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
           Placepredictions = result.predictions!.cast<AutocompletePrediction>();
@@ -98,8 +98,8 @@ class _SettingsState extends State<Settings> {
                   color: darkBlue,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: SingleChildScrollView(
-                    child: HomeLocation("Home Location")),
+                child:
+                    SingleChildScrollView(child: HomeLocation("Home Location")),
               ),
             ),
             const SizedBox(height: 15),
@@ -112,8 +112,8 @@ class _SettingsState extends State<Settings> {
                   color: darkBlue,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: SingleChildScrollView(
-                    child: WorkLocation("Work Location")),
+                child:
+                    SingleChildScrollView(child: WorkLocation("Work Location")),
               ),
             ),
 
@@ -796,9 +796,9 @@ class _SettingsState extends State<Settings> {
               children: [
                 TextField(
                   onChanged: (wvalue) {
-                    if(wvalue.length > 2){
+                    if (wvalue.length > 2) {
                       workplaceAutocomplete(wvalue);
-                    }else{
+                    } else {
                       setState(() {
                         workplaceAutocomplete("");
                       });
