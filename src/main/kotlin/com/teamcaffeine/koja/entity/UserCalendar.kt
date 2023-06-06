@@ -1,17 +1,30 @@
 package com.teamcaffeine.koja.entity
 
+import com.google.api.client.util.DateTime
+import com.teamcaffeine.koja.enums.Months
+import jakarta.persistence.*
 import org.springframework.stereotype.Component
 
 @Component
 class UserCalendar() {
 
-    private var id: Int? = null
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    val id: Int? = null;
+    var month: Months? = null;
 
-    private var user: User? = null
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JoinColumn(name = "event_id")
+    public val events: ArrayList<Event> = ArrayList();
+    public val calendarAdapters: ArrayList<CalendarAdapter> = ArrayList();
+    public val issues: ArrayList<Issue> = ArrayList();
 
-    public val events: ArrayList<Event> = arrayListOf();
-    public val calendarAdapters: ArrayList<CalendarAdapter> = arrayListOf();
-    public val issues: ArrayList<Issue> = arrayListOf();
+
+    public fun createEvent(title: String, start: DateTime, end: DateTime): Event{
+
+        return Event(title,start,end);
+
+    }
 
     fun addCalendarAdapter(adapter: CalendarAdapter){
         this.calendarAdapters.add(adapter);
@@ -24,6 +37,6 @@ class UserCalendar() {
     }
 
     private fun consolidateEvents(event: Event) {
-        TODO("Implement this function to consolidate events from this specific calendar with the events from the other calendars.")
+        TODO("Not yet implemented");
     }
 }
