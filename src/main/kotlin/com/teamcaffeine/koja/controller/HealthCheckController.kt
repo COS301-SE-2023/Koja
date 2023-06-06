@@ -11,7 +11,7 @@ import javax.sql.DataSource
 @RestController
 class HealthCheckController(@Autowired val dataSource: DataSource) {
 
-    @GetMapping("/health")
+    @GetMapping("/api/v1/health")
     fun healthCheck() : ResponseEntity<Any>  {
         val healthStatus = checkHealthStatus()
 
@@ -26,7 +26,7 @@ class HealthCheckController(@Autowired val dataSource: DataSource) {
         }
     }
 
-    @GetMapping("/health/detail")
+    @GetMapping("/api/v1/health/detail")
     fun detailedHealthCheck() : ResponseEntity<Any>  {
         val healthStatus = checkDetailedHealthStatus()
         for (hs in healthStatus)
