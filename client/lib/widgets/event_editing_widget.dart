@@ -111,7 +111,6 @@ class _EventEditingState extends State<EventEditing> {
         ),
       ),
     );
-
   }
 
   Widget deleteEventButton() {
@@ -164,27 +163,22 @@ class _EventEditingState extends State<EventEditing> {
           ),
         ),
         const SizedBox(height: 1),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: eventplacepredictions.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(
-                eventplacepredictions[index].description!,
-                textAlign: TextAlign.start,
-                style: const TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                setState(() {
-                  _eventplace.text = eventplacepredictions[index].description!;
-                  eventplaceAutocomplete("");
-                });
-              },
-            );
-          },
+        SizedBox(
+          height: 200,
+          width: double.infinity,
+          child: locationOptionsWidget(
+              eventplacepredictions: eventplacepredictions,
+              updateContents: updateContents),
         ),
       ],
     );
+  }
+
+  void updateContents(int i) {
+    setState(() {
+      _eventplace.text = eventplacepredictions[i].description!;
+      eventplaceAutocomplete("");
+    });
   }
 
   Widget buildTitle() => TextFormField(
@@ -376,5 +370,34 @@ class _EventEditingState extends State<EventEditing> {
         Navigator.of(context).pop();
       }
     }
+  }
+}
+
+class locationOptionsWidget extends StatelessWidget {
+  const locationOptionsWidget({
+    super.key,
+    required this.eventplacepredictions,
+    required this.updateContents,
+  });
+
+  final List<AutocompletePrediction> eventplacepredictions;
+  final void Function(int i) updateContents;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Wrap(
+        children: [
+          for (var i = 0; i < eventplacepredictions.length; i++)
+            ListTile(
+                title: Text(
+                  eventplacepredictions[i].description!,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () => updateContents(i)),
+        ],
+      ),
+    );
   }
 }
