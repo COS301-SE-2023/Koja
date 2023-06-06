@@ -25,7 +25,6 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
-	implementation ("com.google.auth:google-auth-library-oauth2-http:1.3.0")
 	implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 	implementation("com.google.api-client:google-api-client-java6:1.31.0")
 	implementation ("org.springframework.boot:spring-boot-starter")
@@ -33,9 +32,7 @@ dependencies {
 	implementation ("com.google.apis:google-api-services-sqladmin:v1beta4-rev35-1.22.0")
 	implementation ("com.google.api-client:google-api-client:1.31.1")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-	implementation("org.springframework.security:spring-security-oauth2-client")
-	implementation("org.springframework.security:spring-security-oauth2-jose")
+
 	testImplementation("com.h2database:h2")
 }
 
