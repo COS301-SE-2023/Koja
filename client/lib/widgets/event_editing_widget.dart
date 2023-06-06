@@ -1,8 +1,7 @@
-import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
+import '../Utils/constants_util.dart';
 import '../Utils/date_and_time_util.dart';
 import '../Utils/event_util.dart';
 import '../models/autocomplete_predict_model.dart';
@@ -12,7 +11,6 @@ import '../providers/event_provider.dart';
 
 class EventEditing extends StatefulWidget {
   final Event? event;
-
   const EventEditing({Key? key, this.event}) : super(key: key);
 
   @override
@@ -20,13 +18,15 @@ class EventEditing extends StatefulWidget {
 }
 
 class _EventEditingState extends State<EventEditing> {
-
   List<AutocompletePrediction> eventplacepredictions = [];
   final TextEditingController _eventplace = TextEditingController();
 
   Future<void> eventplaceAutocomplete(String query) async {
-    Uri uri = Uri.https("maps.googleapis.com",
-        'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
+    Uri uri = Uri.https(
+      "maps.googleapis.com",
+      'maps/api/place/autocomplete/json',
+      {"input": query, "key": apiKey},
+    );
 
     String? response = await LocationPredict.fetchUrl(uri);
     if (response != null) {
@@ -34,7 +34,8 @@ class _EventEditingState extends State<EventEditing> {
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          eventplacepredictions = result.predictions!.cast<AutocompletePrediction>();
+          eventplacepredictions =
+              result.predictions!.cast<AutocompletePrediction>();
         });
       }
     }
@@ -43,10 +44,10 @@ class _EventEditingState extends State<EventEditing> {
   late DateTime fromDate;
   late DateTime toDate;
 
-  //key which is used to validate the form
+  // key which is used to validate the form
   final _formKey = GlobalKey<FormState>();
 
-  //controller for the title text field
+  // controller for the title text field
   final titleController = TextEditingController();
 
   @override
@@ -76,49 +77,49 @@ class _EventEditingState extends State<EventEditing> {
     return AlertDialog(
       actions: <Widget>[
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
-            ),
-            child: const Text('Cancel')),
+          onPressed: () => Navigator.of(context).pop(),
+          style: TextButton.styleFrom(
+              // primary: Colors.black,
+              ),
+          child: const Text('Cancel'),
+        ),
         TextButton(
-            onPressed: saveForm,
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
-            ),
-            child: const Text('Save',
-                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+          onPressed: saveForm,
+          style: TextButton.styleFrom(
+              // primary: Colors.black,
+              ),
+          child: const Text(
+            'Save',
+            style: TextStyle(fontFamily: 'Railway', color: Colors.black),
+          ),
+        ),
       ],
       backgroundColor: Colors.grey[300],
-      contentPadding: const EdgeInsets.all(0),
-      content: SingleChildScrollView(
-        // reverse: true,
-        child: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start, 
-              children: <Widget>[
-              buildTitle(),
-              const SizedBox(height: 12),
-              buildDateTimePickers(),
-              location(),
-              deleteEventButton(),
-            ]),
-          ),
+      // contentPadding: const EdgeInsets.all(20),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            buildTitle(),
+            const SizedBox(height: 12),
+            buildDateTimePickers(),
+            location(),
+            deleteEventButton(),
+          ],
         ),
       ),
     );
+
   }
 
-  Widget deleteEventButton(){
-
+  Widget deleteEventButton() {
     return Center(
       child: ElevatedButton(
         onPressed: () {
-          Provider.of<EventProvider>(context, listen: false).deleteEvent(widget.event!);
+          Provider.of<EventProvider>(context, listen: false)
+              .deleteEvent(widget.event!);
           Navigator.of(context).pop();
         },
         child: const Text('Delete Event'),
@@ -127,71 +128,65 @@ class _EventEditingState extends State<EventEditing> {
   }
 
   Widget location() {
-    return SingleChildScrollView(
-      reverse: true,
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        children: [
-          TextField(
-            onChanged: (value) {
-                if (value.length > 2) {
-                  eventplaceAutocomplete(value);
-                } else {
-                  setState(() {
-                    eventplaceAutocomplete("");
-                  });
-                }
-            },
-            cursorColor: Colors.white,
-              controller: _eventplace,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
-              ),
-              border: const OutlineInputBorder(),
-              hintText: 'Enter Your Home Address',
-              hintStyle: const TextStyle(
-                color: Colors.white,
-              ),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  _eventplace.clear();
-                  setState(() {
-                    eventplaceAutocomplete("");
-                  });
-                },
-                icon: const Icon(Icons.clear, color: Colors.white),
-              ),
+    return Column(
+      children: [
+        TextField(
+          onChanged: (value) {
+            if (value.length > 2) {
+              eventplaceAutocomplete(value);
+            } else {
+              setState(() {
+                eventplaceAutocomplete("");
+              });
+            }
+          },
+          cursorColor: Colors.white,
+          controller: _eventplace,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+            ),
+            border: const OutlineInputBorder(),
+            hintText: 'Enter Your Home Address',
+            hintStyle: const TextStyle(
+              color: Colors.white,
+            ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                _eventplace.clear();
+                setState(() {
+                  eventplaceAutocomplete("");
+                });
+              },
+              icon: const Icon(Icons.clear, color: Colors.white),
             ),
           ),
-          const SizedBox(height: 1),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: eventplacepredictions.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  eventplacepredictions[index].description!,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  setState(() {
-                    _eventplace.text = eventplacepredictions[index].description!;
-                    eventplaceAutocomplete("");
-                  });
-                },
-              );
-            },
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 1),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: eventplacepredictions.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(
+                eventplacepredictions[index].description!,
+                textAlign: TextAlign.start,
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                setState(() {
+                  _eventplace.text = eventplacepredictions[index].description!;
+                  eventplaceAutocomplete("");
+                });
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
-
-  /*This method is used to build the Title of the event*/
   Widget buildTitle() => TextFormField(
         style: const TextStyle(fontSize: 24),
         decoration: const InputDecoration(
@@ -211,8 +206,6 @@ class _EventEditingState extends State<EventEditing> {
         ],
       );
 
-
-  /*This method is used to pick the date and time for the FROM section*/
   Widget buildFrom() => BuildHeader(
         header: 'FROM',
         child: Row(
@@ -220,35 +213,34 @@ class _EventEditingState extends State<EventEditing> {
             Expanded(
               child: buildDropdownField(
                 text: DateAndTimeUtil.toDate(fromDate),
-                //If the user clicked the date the new date is saved in the fromDate variable
                 onClicked: () => pickFromDateTime(pickDate: true),
               ),
             ),
             Expanded(
               child: buildDropdownField(
-                  text: DateAndTimeUtil.toTime(fromDate),
-                  //If the user clicked the time the new time is saved in the fromDate variable
-                  onClicked: () => pickFromDateTime(pickDate: false)),
+                text: DateAndTimeUtil.toTime(fromDate),
+                onClicked: () => pickFromDateTime(pickDate: false),
+              ),
             ),
           ],
         ),
       );
 
-
-  /*This method is used to pick the date and time for the TO section*/
   Widget buildTo() => BuildHeader(
         header: 'TO',
         child: Row(
           children: [
             Expanded(
               child: buildDropdownField(
-                  text: DateAndTimeUtil.toDate(toDate),
-                  onClicked: () => pickToDateTime(pickDate: true)),
+                text: DateAndTimeUtil.toDate(toDate),
+                onClicked: () => pickToDateTime(pickDate: true),
+              ),
             ),
             Expanded(
               child: buildDropdownField(
-                  text: DateAndTimeUtil.toTime(toDate),
-                  onClicked: () => pickToDateTime(pickDate: false)),
+                text: DateAndTimeUtil.toTime(toDate),
+                onClicked: () => pickToDateTime(pickDate: false),
+              ),
             ),
           ],
         ),
@@ -274,7 +266,9 @@ class _EventEditingState extends State<EventEditing> {
           Text(
             header,
             style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.black),
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
           child,
         ],
@@ -348,7 +342,6 @@ class _EventEditingState extends State<EventEditing> {
     }
   }
 
-  //To Section
   Future pickToDateTime({required bool pickDate}) async {
     final date = await pickDateTime(toDate, pickDate: pickDate);
 
@@ -365,7 +358,7 @@ class _EventEditingState extends State<EventEditing> {
     if (isValid) {
       final event = Event(
         title: titleController.text,
-        location: '',
+        location: _eventplace.text,
         description: 'description',
         from: fromDate,
         to: toDate,
