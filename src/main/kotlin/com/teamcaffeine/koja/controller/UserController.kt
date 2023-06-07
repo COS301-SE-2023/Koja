@@ -2,18 +2,30 @@ package com.teamcaffeine.koja.controller
 
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.service.UserService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.math.BigInteger
 import java.security.SecureRandom
 
 data class Session(val OAuth: Any)
 
 @RestController
-class UserController(val userService: UserService) {
+class UserController() {
+    @Autowired
+    private lateinit var userService: UserService ;
+
+    @GetMapping("/users")
+    fun allUsers() : List<User>{
+        return userService.retrieveUsers();
+    }
+
+    @PostMapping("/addUser")
+    fun post(@RequestBody user: User) {
+        userService.saveUser(user)
+    }
+
+
 
     @PostMapping("/authenticate")
     fun authenticateUser(user: User): String {

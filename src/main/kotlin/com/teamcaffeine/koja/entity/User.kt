@@ -20,7 +20,7 @@ class User  {
     private var calendarList: List<Calendar> = ArrayList<Calendar>()
 
     private var homeLocation: String ?= null;
-
+    private var workLocation: String ?= null;
 fun getAuthToken(): String{
     return authToken;
 }
