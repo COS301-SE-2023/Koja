@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 interface UserRepository: JpaRepository<User, Integer> {
 
 public fun findByAuthToken( authToken:String): User;
-
+    public fun findById( authToken:String): User;
 }
