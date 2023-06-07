@@ -16,13 +16,24 @@ internal class LocationController {
 
     @Autowired
     private lateinit var userService: UserService;
-    @PutMapping("/{userId}/homeLocation")
+    @PostMapping("/{userId}/homeLocation")
     fun updateUserHomeLocation( @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
             ?: return ResponseEntity.notFound().build()
         placeId?.let { user.setHomeLocation(it) }
+        userService.saveUser(user)
+        return ResponseEntity.ok("User place updated successfully.")
+    }
+
+    @PostMapping("/{userId}/homeLocation")
+    fun updateUserWorkLocation( @PathVariable("userId") userId: String?,
+                                @RequestParam("placeId") placeId: String?
+    ): ResponseEntity<String> {
+        val user: User = userId?.let { userService.getByUserId(it) }
+            ?: return ResponseEntity.notFound().build()
+        placeId?.let { user.setWorkLocation(it) }
         userService.saveUser(user)
         return ResponseEntity.ok("User place updated successfully.")
     }
