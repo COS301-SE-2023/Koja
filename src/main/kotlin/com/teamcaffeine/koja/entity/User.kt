@@ -19,7 +19,7 @@ class User  {
     @JoinColumn(name = "calendar_id")
     private var calendarList: List<Calendar> = ArrayList<Calendar>()
 
-
+    private var homeLocation: String ?= null;
 
 fun getAuthToken(): String{
     return authToken;
