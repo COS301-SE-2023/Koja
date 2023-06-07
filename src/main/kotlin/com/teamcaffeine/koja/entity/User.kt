@@ -1,6 +1,5 @@
 package com.teamcaffeine.koja.entity
 
-import com.google.api.client.util.DateTime
 import jakarta.persistence.*
 
 
@@ -21,7 +20,23 @@ class User  {
 
     private var homeLocation: String ?= null;
     private var workLocation: String ?= null;
-fun getAuthToken(): String{
+
+    fun setHomeLocation(homeLocation: String) {
+        this.homeLocation = homeLocation;
+    }
+
+    fun setWorkLocation(workLocation: String) {
+        this.workLocation = workLocation;
+    }
+    fun getHomeLocation(): String? {
+        return homeLocation;
+    }
+
+    fun getWorkLocation(): String? {
+        return workLocation;
+    }
+
+    fun getAuthToken(): String{
     return authToken;
 }
 
