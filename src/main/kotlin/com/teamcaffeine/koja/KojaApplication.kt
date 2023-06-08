@@ -17,8 +17,8 @@ fun main(args: Array<String>) {
 	setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
 
 	// Set Google Sign In client ID and client secret properties
-	setProperty("spring.security.oauth2.client.registration.google.client-id", dotenv["GOOGLE_CLIENT_ID"]!!)
-	setProperty("spring.security.oauth2.client.registration.google.client-secret", dotenv["GOOGLE_CLIENT_SECRET"]!!)
+	setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
+	setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
 
 	runApplication<KojaApplication>(*args)
 }
