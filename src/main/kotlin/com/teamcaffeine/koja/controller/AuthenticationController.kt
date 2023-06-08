@@ -17,7 +17,7 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
 	}
 
 	@GetMapping("/auth/google/callback")
-	fun handleGoogleOAuth2Callback(@RequestParam("authCode") authCode: String?): ResponseEntity<String?>? {
+	fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?): ResponseEntity<String> {
 		return googleCalendarAdapter.oauth2Callback(authCode)
 	}
 }
