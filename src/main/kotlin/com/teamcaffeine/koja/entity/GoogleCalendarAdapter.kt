@@ -8,11 +8,13 @@ import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
+import org.springframework.web.util.UriComponentsBuilder
 
 class GoogleCalendarAdapter : CalendarAdapter {
     private val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
@@ -47,18 +49,26 @@ class GoogleCalendarAdapter : CalendarAdapter {
     override fun oauth2Callback(authCode: String?): ResponseEntity<String> {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
-        val parameters = LinkedMultiValueMap<String, String>()
-        parameters.add("grant_type", "authorization_code")
-        parameters.add("code", authCode)
-        parameters.add("client_id", "GOOGLE_CLIENT_ID")
-        parameters.add("client_secret", "GOOGLE_CLIENT_SECRET")
-        parameters.add("redirect_uri", "http://localhost:8080/auth/google/response/access_token")
 
         val headers = org.springframework.http.HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE)
+
+        val parameters = LinkedMultiValueMap<String, String>()
+        parameters.add("grant_type", "authorization_code")
+        parameters.add("code", authCode)
+        parameters.add("client_id",  System.getProperty("GOOGLE_CLIENT_ID"))
+        parameters.add("client_secret",  System.getProperty("GOOGLE_CLIENT_SECRET"))
+        parameters.add("redirect_uri", "http://localhost:8080/auth/google/callback")
+
         val requestEntity = HttpEntity(parameters, headers)
 
-        val responseEntity = restTemplate.postForEntity(tokenEndpointUrl, requestEntity, String::class.java)
+        // Building the request URL using UriComponentsBuilder and explicitly calling encode()
+        val builder = UriComponentsBuilder.fromHttpUrl(tokenEndpointUrl)
+            .queryParams(parameters)
+        val requestUrl = builder.build().encode().toUri()
+
+        val responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java)
         val responseJson = ObjectMapper().readTree(responseEntity.body)
         val accessToken = responseJson.get("access_token").asText()
         val refreshToken = responseJson.get("refresh_token")?.asText()
