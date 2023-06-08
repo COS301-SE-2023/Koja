@@ -5,6 +5,9 @@ class SetBoundary extends StatelessWidget {
   VoidCallback onSave;
   final String selectedOption;
   final TextEditingController start, end;
+
+  // DateTime _selectedDate = DateTime.now();
+  // TextEditingController selectedTime = TextEditingController();
   
   SetBoundary(
     this.selectedOption, 
@@ -42,7 +45,10 @@ class SetBoundary extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      TimePickerWidget(),
+                      SizedBox(height: 5),
+                      SizedBox(
+                        child: SelectedTimeButton( controller: start),
+                      ),
                     ], 
                   ),
                   
@@ -59,8 +65,10 @@ class SetBoundary extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      TimePickerWidget(),
-                      
+                      SizedBox(height: 5),
+                      SizedBox(
+                        child: SelectedTimeButton(controller: end),
+                      ),
                     ],
                   ),
                 )
@@ -89,4 +97,46 @@ class SetBoundary extends StatelessWidget {
       ),
     );
   }
+
+  
 }
+
+class SelectedTimeButton extends StatefulWidget {
+  final TextEditingController controller;
+
+  SelectedTimeButton({required this.controller});
+
+  @override
+  _SelectedTimeButtonState createState() => _SelectedTimeButtonState();
+}
+
+class _SelectedTimeButtonState extends State<SelectedTimeButton> {
+  late TimeOfDay selectedTime = TimeOfDay.now();
+
+  void _onPressed() async {
+    var time = await selectTime(context);
+    if (time != null) {
+      setState(() {
+        selectedTime = time;
+        widget.controller.text = time.format(context);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: _onPressed,
+      child: Text(selectedTime != null ? selectedTime.format(context) : 'Select Time'),
+    );
+  }
+
+  Future<TimeOfDay?> selectTime(BuildContext context) async {
+    var selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    return selectedTime;
+  }
+}
+
