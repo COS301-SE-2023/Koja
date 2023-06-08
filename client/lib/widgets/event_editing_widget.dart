@@ -168,32 +168,35 @@ class _EventEditingState extends State<EventEditing> {
             ),
           ),
           const SizedBox(height: 1),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: Eventplacepredictions.length,
-            // physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                height: MediaQuery.of(context).size.height * 0.07,
-                child: ListTile(
-                  title: Text(
-                    Eventplacepredictions[index].description!,
-                    textAlign: TextAlign.start,
-                    style: const TextStyle(color: Colors.black),
+          SizedBox(
+            height: 400,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: Eventplacepredictions.length,
+              // physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  child: ListTile(
+                    title: Text(
+                      Eventplacepredictions[index].description!,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _Eventplace.text =
+                            Eventplacepredictions[index].description!;
+                        //print('event :' +Eventplacepredictions[index].placeId!);
+                        eventplaceAutocomplete("");
+                      });
+                      // send the placeId to the backend
+                      // meetinglocation(Eventplacepredictions[index].placeId!);
+                    },
                   ),
-                  onTap: () {
-                    setState(() {
-                      _Eventplace.text =
-                          Eventplacepredictions[index].description!;
-                      //print('event :' +Eventplacepredictions[index].placeId!);
-                      eventplaceAutocomplete("");
-                    });
-                    // send the placeId to the backend
-                    // meetinglocation(Eventplacepredictions[index].placeId!);
-                  },
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ],
       ),

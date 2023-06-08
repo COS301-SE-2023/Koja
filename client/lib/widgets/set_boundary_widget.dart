@@ -81,6 +81,7 @@ class SetBoundary extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     onSave();
+                    Navigator.of(context).pop();
                   },
                   child: Text("Save")),
                 const SizedBox(width: 3),

@@ -46,6 +46,9 @@ dependencies:
   # icons for 
   icons_plus: ^4.0.0
 
+  #slidable for the time boundary containers
+  flutter_slidable: ^3.0.0
+
   #custom icons
   line_icons: ^2.0.1
 
