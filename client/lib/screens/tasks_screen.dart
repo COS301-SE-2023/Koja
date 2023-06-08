@@ -1,8 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:client/screens/suggestions_screens.dart';
-import 'package:client/widgets/change_theme_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
 
 import '../widgets/calendar_widget.dart';
 import '../widgets/event_editing_widget.dart';
@@ -25,13 +23,7 @@ class Tasks extends StatelessWidget {
             ),
           ),
           actions: [
-            IconButton(
-              icon: Icon(Bootstrap.moon),
-              onPressed: () {
-                ChangeTheme();
-              },
-              selectedIcon: Icon(Bootstrap.sun),
-            )
+            // ChangeTheme()   
           ],
           centerTitle: true,
           backgroundColor: darkBlue,

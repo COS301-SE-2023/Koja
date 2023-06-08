@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../Utils/constants_util.dart';
 import '../widgets/user_details_widget.dart';
 import '../widgets/settings_widget.dart';
@@ -29,6 +28,7 @@ class Profile extends StatelessWidget {
               );             
             },
           ),
+          // ChangeTheme()
         ],
       ),
       body: SingleChildScrollView(

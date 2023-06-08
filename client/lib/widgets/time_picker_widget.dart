@@ -9,7 +9,6 @@ class TimePickerWidget extends StatefulWidget {
 
 class TimePickerWidgetState extends State<TimePickerWidget> {
   TimeOfDay _selectedTime = TimeOfDay.now();
-
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
@@ -21,6 +20,12 @@ class TimePickerWidgetState extends State<TimePickerWidget> {
         _selectedTime = pickedTime;
       });
     }
+    print('time ' + _selectedTime.format(context));
+
+  }
+
+  String getStartTime() {
+    return _selectedTime.format(context);
   }
 
   @override
@@ -28,7 +33,8 @@ class TimePickerWidgetState extends State<TimePickerWidget> {
     return GestureDetector(
       onTap: () => _selectTime(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        width: MediaQuery.of(context).size.width * 0.4,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -36,13 +42,13 @@ class TimePickerWidgetState extends State<TimePickerWidget> {
               _selectedTime.format(context),
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.white,
               ),
             ),
             const Icon(Icons.arrow_drop_down),
           ],
         ),
       ),
+      
     );
   }
 }
