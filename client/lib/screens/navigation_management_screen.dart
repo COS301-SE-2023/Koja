@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 //Pages or widgets
+import '../Utils/constants_util.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'tasks_screen.dart';
@@ -30,7 +31,7 @@ class NavigationScreenState extends State<NavigationScreen> {
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 18,
         currentIndex: _currentIndex,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: darkBlue,
         unselectedItemColor: Colors.white,
         selectedItemColor: Colors.black,
         items: const [

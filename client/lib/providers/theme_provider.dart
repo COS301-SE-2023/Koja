@@ -28,7 +28,7 @@ class MyTheme {
 
   static final darkTheme = ThemeData
   (
-    scaffoldBackgroundColor: Color.fromARGB(255, 151, 152, 165),
+    scaffoldBackgroundColor: Color.fromARGB(255, 8, 23, 233),
     colorScheme: ColorScheme.dark(
       primary: Color.fromARGB(255, 76, 85, 190),
       secondary: Colors.white,

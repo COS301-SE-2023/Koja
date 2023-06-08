@@ -1,4 +1,4 @@
 import 'package:flutter/material.dart';
 
 const String apiKey = "***redacted***";
-const darkBlue = Colors.blueAccent;
+const darkBlue = Color.fromARGB(255, 95, 173, 237);

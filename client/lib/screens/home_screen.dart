@@ -26,6 +26,9 @@ class HomeState extends State<Home> {
         ),
         centerTitle: true,
         backgroundColor: darkBlue,
+        actions: [
+          // ChangeTheme()
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

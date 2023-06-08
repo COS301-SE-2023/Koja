@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../Utils/constants_util.dart';
-import '../screens/login_screen.dart';
 
 class UserDetails extends StatelessWidget {
   final String profile, email;

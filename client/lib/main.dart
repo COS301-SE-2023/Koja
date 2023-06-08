@@ -3,13 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 
 import 'providers/event_provider.dart';
+// import 'providers/theme_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/navigation_management_screen.dart';
-
-// Import your own MyTheme if applicable
-// import 'theme/my_theme.dart';
 
 void main() {
   runApp(const KojaApp());
@@ -20,25 +18,33 @@ class KojaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return ChangeNotifierProvider<EventProvider>(
-      create: (context) => EventProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<EventProvider>(
+          create: (context) => EventProvider(),
+        ),
+        // ChangeNotifierProvider<ThemeProvider>(
+        //   create: (context) => ThemeProvider(),
+        // ),
+      ],
       child: Builder(
         builder: (context) {
-          // final eventProvider = Provider.of<EventProvider>(context);
-          // final themeProvider = ThemeProvider(); 
+          // final themeProvider = Provider.of<ThemeProvider>(context);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Koja',
             // themeMode: themeProvider.themeMode,
             // theme: MyTheme.lightTheme,
             // darkTheme: MyTheme.darkTheme,
-            home: (kDebugMode) ? NavigationScreen() : Login(),
+            theme: ThemeData(       
+              useMaterial3: true,
+            ),
+            home: (kDebugMode) ? const NavigationScreen() : const Login(),
             routes: {
-              Login.routeName: (ctx) => Login(),
-              Profile.routeName: (ctx) => Profile(),
-              Home.routeName: (ctx) => Home(),
-              NavigationScreen.routeName: (ctx) => NavigationScreen(),
+              Login.routeName: (ctx) => const Login(),
+              Profile.routeName: (ctx) => const Profile(),
+              Home.routeName: (ctx) => const Home(),
+              NavigationScreen.routeName: (ctx) => const NavigationScreen(),
             },
           );
         },
