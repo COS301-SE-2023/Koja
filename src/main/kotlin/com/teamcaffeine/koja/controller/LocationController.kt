@@ -27,6 +27,25 @@ internal class LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
+    @PostMapping("/{userId}/DHomeLocation")
+    fun deleteUserHomeLocation( @PathVariable("userId") userId: String?
+    ): ResponseEntity<String> {
+        val user: User = userId?.let { userService.getByUserId(it) }
+            ?: return ResponseEntity.notFound().build()
+       user.setHomeLocation("")
+        userService.saveUser(user)
+        return ResponseEntity.ok("User place updated successfully.")
+    }
+
+    @PostMapping("/{userId}/DHomeLocation")
+    fun deleteUserWorkLocation( @PathVariable("userId") userId: String?
+    ): ResponseEntity<String> {
+        val user: User = userId?.let { userService.getByUserId(it) }
+            ?: return ResponseEntity.notFound().build()
+        user.setWorkLocation("")
+        userService.saveUser(user)
+        return ResponseEntity.ok("User place updated successfully.")
+    }
     @PostMapping("/{userId}/homeLocation")
     fun updateUserWorkLocation( @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
