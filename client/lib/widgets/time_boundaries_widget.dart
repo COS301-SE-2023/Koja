@@ -146,7 +146,7 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                   height: 100,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      // color: Colors.black,
+                      color: Colors.black,
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(10),
