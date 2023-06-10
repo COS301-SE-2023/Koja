@@ -7,7 +7,6 @@ import '../models/autocomplete_predict_model.dart';
 import '../models/place_auto_response_model.dart';
 import '../screens/about_us_screen.dart';
 import '../models/location_predict_widget.dart';
-import 'time_picker_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Settings extends StatefulWidget {
@@ -77,18 +76,11 @@ class SettingsState extends State<Settings> {
               child: Container(
                 width: constraints.maxWidth * 0.95,
                 decoration: BoxDecoration(
-                    color: darkBlue,
                     borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 0.5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]),
-                child: TimeBoundaries(),
-               
+                    border: Border.all(),
+                    ),
+                child: 
+                    SingleChildScrollView(child: TimeBoundaries()),              
               ),
             ),
             const SizedBox(height: 20),
@@ -103,7 +95,7 @@ class SettingsState extends State<Settings> {
               child: Container(
                 width: constraints.maxWidth * 0.95,
                 decoration: BoxDecoration(
-                  color: darkBlue,
+                  border: Border.all(),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child:
@@ -117,7 +109,7 @@ class SettingsState extends State<Settings> {
               child: Container(
                 width: constraints.maxWidth * 0.95,
                 decoration: BoxDecoration(
-                  color: darkBlue,
+                  border: Border.all(),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child:
@@ -135,7 +127,7 @@ class SettingsState extends State<Settings> {
               child: Container(
                 width: constraints.maxWidth * 0.95,
                 decoration: BoxDecoration(
-                  color: darkBlue,
+                  border: Border.all(),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 padding: const EdgeInsets.all(10.0),
@@ -164,7 +156,7 @@ class SettingsState extends State<Settings> {
         Text(text,
             style: GoogleFonts.lato(
               fontSize: 18,
-              color: Colors.black,
+              // color: Colors.black,
               fontWeight: FontWeight.w500,
             )),
       ],
@@ -183,7 +175,7 @@ class SettingsState extends State<Settings> {
             style: GoogleFonts.ubuntu(
               fontSize: 20,
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              // color: Colors.black,
             ),
           ),
           const SizedBox(height: 10),
@@ -192,7 +184,7 @@ class SettingsState extends State<Settings> {
             style: GoogleFonts.ubuntu(
               fontSize: 15,
               fontWeight: FontWeight.w400,
-              color: Colors.black,
+              // color: Colors.black,
             ),
           ),
           const SizedBox(height: 10),
@@ -213,12 +205,12 @@ class SettingsState extends State<Settings> {
                   style: GoogleFonts.ubuntu(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: Colors.black,
+                    // color: Colors.black,
                   ),
                 ),
                 const Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.black,
+                  // color: Colors.black,
                 ),
               ],
             ),
@@ -227,7 +219,7 @@ class SettingsState extends State<Settings> {
               style: GoogleFonts.ubuntu(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Colors.black,
+                // color: Colors.black,
               )),
         ],
       ),
@@ -249,7 +241,9 @@ class SettingsState extends State<Settings> {
                   ' $where : $home',
                   maxLines: 1,
                   style: const TextStyle(
-                      fontSize: 15, color: Colors.black, fontFamily: 'Roboto'),
+                      fontSize: 15, 
+                      //color: Colors.black, 
+                      fontFamily: 'Roboto'),
                 ),
               ),
               if (home.isNotEmpty)
@@ -265,7 +259,7 @@ class SettingsState extends State<Settings> {
                       },
                       icon: const Icon(
                         Icons.clear,
-                        color: Colors.black,
+                        // color: Colors.black,
                       ),
                     ),
                   ],
@@ -289,7 +283,7 @@ class SettingsState extends State<Settings> {
                       });
                     }
                   },
-                  cursorColor: Colors.black,
+                  // cursorColor: Colors.black,
                   controller: _homeTextController,
                   style: const TextStyle(color: Colors.black),
                   decoration: InputDecoration(
@@ -299,7 +293,7 @@ class SettingsState extends State<Settings> {
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Home Address',
                     hintStyle: const TextStyle(
-                      color: Colors.black,
+                      // color: Colors.black,
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -356,7 +350,9 @@ class SettingsState extends State<Settings> {
                   ' $where : $work',
                   maxLines: 1,
                   style: const TextStyle(
-                      fontSize: 15, color: Colors.black, fontFamily: 'Roboto'),
+                      fontSize: 15,
+                      // color: Colors.black,
+                      fontFamily: 'Roboto'),
                 ),
               ),
               if (work.isNotEmpty)
@@ -372,7 +368,7 @@ class SettingsState extends State<Settings> {
                       },
                       icon: const Icon(
                         Icons.clear,
-                        color: Colors.black,
+                        // color: Colors.black,
                       ),
                     ),
                   ],
@@ -398,7 +394,7 @@ class SettingsState extends State<Settings> {
                   },
                   controller: _workTextController,
                   style: const TextStyle(color: Colors.black),
-                  cursorColor: Colors.black,
+                  // cursorColor: Colors.black,
                   decoration: InputDecoration(
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
@@ -406,7 +402,7 @@ class SettingsState extends State<Settings> {
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Work Address',
                     hintStyle: const TextStyle(
-                      color: Colors.black,
+                      // color: Colors.black,
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
