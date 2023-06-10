@@ -41,7 +41,7 @@ class TimeCategory extends StatelessWidget {
           // height: 500,
           width: MediaQuery.of(context).size.width * 0.91,
           decoration: BoxDecoration(
-            color: const Color.fromRGBO(224, 224, 224, 1),
+            // color: const Color.fromRGBO(224, 224, 224, 1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(

@@ -103,7 +103,9 @@ class _EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 12),
                 buildDateTimePickers(),
                 const SizedBox(height: 12),
-                Location(),
+                SingleChildScrollView(
+                  child: Location()
+                ),
                 const SizedBox(height: 12),
                 deleteEventButton()
               ],
@@ -131,8 +133,9 @@ class _EventEditingState extends State<EventEditing> {
 
   Widget Location() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.0),
       child: Column(
+
         children: [
           TextField(
             onChanged: (value) {
@@ -168,35 +171,29 @@ class _EventEditingState extends State<EventEditing> {
             ),
           ),
           const SizedBox(height: 1),
-          SizedBox(
-            height: 400,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: Eventplacepredictions.length,
-              // physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  child: ListTile(
-                    title: Text(
-                      Eventplacepredictions[index].description!,
-                      textAlign: TextAlign.start,
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _Eventplace.text =
-                            Eventplacepredictions[index].description!;
-                        //print('event :' +Eventplacepredictions[index].placeId!);
-                        eventplaceAutocomplete("");
-                      });
-                      // send the placeId to the backend
-                      // meetinglocation(Eventplacepredictions[index].placeId!);
-                    },
-                  ),
-                );
-              },
-            ),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: Eventplacepredictions.length,
+            // physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(
+                  Eventplacepredictions[index].description!,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(color: Colors.black),
+                ),
+                onTap: () {
+                  setState(() {
+                    _Eventplace.text =
+                        Eventplacepredictions[index].description!;
+                    //print('event :' +Eventplacepredictions[index].placeId!);
+                    eventplaceAutocomplete("");
+                  });
+                  //send the placeId to the backend
+                  //meetinglocation(Eventplacepredictions[index].placeId!);
+                },
+              );
+            },
           ),
         ],
       ),

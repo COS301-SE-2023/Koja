@@ -73,90 +73,108 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      trailing: Icon(
-        Icons.arrow_drop_down,
-        color: Colors.white,
-      ),
-      title: Text("Click To Set Your Active Times ",
-          style: GoogleFonts.ubuntu(
-            fontSize: 15,
-          )),
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Select Category:",
+    return SingleChildScrollView(
+      child: ExpansionTile(
+        trailing: Icon(
+          Icons.arrow_drop_down,
+        ),
+        title: Text("Click To Set Your Active Times ",
+            style: GoogleFonts.ubuntu(
+              fontSize: 15,
+            )),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Select Category:",
                   style: TextStyle(
                     fontSize: 15,
                     // fontWeight: FontWeight.bold,
                     // color: Colors.white,
-                  )),
-              SizedBox(width: 3),
-              Expanded(
-                child: Container(
-                  child: DropdownButton<String>(
-                    value: selectedOption,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedOption = newValue!;
-                      });
-                    },
-                    items: dropdownOptions.map<DropdownMenuItem<String>>(
-                      (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
+                  )
+                ),
+                SizedBox(width: 3),
+                Expanded(
+                  child: Container(
+                    child: DropdownButton<String>(
+                      value: selectedOption,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedOption = newValue!;
+                        });
                       },
-                    ).toList(),
+                      items: dropdownOptions.map<DropdownMenuItem<String>>(
+                        (String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        },
+                      ).toList(),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                child: IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    showDialog(
+                Container(
+                  child: IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      showDialog(
                         context: context,
                         builder: (context) {
                           return SetBoundary(
-                              selectedOption, _start, _end, saveTime);
-                        });
-                  },
+                            selectedOption, _start, _end, saveTime
+                          );
+                        }
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        SizedBox(height: 10),
-        SizedBox(
-          height: 400,
-          child: ListView.builder(
+          SizedBox(height: 10),
+          ListView.builder(
+            shrinkWrap: true,
             itemCount: categories.length,
             itemBuilder: (context, index) {
-              return Container(
-                height: 100,
-                child: TimeCategory(categories[index][0], categories[index][1],
-                    categories[index][2], (context) {
-                  delete(index);
-                }, (context) {
-                  editedindex = index;
-                  showDialog(
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      // color: Colors.black,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TimeCategory(categories[index][0], 
+                    categories[index][1],
+                    categories[index][2], 
+                    (context) {
+                    delete(index);
+                    }, (context) {
+                    editedindex = index;
+                    showDialog(
                       context: context,
                       builder: (context) {
                         return SetBoundary(
-                            categories[index][0], _start, _end, saveTime);
-                      });
-                }),
+                          categories[index][0], 
+                          _start, _end, 
+                          saveTime
+                        );
+                      }
+                    );
+                  }),
+                ),
               );
             },
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }
