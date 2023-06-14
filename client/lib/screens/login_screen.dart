@@ -48,7 +48,7 @@ class LoginState extends State<Login> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "With Koja, you can easily manage your schedule and events with the help of our advanced strategies, with less effort from you and more time saving!",
+              "With Koja, you can easily manage your schedule and events with the help of our advanced strategies, which means less effort from you and more time saving!",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -92,6 +92,7 @@ class LoginState extends State<Login> {
           ElevatedButton(
             onPressed: () {
               showModalBottomSheet(
+                showDragHandle: true,
                 isDismissible: true,
                 isScrollControlled: true,
                 clipBehavior: Clip.antiAliasWithSaveLayer,
