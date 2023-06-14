@@ -95,6 +95,7 @@ class InfoState extends State<Info> {
                     // Show modal bottom sheet on last page
                     if(_pageIndex == info.length - 1) {
                       showModalBottomSheet(
+                        showDragHandle: true,
                         isDismissible: true,
                         isScrollControlled: true,
                         clipBehavior: Clip.antiAliasWithSaveLayer,
