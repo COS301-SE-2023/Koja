@@ -9,6 +9,6 @@ interface CalendarAdapter {
     fun setupConnection(request: HttpServletRequest?) : RedirectView
     fun authorize(): String?
     fun oauth2Callback(authCode: String?): ResponseEntity<String>
-    fun getEvents(): Set<Event?>?
-    fun getUserEvents(userId: String?): List<Event>
+    fun getEvents(): Set<UserEvent?>?
+    fun getUserEvents(userId: String?): List<UserEvent>
 }

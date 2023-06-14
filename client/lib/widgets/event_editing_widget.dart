@@ -6,9 +6,9 @@ import '../Utils/event_util.dart';
 import 'event_provider.dart';
 
 class EventEditing extends StatefulWidget {
-  final Event? event;
+  final Event? userEvent;
 
-  const EventEditing({Key? key, this.event}) : super(key: key);
+  const EventEditing({Key? key, this.userEvent}) : super(key: key);
   
   @override
   _EventEditingState createState() => _EventEditingState();
@@ -30,15 +30,15 @@ class _EventEditingState extends State<EventEditing> {
   void initState() {
     super.initState();
 
-    if(widget.event == null) {
+    if(widget.userEvent == null) {
       fromDate = DateTime.now();
       toDate = DateTime.now().add(const Duration(hours: 2));
     } else {
-      final event = widget.event!;
+      final userEvent = widget.userEvent!;
 
-      titleController.text = event.title;
-      fromDate = event.from;
-      toDate = event.to;
+      titleController.text = userEvent.title;
+      fromDate = userEvent.from;
+      toDate = userEvent.to;
     }
  
   }
@@ -277,7 +277,7 @@ class _EventEditingState extends State<EventEditing> {
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if(isValid){
-      final event = Event(
+      final userEvent = Event(
         title: titleController.text,
         location: '',
         description: 'description',
@@ -288,15 +288,15 @@ class _EventEditingState extends State<EventEditing> {
 
       
 
-      final isEditing = widget.event != null;
+      final isEditing = widget.userEvent != null;
       final provider = Provider.of<EventProvider>(context, listen: false);
       
       if(isEditing){
-        provider.editEvent(event, widget.event!);
+        provider.editEvent(userEvent, widget.userEvent!);
         Navigator.of(context).pop();
       }
       else{
-        provider.addEvent(event);
+        provider.addEvent(userEvent);
         Navigator.of(context).pop();
     }
   }

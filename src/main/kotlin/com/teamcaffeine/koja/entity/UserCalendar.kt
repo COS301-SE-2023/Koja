@@ -1,6 +1,5 @@
 package com.teamcaffeine.koja.entity
 
-import com.google.api.client.util.DateTime
 import com.teamcaffeine.koja.enums.Months
 import jakarta.persistence.*
 import org.springframework.stereotype.Component
@@ -15,16 +14,16 @@ class UserCalendar() {
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id")
-    public val events: ArrayList<Event> = ArrayList();
+    public val userEvents: ArrayList<UserEvent> = ArrayList();
     public val calendarAdapters: ArrayList<CalendarAdapter> = ArrayList();
     public val issues: ArrayList<Issue> = ArrayList();
 
 
-    public fun createEvent(title: String, start: DateTime, end: DateTime): Event{
-
-        return Event(title,start,end);
-
-    }
+//    public fun createEvent(title: String, start: DateTime, end: DateTime): UserEvent{
+//
+//        return UserEvent(title,start,end);
+//
+//    }
 
     fun addCalendarAdapter(adapter: CalendarAdapter){
         this.calendarAdapters.add(adapter);
@@ -36,7 +35,7 @@ class UserCalendar() {
         }
     }
 
-    private fun consolidateEvents(event: Event) {
+    private fun consolidateEvents(userEvent: UserEvent) {
         TODO("Not yet implemented");
     }
 }
