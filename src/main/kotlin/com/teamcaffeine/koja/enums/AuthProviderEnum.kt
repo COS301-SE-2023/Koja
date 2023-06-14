@@ -5,7 +5,6 @@ enum class AuthProviderEnum {
     OUTLOOK,
 }
 
-//return enum from string
 fun getAuthProvider(authProvider: String): AuthProviderEnum {
     return when (authProvider) {
         "GOOGLE" -> AuthProviderEnum.GOOGLE
