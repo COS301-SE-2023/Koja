@@ -1,3 +1,5 @@
+package com.teamcaffeine.koja.controller
+
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
@@ -7,16 +9,20 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
-data class TokenRequest(val accessToken: String, val refreshToken: String)
+data class TokenRequest(val accessToken: String, val refreshToken: String, val expireTime: Long)
 
 @RestController
 @RequestMapping("/token")
 class TokenManagerController {
 
+    private val jwtSecret : String = System.getProperty("KOJA_JWT_SECRET")
+    private val minuteInMilliseconds : Long = 60000L
+
     fun createToken(@RequestBody tokenRequest: TokenRequest): String {
         val accessToken = tokenRequest.accessToken
-        val expiryTime = 3600000L // 1 hour in milliseconds
+        val expiryTime = tokenRequest.expireTime - (minuteInMilliseconds * 5)
         val refreshToken = tokenRequest.refreshToken
 
         return createJwtToken(accessToken, expiryTime, refreshToken)
@@ -27,7 +33,7 @@ class TokenManagerController {
         val refreshToken = tokenRequest.refreshToken
 
         try {
-            val algorithm = Algorithm.HMAC256(secretKey)
+            val algorithm = Algorithm.HMAC512(jwtSecret)
             val verifier = JWT.require(algorithm).build()
             val decodedJWT: DecodedJWT = verifier.verify(refreshToken)
 
@@ -44,17 +50,13 @@ class TokenManagerController {
     }
 
     fun createJwtToken(accessToken: String, expiryTime: Long, refreshToken: String): String {
-        // Define the signing algorithm
-        val algorithm = Algorithm.HMAC256("your-secret-key")
+        val algorithm = Algorithm.HMAC512(jwtSecret)
 
-        // Create the JWT token
-        val jwtToken = JWT.create()
+        return JWT.create()
             .withClaim("access_token", accessToken)
             .withClaim("expiry_time", expiryTime)
             .withClaim("refresh_token", refreshToken)
             .withExpiresAt(Date(System.currentTimeMillis() + expiryTime))
             .sign(algorithm)
-
-        return jwtToken
     }
 }
