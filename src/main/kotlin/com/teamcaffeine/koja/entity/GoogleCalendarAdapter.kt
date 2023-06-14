@@ -63,7 +63,6 @@ class GoogleCalendarAdapter : CalendarAdapter {
 
         val requestEntity = HttpEntity(parameters, headers)
 
-        // Building the request URL using UriComponentsBuilder and explicitly calling encode()
         val builder = UriComponentsBuilder.fromHttpUrl(tokenEndpointUrl)
             .queryParams(parameters)
         val requestUrl = builder.build().encode().toUri()
@@ -77,13 +76,30 @@ class GoogleCalendarAdapter : CalendarAdapter {
         return ResponseEntity.ok("OAuth 2.0 callback completed successfully")
     }
 
-    override fun getEvents(): Set<com.teamcaffeine.koja.entity.Event?>? {
+    override fun getEvents(): Set<com.teamcaffeine.koja.entity.UserEvent?>? {
         // You can implement this method based on your requirements
         return null
     }
 
-    override fun getUserEvents(userId: String?): List<com.teamcaffeine.koja.entity.Event> {
-        // You can implement this method based on your requirements
+    override fun getUserEvents(userId: String?): List<UserEvent> {
+//        val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+//
+//        // Create a Calendar object using the credential
+//        val calendar = Calendar.Builder(httpTransport, jsonFactory, credential)
+//            .setApplicationName("Your Application Name")
+//            .build()
+//
+//        // Define the request to get userEvents from the user's primary calendar
+//        val now = DateTime(System.currentTimeMillis())
+//        val request = calendar.events().list("primary")
+//            .setTimeMin(now)
+//            .setOrderBy("startTime")
+//            .setSingleEvents(true)
+//            .setMaxResults(10)
+//
+//        // Execute the request and retrieve the userEvents
+//        val events: GoogleEvents = request.execute()
+
         return emptyList()
     }
 }

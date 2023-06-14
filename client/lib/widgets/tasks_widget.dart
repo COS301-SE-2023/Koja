@@ -65,12 +65,12 @@ class _TasksWidgetState extends State<TasksWidget> {
             return;
           }
 
-          final event = details.appointments!.first;
+          final userEvent = details.appointments!.first;
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => EventEditing(
-                event: event,
+                userEvent: userEvent,
               ),
             ),
           );
@@ -81,7 +81,7 @@ class _TasksWidgetState extends State<TasksWidget> {
 
   Widget appointmentBuilder(
       BuildContext context, CalendarAppointmentDetails details) {
-    final event = details.appointments.first;
+    final userEvent = details.appointments.first;
     return Container(
       width: details.bounds.width,
       height: details.bounds.height,
@@ -91,7 +91,7 @@ class _TasksWidgetState extends State<TasksWidget> {
       ),
       child: Center(
         child: Text(
-          event.title,
+          userEvent.title,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
