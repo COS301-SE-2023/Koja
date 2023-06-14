@@ -20,5 +20,8 @@ fun main(args: Array<String>) {
 	setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
 	setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
 
+	// Set JWT secret key property
+	setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+
 	runApplication<KojaApplication>(*args)
 }
