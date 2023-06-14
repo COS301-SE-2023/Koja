@@ -15,7 +15,7 @@ abstract class CalendarAdapter(authProvider : AuthProviderEnum) {
     abstract fun getEvents(): Set<UserEvent?>?
     abstract fun getUserEvents(userId: String?): List<UserEvent>
 
-    fun getAuthProvider(): AuthProviderEnum? {
+    fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
     }
 }

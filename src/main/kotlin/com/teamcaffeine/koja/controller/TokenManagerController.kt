@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
-data class TokenRequest(val accessToken: String, val refreshToken: String, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Long)
+data class TokenRequest(val accessToken: String, val refreshToken: String?, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Long)
 
 @RestController
 @RequestMapping("/token")

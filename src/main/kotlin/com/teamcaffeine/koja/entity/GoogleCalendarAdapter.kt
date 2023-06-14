@@ -6,6 +6,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpEntity
@@ -74,7 +76,19 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
         val refreshToken = responseJson.get("refresh_token")?.asText()
         val expiresIn = responseJson.get("expires_in").asLong()
 
-        return ResponseEntity.ok("OAuth 2.0 callback completed successfully")
+        //TODO: get the user email using accessToken then save it to the database and get user id
+        val userID = 0L
+        val jwtToken = TokenManagerController().createToken(
+            TokenRequest(
+                accessToken,
+                refreshToken,
+                expiresIn,
+                this.getAuthProvider(),
+                userID
+            )
+        )
+
+        return ResponseEntity.ok(jwtToken)
     }
 
     override fun getEvents(): Set<com.teamcaffeine.koja.entity.UserEvent?>? {
