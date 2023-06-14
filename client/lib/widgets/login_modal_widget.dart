@@ -14,8 +14,7 @@ class LoginModalState extends State<LoginModal> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        height: 130,
-        color: Colors.grey[300],
+        height: 150,
         padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
         child: ListView(
           shrinkWrap: true,
