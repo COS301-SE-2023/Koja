@@ -1,8 +1,6 @@
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import '../Utils/date_and_time_util.dart';
 import '../Utils/event_util.dart';
@@ -74,43 +72,41 @@ class _EventEditingState extends State<EventEditing> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: AlertDialog(
-        actions: <Widget>[
-          TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: const Text('Cancel')),
-          TextButton(
-              onPressed: saveForm,
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: const Text('Save',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
-        ],
-        backgroundColor: Colors.grey[100],
-        contentPadding: const EdgeInsets.all(16),
-        content: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
+    return AlertDialog(
+      actions: <Widget>[
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: const ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Colors.black),
+            ),
+            child: const Text('Cancel')),
+        TextButton(
+            onPressed: saveForm,
+            style: const ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Colors.black),
+            ),
+            child: const Text('Save',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+      ],
+      backgroundColor: Colors.grey[100],
+      contentPadding: const EdgeInsets.all(16),
+      content: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 buildTitle(),
                 const SizedBox(height: 12),
                 buildDateTimePickers(),
                 const SizedBox(height: 12),
-                SingleChildScrollView(
-                  child: Location()
-                ),
+                Expanded(child: Location()),
                 const SizedBox(height: 12),
                 deleteEventButton()
               ],
-            )
-          ),
+            ),
+          )
         ),
       ),
     );
@@ -131,22 +127,14 @@ class _EventEditingState extends State<EventEditing> {
     );
   }
 
-  Widget Location() {
-    return Padding(
+Widget Location() {
+  return Expanded(
+    child: Padding(
       padding: EdgeInsets.all(8.0),
       child: Column(
-
         children: [
           TextField(
-            onChanged: (value) {
-              if (value.length > 2) {
-                eventplaceAutocomplete(value);
-              } else {
-                setState(() {
-                  eventplaceAutocomplete("");
-                });
-              }
-            },
+            onChanged: onLocationChanged,
             cursorColor: Colors.white,
             controller: _Eventplace,
             style: const TextStyle(color: Colors.black),
@@ -160,12 +148,7 @@ class _EventEditingState extends State<EventEditing> {
                 color: Colors.black,
               ),
               suffixIcon: IconButton(
-                onPressed: () {
-                  _Eventplace.clear();
-                  setState(() {
-                    eventplaceAutocomplete("");
-                  });
-                },
+                onPressed: clearLocation,
                 icon: const Icon(Icons.clear, color: Colors.black),
               ),
             ),
@@ -174,7 +157,6 @@ class _EventEditingState extends State<EventEditing> {
           ListView.builder(
             shrinkWrap: true,
             itemCount: Eventplacepredictions.length,
-            // physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(
@@ -183,22 +165,43 @@ class _EventEditingState extends State<EventEditing> {
                   style: const TextStyle(color: Colors.black),
                 ),
                 onTap: () {
-                  setState(() {
-                    _Eventplace.text =
-                        Eventplacepredictions[index].description!;
-                    //print('event :' +Eventplacepredictions[index].placeId!);
-                    eventplaceAutocomplete("");
-                  });
-                  //send the placeId to the backend
-                  //meetinglocation(Eventplacepredictions[index].placeId!);
-                },
-              );
-            },
-          ),
-        ],
+                    selectLocation(Eventplacepredictions[index].description!);
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
-    );
+  );
   }
+
+  void onLocationChanged(String value) {
+    if (value.length > 2) {
+      eventplaceAutocomplete(value);
+    } else {
+      setState(() {
+        eventplaceAutocomplete("");
+      });
+    }
+  }
+
+  void clearLocation() {
+    _Eventplace.clear();
+    setState(() {
+      eventplaceAutocomplete("");
+    });
+  }
+
+  void selectLocation(String location) {
+    setState(() {
+      _Eventplace.text = location;
+      eventplaceAutocomplete("");
+    });
+    // Send the selected location (placeId) to the backend
+    // meetinglocation(Eventplacepredictions[index].placeId!);
+  }
+
 
   Widget buildTitle() => TextFormField(
         style: const TextStyle(fontSize: 24),

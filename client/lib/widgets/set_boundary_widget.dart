@@ -1,13 +1,11 @@
-import 'package:client/widgets/time_picker_widget.dart';
 import 'package:flutter/material.dart';
 
 class SetBoundary extends StatelessWidget {
   VoidCallback onSave;
   final String selectedOption;
-  final TextEditingController start, end;
-
-  // DateTime _selectedDate = DateTime.now();
-  // TextEditingController selectedTime = TextEditingController();
+  
+TextEditingController start;
+TextEditingController end;
   
   SetBoundary(
     this.selectedOption, 
@@ -103,7 +101,7 @@ class SetBoundary extends StatelessWidget {
 }
 
 class SelectedTimeButton extends StatefulWidget {
-  final TextEditingController controller;
+  TextEditingController controller;
 
   SelectedTimeButton({required this.controller});
 

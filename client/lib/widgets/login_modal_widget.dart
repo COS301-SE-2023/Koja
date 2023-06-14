@@ -15,16 +15,16 @@ class LoginModalState extends State<LoginModal> {
     return SingleChildScrollView(
       child: Container(
         height: 130,
+        color: Colors.grey[300],
         padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
         child: ListView(
           shrinkWrap: true,
           children: [
             ElevatedButton(
               onPressed: () async {
-                var user = await GoogleAuthModel.login();
-                if (user != null) {
-                  // Navigator.pushNamed(context, NavigationScreen.routeName);
-                } else {}
+                // var user = await GoogleAuthModel.login();
+                // if (user != null) {
+                // } else {}
               },
               child: const SizedBox(
                 height: 30,
@@ -38,10 +38,16 @@ class LoginModalState extends State<LoginModal> {
                     ),
                     SizedBox(width: 10.0),
                     Text('Sign In With Google',
-                        style: TextStyle(color: Colors.black, fontSize: 16.0)),
+                        style: TextStyle(color: Colors.white, fontSize: 16.0)),
                   ],
                 ),
               ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              )
             ),
           ],
         ),

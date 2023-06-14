@@ -1,4 +1,8 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
+
+// import '../Utils/event_data_source_util.dart';
 
 class ChartWidget extends StatefulWidget {
   const ChartWidget({Key? key}) : super(key: key);
@@ -22,7 +26,16 @@ class ChartWidgetState extends State<ChartWidget> {
   Widget build(BuildContext context) {
     return Container(
         child: Center(
-          child: Text('Chart'),
+          child: Column(
+            children: [
+              Text('Chart'),
+              // Assuming you have an instance of EventDataSource called eventDataSource
+                // EventDataSource eventDataSource = EventDataSource(List<Event> source);
+                // int totalEvents = eventDataSource.appointments?.length ?? 0;
+                // print('Total events in the calendar: $totalEvents');
+
+            ],
+          ),
         ),
     );
   }
