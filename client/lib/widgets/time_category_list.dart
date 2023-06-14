@@ -24,15 +24,15 @@ class TimeCategory extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               icon: Icons.delete_outline_rounded,
-              label: 'Delete',
+              // label: 'Delete',
               borderRadius: BorderRadius.circular(20),
             ),
             SlidableAction(
               onPressed: (context) => edit!(context),
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
-              icon: Icons.edit,
-              label: 'Edit',
+              icon: LineAwesome.edit,
+              // label: 'Edit',
               borderRadius: BorderRadius.circular(20),
             ),
           ],
@@ -83,13 +83,10 @@ class TimeCategory extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 10),
-                      // Text(
-                      //   " Until: ",
-                      //   style: TextStyle(
-                      //     fontSize: 15,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
+                      Icon(
+                        HeroIcons.clock,
+                        size: 30,
+                      ),
                       Text(
                         endTime,
                         style: TextStyle(

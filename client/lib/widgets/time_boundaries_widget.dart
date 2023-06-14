@@ -25,7 +25,8 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
       _restEnd = TextEditingController();
 
   //general controller for all time pickers
-  final _start = TextEditingController(), _end = TextEditingController();
+  late TextEditingController _start = TextEditingController();
+  late TextEditingController _end = TextEditingController();
 
   // list of categories
   List categories = [];
@@ -47,6 +48,16 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
 
   // function to save time
   void saveTime() {
+
+    if(_start.text == '') {
+        _start = TextEditingController(
+            text: '${DateTime.now().hour}:${DateTime.now().minute}');
+    }
+    if(_end.text == '') {
+      _end = TextEditingController(
+          text: '${DateTime.now().hour}:${DateTime.now().minute}');
+    }
+
     setState(() {
       categories.add([selectedOption, _start.text, _end.text]);
     });
@@ -90,12 +101,11 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text("Select Category:",
-                  style: TextStyle(
-                    fontSize: 15,
-                    // fontWeight: FontWeight.bold,
-                    // color: Colors.white,
-                  )
-                ),
+                    style: TextStyle(
+                      fontSize: 15,
+                      // fontWeight: FontWeight.bold,
+                      // color: Colors.white,
+                    )),
                 SizedBox(width: 3),
                 Expanded(
                   child: Container(
@@ -122,13 +132,11 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                     icon: Icon(Icons.add),
                     onPressed: () {
                       showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SetBoundary(
-                            selectedOption, _start, _end, saveTime
-                          );
-                        }
-                      );
+                          context: context,
+                          builder: (context) {
+                            return SetBoundary(
+                                selectedOption, _start, _end, saveTime);
+                          });
                     },
                   ),
                 ),
@@ -151,23 +159,17 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: TimeCategory(categories[index][0], 
-                    categories[index][1],
-                    categories[index][2], 
-                    (context) {
+                  child: TimeCategory(categories[index][0],
+                      categories[index][1], categories[index][2], (context) {
                     delete(index);
-                    }, (context) {
+                  }, (context) {
                     editedindex = index;
                     showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SetBoundary(
-                          categories[index][0], 
-                          _start, _end, 
-                          saveTime
-                        );
-                      }
-                    );
+                        context: context,
+                        builder: (context) {
+                          return SetBoundary(
+                              categories[index][0], _start, _end, saveTime);
+                        });
                   }),
                 ),
               );
