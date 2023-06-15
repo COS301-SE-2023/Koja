@@ -21,7 +21,7 @@ data class TokenRequest(val accessToken: String, val refreshToken: String, val e
 class TokenManagerController {
 
     private val jwtSecret : String = System.getProperty("KOJA_JWT_SECRET")
-    private val minuteInMilliseconds : Long = 60000L
+    private val oneMinuteInSeconds : Long = 60L
 
     @PostMapping("/renew")
     fun renewToken(@RequestBody tokenRequest: TokenRequest): String {
@@ -47,8 +47,8 @@ class TokenManagerController {
         }
     }
 
-    fun createToken(@RequestBody tokenRequest: TokenRequest): String {
-        val expiryTime = tokenRequest.expireTime - (minuteInMilliseconds * 5)
+    fun createToken( tokenRequest: TokenRequest): String {
+        val expiryTime = tokenRequest.expireTime - (oneMinuteInSeconds * 5)
         val userID = tokenRequest.userId
 
         return createJwtToken(
@@ -63,14 +63,20 @@ class TokenManagerController {
     fun createJwtToken(accessToken: String, expiryTime: Long, refreshToken: String, authProvider: AuthProviderEnum, userID: Long): String {
         val algorithm = Algorithm.HMAC512(jwtSecret)
 
+        val tokenExpireDate : Date = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
+
         return JWT.create()
             .withClaim(JWTTokenStructure.ACCESS_TOKEN.claimName, accessToken)
             .withClaim(JWTTokenStructure.EXPIRES_TIME.claimName, expiryTime)
             .withClaim(JWTTokenStructure.REFRESH_TOKEN.claimName, refreshToken)
             .withClaim(JWTTokenStructure.AUTH_PROVIDER.claimName, authProvider.toString())
             .withClaim(JWTTokenStructure.USER_ID.claimName, userID)
-            .withExpiresAt(Date(System.currentTimeMillis() + expiryTime))
+            .withExpiresAt(tokenExpireDate)
             .sign(algorithm)
+    }
+
+    private fun getTokenValidTime(expireTime: Long): Long {
+        return ( expireTime - (oneMinuteInSeconds * 5) ) * 1000
     }
 
     companion object{
