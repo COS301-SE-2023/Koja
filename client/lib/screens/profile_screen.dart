@@ -20,6 +20,7 @@ class Profile extends StatelessWidget {
         centerTitle: true,
         actions: [
           IconButton(
+            color: Colors.white,
             icon: const Icon(Icons.logout),
             onPressed: () {
               Navigator.push(

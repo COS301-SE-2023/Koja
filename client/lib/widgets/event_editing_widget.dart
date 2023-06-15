@@ -19,8 +19,8 @@ class EventEditing extends StatefulWidget {
 }
 
 class _EventEditingState extends State<EventEditing> {
-  List<AutocompletePrediction> Eventplacepredictions = [];
-  final TextEditingController _Eventplace = TextEditingController();
+  List<AutocompletePrediction> eventplacepredictions = [];
+  final TextEditingController _eventplace = TextEditingController();
 
   Future<void> eventplaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -32,7 +32,7 @@ class _EventEditingState extends State<EventEditing> {
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
         setState(() {
-          Eventplacepredictions =
+          eventplacepredictions =
               result.predictions!.cast<AutocompletePrediction>();
         });
       }
@@ -106,6 +106,8 @@ class _EventEditingState extends State<EventEditing> {
             const SizedBox(height: 12),
             buildDateTimePickers(),
             const SizedBox(height: 12),
+            // chooseCategory(),
+            const SizedBox(height: 12),
             location(),
             const SizedBox(height: 12),
             deleteEventButton()
@@ -137,10 +139,23 @@ class _EventEditingState extends State<EventEditing> {
         child: SingleChildScrollView( // Add SingleChildScrollView here
           child: Column(
             children: [
-              TextField(
+              Row(
+                children: [
+                  Expanded(
+                    child: Text("LOCATION: ${_eventplace.text}", 
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontFamily: 'Railway', 
+                      fontSize: 14, 
+                      fontWeight: FontWeight.bold)
+                    ),
+                  ),
+                ],
+              ),
+              TextFormField(
                 onChanged: onLocationChanged,
                 cursorColor: Colors.white,
-                controller: _Eventplace,
+                controller: _eventplace,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   focusedBorder: const OutlineInputBorder(
@@ -156,20 +171,21 @@ class _EventEditingState extends State<EventEditing> {
                     icon: const Icon(Icons.clear, color: Colors.black),
                   ),
                 ),
+                onFieldSubmitted: (_) => saveForm(),
               ),
               const SizedBox(height: 1),
               ListView.builder(
                 shrinkWrap: true,
-                itemCount: Eventplacepredictions.length,
+                itemCount: eventplacepredictions.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(
-                      Eventplacepredictions[index].description!,
+                      eventplacepredictions[index].description!,
                       textAlign: TextAlign.start,
                       style: const TextStyle(color: Colors.black),
                     ),
                     onTap: () {
-                      selectLocation(Eventplacepredictions[index].description!);
+                      selectLocation(eventplacepredictions[index].description!);
                     },
                   );
                 },
@@ -193,7 +209,7 @@ class _EventEditingState extends State<EventEditing> {
   }
 
   void clearLocation() {
-    _Eventplace.clear();
+    _eventplace.clear();
     setState(() {
       eventplaceAutocomplete("");
     });
@@ -201,11 +217,11 @@ class _EventEditingState extends State<EventEditing> {
 
   void selectLocation(String location) {
     setState(() {
-      _Eventplace.text = location;
+      _eventplace.text = location;
       eventplaceAutocomplete("");
     });
     // Send the selected location (placeId) to the backend
-    // meetinglocation(Eventplacepredictions[index].placeId!);
+    // meetinglocation(eventplacepredictions[index].placeId!);
   }
 
 
@@ -247,9 +263,10 @@ class _EventEditingState extends State<EventEditing> {
           ),
           Expanded(
             child: buildDropdownField(
-                text: DateAndTimeUtil.toTime(fromDate),
-                //If the user clicked the time the new time is saved in the fromDate variable
-                onClicked: () => pickFromDateTime(pickDate: false)),
+              text: DateAndTimeUtil.toTime(fromDate),
+              //If the user clicked the time the new time is saved in the fromDate variable
+              onClicked: () => pickFromDateTime(pickDate: false)
+            ),
           ),
         ],
       ),
@@ -294,6 +311,8 @@ class _EventEditingState extends State<EventEditing> {
           style: const TextStyle(
               fontWeight: FontWeight.bold, color: Colors.black),
         ),
+        // if(header != 'LOCATION')
+      
         child,
       ],
     );
@@ -393,7 +412,7 @@ class _EventEditingState extends State<EventEditing> {
     if (isValid) {
       final event = Event(
         title: titleController.text,
-        location: '',
+        location: _eventplace.text,
         description: 'description',
         from: fromDate,
         to: toDate,
@@ -413,9 +432,9 @@ class _EventEditingState extends State<EventEditing> {
     }
   }
 
-  }
+}
 
-  // void meetinglocation(String id) 
+  // void sendmeetinglocation(String id) 
   // {
   //   //send to an api
   //   final backendurl = '';

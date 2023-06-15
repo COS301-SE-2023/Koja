@@ -55,74 +55,72 @@ class InfoState extends State<Info> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: info.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _pageIndex = index;
-                    });
-                  },
-                  itemBuilder: (context, index) => Content(
-                    animation: info[index][0],
-                    title: info[index][1],
-                    description: info[index][2],
-                  ),
-                  
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+                controller: _pageController,
+                itemCount: info.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _pageIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) => Content(
+                  animation: info[index][0],
+                  title: info[index][1],
+                  description: info[index][2],
                 ),
-            ),
-            Row(
-              children: [
-                SizedBox(width: 20),
-                ...List.generate(
-                  info.length, 
-                  (index) => DotIndicator(
-                    isActive: index == _pageIndex,
-                  ),
+                
+              ),
+          ),
+          Row(
+            children: [
+              SizedBox(width: 20),
+              ...List.generate(
+                info.length, 
+                (index) => DotIndicator(
+                  isActive: index == _pageIndex,
                 ),
-                const Spacer(),
-                ElevatedButton(
-                  onPressed: () {
-                    _pageController.nextPage(
-                      duration: Duration(milliseconds: 500), 
-                      curve: Curves.easeInOut);
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () {
+                  _pageController.nextPage(
+                    duration: Duration(milliseconds: 500), 
+                    curve: Curves.easeInOut);
 
-                    // Show modal bottom sheet on last page
-                    if(_pageIndex == info.length - 1) {
-                      showModalBottomSheet(
-                        showDragHandle: true,
-                        isDismissible: true,
-                        isScrollControlled: true,
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20.0),
-                            topRight: Radius.circular(20.0),
-                          ),
+                  // Show modal bottom sheet on last page
+                  if(_pageIndex == info.length - 1) {
+                    showModalBottomSheet(
+                      showDragHandle: true,
+                      isDismissible: true,
+                      isScrollControlled: true,
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
                         ),
-                        context: context,
-                        builder: (context) => const LoginModal(),
-                      );                     
-                    }
-                  }, 
-                  child: Icon(
-                    Bootstrap.arrow_right_circle_fill,
-                    size: 50,
-                    color: Colors.blue[700],
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),       
-                  ),
+                      ),
+                      context: context,
+                      builder: (context) => const LoginModal(),
+                    );                     
+                  }
+                }, 
+                child: Icon(
+                  Bootstrap.arrow_right_circle_fill,
+                  size: 50,
+                  color: Colors.blue[700],
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-          ],
-        ),
+                style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(),       
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 25),
+        ],
       ),
     );
   }
