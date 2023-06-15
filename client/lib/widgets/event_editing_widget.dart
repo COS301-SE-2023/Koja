@@ -79,35 +79,38 @@ class _EventEditingState extends State<EventEditing> {
             style: const ButtonStyle(
               foregroundColor: MaterialStatePropertyAll(Colors.black),
             ),
-            child: const Text('Cancel')),
+            child: 
+              Text('Cancel')
+        ),
         TextButton(
-            onPressed: saveForm,
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
-            ),
-            child: const Text('Save',
-                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+          onPressed: saveForm,
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.black),
+          ),
+          child: 
+            Text('Save',
+              style: TextStyle(
+                fontFamily: 'Railway', 
+                color: Colors.black
+              )
+            )
+          ),
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
-      content: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                buildTitle(),
-                const SizedBox(height: 12),
-                buildDateTimePickers(),
-                const SizedBox(height: 12),
-                Expanded(child: Location()),
-                const SizedBox(height: 12),
-                deleteEventButton()
-              ],
-            ),
-          )
-        ),
+      content: Form(
+        key: _formKey,
+        child: ListView(
+          children: [
+            buildTitle(),
+            const SizedBox(height: 12),
+            buildDateTimePickers(),
+            const SizedBox(height: 12),
+            location(),
+            const SizedBox(height: 12),
+            deleteEventButton()
+          ],
+        )
       ),
     );
   }
@@ -127,53 +130,56 @@ class _EventEditingState extends State<EventEditing> {
     );
   }
 
-Widget Location() {
-  return Expanded(
-    child: Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          TextField(
-            onChanged: onLocationChanged,
-            cursorColor: Colors.white,
-            controller: _Eventplace,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
-              ),
-              border: const OutlineInputBorder(),
-              hintText: "Meeting's Location",
-              hintStyle: const TextStyle(
-                color: Colors.black,
-              ),
-              suffixIcon: IconButton(
-                onPressed: clearLocation,
-                icon: const Icon(Icons.clear, color: Colors.black),
-              ),
-            ),
-          ),
-          const SizedBox(height: 1),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: Eventplacepredictions.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  Eventplacepredictions[index].description!,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(color: Colors.black),
+  Widget location() {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: SingleChildScrollView( // Add SingleChildScrollView here
+          child: Column(
+            children: [
+              TextField(
+                onChanged: onLocationChanged,
+                cursorColor: Colors.white,
+                controller: _Eventplace,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  border: const OutlineInputBorder(),
+                  hintText: "Meeting's Location",
+                  hintStyle: const TextStyle(
+                    color: Colors.black,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: clearLocation,
+                    icon: const Icon(Icons.clear, color: Colors.black),
+                  ),
                 ),
-                onTap: () {
-                    selectLocation(Eventplacepredictions[index].description!);
-                  },
-                );
-              },
-            ),
-          ],
+              ),
+              const SizedBox(height: 1),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: Eventplacepredictions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      Eventplacepredictions[index].description!,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    onTap: () {
+                      selectLocation(Eventplacepredictions[index].description!);
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
-  );
+    );
+
   }
 
   void onLocationChanged(String value) {
@@ -203,17 +209,20 @@ Widget Location() {
   }
 
 
-  Widget buildTitle() => TextFormField(
-        style: const TextStyle(fontSize: 24),
-        decoration: const InputDecoration(
-          border: UnderlineInputBorder(),
-          hintText: 'Add Title',
-        ),
-        onFieldSubmitted: (_) => saveForm(),
-        validator: (title) =>
-            title != null && title.isEmpty ? 'Title cannot be empty' : null,
-        controller: titleController,
-      );
+  Widget buildTitle() 
+  {
+    return TextFormField(
+      style: const TextStyle(fontSize: 24),
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        hintText: 'Add Title',
+      ),
+      onFieldSubmitted: (_) => saveForm(),
+      validator: (title) =>
+          title != null && title.isEmpty ? 'Title cannot be empty' : null,
+      controller: titleController,
+    );
+  }
 
   Widget buildDateTimePickers() => Column(
         children: [
@@ -223,70 +232,73 @@ Widget Location() {
         ],
       );
 
-  Widget buildFrom() => BuildHeader(
-        header: 'FROM',
-        child: Row(
-          children: [
-            Expanded(
-              child: buildDropdownField(
-                text: DateAndTimeUtil.toDate(fromDate),
-                //If the user clicked the date the new date is saved in the fromDate variable
-                onClicked: () => pickFromDateTime(pickDate: true),
-              ),
-            ),
-            Expanded(
-              child: buildDropdownField(
-                  text: DateAndTimeUtil.toTime(fromDate),
-                  //If the user clicked the time the new time is saved in the fromDate variable
-                  onClicked: () => pickFromDateTime(pickDate: false)),
-            ),
-          ],
-        ),
-      );
-
-  Widget buildTo() => BuildHeader(
-        header: 'TO',
-        child: Row(
-          children: [
-            Expanded(
-              child: buildDropdownField(
-                  text: DateAndTimeUtil.toDate(toDate),
-                  onClicked: () => pickToDateTime(pickDate: true)),
-            ),
-            Expanded(
-              child: buildDropdownField(
-                  text: DateAndTimeUtil.toTime(toDate),
-                  onClicked: () => pickToDateTime(pickDate: false)),
-            ),
-          ],
-        ),
-      );
-
-  Widget buildDropdownField({
-    required String text,
-    required VoidCallback onClicked,
-  }) =>
-      ListTile(
-        title: Text(text),
-        trailing: const Icon(Icons.arrow_drop_down),
-        onTap: onClicked,
-      );
-
-  Widget BuildHeader({
-    required String header,
-    required Widget child,
-  }) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildFrom()
+  {
+    return buildHeader(
+      header: 'FROM',
+      child: Row(
         children: [
-          Text(
-            header,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.black),
+          Expanded(
+            child: buildDropdownField(
+              text: DateAndTimeUtil.toDate(fromDate),
+              //If the user clicked the date the new date is saved in the fromDate variable
+              onClicked: () => pickFromDateTime(pickDate: true),
+            ),
           ),
-          child,
+          Expanded(
+            child: buildDropdownField(
+                text: DateAndTimeUtil.toTime(fromDate),
+                //If the user clicked the time the new time is saved in the fromDate variable
+                onClicked: () => pickFromDateTime(pickDate: false)),
+          ),
         ],
-      );
+      ),
+    );
+  }
+
+  Widget buildTo() => buildHeader(
+    header: 'TO',
+    child: Row(
+      children: [
+        Expanded(
+          child: buildDropdownField(
+              text: DateAndTimeUtil.toDate(toDate),
+              onClicked: () => pickToDateTime(pickDate: true)),
+        ),
+        Expanded(
+          child: buildDropdownField(
+              text: DateAndTimeUtil.toTime(toDate),
+              onClicked: () => pickToDateTime(pickDate: false)),
+        ),
+      ],
+    ),
+  );
+
+  Widget buildDropdownField({ required String text,required VoidCallback onClicked,}) 
+  {
+    return ListTile(
+      title: Text(text),
+      trailing: const Icon(Icons.arrow_drop_down),
+      onTap: onClicked,
+    );
+
+  }
+      
+
+  Widget buildHeader({required String header,required Widget child}){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          header,
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        child,
+      ],
+    );
+  }
+  
 
   Future pickFromDateTime({required bool pickDate}) async {
     final date = await pickDateTime(
@@ -312,11 +324,8 @@ Widget Location() {
     });
   }
 
-  Future<DateTime?> pickDateTime(
-    DateTime initialDate, {
-    required bool pickDate,
-    DateTime? firstDate,
-  }) async {
+  Future<DateTime?> pickDateTime(DateTime initialDate, {required bool pickDate,DateTime? firstDate}) async 
+  {
     if (pickDate) {
       final date = await showDatePicker(
         context: context,
@@ -377,7 +386,8 @@ Widget Location() {
     });
   }
 
-  Future saveForm() async {
+  Future saveForm() async 
+  {
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if (isValid) {
@@ -403,22 +413,13 @@ Widget Location() {
     }
   }
 
-  DeleteEventButton() {
-    final provider = Provider.of<EventProvider>(context, listen: false);
-    return ElevatedButton(
-      onPressed: () {
-        provider.deleteEvent(widget.event!);
-        Navigator.of(context).pop();
-      },
-      child: const Text('Delete'),
-    );
   }
-}
 
-void meetinglocation(String id) {
-  //send to an api
-  final backendurl = '';
-  final data = {'placeId': id};
+  // void meetinglocation(String id) 
+  // {
+  //   //send to an api
+  //   final backendurl = '';
+  //   final data = {'placeId': id};
 
-  // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
-}
+  //   // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
+  // }

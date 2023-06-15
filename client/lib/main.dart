@@ -39,8 +39,7 @@ class KojaApp extends StatelessWidget {
             theme: ThemeData(       
               useMaterial3: true,
             ),
-            home: const Login(),
-            // (kDebugMode) ? const NavigationScreen() : const Login(),
+            home: (kDebugMode) ? const NavigationScreen() : const Login(),
             routes: {
               Login.routeName: (ctx) => const Login(),
               Profile.routeName: (ctx) => const Profile(),
