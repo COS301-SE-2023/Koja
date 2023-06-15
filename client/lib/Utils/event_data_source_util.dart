@@ -46,4 +46,7 @@ class EventDataSource extends CalendarDataSource {
   }
 
   //Add the category also
+  String? getCategory(int index) {
+    return getEvent(index).category;
+  }
 }

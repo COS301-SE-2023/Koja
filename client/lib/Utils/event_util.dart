@@ -7,7 +7,7 @@ class Event{
     final String location;
     final DateTime from;
     final DateTime to;
-    // final String category;
+    final String category;
     final Color backgroundColor;
     final bool isAllDay;
 
@@ -17,7 +17,7 @@ class Event{
         this.location = '',
         required this.from,
         required this.to,
-        // required this.category, //also add function on data_source_util.dart
+        this.category = 'Other', //also add function on data_source_util.dart
         this.backgroundColor = Colors.blue,
         this.isAllDay = false,
 
