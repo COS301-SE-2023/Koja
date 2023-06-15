@@ -107,10 +107,8 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
 
     override fun getUserEvents(jwtToken: String): List<UserEvent> {
         try {
-            // Decode the JWT token
             val decodedJwt = decodeJwtToken(jwtToken)
 
-            // Check if the token is still valid
             val expiration : Date = decodedJwt.getClaim(JWTTokenStructure.EXPIRES_TIME.claimName).asDate()
             if (System.currentTimeMillis() > expiration.time){
                 //TODO: refresh token
@@ -120,7 +118,6 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
             val userId = decodedJwt.getClaim(JWTTokenStructure.USER_ID.claimName).asLong()
             val accessToken = decodedJwt.getClaim(JWTTokenStructure.ACCESS_TOKEN.claimName).asString()
 
-            // Your existing code for getting user events
             val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
 
             val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
@@ -145,7 +142,6 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
             return userEvents
 
         } catch (e: ExpiredJwtException) {
-            // Handle token expiration
             return emptyList()
         }
     }
