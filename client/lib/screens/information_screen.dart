@@ -27,7 +27,6 @@ class InfoState extends State<Info> {
       "Integration With Existing \nCalendar Apps",
       "Koja can be integrated with existing calendar apps. This allows you to easily import your existing events into Koja, and vice versa."
       // , such as Google Calendar, Apple Calendar, and Microsoft Outlook
-
     ],
     [
       'assets/animations/ai.json',
@@ -37,7 +36,7 @@ class InfoState extends State<Info> {
     [
       'assets/animations/location-map.json',
       "Traveling Time\nCalculator",
-      "Based on your location and tasks, Koja will also find the traveling time between 2 locations and insert that time on your schedule. This reduces the hassle of having to calculate the traveling time manually."
+      "Based on your location and tasks, Koja will also find the travelling time between 2 locations and insert that time on your schedule. This reduces the hassle of having to calculate the traveling time manually."
     ],
   ];
 
