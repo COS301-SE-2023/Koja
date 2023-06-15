@@ -24,7 +24,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.*
 import com.google.api.client.util.DateTime as GoogleDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
@@ -109,13 +108,6 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
         try {
             val decodedJwt = decodeJwtToken(jwtToken)
 
-            val expiration : Date = decodedJwt.getClaim(JWTTokenStructure.EXPIRES_TIME.claimName).asDate()
-            if (System.currentTimeMillis() > expiration.time){
-                //TODO: refresh token
-                throw ExpiredJwtException(null, null, "Token expired")
-            }
-
-            val userId = decodedJwt.getClaim(JWTTokenStructure.USER_ID.claimName).asLong()
             val accessToken = decodedJwt.getClaim(JWTTokenStructure.ACCESS_TOKEN.claimName).asString()
 
             val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
@@ -126,10 +118,9 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
 
             val now = GoogleDateTime(System.currentTimeMillis())
             val request = calendar.events().list("primary")
-                .setTimeMin(now)
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
-                .setMaxResults(10)
+                .setMaxResults(1000)
 
             val events: Events? = request.execute()
 

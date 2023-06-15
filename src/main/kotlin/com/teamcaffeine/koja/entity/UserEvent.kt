@@ -15,10 +15,10 @@ class UserEvent(
 
     constructor(googleEvent: GoogleEvent) : this(
         id = googleEvent.id,
-        description = googleEvent.description,
-        location = googleEvent.location,
-        startTime = toKotlinDate(googleEvent.start),
-        endTime = toKotlinDate(googleEvent.end)
+        description = googleEvent.summary ?: "",
+        location = googleEvent.location ?: "",
+        startTime = toKotlinDate(googleEvent.start) ?: Date(),
+        endTime = toKotlinDate(googleEvent.end) ?: Date()
     )
 
     fun getId(): String {
