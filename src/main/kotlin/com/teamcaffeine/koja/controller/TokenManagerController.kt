@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
-data class TokenRequest(val accessToken: String, val refreshToken: String?, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Long)
+data class TokenRequest(val accessToken: String, val refreshToken: String, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Long)
 
 @RestController
 @RequestMapping("/token")
@@ -21,20 +21,6 @@ class TokenManagerController {
 
     private val jwtSecret : String = System.getProperty("KOJA_JWT_SECRET")
     private val minuteInMilliseconds : Long = 60000L
-
-
-    fun createToken(@RequestBody tokenRequest: TokenRequest): String {
-        val expiryTime = tokenRequest.expireTime - (minuteInMilliseconds * 5)
-        val userID = tokenRequest.userId
-
-        return createJwtToken(
-            tokenRequest.accessToken,
-            expiryTime,
-            tokenRequest.refreshToken,
-            tokenRequest.authProvider,
-            tokenRequest.userId
-        )
-    }
 
     @PostMapping("/renew")
     fun renewToken(@RequestBody tokenRequest: TokenRequest): String {
@@ -60,6 +46,19 @@ class TokenManagerController {
         }
     }
 
+    fun createToken(@RequestBody tokenRequest: TokenRequest): String {
+        val expiryTime = tokenRequest.expireTime - (minuteInMilliseconds * 5)
+        val userID = tokenRequest.userId
+
+        return createJwtToken(
+            tokenRequest.accessToken,
+            expiryTime,
+            tokenRequest.refreshToken,
+            tokenRequest.authProvider,
+            tokenRequest.userId
+        )
+    }
+
     fun createJwtToken(accessToken: String, expiryTime: Long, refreshToken: String, authProvider: AuthProviderEnum, userID: Long): String {
         val algorithm = Algorithm.HMAC512(jwtSecret)
 
@@ -71,5 +70,19 @@ class TokenManagerController {
             .withClaim("user_id", userID)
             .withExpiresAt(Date(System.currentTimeMillis() + expiryTime))
             .sign(algorithm)
+    }
+
+    companion object{
+        fun decodeJwtToken(jwtToken: String): DecodedJWT {
+            val jwtSecret : String = System.getProperty("KOJA_JWT_SECRET")
+            val algorithm = Algorithm.HMAC512(jwtSecret)
+            val verifier = JWT.require(algorithm).build()
+            return verifier.verify(jwtToken)
+        }
+    }
+    fun decodeJwtToken(jwtToken: String): DecodedJWT {
+        val algorithm = Algorithm.HMAC512(jwtSecret)
+        val verifier = JWT.require(algorithm).build()
+        return verifier.verify(jwtToken)
     }
 }

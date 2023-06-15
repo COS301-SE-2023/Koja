@@ -13,7 +13,7 @@ abstract class CalendarAdapter(authProvider : AuthProviderEnum) {
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?): ResponseEntity<String>
     abstract fun getEvents(): Set<UserEvent?>?
-    abstract fun getUserEvents(userId: String?): List<UserEvent>
+    abstract fun getUserEvents(jwtToken: String): List<UserEvent>
 
     fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
