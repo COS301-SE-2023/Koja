@@ -7,8 +7,10 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.decodeJwtToken
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import io.jsonwebtoken.Jwts
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -81,7 +83,7 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
         val jwtToken = TokenManagerController().createToken(
             TokenRequest(
                 accessToken,
-                refreshToken,
+                refreshToken ?: "",
                 expiresIn,
                 this.getAuthProvider(),
                 userID
@@ -96,25 +98,40 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
         return null
     }
 
-    override fun getUserEvents(userId: String?): List<UserEvent> {
-//        val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
-//
-//        // Create a Calendar object using the credential
-//        val calendar = Calendar.Builder(httpTransport, jsonFactory, credential)
-//            .setApplicationName("Your Application Name")
-//            .build()
-//
-//        // Define the request to get userEvents from the user's primary calendar
-//        val now = DateTime(System.currentTimeMillis())
-//        val request = calendar.events().list("primary")
-//            .setTimeMin(now)
-//            .setOrderBy("startTime")
-//            .setSingleEvents(true)
-//            .setMaxResults(10)
-//
-//        // Execute the request and retrieve the userEvents
-//        val events: GoogleEvents = request.execute()
+    override fun getUserEvents(jwtToken: String): List<UserEvent> {
+        try {
+            // Decode the JWT token
+            val decodedJwt = decodeJwtToken(jwtToken)
 
-        return emptyList()
+            // Check if the token is still valid
+            val expiration = decodedJwt.getClaim()
+            if (System.currentTimeMillis() > expiration) {
+                throw ExpiredJwtException(null, null, "Token expired")
+            }
+
+            // Get the user ID from the JWT token
+            val userId = decodedJwt.body["user_id"] as String
+
+            // Your existing code for getting user events
+            val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+
+            val calendar = Calendar.Builder(httpTransport, jsonFactory, credential)
+                .setApplicationName("Your Application Name")
+                .build()
+
+            val now = DateTime(System.currentTimeMillis())
+            val request = calendar.events().list("primary")
+                .setTimeMin(now)
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .setMaxResults(10)
+
+            val events: GoogleEvents = request.execute()
+
+            return emptyList()
+        } catch (e: ExpiredJwtException) {
+            // Handle token expiration
+            return emptyList()
+        }
     }
 }
