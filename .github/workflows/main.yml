@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - main
+      - dev
 
 jobs:
   build_and_test_flutter:
@@ -24,6 +24,10 @@ jobs:
         run: flutter pub get
         working-directory: client
 
+      - name: Run Flutter Tests
+        run: flutter test
+        working-directory: client
+
       - name: Build Flutter app
         run: flutter build apk
         working-directory: client
@@ -39,6 +43,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-
+      
       - name: Build Spring Boot project
         run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test
