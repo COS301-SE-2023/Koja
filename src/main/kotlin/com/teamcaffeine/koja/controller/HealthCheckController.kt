@@ -5,13 +5,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.sql.DataSource
 
 @RestController
+@RequestMapping("/api/v1/health")
 class HealthCheckController(@Autowired val dataSource: DataSource) {
 
-    @GetMapping("/api/v1/health")
+    @GetMapping()
     fun healthCheck() : ResponseEntity<Any>  {
         val healthStatus = checkHealthStatus()
 
@@ -26,7 +28,7 @@ class HealthCheckController(@Autowired val dataSource: DataSource) {
         }
     }
 
-    @GetMapping("/api/v1/health/detail")
+    @GetMapping("/detail")
     fun detailedHealthCheck() : ResponseEntity<Any>  {
         val healthStatus = checkDetailedHealthStatus()
         for (hs in healthStatus)

@@ -17,7 +17,7 @@ import java.util.*
 data class TokenRequest(val accessToken: String, val refreshToken: String, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Long)
 
 @RestController
-@RequestMapping("/token")
+@RequestMapping("/api/v1/token")
 class TokenManagerController {
 
     private val jwtSecret : String = System.getProperty("KOJA_JWT_SECRET")
@@ -86,10 +86,5 @@ class TokenManagerController {
             val verifier = JWT.require(algorithm).build()
             return verifier.verify(jwtToken)
         }
-    }
-    fun decodeJwtToken(jwtToken: String): DecodedJWT {
-        val algorithm = Algorithm.HMAC512(jwtSecret)
-        val verifier = JWT.require(algorithm).build()
-        return verifier.verify(jwtToken)
     }
 }
