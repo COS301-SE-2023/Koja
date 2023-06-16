@@ -1,11 +1,11 @@
-package com.teamcaffeine.koja.entity
+package com.teamcaffeine.koja.service
 
 import com.google.api.client.util.DateTime
 import java.util.*
 import com.google.api.services.calendar.model.Event as GoogleEvent
 import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTime
 
-class UserEvent(
+class UserEventService(
     private var id: String,
     private var description: String,
     private var location: String,

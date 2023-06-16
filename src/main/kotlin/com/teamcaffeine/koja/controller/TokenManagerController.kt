@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
-data class TokenRequest(val accessToken: String, val refreshToken: String, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Long)
+data class TokenRequest(val accessToken: String, val refreshToken: String, val expireTime: Long, val authProvider: AuthProviderEnum, val userId: Int)
 
 @RestController
 @RequestMapping("/api/v1/token")
@@ -37,7 +37,7 @@ class TokenManagerController {
             val newExpiryTime = decodedJWT.getClaim(JWTTokenStructure.EXPIRES_TIME.claimName).asDate().time
             val newRefreshToken = decodedJWT.getClaim(JWTTokenStructure.REFRESH_TOKEN.claimName).asString()
             val authProvider = decodedJWT.getClaim(JWTTokenStructure.AUTH_PROVIDER.claimName).asString()
-            val userID = decodedJWT.getClaim(JWTTokenStructure.USER_ID.claimName).asLong()
+            val userID = decodedJWT.getClaim(JWTTokenStructure.USER_ID.claimName).asInt()
 
             return createJwtToken(newAccessToken, newExpiryTime, newRefreshToken, getAuthProvider(authProvider), userID)
         } catch (e: JWTDecodeException) {
@@ -60,7 +60,7 @@ class TokenManagerController {
         )
     }
 
-    fun createJwtToken(accessToken: String, expiryTime: Long, refreshToken: String, authProvider: AuthProviderEnum, userID: Long): String {
+    fun createJwtToken(accessToken: String, expiryTime: Long, refreshToken: String, authProvider: AuthProviderEnum, userID: Int): String {
         val algorithm = Algorithm.HMAC512(jwtSecret)
 
         val tokenExpireDate : Date = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))

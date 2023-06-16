@@ -1,7 +1,5 @@
 package com.teamcaffeine.koja.controller
 
-import com.teamcaffeine.koja.entity.User
-import com.teamcaffeine.koja.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.math.BigInteger
@@ -11,16 +9,16 @@ data class Session(val OAuth: Any)
 
 @RestController
 @RequestMapping("/api/v1/user")
-class UserController(val userService: UserService) {
+class UserController() {
 
-    @PostMapping("/authenticate")
-    fun authenticateUser(user: User): String {
-        return if(userService.authenticate(user)){
-            "homepage"
-        } else {
-            "signin"
-        }
-    }
+//    @PostMapping("/authenticate")
+//    fun authenticateUser(user: User): String {
+//        return if(userService.authenticate(user)){
+//            "homepage"
+//        } else {
+//            "signin"
+//        }
+//    }
 
     fun generateRandomToken(length: Int): String {
         val secureRandom = SecureRandom()
