@@ -17,5 +17,6 @@ class CalendarController(private val userCalendar: UserCalendarService, private 
     @GetMapping("/userEvents")
     fun getAllUserEvents(@RequestBody token: String): ResponseEntity<List<UserEventService>> {
         return ResponseEntity.ok(GoogleCalendarAdapterService(userRepository, userAccountRepository).getUserEvents(token))
+        return ResponseEntity.ok(userCalendar.getAllUserEvents(token))
     }
 }

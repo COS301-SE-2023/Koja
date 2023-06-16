@@ -1,16 +1,16 @@
 package com.teamcaffeine.koja.service
 
+import com.teamcaffeine.koja.dto.UserEventDTO
 import org.springframework.stereotype.Service
 
 @Service
 class UserCalendarService() {
 
-    private var id: Int? = null
     private val calendarAdapters: ArrayList<CalendarAdapterService> = ArrayList()
 
-    public val userEvents: ArrayList<UserEventService> = ArrayList()
+    public val userEvents: ArrayList<UserEventDTO> = ArrayList()
 
-    fun addCalendarAdapter(adapter: CalendarAdapterService){
+    public fun addCalendarAdapter(adapter: CalendarAdapterService){
         this.calendarAdapters.add(adapter);
         for( event in adapter.getEvents()!!)
         {
@@ -20,7 +20,13 @@ class UserCalendarService() {
         }
     }
 
-    private fun consolidateEvents(userEvent: UserEventService?) {
+//    public fun getAllUserEvents(token: String): ArrayList<UserEventDTO> {
+//
+//    }
+
+    private fun consolidateEvents(userEvent: UserEventDTO?) {
         TODO("Not yet implemented");
     }
+
+
 }
