@@ -3,6 +3,7 @@ package com.teamcaffeine.koja.enums
 enum class AuthProviderEnum {
     GOOGLE,
     OUTLOOK,
+    NONE,
 }
 
 fun getAuthProvider(authProvider: String): AuthProviderEnum {

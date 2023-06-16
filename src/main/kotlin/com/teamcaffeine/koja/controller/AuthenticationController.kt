@@ -1,6 +1,6 @@
 package com.teamcaffeine.koja.controller
 
-import com.teamcaffeine.koja.entity.GoogleCalendarAdapter
+import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthenticationController(private val googleCalendarAdapter: GoogleCalendarAdapter) {
+class AuthenticationController(private val googleCalendarAdapter: GoogleCalendarAdapterService) {
 
 	@GetMapping("/google")
 	fun authenticateWithGoogle(request: HttpServletRequest): RedirectView {

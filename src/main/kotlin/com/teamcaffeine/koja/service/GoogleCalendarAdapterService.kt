@@ -1,4 +1,4 @@
-package com.teamcaffeine.koja.entity
+package com.teamcaffeine.koja.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
@@ -9,17 +9,23 @@ import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Events
+import com.google.api.services.people.v1.PeopleService
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.decodeJwtToken
 import com.teamcaffeine.koja.controller.TokenRequest
+import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructure
+import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
@@ -27,7 +33,8 @@ import org.springframework.web.util.UriComponentsBuilder
 import com.google.api.client.util.DateTime as GoogleDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
-class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
+@Service
+class GoogleCalendarAdapterService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) : CalendarAdapterService(AuthProviderEnum.GOOGLE) {
     private val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
@@ -84,27 +91,63 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
         val refreshToken = responseJson.get("refresh_token")?.asText()
         val expiresIn = responseJson.get("expires_in").asLong()
 
-        //TODO: get the user email using accessToken then save it to the database and get user id
-        val userID = 0L
-        val jwtToken = TokenManagerController().createToken(
-            TokenRequest(
-                accessToken,
-                refreshToken ?: "",
-                expiresIn,
-                this.getAuthProvider(),
-                userID
+        val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
+        val existingUser : UserAccount? = userAccountRepository.findByEmail(userEmail)
+        val jwtToken: String
+        if (existingUser != null) {
+            jwtToken = TokenManagerController().createToken(
+                TokenRequest(
+                    accessToken,
+                    refreshToken ?: "",
+                    expiresIn,
+                    this.getAuthProvider(),
+                    existingUser.userID
+                )
             )
-        )
+
+            return ResponseEntity.ok(jwtToken)
+        }
+        else
+        {
+            val newUser = createNewUser(userEmail, refreshToken)
+
+            jwtToken = TokenManagerController().createToken(
+                TokenRequest(
+                    accessToken,
+                    refreshToken ?: "",
+                    expiresIn,
+                    this.getAuthProvider(),
+                    newUser.id!!
+                )
+            )
+        }
 
         return ResponseEntity.ok(jwtToken)
     }
 
-    override fun getEvents(): Set<com.teamcaffeine.koja.entity.UserEvent?>? {
+    private fun createNewUser(userEmail: String, refreshToken: String?): User {
+        val newUser = User()
+        val storedUser = userRepository.save(newUser)
+
+        val newUserAccount = UserAccount()
+        newUserAccount.email = userEmail
+        newUserAccount.refreshToken = refreshToken ?: ""
+        newUserAccount.authProvider = AuthProviderEnum.GOOGLE
+        newUserAccount.userID = storedUser.id!!
+        newUserAccount.user = storedUser
+        val savedUserAccount = userAccountRepository.save(newUserAccount)
+
+        storedUser.userAccounts.add(savedUserAccount)
+        userRepository.save(storedUser)
+        return newUser
+    }
+
+    override fun getEvents(): Set<UserEventService>? {
         // You can implement this method based on your requirements
         return null
     }
 
-    override fun getUserEvents(jwtToken: String): List<UserEvent> {
+    override fun getUserEvents(jwtToken: String): List<UserEventService> {
         try {
             val decodedJwt = decodeJwtToken(jwtToken)
 
@@ -124,10 +167,10 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
 
             val events: Events? = request.execute()
 
-            val userEvents = ArrayList<UserEvent>()
+            val userEvents = ArrayList<UserEventService>()
 
             events?.items?.map {
-                userEvents.add(UserEvent(it))
+                userEvents.add(UserEventService(it))
             }
 
             return userEvents
@@ -135,5 +178,21 @@ class GoogleCalendarAdapter : CalendarAdapter(AuthProviderEnum.GOOGLE) {
         } catch (e: ExpiredJwtException) {
             return emptyList()
         }
+    }
+
+    private fun getUserEmail(accessToken: String): String? {
+        val credential = GoogleCredential().setAccessToken(accessToken)
+        val peopleService = PeopleService.Builder(
+            GoogleNetHttpTransport.newTrustedTransport(),
+            JacksonFactory.getDefaultInstance(),
+            credential
+        ).setApplicationName("KOJA")
+        .build()
+
+        val person = peopleService.people().get("people/me")
+            .setPersonFields("emailAddresses")
+            .execute()
+
+        return person.emailAddresses?.firstOrNull()?.value
     }
 }
