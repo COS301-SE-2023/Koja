@@ -39,8 +39,8 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
-    private val redirectUri = "http://localhost:8080/auth/google/callback"
-    private val scopes = listOf("https://www.googleapis.com/auth/calendar.readonly")
+    private val redirectUri = "http://localhost:8080/api/v1/auth/google/callback"
+    private val scopes = listOf("https://www.googleapis.com/auth/calendar.readonly", "https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email")
     private val clientSecrets: GoogleClientSecrets = GoogleClientSecrets().setWeb(
         GoogleClientSecrets.Details().setClientId(clientId).setClientSecret(clientSecret)
     )
@@ -77,7 +77,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         parameters.add("code", authCode)
         parameters.add("client_id",  System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret",  System.getProperty("GOOGLE_CLIENT_SECRET"))
-        parameters.add("redirect_uri", "http://localhost:8080/auth/google/callback")
+        parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
 
