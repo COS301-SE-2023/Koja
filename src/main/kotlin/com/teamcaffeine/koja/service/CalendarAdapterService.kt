@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
@@ -13,8 +14,9 @@ abstract class CalendarAdapterService(authProvider : AuthProviderEnum) {
     abstract fun setupConnection(request: HttpServletRequest?) : RedirectView
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?): ResponseEntity<String>
-    abstract fun getEvents(): Set<UserEventService?>?
-    abstract fun getUserEvents(jwtToken: String): List<UserEventService>
+    abstract fun getUserEvents(jwtToken: String): List<UserEventDTO>
+
+    abstract fun getUserEmail(accessToken: String): String?
 
     fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
