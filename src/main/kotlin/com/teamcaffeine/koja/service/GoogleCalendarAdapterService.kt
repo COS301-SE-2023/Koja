@@ -13,6 +13,7 @@ import com.google.api.services.people.v1.PeopleService
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.decodeJwtToken
 import com.teamcaffeine.koja.controller.TokenRequest
+import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
@@ -142,12 +143,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         return newUser
     }
 
-    override fun getEvents(): Set<UserEventService>? {
-        // You can implement this method based on your requirements
-        return null
-    }
-
-    override fun getUserEvents(jwtToken: String): List<UserEventService> {
+    override fun getUserEvents(jwtToken: String): List<UserEventDTO> {
         try {
             val decodedJwt = decodeJwtToken(jwtToken)
 
@@ -167,10 +163,10 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
             val events: Events? = request.execute()
 
-            val userEvents = ArrayList<UserEventService>()
+            val userEvents = ArrayList<UserEventDTO>()
 
             events?.items?.map {
-                userEvents.add(UserEventService(it))
+                userEvents.add(UserEventDTO(it))
             }
 
             return userEvents
@@ -180,7 +176,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         }
     }
 
-    private fun getUserEmail(accessToken: String): String? {
+    override fun getUserEmail(accessToken: String): String? {
         val credential = GoogleCredential().setAccessToken(accessToken)
         val peopleService = PeopleService.Builder(
             GoogleNetHttpTransport.newTrustedTransport(),

@@ -1,28 +1,26 @@
 package com.teamcaffeine.koja.service
 
+import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.dto.UserEventDTO
 import org.springframework.stereotype.Service
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.decodeJwtToken
+import com.teamcaffeine.koja.enums.JWTTokenStructure
+import com.teamcaffeine.koja.repository.UserAccountRepository
 
 @Service
-class UserCalendarService() {
+class UserCalendarService(private val userAccountRepository: UserAccountRepository) {
 
-    private val calendarAdapters: ArrayList<CalendarAdapterService> = ArrayList()
+    public fun getAllUserEvents(token: String): List<UserEventDTO> {
+        val decodedJWT = decodeJwtToken(token)
+        val userID = decodedJWT.getClaim(JWTTokenStructure.USER_ID.claimName).asInt()
+        val userAccounts = userAccountRepository.findByUserID(userID)
 
-    public val userEvents: ArrayList<UserEventDTO> = ArrayList()
+        val calendarAdapters = ArrayList<CalendarAdapterService>()
 
-    public fun addCalendarAdapter(adapter: CalendarAdapterService){
-        this.calendarAdapters.add(adapter);
-        for( event in adapter.getEvents()!!)
-        {
-            if (event != null) {
-                consolidateEvents(event)
-            };
+        for (ua in userAccounts) {
+            calendarAdapters.add(CalendarAdapterFactory.getCalendarAdapter(userAccount.authProvider))
         }
     }
-
-//    public fun getAllUserEvents(token: String): ArrayList<UserEventDTO> {
-//
-//    }
 
     private fun consolidateEvents(userEvent: UserEventDTO?) {
         TODO("Not yet implemented");
