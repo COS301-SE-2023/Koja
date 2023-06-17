@@ -22,7 +22,7 @@ class TimePickerWidgetState extends State<TimePickerWidget> {
         _selectedTime = pickedTime;
       });
     }
-    print('time ' + _selectedTime.format(context));
+    print('time ${_selectedTime.format(context)}');
 
   }
 

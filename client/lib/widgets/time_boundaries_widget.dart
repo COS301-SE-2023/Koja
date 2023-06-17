@@ -2,7 +2,6 @@ import 'package:client/widgets/set_boundary_widget.dart';
 import 'package:client/widgets/time_category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 
 class TimeBoundaries extends StatefulWidget {
   @override

@@ -79,9 +79,6 @@ dependencies:
 
   syncfusion_flutter_core: ^21.2.8
 
-  # chips to choose similar to tags
-  chips_choice: ^3.0.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
