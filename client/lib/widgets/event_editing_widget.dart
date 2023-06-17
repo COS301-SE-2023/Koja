@@ -8,6 +8,7 @@ import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
 import '../providers/event_provider.dart';
+import './choose_category_widget.dart';
 
 class EventEditing extends StatefulWidget {
   final Event? event;
@@ -106,7 +107,7 @@ class _EventEditingState extends State<EventEditing> {
             const SizedBox(height: 12),
             buildDateTimePickers(),
             const SizedBox(height: 12),
-            // chooseCategory(),
+            ChooseCategory(),
             const SizedBox(height: 12),
             location(),
             const SizedBox(height: 12),

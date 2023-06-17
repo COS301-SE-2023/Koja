@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
-import '../models/google_auth_model.dart';
 
 class LoginModal extends StatefulWidget {
   const LoginModal({super.key});
