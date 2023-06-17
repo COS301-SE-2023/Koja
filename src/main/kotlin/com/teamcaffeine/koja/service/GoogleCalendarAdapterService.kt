@@ -17,7 +17,7 @@ import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
-import com.teamcaffeine.koja.enums.JWTTokenStructure
+import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
@@ -82,11 +82,12 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
         val requestEntity = HttpEntity(parameters, headers)
 
-        val builder = UriComponentsBuilder.fromHttpUrl(tokenEndpointUrl)
+        val builder = UriComponentsBuilder
+            .fromHttpUrl(tokenEndpointUrl)
             .queryParams(parameters)
         val requestUrl = builder.build().encode().toUri()
-
         val responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java)
+
         val responseJson = ObjectMapper().readTree(responseEntity.body)
         val accessToken = responseJson.get("access_token").asText()
         val refreshToken = responseJson.get("refresh_token")?.asText()
@@ -94,6 +95,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
         val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
         val existingUser : UserAccount? = userAccountRepository.findByEmail(userEmail)
+
         val jwtToken: String
         if (existingUser != null) {
             jwtToken = TokenManagerController().createToken(
@@ -147,7 +149,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         try {
             val decodedJwt = decodeJwtToken(jwtToken)
 
-            val accessToken = decodedJwt.getClaim(JWTTokenStructure.ACCESS_TOKEN.claimName).asString()
+            val accessToken = decodedJwt.getClaim(JWTTokenStructureEnum.GOOGLE_Enum_ACCESS_TOKEN.claimName).asString()
 
             val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
 

@@ -6,8 +6,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.teamcaffeine.koja.enums.AuthProviderEnum
-import com.teamcaffeine.koja.enums.JWTTokenStructure
-import com.teamcaffeine.koja.enums.getAuthProvider
+import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,13 +32,15 @@ class TokenManagerController {
             val decodedJWT: DecodedJWT = verifier.verify(refreshToken)
 
             // TODO: Use refresh token to get new access token from Auth Provider and update expiry time
-            val newAccessToken = decodedJWT.getClaim(JWTTokenStructure.ACCESS_TOKEN.claimName).asString()
-            val newExpiryTime = decodedJWT.getClaim(JWTTokenStructure.EXPIRES_TIME.claimName).asDate().time
-            val newRefreshToken = decodedJWT.getClaim(JWTTokenStructure.REFRESH_TOKEN.claimName).asString()
-            val authProvider = decodedJWT.getClaim(JWTTokenStructure.AUTH_PROVIDER.claimName).asString()
-            val userID = decodedJWT.getClaim(JWTTokenStructure.USER_ID.claimName).asInt()
+            val newAccessToken = decodedJWT.getClaim(JWTTokenStructureEnum.GOOGLE_ACCESS_TOKEN.claimName).asString()
+            val newExpiryTime = 0L
+            val userID = decodedJWT.getClaim(JWTTokenStructureEnum.USER_ID.claimName).asInt()
 
-            return createJwtToken(newAccessToken, newExpiryTime, newRefreshToken, getAuthProvider(authProvider), userID)
+            return createJwtToken(
+                accessToken = newAccessToken,
+                expiryTime = newExpiryTime,
+                userID = userID
+            )
         } catch (e: JWTDecodeException) {
             throw IllegalArgumentException("Invalid token format")
         } catch (e: JWTVerificationException) {
@@ -52,25 +53,20 @@ class TokenManagerController {
         val userID = tokenRequest.userId
 
         return createJwtToken(
-            tokenRequest.accessToken,
-            expiryTime,
-            tokenRequest.refreshToken,
-            tokenRequest.authProvider,
-            tokenRequest.userId
+            accessToken = tokenRequest.accessToken,
+            expiryTime = expiryTime,
+            userID = tokenRequest.userId
         )
     }
 
-    fun createJwtToken(accessToken: String, expiryTime: Long, refreshToken: String, authProvider: AuthProviderEnum, userID: Int): String {
+    fun createJwtToken(accessToken: String, expiryTime: Long, userID: Int): String {
         val algorithm = Algorithm.HMAC512(jwtSecret)
 
         val tokenExpireDate : Date = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
 
         return JWT.create()
-            .withClaim(JWTTokenStructure.ACCESS_TOKEN.claimName, accessToken)
-            .withClaim(JWTTokenStructure.EXPIRES_TIME.claimName, expiryTime)
-            .withClaim(JWTTokenStructure.REFRESH_TOKEN.claimName, refreshToken)
-            .withClaim(JWTTokenStructure.AUTH_PROVIDER.claimName, authProvider.toString())
-            .withClaim(JWTTokenStructure.USER_ID.claimName, userID)
+            .withClaim(JWTTokenStructureEnum.GOOGLE_ACCESS_TOKEN.claimName, accessToken)
+            .withClaim(JWTTokenStructureEnum.USER_ID.claimName, userID)
             .withExpiresAt(tokenExpireDate)
             .sign(algorithm)
     }
