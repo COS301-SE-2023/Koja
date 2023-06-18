@@ -7,17 +7,15 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.calendar.CalendarScopes
-import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
 import com.teamcaffeine.koja.controller.TokenManagerController
-import com.teamcaffeine.koja.controller.TokenManagerController.Companion.decodeJwtToken
 import com.teamcaffeine.koja.controller.TokenRequest
+import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
+import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
-import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
@@ -31,8 +29,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
-import com.google.api.client.util.DateTime as GoogleDateTime
-import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
 class GoogleCalendarAdapterService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) : CalendarAdapterService(AuthProviderEnum.GOOGLE) {
@@ -98,17 +94,29 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
         val jwtToken: String
         if (existingUser != null) {
+            val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
+            val existingUserAccounts = userAccountRepository.findByUserID(existingUser.userID)
+
+            for (userAccount in existingUserAccounts) {
+                val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken ?: "")
+                if(updatedCredentials != null)
+                    userTokens.add(
+                        JWTGoogleDTO(
+                            updatedCredentials.accessToken,
+                            userAccount.refreshToken,
+                            updatedCredentials.expireTimeInSeconds
+                        )
+                    )
+            }
+
             jwtToken = TokenManagerController().createToken(
                 TokenRequest(
-                    accessToken,
-                    refreshToken ?: "",
-                    expiresIn,
+                    userTokens,
                     this.getAuthProvider(),
                     existingUser.userID
                 )
             )
 
-            return ResponseEntity.ok(jwtToken)
         }
         else
         {
@@ -116,9 +124,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
             jwtToken = TokenManagerController().createToken(
                 TokenRequest(
-                    accessToken,
-                    refreshToken ?: "",
-                    expiresIn,
+                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList<JWTGoogleDTO>(),
                     this.getAuthProvider(),
                     newUser.id!!
                 )
@@ -147,31 +153,37 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
     override fun getUserEvents(jwtToken: String): List<UserEventDTO> {
         try {
-            val decodedJwt = decodeJwtToken(jwtToken)
-
-            val accessToken = decodedJwt.getClaim(JWTTokenStructureEnum.GOOGLE_Enum_ACCESS_TOKEN.claimName).asString()
-
-            val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
-
-            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
-                .setApplicationName("Your Application Name")
-                .build()
-
-            val now = GoogleDateTime(System.currentTimeMillis())
-            val request = calendar.events().list("primary")
-                .setOrderBy("startTime")
-                .setSingleEvents(true)
-                .setMaxResults(1000)
-
-            val events: Events? = request.execute()
-
-            val userEvents = ArrayList<UserEventDTO>()
-
-            events?.items?.map {
-                userEvents.add(UserEventDTO(it))
-            }
-
-            return userEvents
+//            val decodedJwt = decodeJwtToken(jwtToken)
+//
+//            val accessTokens = decodedJwt.getClaim(JWTTokenStructureEnum.USER_ACCOUNT_TOKENS.claimName).asString()
+//            for (accessToken in accessTokens.split(",")) {
+//                val userEvents = getUserEventsForAccessToken(accessToken)
+//                if (userEvents.isNotEmpty())
+//                    return userEvents
+//            }
+//
+//            val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+//
+//            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
+//                .setApplicationName("Your Application Name")
+//                .build()
+//
+//            val now = GoogleDateTime(System.currentTimeMillis())
+//            val request = calendar.events().list("primary")
+//                .setOrderBy("startTime")
+//                .setSingleEvents(true)
+//                .setMaxResults(1000)
+//
+//            val events: Events? = request.execute()
+//
+//            val userEvents = ArrayList<UserEventDTO>()
+//
+//            events?.items?.map {
+//                userEvents.add(UserEventDTO(it))
+//            }
+//
+//            return userEvents
+            return emptyList()
 
         } catch (e: ExpiredJwtException) {
             return emptyList()
@@ -192,5 +204,25 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
             .execute()
 
         return person.emailAddresses?.firstOrNull()?.value
+    }
+
+    private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
+        val credential = GoogleCredential.Builder()
+            .setJsonFactory(JacksonFactory.getDefaultInstance())
+            .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+            .setClientSecrets(clientId, clientSecret)
+            .build()
+
+        credential.refreshToken = refreshToken
+
+        return if (credential.refreshToken()) {
+            JWTGoogleDTO(
+                accessToken = credential.accessToken,
+                expireTimeInSeconds = credential.expiresInSeconds,
+                refreshToken = refreshToken
+            )
+        } else {
+            null
+        }
     }
 }
