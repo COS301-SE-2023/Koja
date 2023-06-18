@@ -38,67 +38,62 @@ class TimeCategory extends StatelessWidget {
           ],
         ),
         child: Container(
-          // height: 500,
           width: MediaQuery.of(context).size.width * 0.91,
           decoration: BoxDecoration(
-            // color: const Color.fromRGBO(224, 224, 224, 1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                // width: MediaQuery.of(context).size.width * 0.5,
-                // height: 400,
-                child: Column(
+          child: Container(
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          category.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ],
+                    Icon( 
+                      category == 'School' ? Icons.school_outlined : 
+                      category == 'Work' ? Icons.card_travel_outlined : 
+                      category == 'Hobbies' ? Icons.self_improvement_outlined : 
+                      category == 'Resting' ? Icons.king_bed_outlined : 
+                      category == 'Chores' ? Icons.cleaning_services_outlined : 
+                      LineAwesome.question_circle,
+                      size: 30,
                     ),
-                    SizedBox(height: 10),
-                    Row(children: [
-                      MaterialButton(
-                        minWidth: 10,
-                        onPressed: () {},
-                        child: Icon(
-                          Icons.school,
-                        ),
+                    SizedBox(width: 7),
+                    Text(
+                      category.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
-                        startTime,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(
-                        HeroIcons.clock,
-                        size: 30,
-                      ),
-                      Text(
-                        endTime,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ])
+                    ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 10),
+                Row(children: [
+                  Icon(
+                    Icons.watch_later_outlined,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    startTime,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Icon(
+                    Icons.watch_later_outlined,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    endTime,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ])
+              ],
+            ),
           )
         ),
       ),
