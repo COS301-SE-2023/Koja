@@ -134,65 +134,64 @@ class _EventEditingState extends State<EventEditing> {
   }
 
   Widget location() {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: SingleChildScrollView( // Add SingleChildScrollView here
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text("LOCATION: ${_eventplace.text}", 
-                    maxLines: 2,
-                    style: TextStyle(
-                      fontFamily: 'Railway', 
-                      fontSize: 14, 
-                      fontWeight: FontWeight.bold)
-                    ),
-                  ),
-                ],
-              ),
-              TextFormField(
-                onChanged: onLocationChanged,
-                cursorColor: Colors.white,
-                controller: _eventplace,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  border: const OutlineInputBorder(),
-                  hintText: "Meeting's Location",
-                  hintStyle: const TextStyle(
-                    color: Colors.black,
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: clearLocation,
-                    icon: const Icon(Icons.clear, color: Colors.black),
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: SingleChildScrollView( // Add SingleChildScrollView here
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text("LOCATION: ${_eventplace.text}", 
+                  maxLines: 2,
+                  style: TextStyle(
+                    fontFamily: 'Railway', 
+                    fontSize: 14, 
+                    fontWeight: FontWeight.bold)
                   ),
                 ),
-                onFieldSubmitted: (_) => saveForm(),
+              ],
+            ),
+            TextFormField(
+              onChanged: onLocationChanged,
+              cursorColor: Colors.white,
+              controller: _eventplace,
+              style: const TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                border: const OutlineInputBorder(),
+                hintText: "Meeting's Location",
+                hintStyle: const TextStyle(
+                  color: Colors.black,
+                ),
+                suffixIcon: IconButton(
+                  onPressed: clearLocation,
+                  icon: const Icon(Icons.clear, color: Colors.black),
+                ),
               ),
-              const SizedBox(height: 1),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: eventplacepredictions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      eventplacepredictions[index].description!,
-                      textAlign: TextAlign.start,
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    onTap: () {
-                      selectLocation(eventplacepredictions[index].description!);
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
+              onFieldSubmitted: (_) => saveForm(),
+            ),
+            const SizedBox(height: 1),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: ScrollPhysics(),
+              itemCount: eventplacepredictions.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                    eventplacepredictions[index].description!,
+                    textAlign: TextAlign.start,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  onTap: () {
+                    selectLocation(eventplacepredictions[index].description!);
+                  },
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

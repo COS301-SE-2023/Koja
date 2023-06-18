@@ -88,10 +88,16 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
         trailing: Icon(
           Icons.arrow_drop_down,
         ),
-        title: Text("Click To Set Your Active Times ",
-            style: GoogleFonts.ubuntu(
-              fontSize: 15,
-            )),
+        title: Text("Times Boundaries ",
+        style: GoogleFonts.ubuntu(
+          fontSize: 17,
+        )),
+        subtitle: Text(
+          "Click here to add time boundaries for each category, select category and then click +\n\nAfter adding time boundary for a category, you can swipe to the left to edit or delete a boundary.",
+          style: GoogleFonts.ubuntu(
+            fontSize: 12.5,
+          ),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -99,30 +105,30 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("Select Category:",
-                    style: TextStyle(
-                      fontSize: 15,
-                      // fontWeight: FontWeight.bold,
-                      // color: Colors.white,
-                    )),
-                SizedBox(width: 3),
+                Text(" Select Category:",
+                style: TextStyle(
+                  fontSize: 15,
+                )),
+                SizedBox(width: 8),
                 Expanded(
                   child: Container(
-                    child: DropdownButton<String>(
-                      value: selectedOption,
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedOption = newValue!;
-                        });
-                      },
-                      items: dropdownOptions.map<DropdownMenuItem<String>>(
-                        (String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
+                    child: Container(
+                      child: DropdownButton<String>(
+                        value: selectedOption,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedOption = newValue!;
+                          });
                         },
-                      ).toList(),
+                        items: dropdownOptions.map<DropdownMenuItem<String>>(
+                          (String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          },
+                        ).toList(),
+                      ),
                     ),
                   ),
                 ),
@@ -131,11 +137,12 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                     icon: Icon(Icons.add),
                     onPressed: () {
                       showDialog(
-                          context: context,
-                          builder: (context) {
-                            return SetBoundary(
-                                selectedOption, _start, _end, saveTime);
-                          });
+                        context: context,
+                        builder: (context) {
+                          return SetBoundary(
+                            selectedOption, _start, _end, saveTime);
+                        }
+                      );
                     },
                   ),
                 ),
@@ -146,6 +153,7 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
           ListView.builder(
             shrinkWrap: true,
             itemCount: categories.length,
+            physics: ScrollPhysics(),
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -164,16 +172,18 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                   }, (context) {
                     editedindex = index;
                     showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SetBoundary(
-                              categories[index][0], _start, _end, saveTime);
-                        });
+                      context: context,
+                      builder: (context) {
+                        return SetBoundary(
+                          categories[index][0], _start, _end, saveTime
+                        );
+                      }
+                    );
                   }),
                 ),
               );
             },
-          )
+          ),
         ],
       ),
     );

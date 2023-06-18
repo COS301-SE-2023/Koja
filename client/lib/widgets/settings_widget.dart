@@ -309,6 +309,7 @@ class SettingsState extends State<Settings> {
                 const SizedBox(height: 1),
                 ListView.builder(
                   shrinkWrap: true,
+                  physics: ScrollPhysics(),
                   itemCount: placePredictions.length,
                   itemBuilder: (context, index) {
                     return ListTile(
@@ -417,6 +418,7 @@ class SettingsState extends State<Settings> {
                 ),
                 const SizedBox(height: 1),
                 ListView.builder(
+                   physics: ScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: workplacePredictions.length,
                   itemBuilder: (context, index) {
