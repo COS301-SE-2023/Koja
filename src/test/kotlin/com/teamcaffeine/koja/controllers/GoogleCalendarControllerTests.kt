@@ -35,7 +35,6 @@ class GoogleCalendarControllerTests {
         Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]).thenReturn("your_test_password")
     }
 
-
     @Test
     fun `oauth2Callback should return HttpStatus OK`() {
         mockMvc.perform(get("/").param("code", "testCode").contentType(MediaType.APPLICATION_JSON))
