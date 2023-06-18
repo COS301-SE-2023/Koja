@@ -2,8 +2,9 @@ package com.teamcaffeine.koja.controller
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.auth0.jwt.interfaces.DecodedJWT
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
+import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
+import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
 import org.springframework.web.bind.annotation.PostMapping
@@ -121,7 +122,7 @@ class TokenManagerController {
             val decrypted = cipher.doFinal(decoded)
             return String(decrypted, Charsets.UTF_8)
         }
-        fun decodeJwtToken(jwtToken: String): DecodedJWT {
+        fun getUserJWTTokenData(jwtToken: String): UserJWTTokenDataDTO {
             val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
             val algorithm = Algorithm.HMAC512(jwtSecret)
             val verifier = JWT.require(algorithm).build()
@@ -129,8 +130,24 @@ class TokenManagerController {
 
             val encryptedClaims = decodedJWT.getClaim("encrypted").asString()
             val decryptedClaims = decrypt(encryptedClaims, generateSecretKey(jwtSecret))
-            
-            return decodedJWT
+            val userTokens = decryptedClaims
+                .trim()
+                .removeSurrounding("[", "]")
+                .split("}, ")
+                .map { it.trim().plus("}") }
+
+            val userAccountTokens = mutableListOf<JWTAuthDetailsDTO>()
+
+            for (token in userTokens) {
+                val processedToken = parseJWTFormatString(token)
+                if(processedToken != null)
+                    userAccountTokens.add(processedToken)
+            }
+
+            return UserJWTTokenDataDTO(
+                 userAccountTokens,
+                    decryptedClaims.substringAfter("userID=").substringBefore(",").toInt()
+            )
         }
 
         fun generateSecretKey(jwtSecret: String): SecretKey {

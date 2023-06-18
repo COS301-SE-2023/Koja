@@ -7,6 +7,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.calendar.CalendarScopes
+import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -29,6 +31,8 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import com.google.api.client.util.DateTime as GoogleDateTime
+import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
 class GoogleCalendarAdapterService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) : CalendarAdapterService(AuthProviderEnum.GOOGLE) {
@@ -102,7 +106,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
                 if(updatedCredentials != null)
                     userTokens.add(
                         JWTGoogleDTO(
-                            updatedCredentials.accessToken,
+                            updatedCredentials.getAccessToken(),
                             userAccount.refreshToken,
                             updatedCredentials.expireTimeInSeconds
                         )
@@ -151,39 +155,30 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         return newUser
     }
 
-    override fun getUserEvents(jwtToken: String): List<UserEventDTO> {
+    override fun getUserEvents(accessToken : String): List<UserEventDTO> {
         try {
-//            val decodedJwt = decodeJwtToken(jwtToken)
-//
-//            val accessTokens = decodedJwt.getClaim(JWTTokenStructureEnum.USER_ACCOUNT_TOKENS.claimName).asString()
-//            for (accessToken in accessTokens.split(",")) {
-//                val userEvents = getUserEventsForAccessToken(accessToken)
-//                if (userEvents.isNotEmpty())
-//                    return userEvents
-//            }
-//
-//            val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
-//
-//            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
-//                .setApplicationName("Your Application Name")
-//                .build()
-//
-//            val now = GoogleDateTime(System.currentTimeMillis())
-//            val request = calendar.events().list("primary")
-//                .setOrderBy("startTime")
-//                .setSingleEvents(true)
-//                .setMaxResults(1000)
-//
-//            val events: Events? = request.execute()
-//
-//            val userEvents = ArrayList<UserEventDTO>()
-//
-//            events?.items?.map {
-//                userEvents.add(UserEventDTO(it))
-//            }
-//
-//            return userEvents
-            return emptyList()
+
+            val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+
+            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
+                .setApplicationName("Your Application Name")
+                .build()
+
+            val now = GoogleDateTime(System.currentTimeMillis())
+            val request = calendar.events().list("primary")
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .setMaxResults(1000)
+
+            val events: Events? = request.execute()
+
+            val userEvents = ArrayList<UserEventDTO>()
+
+            events?.items?.map {
+                userEvents.add(UserEventDTO(it))
+            }
+
+            return userEvents
 
         } catch (e: ExpiredJwtException) {
             return emptyList()
