@@ -75,10 +75,7 @@ class HealthCheckController(@Autowired val dataSource: DataSource) {
     }
 }
 
-class HealthStatus(working: Boolean, message: String) {
-    public val working: Boolean = working
-    public val message: String = message
-}
+class HealthStatus(val working: Boolean, val message: String)
 
 enum class Status {
     RUNNING,

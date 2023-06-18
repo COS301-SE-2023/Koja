@@ -2,7 +2,7 @@ package com.teamcaffeine.koja.dto
 
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 
-class JWTGoogleDTO(private val accessToken: String, private val refreshToken: String, public val expireTimeInSeconds: Long) : JWTAuthDetailsDTO(AuthProviderEnum.GOOGLE) {
+class JWTGoogleDTO(private val accessToken: String, private val refreshToken: String, val expireTimeInSeconds: Long) : JWTAuthDetailsDTO(AuthProviderEnum.GOOGLE) {
     override fun getJWTFormat(): String {
         return mapOf(
             "googleAccessToken" to accessToken,

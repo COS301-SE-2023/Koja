@@ -14,7 +14,7 @@ abstract class CalendarAdapterService(authProvider : AuthProviderEnum) {
     abstract fun setupConnection(request: HttpServletRequest?) : RedirectView
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?): ResponseEntity<String>
-    abstract fun getUserEvents(jwtToken: String): List<UserEventDTO>
+    abstract fun getUserEvents(accessToken: String): List<UserEventDTO>
 
     abstract fun getUserEmail(accessToken: String): String?
 

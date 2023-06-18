@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserCalendarService(private val userAccountRepository: UserAccountRepository, private val userRepository: UserRepository) {
 
-    public fun getAllUserEvents(token: String): List<UserEventDTO> {
+    fun getAllUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = getUserJWTTokenData(token)
 
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
@@ -36,7 +36,7 @@ class UserCalendarService(private val userAccountRepository: UserAccountReposito
     }
 
     private fun consolidateEvents(userEvent: UserEventDTO?) {
-        TODO("Not yet implemented");
+        TODO("Not yet implemented")
     }
 
 

@@ -2,7 +2,7 @@ package com.teamcaffeine.koja.dto
 
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 
-abstract class JWTAuthDetailsDTO(public val authProvider: AuthProviderEnum) {
+abstract class JWTAuthDetailsDTO(val authProvider: AuthProviderEnum) {
     abstract fun getJWTFormat(): String
     abstract fun getExpireTime(): Long
 
