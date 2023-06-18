@@ -2,7 +2,7 @@ package com.teamcaffeine.koja.dto
 
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 
-abstract class JWTAuthDetailsDTO {
+abstract class JWTAuthDetailsDTO(public val authProvider: AuthProviderEnum) {
     abstract fun getJWTFormat(): String
     abstract fun getExpireTime(): Long
 
@@ -20,11 +20,11 @@ abstract class JWTAuthDetailsDTO {
                 map[key] = value
             }
 
-            if(map["provider"] == AuthProviderEnum.GOOGLE.name){
+            if(map["authProvider"] == AuthProviderEnum.GOOGLE.name){
                 return JWTGoogleDTO(
-                    map["googleAccessToken"] as String,
-                    map["googleRefreshToken"] as String,
-                    (map["googleExpireDate"] as String).toLong()
+                    map["accessToken"] as String,
+                    map["refreshToken"] as String,
+                    (map["expireTimeInSeconds"] as String).toDouble().toLong()
                 )
             }
             return null

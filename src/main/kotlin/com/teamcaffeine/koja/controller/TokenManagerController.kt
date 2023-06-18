@@ -2,8 +2,10 @@ package com.teamcaffeine.koja.controller
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.google.gson.Gson
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
+import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
@@ -78,13 +80,9 @@ class TokenManagerController {
         val algorithm = Algorithm.HMAC512(jwtSecret)
         val tokenExpireDate: Date = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
 
-        var tokenStrings = ""
-        for (token in accessTokens) {
-            tokenStrings = tokenStrings + token.getJWTFormat() + ","
-        }
-
+        val gson = Gson()
         val claims = mutableMapOf<String, Any>()
-        claims[JWTTokenStructureEnum.USER_ACCOUNT_TOKENS.claimName] = tokenStrings
+        claims[JWTTokenStructureEnum.USER_ACCOUNT_TOKENS.claimName] = gson.toJson(accessTokens)
         claims[JWTTokenStructureEnum.USER_ID.claimName] = userID
 
         val encryptedClaims = encrypt(claims.toString(), generateSecretKey(jwtSecret))
@@ -130,23 +128,23 @@ class TokenManagerController {
 
             val encryptedClaims = decodedJWT.getClaim("encrypted").asString()
             val decryptedClaims = decrypt(encryptedClaims, generateSecretKey(jwtSecret))
-            val userTokens = decryptedClaims
-                .trim()
-                .removeSurrounding("[", "]")
-                .split("}, ")
-                .map { it.trim().plus("}") }
+            val gson = Gson()
+
+            val userTokens = gson.fromJson(decryptedClaims.substringAfter("userAccountTokens=")
+                .substringBefore(", userID"), List::class.java)
+
 
             val userAccountTokens = mutableListOf<JWTAuthDetailsDTO>()
 
             for (token in userTokens) {
-                val processedToken = parseJWTFormatString(token)
-                if(processedToken != null)
-                    userAccountTokens.add(processedToken)
+                val currentToken = parseJWTFormatString(token.toString())
+                if(currentToken?.authProvider == AuthProviderEnum.GOOGLE)
+                    userAccountTokens.add(currentToken as JWTGoogleDTO)
             }
 
             return UserJWTTokenDataDTO(
                  userAccountTokens,
-                    decryptedClaims.substringAfter("userID=").substringBefore(",").toInt()
+                    decryptedClaims.substringAfter("userID=").substringBefore("}").toInt()
             )
         }
 
