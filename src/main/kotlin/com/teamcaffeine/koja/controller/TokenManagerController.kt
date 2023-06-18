@@ -14,44 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.MessageDigest
-import java.util.*
+import java.util.Base64
+import java.util.Date
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
-data class TokenRequest(val tokens : List<JWTAuthDetailsDTO>, val authProvider: AuthProviderEnum, val userId: Int)
+data class TokenRequest(val tokens: List<JWTAuthDetailsDTO>, val authProvider: AuthProviderEnum, val userId: Int)
 
 @RestController
 @RequestMapping("/api/v1/token")
 class TokenManagerController {
 
-    private val jwtSecret : String = System.getProperty("KOJA_JWT_SECRET")
-    private val oneMinuteInSeconds : Long = 60L
+    private val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
+    private val oneMinuteInSeconds: Long = 60L
 
     @PostMapping("/renew")
     fun renewToken(@RequestBody tokenRequest: TokenRequest): String {
-//        val refreshToken = tokenRequest.jwtGoogleDTO.refreshToken
-//
-//        try {
-//            val algorithm = Algorithm.HMAC512(jwtSecret)
-//            val verifier = JWT.require(algorithm).build()
-//            val decodedJWT: DecodedJWT = verifier.verify(refreshToken)
-//
-//            // TODO: Use refresh token to get new access token from Auth Provider and update expiry time
-//            val newAccessToken = decodedJWT.getClaim(JWTTokenStructureEnum.GOOGLE_ACCESS_TOKEN.claimName).asString()
-//            val newExpiryTime = 0L
-//            val userID = decodedJWT.getClaim(JWTTokenStructureEnum.USER_ID.claimName).asInt()
-//
-//            return createJwtToken(
-//                accessToken = newAccessToken,
-//                expiryTime = newExpiryTime,
-//                userID = userID
-//            )
-//        } catch (e: JWTDecodeException) {
-//            throw IllegalArgumentException("Invalid token format")
-//        } catch (e: JWTVerificationException) {
-//            throw IllegalArgumentException("Invalid token")
-//        }
         return ""
     }
 
@@ -78,7 +57,7 @@ class TokenManagerController {
 
     fun createJwtToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
         val algorithm = Algorithm.HMAC512(jwtSecret)
-        val tokenExpireDate: Date = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
+        val tokenExpireDate = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
 
         val gson = Gson()
         val claims = mutableMapOf<String, Any>()
@@ -92,6 +71,7 @@ class TokenManagerController {
             .withExpiresAt(tokenExpireDate)
             .sign(algorithm)
     }
+
     private fun encrypt(text: String, key: SecretKey): String {
         val cipher = Cipher.getInstance("AES")
         cipher.init(Cipher.ENCRYPT_MODE, key)
@@ -99,20 +79,11 @@ class TokenManagerController {
         return Base64.getEncoder().encodeToString(encrypted)
     }
 
-    private fun decrypt(text: String, key: SecretKey): String {
-        val cipher = Cipher.getInstance("AES")
-        cipher.init(Cipher.DECRYPT_MODE, key)
-        val decoded = Base64.getDecoder().decode(text)
-        val decrypted = cipher.doFinal(decoded)
-        return String(decrypted, Charsets.UTF_8)
-    }
-
-
     private fun getTokenValidTime(expireTime: Long): Long {
-        return ( expireTime - (oneMinuteInSeconds * 5) ) * 1000
+        return (expireTime - (oneMinuteInSeconds * 5)) * 1000
     }
 
-    companion object{
+    companion object {
         private fun decrypt(text: String, key: SecretKey): String {
             val cipher = Cipher.getInstance("AES")
             cipher.init(Cipher.DECRYPT_MODE, key)
@@ -120,6 +91,7 @@ class TokenManagerController {
             val decrypted = cipher.doFinal(decoded)
             return String(decrypted, Charsets.UTF_8)
         }
+
         fun getUserJWTTokenData(jwtToken: String): UserJWTTokenDataDTO {
             val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
             val algorithm = Algorithm.HMAC512(jwtSecret)
@@ -130,21 +102,24 @@ class TokenManagerController {
             val decryptedClaims = decrypt(encryptedClaims, generateSecretKey(jwtSecret))
             val gson = Gson()
 
-            val userTokens = gson.fromJson(decryptedClaims.substringAfter("userAccountTokens=")
-                .substringBefore(", userID"), List::class.java)
-
+            val userTokens = gson.fromJson(
+                decryptedClaims.substringAfter("userAccountTokens=")
+                    .substringBefore(", userID"),
+                List::class.java
+            )
 
             val userAccountTokens = mutableListOf<JWTAuthDetailsDTO>()
 
             for (token in userTokens) {
                 val currentToken = parseJWTFormatString(token.toString())
-                if(currentToken?.authProvider == AuthProviderEnum.GOOGLE)
+                if (currentToken?.authProvider == AuthProviderEnum.GOOGLE) {
                     userAccountTokens.add(currentToken as JWTGoogleDTO)
+                }
             }
 
             return UserJWTTokenDataDTO(
-                 userAccountTokens,
-                    decryptedClaims.substringAfter("userID=").substringBefore("}").toInt()
+                userAccountTokens,
+                decryptedClaims.substringAfter("userID=").substringBefore("}").toInt()
             )
         }
 

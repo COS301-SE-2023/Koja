@@ -31,7 +31,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
-import com.google.api.client.util.DateTime as GoogleDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -102,7 +101,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
             val existingUserAccounts = userAccountRepository.findByUserID(existingUser.userID)
 
             for (userAccount in existingUserAccounts) {
-                val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken ?: "")
+                val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
                 if(updatedCredentials != null)
                     userTokens.add(
                         JWTGoogleDTO(
@@ -164,7 +163,6 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
                 .setApplicationName("Your Application Name")
                 .build()
 
-            val now = GoogleDateTime(System.currentTimeMillis())
             val request = calendar.events().list("primary")
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
