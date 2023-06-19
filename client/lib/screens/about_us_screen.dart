@@ -4,10 +4,10 @@ class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key});
 
   @override
-  _AboutUsPageState createState() => _AboutUsPageState();
+  AboutUsPageState createState() => AboutUsPageState();
 }
 
-class _AboutUsPageState extends State<AboutUsPage>
+class AboutUsPageState extends State<AboutUsPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
