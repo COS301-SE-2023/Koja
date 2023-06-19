@@ -7,17 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-
 @Configuration
 class AuthConfig {
-	@Autowired
-	private lateinit var userRepository: UserRepository
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
-	@Autowired
-	private lateinit var userAccountRepository: UserAccountRepository
+    @Autowired
+    private lateinit var userAccountRepository: UserAccountRepository
 
-	@Bean
-	fun googleCalendarAdapter(): GoogleCalendarAdapterService {
-		return GoogleCalendarAdapterService(this.userRepository, this.userAccountRepository)
-	}
+    @Bean
+    fun googleCalendarAdapter(): GoogleCalendarAdapterService {
+        return GoogleCalendarAdapterService(this.userRepository, this.userAccountRepository)
+    }
 }

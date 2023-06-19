@@ -10,8 +10,7 @@ abstract class JWTAuthDetailsDTO(val authProvider: AuthProviderEnum) {
 
     abstract fun getAccessToken(): String
 
-    companion object
-    {
+    companion object {
         fun parseJWTFormatString(jwtFormatString: String): JWTAuthDetailsDTO? {
             val map = mutableMapOf<String, Any>()
             val keyValuePairs = jwtFormatString.trim().removeSurrounding("{", "}").split(", ")
@@ -20,7 +19,7 @@ abstract class JWTAuthDetailsDTO(val authProvider: AuthProviderEnum) {
                 map[key] = value
             }
 
-            if(map["authProvider"] == AuthProviderEnum.GOOGLE.name){
+            if (map["authProvider"] == AuthProviderEnum.GOOGLE.name) {
                 return JWTGoogleDTO(
                     map["accessToken"] as String,
                     map["refreshToken"] as String,

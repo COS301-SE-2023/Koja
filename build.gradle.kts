@@ -50,3 +50,7 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+allprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+}
