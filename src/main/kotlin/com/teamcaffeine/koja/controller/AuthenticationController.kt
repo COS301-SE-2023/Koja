@@ -1,4 +1,5 @@
 package com.teamcaffeine.koja.controller
+
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity

@@ -7,14 +7,17 @@ import com.teamcaffeine.koja.repository.UserRepository
 import org.springframework.stereotype.Service
 
 @Service
-class UserCalendarService(private val userAccountRepository: UserAccountRepository, private val userRepository: UserRepository) {
+class UserCalendarService(
+    private val userAccountRepository: UserAccountRepository,
+    private val userRepository: UserRepository
+) {
 
     fun getAllUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = getUserJWTTokenData(token)
 
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
-        val adapterFactory = CalendarAdapterFactoryService( userRepository, userAccountRepository)
+        val adapterFactory = CalendarAdapterFactoryService(userRepository, userAccountRepository)
 
         for (ua in userAccounts) {
             calendarAdapters.add(adapterFactory.createCalendarAdapter(ua.authProvider))
@@ -38,6 +41,4 @@ class UserCalendarService(private val userAccountRepository: UserAccountReposito
     private fun consolidateEvents(userEvent: UserEventDTO?) {
         TODO("Not yet implemented")
     }
-
-
 }

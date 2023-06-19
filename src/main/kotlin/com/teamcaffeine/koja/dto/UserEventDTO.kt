@@ -1,7 +1,7 @@
 package com.teamcaffeine.koja.dto
 
 import com.google.api.client.util.DateTime
-import java.util.*
+import java.util.Date
 import com.google.api.services.calendar.model.Event as GoogleEvent
 import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTime
 
@@ -61,7 +61,7 @@ class UserEventDTO(
         this.endTime = endTime
     }
 
-    companion object{
+    companion object {
         private fun toKotlinDate(eventDateTime: GoogleEventDateTime): Date {
             val dateTime: DateTime? = eventDateTime.dateTime
             val date: DateTime? = eventDateTime.date
@@ -75,5 +75,4 @@ class UserEventDTO(
             throw IllegalArgumentException("EventDateTime does not have a valid date or dateTime")
         }
     }
-
 }

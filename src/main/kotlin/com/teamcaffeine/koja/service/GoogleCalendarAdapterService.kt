@@ -34,13 +34,20 @@ import org.springframework.web.util.UriComponentsBuilder
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
-class GoogleCalendarAdapterService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) : CalendarAdapterService(AuthProviderEnum.GOOGLE) {
+class GoogleCalendarAdapterService(
+    private val userRepository: UserRepository,
+    private val userAccountRepository: UserAccountRepository
+) : CalendarAdapterService(AuthProviderEnum.GOOGLE) {
     private val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
     private val redirectUri = "http://localhost:8080/api/v1/auth/google/callback"
-    private val scopes = listOf("https://www.googleapis.com/auth/calendar.readonly", "https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email")
+    private val scopes = listOf(
+        "https://www.googleapis.com/auth/calendar.readonly",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email"
+    )
     private val clientSecrets: GoogleClientSecrets = GoogleClientSecrets().setWeb(
         GoogleClientSecrets.Details().setClientId(clientId).setClientSecret(clientSecret)
     )
@@ -48,7 +55,6 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         GoogleAuthorizationCodeFlow.Builder(httpTransport, jsonFactory, clientSecrets, scopes)
             .setAccessType("offline")
             .build()
-
 
     override fun setupConnection(request: HttpServletRequest?): RedirectView {
         val url = flow.newAuthorizationUrl()
@@ -75,8 +81,8 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         val parameters = LinkedMultiValueMap<String, String>()
         parameters.add("grant_type", "authorization_code")
         parameters.add("code", authCode)
-        parameters.add("client_id",  System.getProperty("GOOGLE_CLIENT_ID"))
-        parameters.add("client_secret",  System.getProperty("GOOGLE_CLIENT_SECRET"))
+        parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
+        parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
         parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
@@ -93,7 +99,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         val expiresIn = responseJson.get("expires_in").asLong()
 
         val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
-        val existingUser : UserAccount? = userAccountRepository.findByEmail(userEmail)
+        val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
 
         val jwtToken: String
         if (existingUser != null) {
@@ -102,7 +108,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
 
             for (userAccount in existingUserAccounts) {
                 val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
-                if(updatedCredentials != null)
+                if (updatedCredentials != null)
                     userTokens.add(
                         JWTGoogleDTO(
                             updatedCredentials.getAccessToken(),
@@ -119,10 +125,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
                     existingUser.userID
                 )
             )
-
-        }
-        else
-        {
+        } else {
             val newUser = createNewUser(userEmail, refreshToken)
 
             jwtToken = TokenManagerController().createToken(
@@ -154,10 +157,11 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
         return newUser
     }
 
-    override fun getUserEvents(accessToken : String): List<UserEventDTO> {
+    override fun getUserEvents(accessToken: String): List<UserEventDTO> {
         try {
 
-            val credential = GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+            val credential =
+                GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
 
             val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
                 .setApplicationName("Your Application Name")
@@ -177,7 +181,6 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
             }
 
             return userEvents
-
         } catch (e: ExpiredJwtException) {
             return emptyList()
         }
@@ -190,7 +193,7 @@ class GoogleCalendarAdapterService(private val userRepository: UserRepository, p
             JacksonFactory.getDefaultInstance(),
             credential
         ).setApplicationName("KOJA")
-        .build()
+            .build()
 
         val person = peopleService.people().get("people/me")
             .setPersonFields("emailAddresses")
