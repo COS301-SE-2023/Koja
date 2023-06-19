@@ -23,6 +23,10 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
         working-directory: client
+        
+      - name: Run Flutter linter
+        run: flutter analyze
+        working-directory: client
 
       - name: Run Flutter Tests
         run: flutter test
@@ -43,6 +47,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+          
+      - name: Run Linter
+        run: ./gradlew ktlintCheck
       
       - name: Build Spring Boot project
         run: ./gradlew build
