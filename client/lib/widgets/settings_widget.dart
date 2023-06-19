@@ -7,23 +7,21 @@ import 'time_picker_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Settings extends StatelessWidget {
-  var contexzz;
-  Widget spacer = const SizedBox(width: 30, height: 8);
-  Widget inline = const SizedBox(width: 10);
-  Widget forwardarrow = const SizedBox(width: 60);
+  final Widget spacer = const SizedBox(width: 30, height: 8);
+  final Widget inline = const SizedBox(width: 10);
+  final Widget forwardArrow = const SizedBox(width: 60);
 
-  Settings({Key? key}) : super(key: key);
+  const Settings({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    contexzz = context;
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
           child: Column(
             children: [
               /*  This is the Time Input Section  */
-              Header(LineIcons.hourglassEnd, 'Set Your Active Times'),
+              header(LineIcons.hourglassEnd, 'Set Your Active Times'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
               Container(
@@ -33,7 +31,7 @@ class Settings extends StatelessWidget {
                   color: const Color.fromARGB(255, 90, 126, 165),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: WorkTimePicker(),
+                child: workTimePicker(),
               ),
               const SizedBox(height: 10),
               Container(
@@ -43,13 +41,13 @@ class Settings extends StatelessWidget {
                   color: const Color.fromARGB(255, 90, 126, 165),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: PersonalTimePicker('Personal Time'),
+                child: personalTimePicker('Personal Time'),
               ),
 
               /*  This is the Location Input Section  */
 
               const SizedBox(height: 15),
-              Header(LineIcons.directions, 'Set Your Location'),
+              header(LineIcons.directions, 'Set Your Location'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
               Container(
@@ -59,7 +57,7 @@ class Settings extends StatelessWidget {
                   color: const Color.fromARGB(255, 90, 126, 165),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: Location(" Home Location"),
+                child: location(context, " Home Location"),
               ),
               const SizedBox(height: 15),
               Container(
@@ -69,13 +67,13 @@ class Settings extends StatelessWidget {
                   color: const Color.fromARGB(255, 90, 126, 165),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: Location(" Work Location"),
+                child: location(context, " Work Location"),
               ),
 
               /*  This is the About Us Section  */
 
               const SizedBox(height: 15),
-              Header(LineIcons.tags, ' About Us'),
+              header(LineIcons.tags, ' About Us'),
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 15),
               Container(
@@ -86,7 +84,7 @@ class Settings extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 padding: const EdgeInsets.all(10.0),
-                child: AboutUs(),
+                child: aboutUs(context),
               ),
             ],
           ),
@@ -97,7 +95,7 @@ class Settings extends StatelessWidget {
 
   /* This is the Header Section */
 
-  Widget Header(IconData iconData, String text) {
+  Widget header(IconData iconData, String text) {
     return Row(
       children: [
         Icon(iconData),
@@ -115,7 +113,7 @@ class Settings extends StatelessWidget {
 
   /* This is the Work Time Input Section - only difference is the Text*/
 
-  Widget WorkTimePicker() {
+  Widget workTimePicker() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,8 +130,8 @@ class Settings extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TimePickers('Start Time'),
-            TimePickers('End Time'),
+            timePickers('Start Time'),
+            timePickers('End Time'),
           ],
         ),
         Padding(
@@ -163,7 +161,7 @@ class Settings extends StatelessWidget {
 
   /* This is the Personal Time Input Section  - only difference is the Text */
 
-  Widget PersonalTimePicker(String label) {
+  Widget personalTimePicker(String label) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,8 +175,8 @@ class Settings extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TimePickers('Start Time'),
-            TimePickers('End Time'),
+            timePickers('Start Time'),
+            timePickers('End Time'),
           ],
         ),
         Padding(
@@ -206,7 +204,7 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget TimePickers(String label) {
+  Widget timePickers(String label) {
     return Row(
       children: [
         // const SizedBox(width: 3),//Don't Change this
@@ -222,7 +220,7 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget AboutUs() {
+  Widget aboutUs(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,138 +245,25 @@ class Settings extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
-            Navigator.push(
-              contexzz,
-              MaterialPageRoute(builder: (contexzz) => const AboutUsPage()),
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const AboutUsPage()),
             );
           },
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            side: const BorderSide(width: 2, color: Colors.white),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Learn More',
-                style: GoogleFonts.ubuntu(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white,
-              ),
-            ],
+          child: const Text(
+            'Read More',
+            style: TextStyle(fontSize: 15, color: Colors.white),
           ),
-          // onHover: ,
-        ),
-        Text("Version 1.0.5",
-            style: GoogleFonts.ubuntu(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: Colors.white,
-            )),
-      ],
-    );
-  }
-
-  Widget Location(String where) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 15),
-        Text(
-          ' $where',
-          style: const TextStyle(
-              fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(width: 3),
-            Address("Tap Change"),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    contexzz,
-                    MaterialPageRoute(
-                        builder: (context) => const LocationSearch()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  side: const BorderSide(width: 2, color: Colors.white),
-                ),
-                child: const Text(
-                  'Change',
-                  style: TextStyle(
-                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // TextInputType.text,
-            Container(
-              margin: const EdgeInsets.only(right: 10),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  side: const BorderSide(width: 2, color: Colors.white),
-                ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                      fontSize: 15, color: Colors.white, fontFamily: 'Roboto'),
-                ),
-              ),
-            ),
-          ],
         ),
       ],
     );
   }
 
-  Widget Address(String address) {
-    return SizedBox(
-      width: 250,
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.white),
-          ),
-        ),
-        child: Text(
-          '  $address',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    );
+  Widget location(BuildContext context, String text) {
+    return const LocationSearch();
   }
 }

@@ -11,10 +11,10 @@ class EventViewing extends StatefulWidget {
   const EventViewing({Key? key, required this.userEvent}) : super(key: key);
 
   @override
-  _EventViewingState createState() => _EventViewingState();
+  EventViewingState createState() => EventViewingState();
 }
 
-class _EventViewingState extends State<EventViewing> {
+class EventViewingState extends State<EventViewing> {
   late Event userEvent;
 
   @override
@@ -65,7 +65,7 @@ class _EventViewingState extends State<EventViewing> {
       ],
     );
   }
-  
+
   Widget buildDate(String s, DateTime to) {
     return Row(
       children: [
@@ -84,7 +84,7 @@ class _EventViewingState extends State<EventViewing> {
       ],
     );
   }
-  
+
   Widget buildDescription() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

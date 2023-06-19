@@ -4,16 +4,15 @@ import 'package:line_icons/line_icons.dart';
 import '../screens/google_auth_screen.dart';
 
 import '../Utils/constants_util.dart';
-import '../screens/navigation_management_screen.dart';
 
 class LoginModal extends StatefulWidget {
   const LoginModal({super.key});
 
   @override
-  _LoginModalState createState() => _LoginModalState();
+  LoginModalState createState() => LoginModalState();
 }
 
-class _LoginModalState extends State<LoginModal> {
+class LoginModalState extends State<LoginModal> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

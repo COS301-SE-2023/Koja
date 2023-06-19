@@ -12,10 +12,10 @@ class TasksWidget extends StatefulWidget {
   const TasksWidget({Key? key}) : super(key: key);
 
   @override
-  _TasksWidgetState createState() => _TasksWidgetState();
+  TasksWidgetState createState() => TasksWidgetState();
 }
 
-class _TasksWidgetState extends State<TasksWidget> {
+class TasksWidgetState extends State<TasksWidget> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<EventProvider>(context);

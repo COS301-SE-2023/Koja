@@ -11,10 +11,10 @@ class EventEditing extends StatefulWidget {
   const EventEditing({Key? key, this.userEvent}) : super(key: key);
   
   @override
-  _EventEditingState createState() => _EventEditingState();
+  EventEditingState createState() => EventEditingState();
 }
 
-class _EventEditingState extends State<EventEditing> {
+class EventEditingState extends State<EventEditing> {
 
   late DateTime fromDate;
   late DateTime toDate;
@@ -111,7 +111,7 @@ class _EventEditingState extends State<EventEditing> {
     ],
   );
   
-  Widget buildFrom() => BuildHeader(
+  Widget buildFrom() => buildHeader(
     header: 'FROM',
     child: Row(
       children: [
@@ -136,7 +136,7 @@ class _EventEditingState extends State<EventEditing> {
     ),
   );
   
-  Widget buildTo() => BuildHeader(
+  Widget buildTo() => buildHeader(
     header: 'TO',
     child: Row(
       children: [
@@ -170,7 +170,7 @@ class _EventEditingState extends State<EventEditing> {
         onTap: onClicked,
       );
       
-  Widget BuildHeader({
+  Widget buildHeader({
   required String header,
   required Widget child,
   }) =>
