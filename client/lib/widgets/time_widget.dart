@@ -8,7 +8,6 @@ class Time extends StatefulWidget {
 }
 
 class _ShowTimePickerAppState extends State<Time> {
-
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -19,7 +18,6 @@ class _ShowTimePickerAppState extends State<Time> {
 
 class TimePickerOptions extends StatefulWidget {
   const TimePickerOptions({super.key});
-
 
   @override
   State<TimePickerOptions> createState() => _TimePickerOptionsState();
@@ -32,14 +30,6 @@ class _TimePickerOptionsState extends State<TimePickerOptions> {
   MaterialTapTargetSize tapTargetSize = MaterialTapTargetSize.padded;
   bool use24HourTime = true;
 
-  void _use24HourTimeChanged(bool? value) {
-    if (value != use24HourTime) {
-      setState(() {
-        use24HourTime = value!;
-      });
-    }
-  }
-  
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -69,7 +59,6 @@ class _TimePickerOptionsState extends State<TimePickerOptions> {
                         context: context,
                         initialTime: selectedTime ?? TimeOfDay.now(),
                         initialEntryMode: entryMode,
-                        
                       );
                       setState(() {
                         selectedTime = time;

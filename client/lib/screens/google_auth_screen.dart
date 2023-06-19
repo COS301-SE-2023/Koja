@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:client/models/event_wrapper_module.dart';
@@ -13,17 +14,21 @@ class GoogleAuthScreen extends StatefulWidget {
   const GoogleAuthScreen({super.key});
 
   @override
-  _GoogleAuthScreenState createState() => _GoogleAuthScreenState();
+  GoogleAuthScreenState createState() => GoogleAuthScreenState();
 }
 
-class _GoogleAuthScreenState extends State<GoogleAuthScreen> {
+class GoogleAuthScreenState extends State<GoogleAuthScreen> {
   @override
   Widget build(BuildContext context) {
+    final completer = Completer<BuildContext>();
+    if (!completer.isCompleted) {
+      completer.complete(context);
+    }
     final provider = Provider.of<EventProvider>(context);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Google Auth'),
+          title: const Text('Google Auth'),
         ),
         body: InAppWebView(
           initialUrlRequest: URLRequest(
@@ -39,16 +44,17 @@ class _GoogleAuthScreenState extends State<GoogleAuthScreen> {
           onLoadStop: (InAppWebViewController controller, Uri? uri) async {
             List<EventWrapper> events = [];
             if (uri != null) {
-              String url = uri.toString();
               String responseBody = await controller.evaluateJavascript(
                   source: 'document.body.innerHTML');
               final response = jsonDecode(responseBody);
               for (var obj in response) {
-                events.add(new EventWrapper(jsonEncode(obj)));
+                events.add(EventWrapper(jsonEncode(obj)));
               }
               provider.setEventWrappers(events);
-              Navigator.of(context)
-                  .pushReplacementNamed(NavigationScreen.routeName);
+              completer.future.then((context) {
+                Navigator.of(context)
+                    .pushReplacementNamed(NavigationScreen.routeName);
+              });
             }
           },
         ),
