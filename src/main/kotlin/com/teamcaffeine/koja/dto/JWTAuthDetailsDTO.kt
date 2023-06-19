@@ -29,5 +29,4 @@ abstract class JWTAuthDetailsDTO(val authProvider: AuthProviderEnum) {
             return null
         }
     }
-
 }
