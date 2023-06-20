@@ -1,2 +1,4 @@
-package com.teamcaffiene.koja.Repository;public class UserAccountRepositoryTest {
+package com.teamcaffiene.koja.Repository;
+
+public class UserAccountRepositoryTest {
 }

@@ -1,2 +1,4 @@
-package com.teamcaffiene.koja.controller;public class AuthenticationControllerTest {
+package com.teamcaffiene.koja.controller;
+
+public class AuthenticationControllerTest {
 }

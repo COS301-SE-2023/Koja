@@ -1,2 +1,4 @@
-package com.teamcaffiene.koja.service;public class UserCalendarServiceTest {
+package com.teamcaffiene.koja.service;
+
+public class UserCalendarServiceTest {
 }

@@ -1,2 +1,4 @@
-package com.teamcaffiene.koja.controller;public class CalendarControllerTest {
+package com.teamcaffiene.koja.controller;
+
+public class CalendarControllerTest {
 }
