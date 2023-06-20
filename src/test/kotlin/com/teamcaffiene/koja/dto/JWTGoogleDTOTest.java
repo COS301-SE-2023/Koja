@@ -1,2 +1,4 @@
-package com.teamcaffiene.koja.dto;public class JWTGoogleDTOTest {
+package com.teamcaffiene.koja.dto;
+
+public class JWTGoogleDTOTest {
 }

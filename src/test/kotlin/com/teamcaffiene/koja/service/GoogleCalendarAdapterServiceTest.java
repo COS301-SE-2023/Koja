@@ -1,2 +1,4 @@
-package com.teamcaffiene.koja.service;public class GoogleCalendarAdapterServiceTest {
+package com.teamcaffiene.koja.service;
+
+public class GoogleCalendarAdapterServiceTest {
 }
