@@ -15,7 +15,7 @@ class UserEventDTO(
 
     constructor(googleEvent: GoogleEvent) : this(
         id = googleEvent.id,
-        description = googleEvent.summary ?: "",
+        description = googleEvent.description ?: "",
         location = googleEvent.location ?: "",
         startTime = toKotlinDate(googleEvent.start) ?: Date(),
         endTime = toKotlinDate(googleEvent.end) ?: Date()
