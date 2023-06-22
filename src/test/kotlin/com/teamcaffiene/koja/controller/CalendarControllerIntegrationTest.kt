@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.controller
 
+import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.junit.jupiter.api.Test
@@ -10,11 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import java.util.*
 
-@SpringBootTest
+@SpringJUnitConfig
+@SpringBootTest(classes = [KojaApplication::class])
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(locations = ["classpath:application-test.properties"])
