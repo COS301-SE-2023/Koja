@@ -10,14 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-
+import com.google.maps.DistanceMatrixApi
+import com.google.maps.GeoApiContext
+import com.google.maps.model.DistanceMatrix
+import com.google.maps.model.TravelMode
 @RestController
-internal class LocationController {
+internal class
+LocationController {
 
     @Autowired
     private lateinit var userService: UserService;
-    @PostMapping("/{userId}/homeLocation")
-    fun updateUserHomeLocation( @PathVariable("userId") userId: String?,
+    @PostMapping("/homeLocation/{userId}")
+    fun updateUserHomeLocation(  @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
@@ -27,8 +31,8 @@ internal class LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
-    @PostMapping("/{userId}/DHomeLocation")
-    fun deleteUserHomeLocation( @PathVariable("userId") userId: String?
+    @PostMapping("/DHomeLocation/{userId}")
+    fun deleteUserHomeLocation( @RequestParam @PathVariable("userId") userId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
             ?: return ResponseEntity.notFound().build()
@@ -37,8 +41,8 @@ internal class LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
-    @PostMapping("/{userId}/DHomeLocation")
-    fun deleteUserWorkLocation( @PathVariable("userId") userId: String?
+    @PostMapping("/HomeLocation/{userId}")
+    fun deleteUserWorkLocation(  @PathVariable("userId") userId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
             ?: return ResponseEntity.notFound().build()
@@ -46,7 +50,7 @@ internal class LocationController {
         userService.saveUser(user)
         return ResponseEntity.ok("User place updated successfully.")
     }
-    @PostMapping("/{userId}/homeLocation")
+    @PostMapping("/homeLocation/{userId}")
     fun updateUserWorkLocation( @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
     ): ResponseEntity<String> {
@@ -56,4 +60,36 @@ internal class LocationController {
         userService.saveUser(user)
         return ResponseEntity.ok("User place updated successfully.")
     }
+
+
+    @PostMapping("/distance")
+    fun getDistanceBetweenLocations( @PathVariable("origin") origin: String?,
+                                @PathVariable("destination") destination: String?){
+
+        val distance = getDistance(origin, destination)
+        println("Distance between $origin and $destination: $distance")
+    }
+
+
+
+
+
+
+
+    fun getDistance(origin: String?, destination: String?): String? {
+        val apiKey = "AIzaSyBF6_0K6jL6q0hp7izxP_GKLffm0NHfK0o" // Replace with your actual API key
+
+        val context = GeoApiContext.Builder()
+            .apiKey(apiKey)
+            .build()
+
+        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+            .origins(origin)
+            .destinations(destination)
+            .mode(TravelMode.DRIVING) // You can change the travel mode as needed
+            .await()
+
+        return result.rows[0].elements[0].distance.humanReadable
+    }
 }
+
