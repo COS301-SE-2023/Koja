@@ -20,7 +20,7 @@ LocationController {
 
     @Autowired
     private lateinit var userService: UserService;
-    @PostMapping("/homeLocation/{userId}")
+    @PostMapping("/HLocationU/{userId}")
     fun updateUserHomeLocation(  @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
     ): ResponseEntity<String> {
@@ -31,7 +31,7 @@ LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
-    @PostMapping("/DHomeLocation/{userId}")
+    @PostMapping("/HLocationD/{userId}")
     fun deleteUserHomeLocation( @RequestParam @PathVariable("userId") userId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
@@ -41,7 +41,7 @@ LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
-    @PostMapping("/HomeLocation/{userId}")
+    @PostMapping("/WLocationD/{userId}")
     fun deleteUserWorkLocation(  @PathVariable("userId") userId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
@@ -50,7 +50,7 @@ LocationController {
         userService.saveUser(user)
         return ResponseEntity.ok("User place updated successfully.")
     }
-    @PostMapping("/homeLocation/{userId}")
+    @PostMapping("/WLocationU/{userId}")
     fun updateUserWorkLocation( @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
     ): ResponseEntity<String> {
