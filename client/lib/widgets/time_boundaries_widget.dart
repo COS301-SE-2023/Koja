@@ -105,46 +105,61 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(" Select Category:",
-                style: TextStyle(
-                  fontSize: 15,
-                )),
+                Text(" Category:",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  )
+                ),
                 SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    child: Container(
-                      child: DropdownButton<String>(
-                        value: selectedOption,
-                        onChanged: (newValue) {
-                          setState(() {
-                            selectedOption = newValue!;
-                          });
-                        },
-                        items: dropdownOptions.map<DropdownMenuItem<String>>(
-                          (String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          },
-                        ).toList(),
-                      ),
+                Container(
+                  height: 35,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1,
                     ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: DropdownButton<String>(
+                    padding: EdgeInsets.all(5),
+                    underline: Container(
+                      height: 0,
+                    ),
+                    value: selectedOption,
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedOption = newValue!;
+                      });
+                    },
+                    items: dropdownOptions.map<DropdownMenuItem<String>>(
+                      (String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      },
+                    ).toList(),
                   ),
                 ),
-                Container(
-                  child: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SetBoundary(
-                            selectedOption, _start, _end, saveTime);
-                        }
-                      );
-                    },
+                SizedBox(width: 2),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.blue,
+                    ),
                   ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SetBoundary(
+                          selectedOption, _start, _end, saveTime);
+                      }
+                    );
+                  },
                 ),
               ],
             ),
@@ -158,7 +173,7 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 100,
+                  height: 83,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black,

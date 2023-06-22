@@ -10,7 +10,7 @@ class EventProvider extends ChangeNotifier {
   List<Event> get events => _events;
 
   //This is the selected date
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate ;
 
   //getter for the selected date
   DateTime get selectedDate => _selectedDate;

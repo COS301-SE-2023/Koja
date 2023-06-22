@@ -80,41 +80,32 @@ class _EventEditingState extends State<EventEditing> {
             style: const ButtonStyle(
               foregroundColor: MaterialStatePropertyAll(Colors.black),
             ),
-            child: 
-              Text('Cancel')
-        ),
+            child: Text('Cancel')),
         TextButton(
-          onPressed: saveForm,
-          style: const ButtonStyle(
-            foregroundColor: MaterialStatePropertyAll(Colors.black),
-          ),
-          child: 
-            Text('Save',
-              style: TextStyle(
-                fontFamily: 'Railway', 
-                color: Colors.black
-              )
-            )
-          ),
+            onPressed: saveForm,
+            style: const ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Colors.black),
+            ),
+            child: Text('Save',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
       content: Form(
-        key: _formKey,
-        child: ListView(
-          children: [
-            buildTitle(),
-            const SizedBox(height: 12),
-            buildDateTimePickers(),
-            const SizedBox(height: 12),
-            ChooseCategory(),
-            const SizedBox(height: 12),
-            location(),
-            const SizedBox(height: 12),
-            deleteEventButton()
-          ],
-        )
-      ),
+          key: _formKey,
+          child: ListView(
+            children: [
+              buildTitle(),
+              const SizedBox(height: 12),
+              buildDateTimePickers(),
+              const SizedBox(height: 12),
+              ChooseCategory(),
+              const SizedBox(height: 12),
+              location(),
+              const SizedBox(height: 12),
+              deleteEventButton(),
+            ],
+          )),
     );
   }
 
@@ -136,19 +127,18 @@ class _EventEditingState extends State<EventEditing> {
   Widget location() {
     return Padding(
       padding: EdgeInsets.all(8.0),
-      child: SingleChildScrollView( // Add SingleChildScrollView here
+      child: SingleChildScrollView(
         child: Column(
           children: [
             Row(
               children: [
                 Expanded(
-                  child: Text("LOCATION: ${_eventplace.text}", 
-                  maxLines: 2,
-                  style: TextStyle(
-                    fontFamily: 'Railway', 
-                    fontSize: 14, 
-                    fontWeight: FontWeight.bold)
-                  ),
+                  child: Text("LOCATION: ${_eventplace.text}",
+                      maxLines: 2,
+                      style: TextStyle(
+                          fontFamily: 'Railway',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -171,7 +161,19 @@ class _EventEditingState extends State<EventEditing> {
                   icon: const Icon(Icons.clear, color: Colors.black),
                 ),
               ),
-              onFieldSubmitted: (_) => saveForm(),
+              onFieldSubmitted: (_) {
+                if(titleController.text.isNotEmpty){
+                  saveForm();
+                }
+                else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a title'),
+                    ),
+                  );
+                }
+              },
+              
             ),
             const SizedBox(height: 1),
             ListView.builder(
@@ -195,7 +197,6 @@ class _EventEditingState extends State<EventEditing> {
         ),
       ),
     );
-
   }
 
   void onLocationChanged(String value) {
@@ -224,9 +225,7 @@ class _EventEditingState extends State<EventEditing> {
     // meetinglocation(eventplacepredictions[index].placeId!);
   }
 
-
-  Widget buildTitle() 
-  {
+  Widget buildTitle() {
     return TextFormField(
       style: const TextStyle(fontSize: 24),
       decoration: const InputDecoration(
@@ -248,8 +247,7 @@ class _EventEditingState extends State<EventEditing> {
         ],
       );
 
-  Widget buildFrom()
-  {
+  Widget buildFrom() {
     return buildHeader(
       header: 'FROM',
       child: Row(
@@ -263,10 +261,9 @@ class _EventEditingState extends State<EventEditing> {
           ),
           Expanded(
             child: buildDropdownField(
-              text: DateAndTimeUtil.toTime(fromDate),
-              //If the user clicked the time the new time is saved in the fromDate variable
-              onClicked: () => pickFromDateTime(pickDate: false)
-            ),
+                text: DateAndTimeUtil.toTime(fromDate),
+                //If the user clicked the time the new time is saved in the fromDate variable
+                onClicked: () => pickFromDateTime(pickDate: false)),
           ),
         ],
       ),
@@ -274,50 +271,49 @@ class _EventEditingState extends State<EventEditing> {
   }
 
   Widget buildTo() => buildHeader(
-    header: 'TO',
-    child: Row(
-      children: [
-        Expanded(
-          child: buildDropdownField(
-              text: DateAndTimeUtil.toDate(toDate),
-              onClicked: () => pickToDateTime(pickDate: true)),
+        header: 'TO',
+        child: Row(
+          children: [
+            Expanded(
+              child: buildDropdownField(
+                  text: DateAndTimeUtil.toDate(toDate),
+                  onClicked: () => pickToDateTime(pickDate: true)),
+            ),
+            Expanded(
+              child: buildDropdownField(
+                  text: DateAndTimeUtil.toTime(toDate),
+                  onClicked: () => pickToDateTime(pickDate: false)),
+            ),
+          ],
         ),
-        Expanded(
-          child: buildDropdownField(
-              text: DateAndTimeUtil.toTime(toDate),
-              onClicked: () => pickToDateTime(pickDate: false)),
-        ),
-      ],
-    ),
-  );
+      );
 
-  Widget buildDropdownField({ required String text,required VoidCallback onClicked,}) 
-  {
+  Widget buildDropdownField({
+    required String text,
+    required VoidCallback onClicked,
+  }) {
     return ListTile(
       title: Text(text),
       trailing: const Icon(Icons.arrow_drop_down),
       onTap: onClicked,
     );
-
   }
-      
 
-  Widget buildHeader({required String header,required Widget child}){
+  Widget buildHeader({required String header, required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           header,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.black),
+          style:
+              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         // if(header != 'LOCATION')
-      
+
         child,
       ],
     );
   }
-  
 
   Future pickFromDateTime({required bool pickDate}) async {
     final date = await pickDateTime(
@@ -343,8 +339,8 @@ class _EventEditingState extends State<EventEditing> {
     });
   }
 
-  Future<DateTime?> pickDateTime(DateTime initialDate, {required bool pickDate,DateTime? firstDate}) async 
-  {
+  Future<DateTime?> pickDateTime(DateTime initialDate,
+      {required bool pickDate, DateTime? firstDate}) async {
     if (pickDate) {
       final date = await showDatePicker(
         context: context,
@@ -405,9 +401,12 @@ class _EventEditingState extends State<EventEditing> {
     });
   }
 
-  Future saveForm() async 
-  {
-    final isValid = _formKey.currentState?.validate() ?? false;
+  Future saveForm() async {
+    late bool isValid = false;
+
+    if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
+      isValid = true;
+    }
 
     if (isValid) {
       final event = Event(
@@ -431,7 +430,6 @@ class _EventEditingState extends State<EventEditing> {
       }
     }
   }
-
 }
 
   // void sendmeetinglocation(String id) 
