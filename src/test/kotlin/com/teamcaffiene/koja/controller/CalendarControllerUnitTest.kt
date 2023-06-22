@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class CalendarControllerTest {
+class CalendarControllerUnitTest {
     @Mock
     private lateinit var userCalendarService: UserCalendarService
 

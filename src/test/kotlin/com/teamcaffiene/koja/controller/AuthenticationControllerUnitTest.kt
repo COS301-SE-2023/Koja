@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.view.RedirectView
 
-class AuthenticationControllerTest {
+class AuthenticationControllerUnitTest {
     @Mock
     private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
 
