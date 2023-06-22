@@ -14,41 +14,40 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class CalendarWidgetState extends State<CalendarWidget> {
-
   @override
   Widget build(BuildContext context) {
     final events = Provider.of<EventProvider>(context).events;
 
     return SfCalendar(
-      //This sets the view of the calendar to month view
-      view: CalendarView.week,
+        //This sets the view of the calendar to month view
+        view: CalendarView.week,
+        allowedViews: const [
+          CalendarView.day,
+          CalendarView.week,
+          CalendarView.month,
+        ],
+        initialDisplayDate: DateTime.now(),
+        showNavigationArrow: true,
+        allowDragAndDrop: true,
+        firstDayOfWeek: 1,
+        //Ths displays the events on the calendar
+        dataSource: EventDataSource(events),
 
-      allowedViews: const [
-        CalendarView.day,
-        CalendarView.week,
-        CalendarView.month,
-      ],
+        //This initialises the calendar to the current date
+        initialSelectedDate: DateTime.now(),
+        timeSlotViewSettings: const TimeSlotViewSettings(
+          timeIntervalHeight: 50,
+          timeInterval: Duration(minutes: 30),
+          timeFormat: 'h:mm a',
+        ),
 
-      showNavigationArrow: true,
-
-      allowDragAndDrop: true,
-      firstDayOfWeek: 1,
-      //Ths displays the events on the calendar
-      dataSource: EventDataSource(events),
-
-      //This initialises the calendar to the current date
-      initialSelectedDate: DateTime.now(),
-
-      //Save the date of the event when the user taps on the calendar
-      onTap: (details) {
-        final provider = Provider.of<EventProvider>(context, listen: false);
-        provider.setDate(details.date!);
-        showModalBottomSheet(
-          context: context, 
-          builder: (context) => const TasksWidget()
-        );
-      }
-
-    ); 
+        //Save the date of the event when the user taps on the calendar
+        onTap: (details) {
+          final provider = Provider.of<EventProvider>(context, listen: false);
+          provider.setDate(details.date!);
+          print(details.date!);
+          showModalBottomSheet(
+              context: context, builder: (context) => const TasksWidget());
+        });
   }
 }

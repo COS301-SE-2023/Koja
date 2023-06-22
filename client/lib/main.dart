@@ -1,4 +1,6 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 
@@ -39,7 +41,8 @@ class KojaApp extends StatelessWidget {
             theme: ThemeData(       
               useMaterial3: true,
             ),
-            home: (kDebugMode) ? const NavigationScreen() : const Login(),
+            home: const SplashScreen(),
+            // (kDebugMode) ? const NavigationScreen() : const Login(),
             routes: {
               Login.routeName: (ctx) => const Login(),
               Profile.routeName: (ctx) => const Profile(),
@@ -49,6 +52,40 @@ class KojaApp extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSplashScreen(
+      nextScreen: const Login(),
+      splash: Scaffold(
+        body: Container(
+          color: Colors.blue.shade700,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset('assets/icons/koja.png', height: 150, width: 100,),
+              Text('Koja',
+                style: TextStyle(
+                  fontSize: 40.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.ubuntu().fontFamily,
+                )
+              ),
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: Colors.blue.shade700,
+      // splashTransition: SplashTransition.fadeTransition,
+      centered: true,
     );
   }
 }

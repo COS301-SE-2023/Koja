@@ -40,6 +40,8 @@ dependencies:
   #for sign in with google
   google_sign_in: ^6.1.3
 
+  animated_splash_screen: ^1.3.0
+
   # for sign in and getting the auth
   extension_google_sign_in_as_googleapis_auth: ^2.0.9
 
