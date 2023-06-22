@@ -7,10 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
 
-
 class UserEventDTOTest {
-
-    //private val userEventDTO : UserEventDTO
 
     @Test
     fun `CreateGoogleEventDTO_SUCCESS`(){
@@ -56,5 +53,4 @@ class UserEventDTOTest {
         assertEquals(Date(2015,5,28,7,0),userEventDTO.getStartTime())
 
     }
-
 }
