@@ -50,7 +50,7 @@ class TimeCategory extends StatelessWidget {
                       category == 'Work' ? Icons.card_travel_outlined : 
                       category == 'Hobbies' ? Icons.self_improvement_outlined : 
                       category == 'Resting' ? Icons.king_bed_outlined : 
-                      category == 'Chores' ? Icons.cleaning_services_outlined : 
+                      category == 'Chores' ? Icons.help : 
                       LineAwesome.question_circle,
                       size: 30,
                     ),

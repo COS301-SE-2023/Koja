@@ -1,19 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
-
+import 'package:provider/provider.dart';
 import '../Utils/constants_util.dart';
-import '../widgets/chart_widget.dart';
+import '../providers/event_provider.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 class Home extends StatefulWidget {
   static const routeName = '/home';
 
+  
   const Home({Key? key}) : super(key: key);
-
   @override
-  HomeState createState() => HomeState();
+  _HomeState createState() => _HomeState();
 }
 
-class HomeState extends State<Home> {
+class _HomeState extends State<Home> {
+  late EventProvider _eventProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Access the EventProvider instance from the provider
+    _eventProvider = Provider.of<EventProvider>(context);
+  }
+
+  int getEventsOnPresentDay() {
+    // Get the selected date from the EventProvider
+    final selectedDate = _eventProvider.selectedDate;
+
+    // Filter the events to get the events on the selected date
+    final eventsOnSelectedDate = _eventProvider.eventsOfSelectedDate
+        .where((event) =>
+            event.from.year == selectedDate.year &&
+            event.from.month == selectedDate.month &&
+            event.from.day == selectedDate.day)
+        .toList();
+
+    return eventsOnSelectedDate.length;
+  }
+
+  int getEventsOnPresentWeek() {
+    // Get the selected date from the EventProvider
+    final selectedDate = _eventProvider.selectedDate;
+
+    // Calculate the start and end dates of the present week
+    final startOfWeek =
+        selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
+    final endOfWeek =
+        selectedDate.add(Duration(days: 7 - selectedDate.weekday));
+
+    // Filter the events to get the events within the present week
+    final eventsOnPresentWeek = _eventProvider.events
+        .where((event) =>
+            event.from.isAfter(startOfWeek) && event.from.isBefore(endOfWeek))
+        .toList();
+
+    return eventsOnPresentWeek.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,13 +75,13 @@ class HomeState extends State<Home> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start, 
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10),
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: TaskOverviewBlock(),
-          ),        
+            child: TaskOverviewBlock()
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -52,33 +95,27 @@ class HomeState extends State<Home> {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const TasksBlock(),
+                  child: TasksBlock(
+                    todayTasks: getEventsOnPresentDay(),weekTasks: getEventsOnPresentWeek(),
+                  )
                 ),
               ),
               /*  The Second Block which gives a least busy and busiest day of the week */
               Center(
                 child: Container(
-                    width: MediaQuery.of(context).size.width * 0.95,
-                    height: 75,
-                    margin: const EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const BusyDaysBlock(),
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: 75,
+                  margin: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const BusyDaysBlock(),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Summary(),
-          ), 
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: ChartWidget(),
-          ),
         ],
       ),
     );
@@ -107,28 +144,126 @@ class TaskOverviewBlock extends StatelessWidget {
   }
 }
 
-/* Summary Section with pie chart */
-class Summary extends StatelessWidget {
-  const Summary({
-    super.key,
-  });
+/*  The First Block which gives a summary of the tasks pending and total*/
+class TasksBlock extends StatelessWidget {
+  final int todayTasks;
+  final int weekTasks;
+
+  TasksBlock({Key? key, required this.todayTasks, required this.weekTasks})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Text(
-          'Summary',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
+        Container(
+          width: MediaQuery.of(context).size.width * 0.45,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.pending_actions,
+                      color: Colors.black,
+                      size: 26,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Today's Tasks",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 1,
+                        ),
+                        Text(
+                          todayTasks.toString(),
+                          style: TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(4.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.45,
+            height: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Bootstrap.calendar4_range,
+                      color: Colors.black,
+                      size: 26,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "This Week's Tasks",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 1,
+                        ),
+                        Text(
+                          weekTasks.toString(),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 }
+
 
 /*  The Second Block which gives a summary of the Days with tight and flexible schedules */
 class BusyDaysBlock extends StatelessWidget {
@@ -190,77 +325,10 @@ class BusyDaysBlock extends StatelessWidget {
               ],
             ),
           ),
-      ),
-      Container(
-        width: MediaQuery.of(context).size.width * 0.45,
-        height: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
         ),
-        child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Bootstrap.battery_charging,
-                    color: Colors.black,
-                    size: 26,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Least Busy Day",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 1,
-                      ),
-                      Text(
-                        'Sunday',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-    );
-  }
-}
-
-/*  The First Block which gives a summary of the tasks pending and total*/
-class TasksBlock extends StatelessWidget {
-  const TasksBlock({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
         Container(
           width: MediaQuery.of(context).size.width * 0.45,
+          height: 100,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -268,63 +336,12 @@ class TasksBlock extends StatelessWidget {
             padding: EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.pending_actions,
-                      color: Colors.black,
-                      size: 26,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Today's Tasks",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 1,
-                        ),
-                        Text(
-                          '5',
-                          style: TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.45,
-            height: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(
-                      Bootstrap.calendar4_range,
+                      Bootstrap.battery_charging,
                       color: Colors.black,
                       size: 26,
                     ),
@@ -336,7 +353,7 @@ class TasksBlock extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "This Week's Tasks",
+                          "Least Busy Day",
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black,
@@ -346,10 +363,10 @@ class TasksBlock extends StatelessWidget {
                           height: 1,
                         ),
                         Text(
-                          '35',
+                          'Sunday',
                           style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
                             color: Colors.black,
                           ),
                         ),
