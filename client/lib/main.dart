@@ -70,10 +70,10 @@ class SplashScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('assets/icons/koja.png', height: 150, width: 100,),
+              Image.asset('assets/icons/koja.png', height: 200, width: 100,),
               Text('Koja',
                 style: TextStyle(
-                  fontSize: 40.0,
+                  fontSize: 50.0,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.ubuntu().fontFamily,
@@ -84,7 +84,7 @@ class SplashScreen extends StatelessWidget {
         ),
       ),
       backgroundColor: Colors.blue.shade700,
-      // splashTransition: SplashTransition.fadeTransition,
+      splashTransition: SplashTransition.fadeTransition,
       centered: true,
     );
   }
