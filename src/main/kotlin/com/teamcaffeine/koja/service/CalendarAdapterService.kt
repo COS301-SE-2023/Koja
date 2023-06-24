@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.RedirectView
 abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     private val authProviderEnum: AuthProviderEnum = authProvider
 
-    abstract fun setupConnection(request: HttpServletRequest?): RedirectView
+    abstract fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?): String
     abstract fun getUserEvents(accessToken: String): List<UserEventDTO>
