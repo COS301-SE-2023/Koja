@@ -69,8 +69,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?):
-    String {
+    override fun oauth2Callback(authCode: String?): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
