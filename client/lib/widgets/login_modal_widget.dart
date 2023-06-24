@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../screens/navigation_management_screen.dart';
-import '../models/google_auth_model.dart';
 
 class LoginModal extends StatefulWidget {
   const LoginModal({super.key});
@@ -23,15 +24,18 @@ class LoginModalState extends State<LoginModal> {
           children: [
             ElevatedButton(
                 onPressed: () async {
-                  var user = await GoogleAuthModel.login();
-                  if (user != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NavigationScreen()
-                      ),
-                    );
-                  }
+                  final String authUrl =
+                      'http://localhost:8080/api/v1/auth/google';
+
+                  final String callbackUrlScheme = 'koja-login-callback';
+
+                  FlutterWebAuth.authenticate(
+                    url: authUrl,
+                    callbackUrlScheme: callbackUrlScheme,
+                  ).then((result) {
+                    final value = Uri.parse(result).queryParameters['token'];
+                    print(value);
+                  });
                 },
                 child: const SizedBox(
                   height: 30,
@@ -45,9 +49,8 @@ class LoginModalState extends State<LoginModal> {
                       ),
                       SizedBox(width: 10.0),
                       Text('Sign In With Google',
-                        style:
-                          TextStyle(color: Colors.white, fontSize: 16.0)
-                      ),
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 16.0)),
                     ],
                   ),
                 ),
