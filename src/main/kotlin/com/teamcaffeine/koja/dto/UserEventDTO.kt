@@ -1,7 +1,7 @@
 package com.teamcaffeine.koja.dto
 
 import com.google.api.client.util.DateTime
-import java.util.*
+import java.util.Date
 import com.google.api.services.calendar.model.Event as GoogleEvent
 import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTime
 
@@ -11,7 +11,7 @@ class UserEventDTO(
     private var location: String,
     private var startTime: Date,
     private var endTime: Date,
-    private var dynamic : Boolean = false
+    private var dynamic: Boolean = false
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(

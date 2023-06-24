@@ -49,8 +49,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun createEvent(token: String, eventDTO: UserEventDTO)
-    {
+    fun createEvent(token: String, eventDTO: UserEventDTO) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val userEvents = getAllUserEvents(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
