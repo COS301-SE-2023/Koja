@@ -1,7 +1,7 @@
 package com.teamcaffeine.koja.dto
 
 import com.google.api.client.util.DateTime
-import java.util.Date
+import java.util.*
 import com.google.api.services.calendar.model.Event as GoogleEvent
 import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTime
 
@@ -10,7 +10,8 @@ class UserEventDTO(
     private var description: String,
     private var location: String,
     private var startTime: Date,
-    private var endTime: Date
+    private var endTime: Date,
+    private var dynamic : Boolean = false
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
@@ -18,7 +19,8 @@ class UserEventDTO(
         description = googleEvent.summary ?: "",
         location = googleEvent.location ?: "",
         startTime = toKotlinDate(googleEvent.start) ?: Date(),
-        endTime = toKotlinDate(googleEvent.end) ?: Date()
+        endTime = toKotlinDate(googleEvent.end) ?: Date(),
+        dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true"
     )
 
     fun getId(): String {
@@ -59,6 +61,14 @@ class UserEventDTO(
 
     fun setEndTime(endTime: Date) {
         this.endTime = endTime
+    }
+
+    fun isDynamic(): Boolean {
+        return dynamic
+    }
+
+    fun setDynamic(dynamic: Boolean) {
+        this.dynamic = dynamic
     }
 
     companion object {

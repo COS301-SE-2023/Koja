@@ -7,7 +7,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.CalendarScopes
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
 import com.teamcaffeine.koja.controller.TokenManagerController
@@ -225,5 +228,36 @@ class GoogleCalendarAdapterService(
         } else {
             null
         }
+    }
+
+    override fun createEvent(accessToken: String, eventDTO: UserEventDTO ): Event {
+        val calendarService = buildCalendarService(accessToken)
+
+        val event = Event()
+            .setSummary(eventDTO.getDescription())
+            .setLocation(eventDTO.getLocation())
+            .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
+            .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
+
+        if (eventDTO.isDynamic()) {
+            event.extendedProperties = Event.ExtendedProperties().apply {
+                shared = mapOf("dynamic" to "true")
+            }
+        }
+
+        val calendarId = "primary"
+        val createdEvent = calendarService.events().insert(calendarId, event).execute()
+        println("Event created: ${createdEvent.htmlLink}")
+        return createdEvent
+    }
+
+    private fun buildCalendarService(accessToken: String): GoogleCalendar {
+        val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
+        val jsonFactory = JacksonFactory.getDefaultInstance()
+        val credential = GoogleCredential().setAccessToken(accessToken)
+
+        return GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
+            .setApplicationName("Your Application Name")
+            .build()
     }
 }
