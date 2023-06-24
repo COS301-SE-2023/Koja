@@ -230,7 +230,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    override fun createEvent(accessToken: String, eventDTO: UserEventDTO ): Event {
+    override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val event = Event()

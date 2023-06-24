@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/user/calendar")
-class CalendarController(private val userCalendar: UserCalendarService) {\
+class CalendarController(private val userCalendar: UserCalendarService) {
 
     data class AddEventRequest(
         val token: String,
         val event: UserEventDTO
     )
-
 
     @GetMapping("/userEvents")
     fun getAllUserEvents(@RequestBody token: String): ResponseEntity<List<UserEventDTO>> {
@@ -29,5 +28,4 @@ class CalendarController(private val userCalendar: UserCalendarService) {\
         userCalendar.createEvent(addEventRequest.token, addEventRequest.event)
         return ResponseEntity.ok("Event added")
     }
-
 }
