@@ -46,7 +46,7 @@ class GoogleCalendarAdapterService(
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
     private val redirectUriBase = "http://localhost:8080/api/v1/auth"
     private val scopes = listOf(
-        "https://www.googleapis.com/auth/calendar.readonly",
+        "https://www.googleapis.com/auth/calendar",
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email"
     )
