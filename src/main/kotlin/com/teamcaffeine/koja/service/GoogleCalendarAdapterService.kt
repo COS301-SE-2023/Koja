@@ -41,7 +41,7 @@ class GoogleCalendarAdapterService(
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
-    private val redirectUri = "http://localhost:8080/api/v1/auth/google/callback"
+    private val redirectUriBase = "http://localhost:8080/api/v1/auth"
     private val scopes = listOf(
         "https://www.googleapis.com/auth/calendar.readonly",
         "https://www.googleapis.com/auth/userinfo.profile",
@@ -55,9 +55,15 @@ class GoogleCalendarAdapterService(
             .setAccessType("offline")
             .build()
 
-    override fun setupConnection(request: HttpServletRequest?): RedirectView {
+    override fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView {
+        val redirectURI = if(appCallBack) {
+            "$redirectUriBase/app/google/callback"
+        } else {
+            "$redirectUriBase/google/callback"
+        }
+
         val url = flow.newAuthorizationUrl()
-            .setRedirectUri(redirectUri)
+            .setRedirectUri(redirectURI)
             .setState(request?.session?.id)
             .build()
 
