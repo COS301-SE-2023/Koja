@@ -24,9 +24,9 @@ class CalendarController(private val userCalendar: UserCalendarService) {\
         return ResponseEntity.ok(userCalendar.getAllUserEvents(token))
     }
 
-    @PostMapping("/addEvent")
+    @PostMapping("/createEvent")
     fun addEvent(@RequestBody addEventRequest: AddEventRequest): ResponseEntity<String> {
-        userCalendar.ge
+        userCalendar.createEvent(addEventRequest.token, addEventRequest.event)
         return ResponseEntity.ok("Event added")
     }
 

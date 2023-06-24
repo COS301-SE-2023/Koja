@@ -49,7 +49,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun addEvent(token: String, eventDTO: UserEventDTO)
+    fun createEvent(token: String, eventDTO: UserEventDTO)
     {
         val userJWTTokenData = getUserJWTTokenData(token)
         val userEvents = getAllUserEvents(token)
