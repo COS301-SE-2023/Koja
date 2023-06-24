@@ -65,7 +65,7 @@ class EventViewingState extends State<EventViewing> {
       ],
     );
   }
-  
+
   Widget buildDate(String s, DateTime to) {
     return Row(
       children: [
@@ -84,7 +84,7 @@ class EventViewingState extends State<EventViewing> {
       ],
     );
   }
-  
+
   Widget buildDescription() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
