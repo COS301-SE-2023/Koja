@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
@@ -70,7 +69,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?): ResponseEntity<String> {
+    override fun oauth2Callback(authCode: String?): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -102,7 +101,7 @@ class GoogleCalendarAdapterService(
         val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
 
         val jwtToken: String
-        if (existingUser != null) {
+        if (existingUser != null && existingUser.refreshToken.isNotEmpty()) {
             val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
             val existingUserAccounts = userAccountRepository.findByUserID(existingUser.userID)
 
@@ -137,7 +136,7 @@ class GoogleCalendarAdapterService(
             )
         }
 
-        return ResponseEntity.ok(jwtToken)
+        return jwtToken
     }
 
     private fun createNewUser(userEmail: String, refreshToken: String?): User {
@@ -161,10 +160,10 @@ class GoogleCalendarAdapterService(
         try {
 
             val credential =
-                GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+                GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR, ))
 
             val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
-                .setApplicationName("Your Application Name")
+                .setApplicationName("Koja")
                 .build()
 
             val request = calendar.events().list("primary")

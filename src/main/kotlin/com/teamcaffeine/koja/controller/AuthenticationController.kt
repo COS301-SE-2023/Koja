@@ -2,7 +2,6 @@ package com.teamcaffeine.koja.controller
 
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -19,7 +18,8 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
     }
 
     @GetMapping("/google/callback")
-    fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?): ResponseEntity<String> {
-        return googleCalendarAdapter.oauth2Callback(authCode)
+    fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?): RedirectView {
+        val jwt = googleCalendarAdapter.oauth2Callback(authCode)
+        return RedirectView("koja-login-callback://callback?token=$jwt")
     }
 }
