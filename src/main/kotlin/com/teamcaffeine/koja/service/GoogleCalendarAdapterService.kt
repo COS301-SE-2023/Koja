@@ -56,7 +56,7 @@ class GoogleCalendarAdapterService(
             .build()
 
     override fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView {
-        val redirectURI = if(appCallBack) {
+        val redirectURI = if (appCallBack) {
             "$redirectUriBase/app/google/callback"
         } else {
             "$redirectUriBase/google/callback"
