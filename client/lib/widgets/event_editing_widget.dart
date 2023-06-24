@@ -133,12 +133,16 @@ class _EventEditingState extends State<EventEditing> {
             Row(
               children: [
                 Expanded(
-                  child: Text("LOCATION: ${_eventplace.text}",
-                      maxLines: 2,
-                      style: TextStyle(
-                          fontFamily: 'Railway',
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold)),
+                  child: Text
+                  (
+                    "LOCATION: ${_eventplace.text}",
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontFamily: 'Railway',
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
                 ),
               ],
             ),
@@ -308,8 +312,6 @@ class _EventEditingState extends State<EventEditing> {
           style:
               const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
-        // if(header != 'LOCATION')
-
         child,
       ],
     );
@@ -402,6 +404,12 @@ class _EventEditingState extends State<EventEditing> {
   }
 
   Future saveForm() async {
+
+    ChooseCategory chooseCategory = ChooseCategory();
+    // String selectedCategory = chooseCategory.category;
+    // print(selectedCategory);
+
+
     late bool isValid = false;
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -413,6 +421,7 @@ class _EventEditingState extends State<EventEditing> {
         title: titleController.text,
         location: _eventplace.text,
         description: 'description',
+        category: '',
         from: fromDate,
         to: toDate,
         isAllDay: false,

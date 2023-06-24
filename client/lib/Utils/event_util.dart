@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Event{
-
     final String title;
     final String description;
     final String location;
@@ -17,9 +16,8 @@ class Event{
         this.location = '',
         required this.from,
         required this.to,
-        this.category = 'Other', //also add function on data_source_util.dart
+        this.category = '',
         this.backgroundColor = Colors.blue,
         this.isAllDay = false,
-
     });
 }
