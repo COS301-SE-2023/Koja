@@ -20,6 +20,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
 
     return SfCalendar(
         //This sets the view of the calendar to month view
+
         view: CalendarView.week,
         allowedViews: const [
           CalendarView.day,
@@ -30,6 +31,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
         showNavigationArrow: true,
         allowDragAndDrop: true,
         firstDayOfWeek: 1,
+
         //Ths displays the events on the calendar
         dataSource: EventDataSource(events),
 
@@ -45,7 +47,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
         onTap: (details) {
           final provider = Provider.of<EventProvider>(context, listen: false);
           provider.setDate(details.date!);
-          print(details.date!);
           showModalBottomSheet(
               context: context, builder: (context) => const TasksWidget());
         });

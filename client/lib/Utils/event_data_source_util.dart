@@ -10,7 +10,7 @@ class EventDataSource extends CalendarDataSource {
     appointments = source;
   }
 
-  //DataSource is dynamic so this returns the "event" at the given index
+  //DataSource is dynamic so this returns the "userEvent" at the given index
   Event getEvent(int index) {
     return appointments![index] as Event;
   }

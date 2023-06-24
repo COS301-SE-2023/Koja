@@ -54,11 +54,6 @@ class TasksWidgetState extends State<TasksWidget> {
 
     return SfCalendarTheme(
       data: SfCalendarThemeData(
-        // todayHighlightColor: Colors.blue,
-        // todayTextStyle: const TextStyle(
-        //   color: Colors.blue,
-        //   fontWeight: FontWeight.bold,
-        // ),
         timeTextStyle: const TextStyle(
           color: Colors.black,
           fontSize: 16,
@@ -82,12 +77,12 @@ class TasksWidgetState extends State<TasksWidget> {
             return;
           }
 
-          final event = details.appointments!.first;
+          final userEvent = details.appointments!.first;
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => EventEditing(
-                event: event,
+                event: userEvent,
               ),
             ),
           );
