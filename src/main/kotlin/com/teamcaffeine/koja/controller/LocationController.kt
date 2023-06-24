@@ -79,7 +79,6 @@ LocationController {
     fun getDistance(origin: String?, destination: String?): String? {
         val apiKey = "AIzaSyBF6_0K6jL6q0hp7izxP_GKLffm0NHfK0o" // Replace with your actual API key
 
-
         val context = GeoApiContext.Builder()
             .apiKey(apiKey)
             .build()
