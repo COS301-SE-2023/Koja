@@ -33,6 +33,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import java.util.Date
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -259,5 +260,35 @@ class GoogleCalendarAdapterService(
         return GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
             .setApplicationName("Your Application Name")
             .build()
+    }
+
+    override fun getUserEventsInRange(accessToken: String, startDate: Date, endDate: Date): List<UserEventDTO> {
+        try {
+            val credential = GoogleCredential().setAccessToken(accessToken)
+                .createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+
+            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
+                .setApplicationName("Your Application Name")
+                .build()
+
+            val request = calendar.events().list("primary")
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .setMaxResults(1000)
+                .setTimeMin(DateTime(startDate.time))
+                .setTimeMax(DateTime(endDate.time))
+
+            val events: Events? = request.execute()
+
+            val userEvents = ArrayList<UserEventDTO>()
+
+            events?.items?.map {
+                userEvents.add(UserEventDTO(it))
+            }
+
+            return userEvents
+        } catch (e: ExpiredJwtException) {
+            return emptyList()
+        }
     }
 }
