@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
@@ -70,7 +69,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?): ResponseEntity<String> {
+    override fun oauth2Callback(authCode: String?): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -137,7 +136,7 @@ class GoogleCalendarAdapterService(
             )
         }
 
-        return ResponseEntity.ok(jwtToken)
+        return jwtToken
     }
 
     private fun createNewUser(userEmail: String, refreshToken: String?): User {
