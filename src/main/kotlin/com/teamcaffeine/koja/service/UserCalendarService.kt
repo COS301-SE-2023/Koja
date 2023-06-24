@@ -7,7 +7,8 @@ import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 @Service
 class UserCalendarService(
@@ -65,8 +66,7 @@ class UserCalendarService(
             }
         }
 
-        if(eventDTO.isDynamic())
-        {
+        if (eventDTO.isDynamic()) {
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
