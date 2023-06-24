@@ -7,8 +7,7 @@ import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import org.springframework.stereotype.Service
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 
 @Service
 class UserCalendarService(
@@ -66,9 +65,12 @@ class UserCalendarService(
             }
         }
 
-        val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
-        eventDTO.setStartTime(earliestSlotStartTime)
-        eventDTO.setEndTime(earliestSlotEndTime)
+        if(eventDTO.isDynamic())
+        {
+            val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
+            eventDTO.setStartTime(earliestSlotStartTime)
+            eventDTO.setEndTime(earliestSlotEndTime)
+        }
 
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
@@ -104,11 +106,9 @@ class UserCalendarService(
                 break
             }
 
-            // Otherwise, the earliestSlotStartTime is updated to after the current event ends
             earliestSlotStartTime = currentEvent.getEndTime()
         }
 
-        // Calculate end time based on the duration of the event
         val duration = eventDTO.getEndTime().time - eventDTO.getStartTime().time
         val earliestSlotEndTime = Date(earliestSlotStartTime.time + duration)
 
