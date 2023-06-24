@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.enums.AuthProviderEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.view.RedirectView
+import java.util.Date
 
 @Service
 abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
@@ -15,6 +16,8 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?): String
     abstract fun getUserEvents(accessToken: String): List<UserEventDTO>
+
+    abstract fun getUserEventsInRange(accessToken: String, startDate: Date, endDate: Date): List<UserEventDTO>
 
     abstract fun getUserEmail(accessToken: String): String?
 
