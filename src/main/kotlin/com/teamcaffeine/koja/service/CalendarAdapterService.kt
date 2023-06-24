@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import jakarta.servlet.http.HttpServletRequest
@@ -16,6 +17,8 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     abstract fun getUserEvents(accessToken: String): List<UserEventDTO>
 
     abstract fun getUserEmail(accessToken: String): String?
+
+    abstract fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event
 
     fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
