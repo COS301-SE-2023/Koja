@@ -45,4 +45,15 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         }
         return ResponseEntity.ok("Event updated")
     }
+
+    @PostMapping("/deleteEvent")
+    fun deleteEvent(@RequestBody eventToDelete : AddEventRequest): ResponseEntity<String> {
+        try {
+            userCalendar.deleteEvent(eventToDelete.token, eventToDelete.event)
+        }
+        catch (e : Exception){
+            return ResponseEntity.badRequest().body("Event could not be deleted.")
+        }
+        return ResponseEntity.ok("Event deleted.")
+    }
 }
