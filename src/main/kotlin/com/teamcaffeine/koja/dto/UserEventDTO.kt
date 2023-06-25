@@ -1,8 +1,12 @@
 package com.teamcaffeine.koja.dto
 
 import com.google.api.client.util.DateTime
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -81,9 +85,14 @@ class UserEventDTO(
         this.dynamic = dynamic
     }
 
-    fun getDuration(): Long {
+    fun getDurationInMilliseconds(): Long {
         return duration
     }
+
+    fun getDurationInSeconds(): Long {
+        return duration.div(1000)
+    }
+
 
     fun getTimeSlots(): List<TimeSlot> {
         return timeSlots
@@ -120,7 +129,9 @@ class UserEventDTO(
         }
 
         private fun parseTimeSlots(timeSlotsString: String): List<TimeSlot> {
-            val gson = Gson()
+            val gson = GsonBuilder()
+                .registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
+                .create()
             val timeSlotListType = object : TypeToken<List<TimeSlot>>() {}.type
             return gson.fromJson(timeSlotsString, timeSlotListType)
         }
@@ -128,3 +139,10 @@ class UserEventDTO(
 }
 
 data class TimeSlot(val startTime: OffsetDateTime, val endTime: OffsetDateTime)
+
+
+class OffsetDateTimeAdapter : JsonDeserializer<OffsetDateTime> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): OffsetDateTime {
+        return OffsetDateTime.parse(json.asString)
+    }
+}
