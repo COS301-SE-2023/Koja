@@ -302,6 +302,10 @@ class GoogleCalendarAdapterService(
         return updatedEvent
     }
 
+    override fun deleteEvent(accessToken: String, eventDTO: UserEventDTO): Event {
+        TODO("Not yet implemented")
+    }
+
     private fun buildCalendarService(accessToken: String): GoogleCalendar {
         val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
         val jsonFactory = JacksonFactory.getDefaultInstance()
