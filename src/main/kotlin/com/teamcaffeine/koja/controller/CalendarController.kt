@@ -34,4 +34,9 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         }
         return ResponseEntity.ok("Event added.")
     }
+
+    @PostMapping("/updateEvent")
+    fun updateEvent(@RequestBody updateEvent: AddEventRequest): ResponseEntity<String> {
+        return ResponseEntity.ok("Event updated")
+    }
 }
