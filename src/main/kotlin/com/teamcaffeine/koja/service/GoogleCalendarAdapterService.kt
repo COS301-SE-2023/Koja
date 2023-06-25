@@ -232,6 +232,39 @@ class GoogleCalendarAdapterService(
         }
     }
 
+
+    override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
+        val calendarService = buildCalendarService(accessToken)
+
+        val event = Event()
+            .setSummary(eventDTO.getDescription())
+            .setLocation(eventDTO.getLocation())
+            .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
+            .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
+
+        val extendedPropertiesMap = mutableMapOf<String, String>()
+
+        if (eventDTO.isDynamic()) {
+            extendedPropertiesMap["dynamic"] = "true"
+        }
+
+        extendedPropertiesMap["duration"] = eventDTO.getDuration().toString()
+        extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
+
+        val gson = Gson()
+        val timeSlotsJson = gson.toJson(eventDTO.getTimeSlots())
+        extendedPropertiesMap["timeSlots"] = timeSlotsJson
+
+        event.extendedProperties = Event.ExtendedProperties().apply {
+            shared = extendedPropertiesMap
+        }
+
+        val calendarId = "primary"
+        val createdEvent = calendarService.events().insert(calendarId, event).execute()
+        println("Event created: ${createdEvent.htmlLink}")
+        return createdEvent
+    }
+
     override fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
         //get the event from the calendar first
@@ -267,37 +300,6 @@ class GoogleCalendarAdapterService(
         val updatedEvent = calendarService.events().update(calendarId, eventDTO.getId(), event).execute()
         println("Event Updated: ${updatedEvent.htmlLink}")
         return updatedEvent
-    }
-    override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
-        val calendarService = buildCalendarService(accessToken)
-
-        val event = Event()
-            .setSummary(eventDTO.getDescription())
-            .setLocation(eventDTO.getLocation())
-            .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
-            .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
-
-        val extendedPropertiesMap = mutableMapOf<String, String>()
-
-        if (eventDTO.isDynamic()) {
-            extendedPropertiesMap["dynamic"] = "true"
-        }
-
-        extendedPropertiesMap["duration"] = eventDTO.getDuration().toString()
-        extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
-
-        val gson = Gson()
-        val timeSlotsJson = gson.toJson(eventDTO.getTimeSlots())
-        extendedPropertiesMap["timeSlots"] = timeSlotsJson
-
-        event.extendedProperties = Event.ExtendedProperties().apply {
-            shared = extendedPropertiesMap
-        }
-
-        val calendarId = "primary"
-        val createdEvent = calendarService.events().insert(calendarId, event).execute()
-        println("Event created: ${createdEvent.htmlLink}")
-        return createdEvent
     }
 
     private fun buildCalendarService(accessToken: String): GoogleCalendar {
