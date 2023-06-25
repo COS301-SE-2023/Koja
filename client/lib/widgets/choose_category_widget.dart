@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChooseCategory extends StatefulWidget {
-  const ChooseCategory({Key? key}) : super(key: key);
+  final void Function(String category) onCategorySelected;
+  const ChooseCategory({Key? key, required this.onCategorySelected}) : super(key: key);
 
   @override
   _ChooseCategoryState createState() => _ChooseCategoryState();
@@ -38,6 +39,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                     setState(() {
                       tag = selected ? 0 : 1;
                     });
+                    widget.onCategorySelected(categories[0]);
                   }),
               ChoiceChip(
                   label: Text(categories[1]),
@@ -46,6 +48,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                     setState(() {
                       tag = selected ? 1 : 0;
                     });
+                    widget.onCategorySelected(categories[1]);
                   }),
               ChoiceChip(
                   label: Text(categories[2]),
@@ -53,7 +56,9 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                   onSelected: (bool selected) {
                     setState(() {
                       tag = selected ? 2 : 0;
+                      
                     });
+                    widget.onCategorySelected(categories[2]);
                   }),
               ChoiceChip(
                   label: Text(categories[3]),
@@ -62,6 +67,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                     setState(() {
                       tag = selected ? 3 : 0;
                     });
+                    widget.onCategorySelected(categories[3]);
                   }),
               ChoiceChip(
                   label: Text(categories[4]),
@@ -70,6 +76,7 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                     setState(() {
                       tag = selected ? 4 : 0;
                     });
+                    widget.onCategorySelected(categories[4]);
                   }),
             ],
           )

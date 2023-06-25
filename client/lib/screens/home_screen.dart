@@ -25,42 +25,40 @@ class _HomeState extends State<Home> {
     _eventProvider = Provider.of<EventProvider>(context);
   }
 
-  int getEventsOnPresentDay() {
-    // Get the selected date from the EventProvider
-    final selectedDate = _eventProvider.selectedDate;
-
-    // Filter the events to get the events on the selected date
-    final eventsOnSelectedDate = _eventProvider.eventsOfSelectedDate
-        .where((event) =>
-            event.from.year == selectedDate.year &&
-            event.from.month == selectedDate.month &&
-            event.from.day == selectedDate.day)
-        .toList();
-
-    return eventsOnSelectedDate.length;
-  }
-
-  int getEventsOnPresentWeek() {
-    // Get the selected date from the EventProvider
-    final selectedDate = _eventProvider.selectedDate;
-
-    // Calculate the start and end dates of the present week
-    final startOfWeek =
-        selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
-    final endOfWeek =
-        selectedDate.add(Duration(days: 7 - selectedDate.weekday));
-
-    // Filter the events to get the events within the present week
-    final eventsOnPresentWeek = _eventProvider.events
-        .where((event) =>
-            event.from.isAfter(startOfWeek) && event.from.isBefore(endOfWeek))
-        .toList();
-
-    return eventsOnPresentWeek.length;
-  }
-
   @override
   Widget build(BuildContext context) {
+    int getEventsOnPresentDay() {
+      // Get the selected date from the EventProvider
+      final selectedDate = _eventProvider.selectedDate;
+
+      // Filter the events to get the events on the selected date
+      final eventsOnSelectedDate = _eventProvider.eventsOfSelectedDate
+          .where((event) =>
+              event.from.year == selectedDate.year &&
+              event.from.month == selectedDate.month &&
+              event.from.day == selectedDate.day)
+          .toList();
+
+      return eventsOnSelectedDate.length;
+    }
+
+    int getEventsOnPresentWeek() {
+      // Get the selected date from the EventProvider
+      final selectedDate = _eventProvider.selectedDate;
+
+      // Calculate the start and end dates of the present week
+      final startOfWeek = selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
+      final endOfWeek = selectedDate.add(Duration(days: 7 - selectedDate.weekday));
+
+      // Filter the events to get the events within the present week (date part only)
+      final eventsOnPresentWeek = _eventProvider.events.where((event) {
+        final eventDate = DateTime(event.from.year, event.from.month, event.from.day);
+        return eventDate.isAfter(startOfWeek) && eventDate.isBefore(endOfWeek);
+      }).toList();
+
+      return eventsOnPresentWeek.length;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -125,6 +123,7 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+
   }
 
   Expanded events(BuildContext context) {

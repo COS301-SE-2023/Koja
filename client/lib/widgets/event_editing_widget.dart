@@ -49,6 +49,14 @@ class _EventEditingState extends State<EventEditing> {
   //controller for the title text field
   final titleController = TextEditingController();
 
+  String selectedCategory = '';
+
+  void updateCategory(String category) {
+    setState(() {
+      selectedCategory = category;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -104,7 +112,7 @@ class _EventEditingState extends State<EventEditing> {
             const SizedBox(height: 12),
             buildDateTimePickers(),
             const SizedBox(height: 12),
-            ChooseCategory(),
+            ChooseCategory(onCategorySelected: updateCategory),
             const SizedBox(height: 12),
             location(),
             const SizedBox(height: 12),
@@ -411,11 +419,7 @@ class _EventEditingState extends State<EventEditing> {
 
   Future saveForm() async {
 
-    ChooseCategory chooseCategory = ChooseCategory();
-    // String selectedCategory = chooseCategory.category;
-    // print(selectedCategory);
-
-
+    // print('Selected Category: $selectedCategory');
     late bool isValid = false;
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -427,7 +431,7 @@ class _EventEditingState extends State<EventEditing> {
         title: titleController.text,
         location: _eventplace.text,
         description: 'description',
-        category: '',
+        category: selectedCategory,
         from: fromDate,
         to: toDate,
         isAllDay: false,
