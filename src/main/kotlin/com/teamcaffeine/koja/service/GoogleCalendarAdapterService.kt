@@ -13,6 +13,7 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
+import com.google.gson.Gson
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
@@ -25,6 +26,7 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
+import java.util.*
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -33,7 +35,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.Date
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -240,10 +241,21 @@ class GoogleCalendarAdapterService(
             .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
             .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
 
+        val extendedPropertiesMap = mutableMapOf<String, String>()
+
         if (eventDTO.isDynamic()) {
-            event.extendedProperties = Event.ExtendedProperties().apply {
-                shared = mapOf("dynamic" to "true")
-            }
+            extendedPropertiesMap["dynamic"] = "true"
+        }
+
+        extendedPropertiesMap["duration"] = eventDTO.getDuration().toString()
+        extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
+
+        val gson = Gson()
+        val timeSlotsJson = gson.toJson(eventDTO.getTimeSlots())
+        extendedPropertiesMap["timeSlots"] = timeSlotsJson
+
+        event.extendedProperties = Event.ExtendedProperties().apply {
+            shared = extendedPropertiesMap
         }
 
         val calendarId = "primary"
