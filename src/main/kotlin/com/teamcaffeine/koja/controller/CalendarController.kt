@@ -37,9 +37,12 @@ class CalendarController(private val userCalendar: UserCalendarService) {
 
     @PostMapping("/updateEvent")
     fun updateEvent(@RequestBody updateEvent: AddEventRequest): ResponseEntity<String> {
-        /*try {
-           // userCalendar.
-        }*/
+        try {
+            userCalendar.updateEvent(updateEvent.token, updateEvent.event)
+        }
+        catch (e: Exception) {
+            return ResponseEntity.badRequest().body("Event could not be updated.")
+        }
         return ResponseEntity.ok("Event updated")
     }
 }
