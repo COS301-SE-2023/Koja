@@ -7,8 +7,7 @@ import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import org.springframework.stereotype.Service
-import java.util.Calendar
-import java.util.Date
+import java.time.OffsetDateTime
 
 @Service
 class UserCalendarService(
@@ -62,7 +61,7 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
             if (accessToken != null) {
-                userEvents.addAll(adapter.getUserEventsInRange(accessToken!!, eventDTO.getStartTime(), eventDTO.getEndTime()))
+                userEvents.addAll(adapter.getUserEventsInRange(accessToken, eventDTO.getStartTime(), eventDTO.getEndTime()))
             }
         }
 
@@ -83,25 +82,25 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(userEvents: List<UserEventDTO>, eventDTO: UserEventDTO): Pair<Date, Date> {
+    private fun findEarliestTimeSlot(userEvents: List<UserEventDTO>, eventDTO: UserEventDTO): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
 
-        val currentDateTime = Calendar.getInstance().time
+        val currentDateTime = OffsetDateTime.now()
         val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
-            .filter { it.endTime.after(currentDateTime) }
+            .filter { it.endTime.isAfter(currentDateTime) }
             .sortedBy { it.startTime }
 
-        var earliestSlotStartTime: Date? = null
-        var earliestSlotEndTime: Date? = null
+        var earliestSlotStartTime: OffsetDateTime? = null
+        var earliestSlotEndTime: OffsetDateTime? = null
 
         for (timeSlot in sortedAvailableTimeSlots) {
-            val potentialSlotEndTime = Date(timeSlot.startTime.time + eventDTO.getDuration())
+            val potentialSlotEndTime = timeSlot.startTime.plusSeconds(eventDTO.getDuration())
 
-            if (!potentialSlotEndTime.after(timeSlot.endTime)) {
+            if (!potentialSlotEndTime.isAfter(timeSlot.endTime)) {
                 val conflictingEvent = sortedUserEvents.find {
-                    (it.getStartTime().after(timeSlot.startTime) && it.getStartTime().before(potentialSlotEndTime)) ||
-                        (it.getEndTime().after(timeSlot.startTime) && it.getEndTime().before(potentialSlotEndTime)) ||
-                        (it.getStartTime().before(timeSlot.startTime) && it.getEndTime().after(potentialSlotEndTime))
+                    (it.getStartTime().isAfter(timeSlot.startTime) && it.getStartTime().isBefore(potentialSlotEndTime)) ||
+                        (it.getEndTime().isAfter(timeSlot.startTime) && it.getEndTime().isBefore(potentialSlotEndTime)) ||
+                        (it.getStartTime().isBefore(timeSlot.startTime) && it.getEndTime().isAfter(potentialSlotEndTime))
                 }
 
                 if (conflictingEvent == null) {

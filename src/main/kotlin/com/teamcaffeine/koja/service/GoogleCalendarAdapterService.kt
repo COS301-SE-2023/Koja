@@ -26,7 +26,6 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
-import java.util.*
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -35,6 +34,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import java.time.OffsetDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -274,7 +274,7 @@ class GoogleCalendarAdapterService(
             .build()
     }
 
-    override fun getUserEventsInRange(accessToken: String, startDate: Date, endDate: Date): List<UserEventDTO> {
+    override fun getUserEventsInRange(accessToken: String, startDate: OffsetDateTime, endDate: OffsetDateTime): List<UserEventDTO> {
         try {
             val credential = GoogleCredential().setAccessToken(accessToken)
                 .createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
@@ -287,8 +287,8 @@ class GoogleCalendarAdapterService(
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
                 .setMaxResults(1000)
-                .setTimeMin(DateTime(startDate.time))
-                .setTimeMax(DateTime(endDate.time))
+                .setTimeMin(DateTime(startDate.toString()))
+                .setTimeMax(DateTime(endDate.toString()))
 
             val events: Events? = request.execute()
 
