@@ -234,9 +234,12 @@ class GoogleCalendarAdapterService(
 
     override fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
-
+        //get the event from the calendar first
         val calendarId = "primary"
+
         val event: Event = calendarService.events().get(calendarId, eventDTO.getId()).execute()
+
+        // update the event
         event.setSummary(eventDTO.getDescription())
             .setSummary(eventDTO.getDescription())
             .setLocation(eventDTO.getLocation())
@@ -259,6 +262,8 @@ class GoogleCalendarAdapterService(
         event.extendedProperties = Event.ExtendedProperties().apply {
             shared = extendedPropertiesMap
         }
+
+        // save the new updated event
         val updatedEvent = calendarService.events().update(calendarId, eventDTO.getId(), event).execute()
         println("Event Updated: ${updatedEvent.htmlLink}")
         return updatedEvent
