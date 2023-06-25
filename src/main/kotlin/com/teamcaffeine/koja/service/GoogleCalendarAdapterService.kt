@@ -302,8 +302,17 @@ class GoogleCalendarAdapterService(
         return updatedEvent
     }
 
-    override fun deleteEvent(accessToken: String, eventDTO: UserEventDTO): Event {
-        TODO("Not yet implemented")
+    override fun deleteEvent(accessToken: String, eventDTO: UserEventDTO): Boolean {
+        val calendarService = buildCalendarService(accessToken)
+        val calendarId = "primary"
+
+        try {
+            calendarService.events().delete(calendarId, eventDTO.getId()).execute()
+        }
+        catch (e : Exception){
+            return false
+        }
+        return true
     }
 
     private fun buildCalendarService(accessToken: String): GoogleCalendar {
