@@ -6,8 +6,8 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
-import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
+import org.springframework.stereotype.Service
 
 @Service
 class UserCalendarService(
@@ -61,7 +61,13 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
             if (accessToken != null) {
-                userEvents.addAll(adapter.getUserEventsInRange(accessToken, eventDTO.getStartTime(), eventDTO.getEndTime()))
+                userEvents.addAll(
+                    adapter.getUserEventsInRange(
+                        accessToken,
+                        eventDTO.getStartTime().withHour(0).withMinute(0).withSecond(0).withNano(0),
+                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999)
+                    )
+                )
             }
         }
 
@@ -84,8 +90,9 @@ class UserCalendarService(
 
     private fun findEarliestTimeSlot(userEvents: List<UserEventDTO>, eventDTO: UserEventDTO): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
-
         val currentDateTime = OffsetDateTime.now()
+
+
         val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
             .filter { it.endTime.isAfter(currentDateTime) }
             .sortedBy { it.startTime }
@@ -94,7 +101,7 @@ class UserCalendarService(
         var earliestSlotEndTime: OffsetDateTime? = null
 
         for (timeSlot in sortedAvailableTimeSlots) {
-            val potentialSlotEndTime = timeSlot.startTime.plusSeconds(eventDTO.getDuration())
+            val potentialSlotEndTime = timeSlot.startTime.plusSeconds(eventDTO.getDurationInSeconds())
 
             if (!potentialSlotEndTime.isAfter(timeSlot.endTime)) {
                 val conflictingEvent = sortedUserEvents.find {
