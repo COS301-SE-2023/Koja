@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../screens/navigation_management_screen.dart';
 
@@ -62,11 +61,13 @@ class LoginModalState extends State<LoginModal> {
                 )),
 
             ///*
+            SizedBox(height: 10.0),
             ElevatedButton(
-                onPressed: () async {
-                  Navigator.push(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => NavigationScreen()),
+                    MaterialPageRoute(builder: (context) => const NavigationScreen()),
+                    (Route<dynamic> route) => false,
                   );
                 },
                 child: const SizedBox(
@@ -75,14 +76,14 @@ class LoginModalState extends State<LoginModal> {
                   child: Row(
                     children: [
                       Icon(
-                        Bootstrap.facebook,
+                        Bootstrap.terminal,
                         size: 16.0,
                         color: Colors.white,
                       ),
                       SizedBox(width: 10.0),
-                      Text('Debug Mode',
+                      Text('Debug Mode Route',
                           style:
-                              TextStyle(color: Colors.white, fontSize: 16.0)),
+                            TextStyle(color: Colors.white, fontSize: 16.0)),
                     ],
                   ),
                 ),

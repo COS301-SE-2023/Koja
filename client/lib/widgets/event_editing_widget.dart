@@ -74,38 +74,40 @@ class _EventEditingState extends State<EventEditing> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       actions: <Widget>[
         TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
-            ),
-            child: Text('Cancel')),
+          onPressed: () => Navigator.of(context).pop(),
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.black),
+          ),
+          child: Text('Cancel')),
         TextButton(
-            onPressed: saveForm,
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
-            ),
-            child: Text('Save',
-                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+          onPressed: saveForm,
+          style: const ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.black),
+          ),
+          child: Text('Save',
+            style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
       content: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              buildTitle(),
-              const SizedBox(height: 12),
-              buildDateTimePickers(),
-              const SizedBox(height: 12),
-              ChooseCategory(),
-              const SizedBox(height: 12),
-              location(),
-              const SizedBox(height: 12),
-              deleteEventButton(),
-            ],
-          )),
+        key: _formKey,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            buildTitle(),
+            const SizedBox(height: 12),
+            buildDateTimePickers(),
+            const SizedBox(height: 12),
+            ChooseCategory(),
+            const SizedBox(height: 12),
+            // location(),
+            const SizedBox(height: 12),
+            deleteEventButton(),
+          ],
+        )),
     );
   }
 
