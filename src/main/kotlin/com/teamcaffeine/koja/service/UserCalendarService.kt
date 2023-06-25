@@ -58,7 +58,6 @@ class UserCalendarService(
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
-            //TODO
             if (accessToken != null){
                 adapter.updateEvent(accessToken, eventDTO)
             }
@@ -68,6 +67,16 @@ class UserCalendarService(
     fun deleteEvent(token: String, eventDTO: UserEventDTO){
         var userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+
+        for (adapter in calendarAdapters){
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
+                it.getRefreshToken() == userAccount.refreshToken
+            }?.getAccessToken()
+            if (accessToken != null){
+                adapter.deleteEvent(accessToken, eventDTO)
+            }
+        }
     }
     fun createEvent(token: String, eventDTO: UserEventDTO) {
         val userJWTTokenData = getUserJWTTokenData(token)
