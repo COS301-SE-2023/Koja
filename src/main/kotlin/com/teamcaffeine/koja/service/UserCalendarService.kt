@@ -64,6 +64,11 @@ class UserCalendarService(
             }
         }
     }
+
+    fun deleteEvent(token: String, eventDTO: UserEventDTO){
+        var userJWTTokenData = getUserJWTTokenData(token)
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+    }
     fun createEvent(token: String, eventDTO: UserEventDTO) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
