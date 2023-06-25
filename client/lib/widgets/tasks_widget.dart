@@ -62,6 +62,12 @@ class TasksWidgetState extends State<TasksWidget> {
       child: SfCalendar(
         dataSource: EventDataSource(provider.events),
         initialSelectedDate: provider.selectedDate,
+
+        timeSlotViewSettings: TimeSlotViewSettings(
+          timeIntervalHeight: 60,
+          timeInterval: Duration(minutes: 30),
+          timeFormat: 'HH:mm',
+        ),
         //Builds the events on the calendar
         appointmentBuilder: appointmentBuilder,
         initialDisplayDate: provider.selectedDate,
@@ -69,8 +75,6 @@ class TasksWidgetState extends State<TasksWidget> {
         todayHighlightColor: Colors.black,
         selectionDecoration: const BoxDecoration(
           color: Color.fromARGB(0, 255, 0, 0),
-          // border: Border.all(color: Colors.black, width: 2),
-          // borderRadius: BorderRadius.circular(12),
         ),
         onTap: (details) {
           if (details.appointments == null) {
@@ -101,34 +105,16 @@ class TasksWidgetState extends State<TasksWidget> {
         color: darkBlue,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
-      children: [
-        Center(
-          child: Text(
-            event.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontFamily: 'Raleway'
-            ),
+      child: Center(
+        child: Text(
+          event.title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontFamily: 'Raleway'
           ),
-          
-        ),
-        // Expanded(
-        //   child: Center(
-        //     child: Text(
-        //       event.location,
-        //       style: const TextStyle(
-        //         color: Colors.white,
-        //         fontSize: 15,
-        //         fontFamily: 'Raleway'
-        //       ),
-        //       maxLines: 1,
-        //     ),
-        //   ),
-        // )
-      ],
-        ),
+        ),     
+      ),
     );
   }
 }
