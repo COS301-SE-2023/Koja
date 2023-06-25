@@ -52,7 +52,6 @@ class UserCalendarService(
     fun updateEvent(token: String, eventDTO: UserEventDTO){
         var userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
-        val userEvents = ArrayList<UserEventDTO>()
 
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
@@ -61,6 +60,7 @@ class UserCalendarService(
             }?.getAccessToken()
             //TODO
             if (accessToken != null){
+                adapter.updateEvent(accessToken, eventDTO)
             }
         }
     }
