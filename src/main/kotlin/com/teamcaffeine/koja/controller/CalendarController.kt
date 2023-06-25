@@ -25,7 +25,13 @@ class CalendarController(private val userCalendar: UserCalendarService) {
 
     @PostMapping("/createEvent")
     fun addEvent(@RequestBody addEventRequest: AddEventRequest): ResponseEntity<String> {
-        userCalendar.createEvent(addEventRequest.token, addEventRequest.event)
-        return ResponseEntity.ok("Event added")
+        try {
+            userCalendar.createEvent(addEventRequest.token, addEventRequest.event)
+        }
+        catch (e: Exception) {
+            if(e.message.equals("Could not find a time slot where the event can fit"))
+            return ResponseEntity.badRequest().body("Event not added, could not find a time slot where the event can fit.")
+        }
+        return ResponseEntity.ok("Event added.")
     }
 }
