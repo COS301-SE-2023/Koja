@@ -49,7 +49,19 @@ class UserCalendarService(
     private fun consolidateEvents(userEvent: UserEventDTO?) {
         TODO("Not yet implemented")
     }
+    fun updateEvent(token: String, eventDTO: UserEventDTO){
+        var userJWTTokenData = getUserJWTTokenData(token)
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+        val userEvents = ArrayList<UserEventDTO>()
 
+        for (adapter in calendarAdapters) {
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
+                it.getRefreshToken() == userAccount.refreshToken
+            }?.getAccessToken()
+            
+        }
+    }
     fun createEvent(token: String, eventDTO: UserEventDTO) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
