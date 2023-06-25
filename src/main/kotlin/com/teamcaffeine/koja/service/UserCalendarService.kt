@@ -86,31 +86,35 @@ class UserCalendarService(
     private fun findEarliestTimeSlot(userEvents: List<UserEventDTO>, eventDTO: UserEventDTO): Pair<Date, Date> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
 
-        var earliestSlotStartTime = eventDTO.getStartTime().let { originalDate ->
-            val calendar = Calendar.getInstance()
-            calendar.time = originalDate
-            calendar.set(Calendar.HOUR_OF_DAY, 0)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.time
-        }
+        val currentDateTime = Calendar.getInstance().time
+        val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
+            .filter { it.endTime.after(currentDateTime) }
+            .sortedBy { it.startTime }
 
-        for (i in sortedUserEvents.indices) {
-            val currentEvent = sortedUserEvents[i]
-            val nextEvent = sortedUserEvents.getOrNull(i + 1)
+        var earliestSlotStartTime: Date? = null
+        var earliestSlotEndTime: Date? = null
 
-            if (earliestSlotStartTime.after(currentEvent.getEndTime()) &&
-                (nextEvent == null || earliestSlotStartTime.before(nextEvent.getStartTime()))
-            ) {
+        for (timeSlot in sortedAvailableTimeSlots) {
+            val potentialSlotEndTime = Date(timeSlot.startTime.time + eventDTO.getDuration())
 
-                break
+            if (!potentialSlotEndTime.after(timeSlot.endTime)) {
+                val conflictingEvent = sortedUserEvents.find {
+                    (it.getStartTime().after(timeSlot.startTime) && it.getStartTime().before(potentialSlotEndTime)) ||
+                        (it.getEndTime().after(timeSlot.startTime) && it.getEndTime().before(potentialSlotEndTime)) ||
+                        (it.getStartTime().before(timeSlot.startTime) && it.getEndTime().after(potentialSlotEndTime))
+                }
+
+                if (conflictingEvent == null) {
+                    earliestSlotStartTime = timeSlot.startTime
+                    earliestSlotEndTime = potentialSlotEndTime
+                    break
+                }
             }
-
-            earliestSlotStartTime = currentEvent.getEndTime()
         }
 
-        val duration = eventDTO.getEndTime().time - eventDTO.getStartTime().time
-        val earliestSlotEndTime = Date(earliestSlotStartTime.time + duration)
+        if (earliestSlotStartTime == null || earliestSlotEndTime == null) {
+            throw Exception("Could not find a time slot where the event can fit")
+        }
 
         return Pair(earliestSlotStartTime, earliestSlotEndTime)
     }

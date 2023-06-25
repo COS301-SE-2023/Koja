@@ -3,7 +3,7 @@ package com.teamcaffeine.koja.dto
 import com.google.api.client.util.DateTime
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.util.*
+import java.util.Date
 import com.google.api.services.calendar.model.Event as GoogleEvent
 import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTime
 
