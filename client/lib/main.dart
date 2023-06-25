@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/event_provider.dart';
-// import 'providers/theme_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -23,20 +22,13 @@ class KojaApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<EventProvider>(
           create: (context) => EventProvider(),
-        ),
-        // ChangeNotifierProvider<ThemeProvider>(
-        //   create: (context) => ThemeProvider(),
-        // ),
+        ), 
       ],
       child: Builder(
         builder: (context) {
-          // final themeProvider = Provider.of<ThemeProvider>(context);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Koja',
-            // themeMode: themeProvider.themeMode,
-            // theme: MyTheme.lightTheme,
-            // darkTheme: MyTheme.darkTheme,
             theme: ThemeData(       
               useMaterial3: true,
             ),
@@ -61,6 +53,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
+      backgroundColor: Colors.blue.shade700,
       nextScreen: const Login(),
       splash: Scaffold(
         body: Container(
@@ -82,7 +75,6 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: Colors.blue.shade700,
       splashTransition: SplashTransition.fadeTransition,
       centered: true,
     );

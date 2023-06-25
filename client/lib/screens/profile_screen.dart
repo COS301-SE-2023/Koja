@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../Utils/constants_util.dart';
 import '../widgets/user_details_widget.dart';
 import '../widgets/settings_widget.dart';
-import 'login_screen.dart';
+import './login_screen.dart';
 
 class Profile extends StatelessWidget {
   static const routeName = '/profile';
@@ -23,13 +24,13 @@ class Profile extends StatelessWidget {
             color: Colors.white,
             icon: const Icon(Icons.logout),
             onPressed: () {
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const Login()),
+                (Route<dynamic> route) => false,
               );             
             },
           ),
-          // ChangeTheme()
         ],
       ),
       body: SingleChildScrollView(
@@ -39,7 +40,6 @@ class Profile extends StatelessWidget {
                 profile: "assets/icons/coffee.png", email: "koja@epi-use.io"),
             const Divider(
               thickness: 0,
-              // color: Colors.white,
               height: 40,
             ),
             const Settings(),
