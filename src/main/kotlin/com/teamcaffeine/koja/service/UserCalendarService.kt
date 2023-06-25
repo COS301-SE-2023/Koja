@@ -59,7 +59,9 @@ class UserCalendarService(
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
-            
+            //TODO
+            if (accessToken != null){
+            }
         }
     }
     fun createEvent(token: String, eventDTO: UserEventDTO) {
