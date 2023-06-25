@@ -179,7 +179,7 @@ class UpcomingHeader extends StatelessWidget {
     return const Row(
       children: [
         Text(
-          'Upcoming Events',
+          'Upcoming Tasks',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,

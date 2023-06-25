@@ -33,7 +33,6 @@ class KojaApp extends StatelessWidget {
               useMaterial3: true,
             ),
             home: const SplashScreen(),
-            // (kDebugMode) ? const NavigationScreen() : const Login(),
             routes: {
               Login.routeName: (ctx) => const Login(),
               Profile.routeName: (ctx) => const Profile(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import '../Utils/constants_util.dart';
 import '../providers/event_provider.dart';
 
 class UpcomingEvents extends StatelessWidget {
@@ -30,14 +31,34 @@ class UpcomingEvents extends StatelessWidget {
         itemCount: itemCount,
         itemBuilder: (context, index) {
           final event = eventList[index];
-          final FromformattedTime = DateFormat('HH: mm').format(event.from);
-          final ToformattedTime = DateFormat('HH: mm').format(event.to);
-          final formattedDate = DateFormat('EEEE, MMM d').format(event.from);
+          final fromformattedTime = DateFormat('HH:mm').format(event.from);
+          final toformattedTime = DateFormat('HH:mm').format(event.to);
+          final formattedDate = DateFormat('EEEE').format(event.from);
           return ListTile(
+            leading: Container(
+              height: 70,
+              width: 50,
+              decoration: BoxDecoration(
+                color: darkBlue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  event.from.day.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(formattedDate,
+                Text(event.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -47,12 +68,12 @@ class UpcomingEvents extends StatelessWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(event.title),
+                Text(formattedDate),
                 Row(
                   children: [
-                    Text(FromformattedTime),
+                    Text(fromformattedTime),
                     const Text(' - '),
-                    Text(ToformattedTime),
+                    Text(toformattedTime),
                   ],
                 ),
               ],

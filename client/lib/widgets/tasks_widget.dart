@@ -102,33 +102,33 @@ class TasksWidgetState extends State<TasksWidget> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
-        children: [
-          Center(
-            child: Text(
-              event.title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontFamily: 'Raleway'
-              ),
+      children: [
+        Center(
+          child: Text(
+            event.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontFamily: 'Raleway'
             ),
-            
           ),
-          Expanded(
-            child: Center(
-              child: Text(
-                event.location,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontFamily: 'Raleway'
-                ),
-                maxLines: 1,
-              ),
-            ),
-          )
-        ],
-      ),
+          
+        ),
+        // Expanded(
+        //   child: Center(
+        //     child: Text(
+        //       event.location,
+        //       style: const TextStyle(
+        //         color: Colors.white,
+        //         fontSize: 15,
+        //         fontFamily: 'Raleway'
+        //       ),
+        //       maxLines: 1,
+        //     ),
+        //   ),
+        // )
+      ],
+        ),
     );
   }
 }

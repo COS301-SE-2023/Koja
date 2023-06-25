@@ -40,7 +40,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
         timeSlotViewSettings: const TimeSlotViewSettings(
           timeIntervalHeight: 50,
           timeInterval: Duration(minutes: 30),
-          timeFormat: 'h:mm a',
+          timeFormat: 'HH:mm',
         ),
 
         //Save the date of the event when the user taps on the calendar

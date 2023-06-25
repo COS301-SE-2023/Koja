@@ -92,7 +92,10 @@ class _EventEditingState extends State<EventEditing> {
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
-      content: Form(
+      content: Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Form(
         key: _formKey,
         child: ListView(
           shrinkWrap: true,
@@ -103,11 +106,12 @@ class _EventEditingState extends State<EventEditing> {
             const SizedBox(height: 12),
             ChooseCategory(),
             const SizedBox(height: 12),
-            // location(),
+            location(),
             const SizedBox(height: 12),
             deleteEventButton(),
           ],
         )),
+      ),
     );
   }
 
