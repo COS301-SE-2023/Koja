@@ -3,7 +3,6 @@ package com.teamcaffeine.koja.controller
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.teamcaffeine.koja.entity.User
-import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -21,7 +20,7 @@ internal class
 LocationController {
 
     @Autowired
-    private lateinit var userService: UserService;
+    private lateinit var userService: UserService
 
     @PostMapping("/HLocationU/{userId}")
     fun updateUserHomeLocation(  @PathVariable("userId") userId: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<String> {
@@ -94,15 +93,12 @@ LocationController {
             .apiKey(retrieveAPIKey())
             .build()
 
-        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+        return DistanceMatrixApi.newRequest(context)
             .origins(*origins.toTypedArray())
             .destinations(*destinations.toTypedArray())
             .mode(TravelMode.DRIVING) // You can change the travel mode as needed
             .await()
-
-        return result
     }
-
 
 
     fun getDistanceMatrix(origins: List<String>, destinations: List<String>): DistanceMatrix {
@@ -110,19 +106,17 @@ LocationController {
             .apiKey(retrieveAPIKey())
             .build()
 
-        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+        return DistanceMatrixApi.newRequest(context)
             .origins(*origins.toTypedArray())
             .destinations(*destinations.toTypedArray())
             .mode(TravelMode.DRIVING) // You can change the travel mode as needed
             .await()
-
-        return result
     }
 
     fun retrieveAPIKey() : String?{
         val jsonFile = File("koja/config.json")
         val objectMapper = ObjectMapper()
-        var fieldValue: JsonNode? = null;
+        var fieldValue: JsonNode? = null
         try {
             // Read the JSON file into a JsonNode object
             val jsonNode: JsonNode = objectMapper.readTree(jsonFile)
@@ -133,7 +127,7 @@ LocationController {
             e.printStackTrace()
         }
 
-        return fieldValue?.asText();
+        return fieldValue?.asText()
     }
 
     // The distance variable to update, for all collective distance
