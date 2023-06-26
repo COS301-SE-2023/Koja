@@ -4,16 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 import '../Utils/constants_util.dart';
 import '../widgets/login_modal_widget.dart';
 
-
 class Login extends StatefulWidget {
   static const routeName = '/login';
   const Login({super.key});
 
   @override
-  _LoginState createState() => _LoginState();
+  LoginState createState() => LoginState();
 }
 
-class _LoginState extends State<Login> {
+class LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,5 +93,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-
 }

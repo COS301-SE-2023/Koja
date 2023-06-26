@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:timezone/standalone.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class EventWrapper {
   Map<String, dynamic> json;
