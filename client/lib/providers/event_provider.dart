@@ -114,8 +114,7 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getLocation() async {
-    
+  Future<LocationData?> getLocation() async {
     Location location = Location();
     bool serviceEnabled;
     PermissionStatus permissionGranted;
@@ -124,20 +123,18 @@ class EventProvider extends ChangeNotifier {
 
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
-      if (!serviceEnabled) return;
+      if (!serviceEnabled) return null;
     }
 
     permissionGranted = await location.hasPermission();
 
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return;
+      if (permissionGranted != PermissionStatus.granted) return null;
     }
 
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      // Do something with currentLocation here
-    });
+    // Get the current location
+    LocationData currentLocation = await location.getLocation();
+    return currentLocation;
   }
-
-  
 }
