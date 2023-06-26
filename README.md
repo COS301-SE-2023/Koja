@@ -21,6 +21,9 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 ## Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
+##User Manual
+[User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
+
 ## Group Members:
 
 ## [Marthinus Ettienne van Zyl(u19012366)](https://github.com/u19012366) [LinkedIn](https://www.linkedin.com/in/ettienne-van-zyl-a2a899177)
