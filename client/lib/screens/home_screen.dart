@@ -31,23 +31,31 @@ class _HomeState extends State<Home> {
       // Get the selected date from the EventProvider
       final selectedDate = _eventProvider.selectedDate;
 
-      // Filter the events to get the events on the selected date
-      final eventsOnSelectedDate = _eventProvider.eventsOfSelectedDate
+      // Calculate the start and end dates for the range
+      final startDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+      final endDate = startDate.add(Duration(days: 1));
+
+      // Filter the events to get the events within the range
+      final eventsInRange = _eventProvider.eventsOfSelectedDate
           .where((event) =>
-              event.from.year == selectedDate.year &&
-              event.from.month == selectedDate.month &&
-              event.from.day == selectedDate.day)
+              event.from.isAfter(startDate) && event.from.isBefore(endDate))
           .toList();
 
-      return eventsOnSelectedDate.length;
+      return eventsInRange.length;
     }
+
+
 
     int getEventsOnPresentWeek() {
       // Get the selected date from the EventProvider
       final selectedDate = _eventProvider.selectedDate;
 
+      // Determine the first day of the week based on your configuration
+      const int mondayIndex = 1;
+      final int firstDayOfWeek = (DateTime.monday + 7 - mondayIndex) % 7;
+
       // Calculate the start and end dates of the present week
-      final startOfWeek = selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
+      final startOfWeek = selectedDate.subtract(Duration(days: selectedDate.weekday - firstDayOfWeek));
       final endOfWeek = selectedDate.add(Duration(days: 7 - selectedDate.weekday));
 
       // Filter the events to get the events within the present week (date part only)
@@ -58,6 +66,7 @@ class _HomeState extends State<Home> {
 
       return eventsOnPresentWeek.length;
     }
+
 
     return Scaffold(
       appBar: AppBar(

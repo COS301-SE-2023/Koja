@@ -32,10 +32,12 @@ class _EventEditingState extends State<EventEditing> {
       PlaceAutocompleteResponse result =
           PlaceAutocompleteResponse.parsePlaceAutocompleteResponse(response);
       if (result.predictions != null) {
-        setState(() {
-          eventplacepredictions =
-              result.predictions!.cast<AutocompletePrediction>();
-        });
+        if (mounted) {
+          setState(() {
+            eventplacepredictions =
+                result.predictions!.cast<AutocompletePrediction>();
+          });
+        }
       }
     }
   }
@@ -85,18 +87,18 @@ class _EventEditingState extends State<EventEditing> {
       scrollable: true,
       actions: <Widget>[
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          style: const ButtonStyle(
-            foregroundColor: MaterialStatePropertyAll(Colors.black),
-          ),
-          child: Text('Cancel')),
+            onPressed: () => Navigator.of(context).pop(),
+            style: const ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Colors.black),
+            ),
+            child: Text('Cancel')),
         TextButton(
-          onPressed: saveForm,
-          style: const ButtonStyle(
-            foregroundColor: MaterialStatePropertyAll(Colors.black),
-          ),
-          child: Text('Save',
-            style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+            onPressed: saveForm,
+            style: const ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Colors.black),
+            ),
+            child: Text('Save',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
@@ -104,21 +106,22 @@ class _EventEditingState extends State<EventEditing> {
         height: MediaQuery.of(context).size.height * 0.8,
         width: MediaQuery.of(context).size.width * 0.8,
         child: Form(
-        key: _formKey,
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            buildTitle(),
-            const SizedBox(height: 12),
-            buildDateTimePickers(),
-            const SizedBox(height: 12),
-            ChooseCategory(onCategorySelected: updateCategory),
-            const SizedBox(height: 12),
-            location(),
-            const SizedBox(height: 12),
-            deleteEventButton(),
-          ],
-        )),
+          key: _formKey,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              buildTitle(),
+              const SizedBox(height: 12),
+              buildDateTimePickers(),
+              const SizedBox(height: 12),
+              ChooseCategory(onCategorySelected: updateCategory),
+              const SizedBox(height: 12),
+              location(),
+              const SizedBox(height: 12),
+              deleteEventButton(),
+            ],
+          )
+        ),
       ),
     );
   }
@@ -147,9 +150,7 @@ class _EventEditingState extends State<EventEditing> {
             Row(
               children: [
                 Expanded(
-                  child: Text
-                  (
-                    "LOCATION: ${_eventplace.text}",
+                  child: Text("LOCATION: ${_eventplace.text}",
                     maxLines: 2,
                     style: TextStyle(
                       fontFamily: 'Railway',
@@ -180,10 +181,9 @@ class _EventEditingState extends State<EventEditing> {
                 ),
               ),
               onFieldSubmitted: (_) {
-                if(titleController.text.isNotEmpty){
+                if (titleController.text.isNotEmpty) {
                   saveForm();
-                }
-                else{
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Please enter a title'),
@@ -191,7 +191,6 @@ class _EventEditingState extends State<EventEditing> {
                   );
                 }
               },
-              
             ),
             const SizedBox(height: 1),
             ListView.builder(
@@ -350,9 +349,13 @@ class _EventEditingState extends State<EventEditing> {
       );
     }
 
-    setState(() {
-      fromDate = date;
-    });
+    if(mounted)
+    {
+      setState(() {
+        fromDate = date;
+      });
+    }
+
   }
 
   Future<DateTime?> pickDateTime(DateTime initialDate,
@@ -411,14 +414,16 @@ class _EventEditingState extends State<EventEditing> {
     //     toDate.minute,
     //   );
     // }
-
-    setState(() {
-      toDate = date;
-    });
+    if(mounted)
+    {
+      setState(() {
+        toDate = date;
+      });
+    }
+    
   }
 
   Future saveForm() async {
-
     // print('Selected Category: $selectedCategory');
     late bool isValid = false;
 
