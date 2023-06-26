@@ -4,10 +4,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TimeCategory extends StatelessWidget {
   final String category;
-  final startTime;
-  final endTime;
-  Function(BuildContext)? delete;
-  Function(BuildContext)? edit;
+  final DateTime startTime;
+  final DateTime endTime;
+  final Function(BuildContext)? delete;
+  final Function(BuildContext)? edit;
 
   TimeCategory(this.category, this.startTime, this.endTime,this.delete,this.edit, {super.key});
 
@@ -71,7 +71,7 @@ class TimeCategory extends StatelessWidget {
                   ),
                   SizedBox(width: 5),
                   Text(
-                    startTime,
+                    startTime as String,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -83,7 +83,7 @@ class TimeCategory extends StatelessWidget {
                   ),
                   SizedBox(width: 5),
                   Text(
-                    endTime,
+                    endTime as String,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

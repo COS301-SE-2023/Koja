@@ -12,10 +12,10 @@ class Home extends StatefulWidget {
   
   const Home({Key? key}) : super(key: key);
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   late EventProvider _eventProvider;
 
   @override
@@ -108,19 +108,6 @@ class _HomeState extends State<Home> {
                   )
                 ),
               ),
-              /*  The Second Block which gives a least busy and busiest day of the week */
-              // Center(
-              //   child: Container(
-              //     width: MediaQuery.of(context).size.width * 0.95,
-              //     height: 75,
-              //     margin: const EdgeInsets.all(4.0),
-              //     decoration: BoxDecoration(
-              //       color: Colors.grey[200],
-              //       borderRadius: BorderRadius.circular(10),
-              //     ),
-              //     child: const BusyDaysBlock(),
-              //   ),
-              // ),
             ],
           ),
           const SizedBox(height: 5),
