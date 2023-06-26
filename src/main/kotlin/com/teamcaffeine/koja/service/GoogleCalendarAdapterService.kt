@@ -31,6 +31,7 @@ import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import java.lang.reflect.Type
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -234,11 +235,17 @@ class GoogleCalendarAdapterService(
     override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
 
+        val eventStartTime = eventDTO.getStartTime()
+        val eventEndTime = eventDTO.getEndTime()
+
+        val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+        val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+
         val event = Event()
             .setSummary(eventDTO.getDescription())
             .setLocation(eventDTO.getLocation())
-            .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
-            .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
+            .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
+            .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
 
@@ -302,6 +309,15 @@ class GoogleCalendarAdapterService(
             return emptyList()
         }
     }
+
+    private fun findTimeZoneIdForOffset(offsetDateTime: OffsetDateTime): ZoneId {
+        val offset = offsetDateTime.offset
+        return ZoneId.systemDefault().rules.getValidOffsets(offsetDateTime.toLocalDateTime())
+            .find { it == offset }
+            ?.let { ZoneId.ofOffset("UTC", it) }
+            ?: ZoneId.of("UTC")
+    }
+
 }
 
 class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
