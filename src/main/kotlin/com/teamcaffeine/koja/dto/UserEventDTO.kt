@@ -93,7 +93,6 @@ class UserEventDTO(
         return duration.div(1000)
     }
 
-
     fun getTimeSlots(): List<TimeSlot> {
         return timeSlots
     }
@@ -139,7 +138,6 @@ class UserEventDTO(
 }
 
 data class TimeSlot(val startTime: OffsetDateTime, val endTime: OffsetDateTime)
-
 
 class OffsetDateTimeAdapter : JsonDeserializer<OffsetDateTime> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): OffsetDateTime {
