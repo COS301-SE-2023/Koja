@@ -96,13 +96,17 @@ class UserCalendarService(
     ): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
 
-        val currentDateTime = OffsetDateTime.now()
+        var currentDateTime = OffsetDateTime.now()
         val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
             .filter {
                 it.endTime.isAfter(currentDateTime)
                         && Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds()
             }
             .sortedBy { it.startTime }
+
+        if (sortedAvailableTimeSlots.isNotEmpty()) {
+            currentDateTime = currentDateTime.withOffsetSameInstant(sortedAvailableTimeSlots.first().startTime.offset)
+        }
 
         var newEventStartTime: OffsetDateTime? = null
         var newEventEndTime: OffsetDateTime? = null
@@ -117,10 +121,11 @@ class UserCalendarService(
                     val userEventStartTime = it.getStartTime()
                     val userEventEndTime = it.getEndTime()
 
-                    ( userEventEndTime.isAfter(potentialStartTime) || userEventStartTime.isBefore(potentialEndTime) ||
+                    ( userEventEndTime.isAfter(potentialStartTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                            ( userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime))||
                             (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
                             (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) )
+                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime))
 
                 }
 
