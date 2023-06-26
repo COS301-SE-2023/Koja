@@ -7,7 +7,6 @@ import '../widgets/settings_widget.dart';
 class Profile extends StatelessWidget {
   static const routeName = '/profile';
   const Profile({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +18,17 @@ class Profile extends StatelessWidget {
             )),
         backgroundColor: darkBlue,
         centerTitle: true,
-        
       ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Userdetails(),
+            UserDetails(),
             const Divider(
               thickness: 0,
               color: Colors.white,
               height: 40,
             ),
-            Settings(),
+            const Settings(),
           ],
         ),
       ),
