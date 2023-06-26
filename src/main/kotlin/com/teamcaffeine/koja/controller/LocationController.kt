@@ -22,7 +22,7 @@ LocationController {
     @Autowired
     private lateinit var userService: UserService
 
-    @PostMapping("/HLocationU/{userId}")
+    @PostMapping("/HomeLocationUpdater/{userId}")
     fun updateUserHomeLocation(  @PathVariable("userId") userId: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
             ?: return ResponseEntity.notFound().build()
@@ -31,7 +31,7 @@ LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
-    @PostMapping("/HLocationD/{userId}")
+    @PostMapping("/HomeLocationDel/{userId}")
     fun deleteUserHomeLocation( @RequestParam @PathVariable("userId") userId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
@@ -41,7 +41,7 @@ LocationController {
         return ResponseEntity.ok("User place updated successfully.")
     }
 
-    @PostMapping("/WLocationD/{userId}")
+    @PostMapping("/WorkLocationDel/{userId}")
     fun deleteUserWorkLocation(  @PathVariable("userId") userId: String?
     ): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
@@ -50,7 +50,7 @@ LocationController {
         userService.saveUser(user)
         return ResponseEntity.ok("User place updated successfully.")
     }
-    @PostMapping("/WLocationU/{userId}")
+    @PostMapping("/WorkLocationUpdater/{userId}")
     fun updateUserWorkLocation( @PathVariable("userId") userId: String?,
                                 @RequestParam("placeId") placeId: String?
     ): ResponseEntity<String> {
@@ -84,24 +84,11 @@ LocationController {
         return result.rows[0].elements[0].distance.humanReadable
     }
 
-    @GetMapping("/dayDistance")
+    @GetMapping("/combinedDayDistance")
     fun getDistances(
         @RequestParam("origins") origins: List<String>,
         @RequestParam("destinations") destinations: List<String>,
     ): DistanceMatrix {
-        val context = GeoApiContext.Builder()
-            .apiKey(retrieveAPIKey())
-            .build()
-
-        return DistanceMatrixApi.newRequest(context)
-            .origins(*origins.toTypedArray())
-            .destinations(*destinations.toTypedArray())
-            .mode(TravelMode.DRIVING) // You can change the travel mode as needed
-            .await()
-    }
-
-
-    fun getDistanceMatrix(origins: List<String>, destinations: List<String>): DistanceMatrix {
         val context = GeoApiContext.Builder()
             .apiKey(retrieveAPIKey())
             .build()
@@ -118,15 +105,11 @@ LocationController {
         val objectMapper = ObjectMapper()
         var fieldValue: JsonNode? = null
         try {
-            // Read the JSON file into a JsonNode object
             val jsonNode: JsonNode = objectMapper.readTree(jsonFile)
-            // Access the desired field by providing the field name
             fieldValue = jsonNode.get("apiKey")
-        // Do something with the field value
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
         return fieldValue?.asText()
     }
 
@@ -144,7 +127,6 @@ LocationController {
         // Schedule the task to run at the specified interval
         timer.scheduleAtFixedRate(task, 0, intervalInMillis)
     }
-    // Example update function that increments the distance by a fixed value
     fun updateDistance() {
         val increment = 10.0 // Distance increment
         distance += increment
