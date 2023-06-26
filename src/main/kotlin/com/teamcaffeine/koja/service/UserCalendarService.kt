@@ -6,8 +6,10 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import java.time.Duration
 import java.time.OffsetDateTime
 import org.springframework.stereotype.Service
+
 
 @Service
 class UserCalendarService(
@@ -88,40 +90,59 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(userEvents: List<UserEventDTO>, eventDTO: UserEventDTO): Pair<OffsetDateTime, OffsetDateTime> {
+    private fun findEarliestTimeSlot(
+        userEvents: List<UserEventDTO>,
+        eventDTO: UserEventDTO
+    ): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
+
         val currentDateTime = OffsetDateTime.now()
-
-
         val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
-            .filter { it.endTime.isAfter(currentDateTime) }
+            .filter {
+                it.endTime.isAfter(currentDateTime)
+                        && Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds()
+            }
             .sortedBy { it.startTime }
 
-        var earliestSlotStartTime: OffsetDateTime? = null
-        var earliestSlotEndTime: OffsetDateTime? = null
+        var newEventStartTime: OffsetDateTime? = null
+        var newEventEndTime: OffsetDateTime? = null
 
         for (timeSlot in sortedAvailableTimeSlots) {
-            val potentialSlotEndTime = timeSlot.startTime.plusSeconds(eventDTO.getDurationInSeconds())
+            var potentialStartTime = timeSlot.startTime
+            var potentialEndTime = potentialStartTime.plusSeconds(eventDTO.getDurationInSeconds())
+            val potentialEndTimeLimit = timeSlot.endTime
 
-            if (!potentialSlotEndTime.isAfter(timeSlot.endTime)) {
+            while (!potentialEndTime.isAfter(potentialEndTimeLimit)) {
                 val conflictingEvent = sortedUserEvents.find {
-                    (it.getStartTime().isAfter(timeSlot.startTime) && it.getStartTime().isBefore(potentialSlotEndTime)) ||
-                        (it.getEndTime().isAfter(timeSlot.startTime) && it.getEndTime().isBefore(potentialSlotEndTime)) ||
-                        (it.getStartTime().isBefore(timeSlot.startTime) && it.getEndTime().isAfter(potentialSlotEndTime))
+                    val userEventStartTime = it.getStartTime()
+                    val userEventEndTime = it.getEndTime()
+
+                    ( userEventEndTime.isAfter(potentialStartTime) || userEventStartTime.isBefore(potentialEndTime) ||
+                            (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                            (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) )
+
                 }
 
                 if (conflictingEvent == null) {
-                    earliestSlotStartTime = timeSlot.startTime
-                    earliestSlotEndTime = potentialSlotEndTime
+                    newEventStartTime = potentialStartTime
+                    newEventEndTime = potentialEndTime
                     break
+                } else {
+                    potentialStartTime = conflictingEvent.getEndTime()
+                    potentialEndTime = potentialStartTime.plusSeconds(eventDTO.getDurationInSeconds())
                 }
+            }
+
+            if (newEventStartTime != null && newEventEndTime != null) {
+                break
             }
         }
 
-        if (earliestSlotStartTime == null || earliestSlotEndTime == null) {
+        if (newEventStartTime == null || newEventEndTime == null) {
             throw Exception("Could not find a time slot where the event can fit")
         }
 
-        return Pair(earliestSlotStartTime, earliestSlotEndTime)
+        return Pair(newEventStartTime, newEventEndTime)
     }
 }
