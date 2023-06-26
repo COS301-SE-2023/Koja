@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import '../Utils/constants_util.dart';
 import '../screens/login_screen.dart';
 
-class Userdetails extends StatelessWidget {
-
-  String profile = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
-  String email = "koja@epi-use.com";
+class UserDetails extends StatelessWidget {
+  final profile =
+      "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/flat-white-3402c4f.jpg?quality=90&resize=500,454";
+  final email = "koja@epi-use.com";
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class Userdetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ClipOval(
-                  //This is the profile picture 
+                  //This is the profile picture
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: NetworkImage(
