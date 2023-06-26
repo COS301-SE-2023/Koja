@@ -52,6 +52,8 @@ class _EventEditingState extends State<EventEditing> {
 
   //controller for the title text field
   final titleController = TextEditingController();
+  final hoursController = TextEditingController();
+  final minutesController = TextEditingController();
 
   String selectedCategory = 'Work';
   String selectedEventType = 'Dynamic';
@@ -121,7 +123,9 @@ class _EventEditingState extends State<EventEditing> {
               children: [
                 buildTitle(),
                 const SizedBox(height: 12),
-                buildDateTimePickers(),
+                (selectedEventType == 'Dynamic')
+                    ? getDynamicTimeSelectors()
+                    : buildDateTimePickers(),
                 const SizedBox(height: 12),
                 ChooseCategory(onCategorySelected: updateCategory),
                 const SizedBox(height: 12),
@@ -133,6 +137,59 @@ class _EventEditingState extends State<EventEditing> {
               ],
             )),
       ),
+    );
+  }
+
+  Widget getDynamicTimeSelectors() {
+    return Column(
+      children: [
+        buildHeader(
+          header: 'Select Duration',
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  decoration:
+                      InputDecoration(labelText: "Hours", hintText: "1"),
+                  controller: hoursController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    } else {
+                      final value = int.tryParse(hoursController.text);
+                      if (value == null) return "Must be a number!";
+                      if (value < 0 || value > 12) {
+                        return "Must be between 0 and 12";
+                      }
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: TextFormField(
+                  decoration:
+                      InputDecoration(labelText: "Minutes", hintText: "30"),
+                  controller: minutesController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    } else {
+                      final value = int.tryParse(minutesController.text);
+                      if (value == null) return "Must be a number!";
+                      if (value < 0 || value > 59) {
+                        return "Must be between 0 and 59";
+                      }
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 
