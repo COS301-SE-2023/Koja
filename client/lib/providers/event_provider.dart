@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
 
 class EventProvider extends ChangeNotifier {
+  String? _accessToken;
+
   List<EventWrapper> _eventWrappers = [];
 
   //This is the list of events
@@ -29,7 +34,7 @@ class EventProvider extends ChangeNotifier {
   List<Event> get eventsOfSelectedDate => _events;
 
   //This adds an event to the list
-  void addEvent(Event event) {  
+  void addEvent(Event event) {
     _events.add(event);
     notifyListeners();
   }
@@ -70,5 +75,26 @@ class EventProvider extends ChangeNotifier {
 
     // Parse the string and return the DateTime object
     return format.parse(formattedString);
+  }
+
+  String? get accessToken => _accessToken;
+
+  void setAccessToken({required String? accessToken}) {
+    _accessToken = accessToken;
+    notifyListeners();
+    if (accessToken != null) getEventsFromAPI();
+  }
+
+  Future<void> getEventsFromAPI() async {
+    var url = Uri.http('localhost:8080', '/api/v1/user/calendar/userEvents');
+    var response =
+        await http.get(url, headers: {"Authorisation": accessToken!});
+
+    List<dynamic> jsonResponse = jsonDecode(response.body);
+    for(var e in jsonResponse) {
+      final tempEvent = Event.fromJson(e);
+      _events.add(tempEvent);
+    }
+    notifyListeners();
   }
 }

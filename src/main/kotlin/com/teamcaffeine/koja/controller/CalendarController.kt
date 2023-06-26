@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -19,7 +20,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     )
 
     @GetMapping("/userEvents")
-    fun getAllUserEvents(@RequestBody token: String): ResponseEntity<List<UserEventDTO>> {
+    fun getAllUserEvents(@RequestHeader("Authorisation") token: String): ResponseEntity<List<UserEventDTO>> {
         return ResponseEntity.ok(userCalendar.getAllUserEvents(token))
     }
 

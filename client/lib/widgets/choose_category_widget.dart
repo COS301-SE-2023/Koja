@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ChooseCategory extends StatefulWidget {
   final void Function(String category) onCategorySelected;
-  const ChooseCategory({Key? key, required this.onCategorySelected}) : super(key: key);
+  const ChooseCategory({Key? key, required this.onCategorySelected})
+      : super(key: key);
 
   @override
   _ChooseCategoryState createState() => _ChooseCategoryState();
@@ -56,7 +58,6 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                   onSelected: (bool selected) {
                     setState(() {
                       tag = selected ? 2 : 0;
-                      
                     });
                     widget.onCategorySelected(categories[2]);
                   }),
@@ -78,6 +79,57 @@ class _ChooseCategoryState extends State<ChooseCategory> {
                     });
                     widget.onCategorySelected(categories[4]);
                   }),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ChooseEventType extends StatefulWidget {
+  final void Function(String category) onEventSelected;
+  const ChooseEventType({Key? key, required this.onEventSelected})
+      : super(key: key);
+
+  @override
+  ChooseEventTypeState createState() => ChooseEventTypeState();
+}
+
+class ChooseEventTypeState extends State<ChooseEventType> {
+  int tag = 1;
+  List<String> categories = ['Fixed', 'Dynamic'];
+
+  String get category => categories[tag];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("EVENT TYPE",
+              maxLines: 2,
+              style: TextStyle(
+                  fontFamily: 'Railway',
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          Wrap(
+            spacing: 5,
+            children: [
+              for (var i = 0; i < categories.length; i++)
+                ChoiceChip(
+                    label: Text(categories[i]),
+                    selected: tag == i,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        if (selected) tag = i;
+                      });
+                      widget.onEventSelected(categories[i]);
+                    }),
             ],
           )
         ],
