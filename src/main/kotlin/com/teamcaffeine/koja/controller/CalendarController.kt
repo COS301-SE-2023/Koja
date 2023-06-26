@@ -27,10 +27,11 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     fun addEvent(@RequestBody addEventRequest: AddEventRequest): ResponseEntity<String> {
         try {
             userCalendar.createEvent(addEventRequest.token, addEventRequest.event)
-        }
-        catch (e: Exception) {
-            if(e.message.equals("Could not find a time slot where the event can fit"))
-            return ResponseEntity.badRequest().body("Event not added, could not find a time slot where the event can fit.")
+        } catch (e: Exception) {
+            if (e.message.equals("Could not find a time slot where the event can fit"))
+                return ResponseEntity.badRequest().body("Event not added, could not find a time slot where the event can fit.")
+
+            return ResponseEntity.internalServerError().body("Event could no be created.")
         }
         return ResponseEntity.ok("Event added.")
     }

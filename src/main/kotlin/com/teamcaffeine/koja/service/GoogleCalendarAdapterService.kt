@@ -8,12 +8,15 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
-import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
@@ -26,6 +29,10 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
+import java.lang.reflect.Type
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -34,7 +41,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
-import java.time.OffsetDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -169,13 +175,7 @@ class GoogleCalendarAdapterService(
 
     override fun getUserEvents(accessToken: String): List<UserEventDTO> {
         try {
-
-            val credential =
-                GoogleCredential().setAccessToken(accessToken).createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
-
-            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
-                .setApplicationName("Your Application Name")
-                .build()
+            val calendar = buildCalendarService(accessToken)
 
             val request = calendar.events().list("primary")
                 .setOrderBy("startTime")
@@ -236,11 +236,17 @@ class GoogleCalendarAdapterService(
     override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
 
+        val eventStartTime = eventDTO.getStartTime()
+        val eventEndTime = eventDTO.getEndTime()
+
+        val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+        val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+
         val event = Event()
             .setSummary(eventDTO.getDescription())
             .setLocation(eventDTO.getLocation())
-            .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
-            .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
+            .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
+            .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
 
@@ -248,10 +254,12 @@ class GoogleCalendarAdapterService(
             extendedPropertiesMap["dynamic"] = "true"
         }
 
-        extendedPropertiesMap["duration"] = eventDTO.getDuration().toString()
+        extendedPropertiesMap["duration"] = eventDTO.getDurationInMilliseconds().toString()
         extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
 
-        val gson = Gson()
+        val gson = GsonBuilder()
+            .registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
+            .create()
         val timeSlotsJson = gson.toJson(eventDTO.getTimeSlots())
         extendedPropertiesMap["timeSlots"] = timeSlotsJson
 
@@ -321,25 +329,23 @@ class GoogleCalendarAdapterService(
         val credential = GoogleCredential().setAccessToken(accessToken)
 
         return GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
-            .setApplicationName("Your Application Name")
+            .setApplicationName("Koja")
             .build()
     }
 
     override fun getUserEventsInRange(accessToken: String, startDate: OffsetDateTime, endDate: OffsetDateTime): List<UserEventDTO> {
         try {
-            val credential = GoogleCredential().setAccessToken(accessToken)
-                .createScoped(listOf(CalendarScopes.CALENDAR_READONLY))
+            val calendar = buildCalendarService(accessToken)
 
-            val calendar = GoogleCalendar.Builder(httpTransport, jsonFactory, credential)
-                .setApplicationName("Your Application Name")
-                .build()
+            val startDateTime = DateTime(startDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+            val endDateTime = DateTime(endDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
             val request = calendar.events().list("primary")
+                .setTimeMin(startDateTime)
+                .setTimeMax(endDateTime)
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
                 .setMaxResults(1000)
-                .setTimeMin(DateTime(startDate.toString()))
-                .setTimeMax(DateTime(endDate.toString()))
 
             val events: Events? = request.execute()
 
@@ -354,4 +360,20 @@ class GoogleCalendarAdapterService(
             return emptyList()
         }
     }
+
+    private fun findTimeZoneIdForOffset(offsetDateTime: OffsetDateTime): ZoneId {
+        val offset = offsetDateTime.offset
+        return ZoneId.systemDefault().rules.getValidOffsets(offsetDateTime.toLocalDateTime())
+            .find { it == offset }
+            ?.let { ZoneId.ofOffset("UTC", it) }
+            ?: ZoneId.of("UTC")
+    }
+
 }
+
+class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
+    override fun serialize(src: OffsetDateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonPrimitive(src.toString())
+    }
+}
+
