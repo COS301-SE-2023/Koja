@@ -87,7 +87,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?): String {
+    override fun oauth2Callback(authCode: String?, appCallBack: Boolean): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -100,7 +100,9 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
+        if(!appCallBack)
+            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
+        else parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/app/google/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
 

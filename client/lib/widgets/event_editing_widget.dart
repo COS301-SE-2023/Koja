@@ -52,10 +52,17 @@ class _EventEditingState extends State<EventEditing> {
   final titleController = TextEditingController();
 
   String selectedCategory = '';
+  String selectedEventType = '';
 
   void updateCategory(String category) {
     setState(() {
       selectedCategory = category;
+    });
+  }
+
+  void updateEventType(String eventType) {
+    setState(() {
+      selectedEventType = eventType;
     });
   }
 
@@ -106,22 +113,23 @@ class _EventEditingState extends State<EventEditing> {
         height: MediaQuery.of(context).size.height * 0.8,
         width: MediaQuery.of(context).size.width * 0.8,
         child: Form(
-          key: _formKey,
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              buildTitle(),
-              const SizedBox(height: 12),
-              buildDateTimePickers(),
-              const SizedBox(height: 12),
-              ChooseCategory(onCategorySelected: updateCategory),
-              const SizedBox(height: 12),
-              location(),
-              const SizedBox(height: 12),
-              deleteEventButton(),
-            ],
-          )
-        ),
+            key: _formKey,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                buildTitle(),
+                const SizedBox(height: 12),
+                buildDateTimePickers(),
+                const SizedBox(height: 12),
+                ChooseCategory(onCategorySelected: updateCategory),
+                const SizedBox(height: 12),
+                ChooseEventType(onEventSelected: updateEventType),
+                const SizedBox(height: 12),
+                location(),
+                const SizedBox(height: 12),
+                deleteEventButton(),
+              ],
+            )),
       ),
     );
   }
@@ -151,13 +159,11 @@ class _EventEditingState extends State<EventEditing> {
               children: [
                 Expanded(
                   child: Text("LOCATION: ${_eventplace.text}",
-                    maxLines: 2,
-                    style: TextStyle(
-                      fontFamily: 'Railway',
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
+                      maxLines: 2,
+                      style: TextStyle(
+                          fontFamily: 'Railway',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -349,13 +355,11 @@ class _EventEditingState extends State<EventEditing> {
       );
     }
 
-    if(mounted)
-    {
+    if (mounted) {
       setState(() {
         fromDate = date;
       });
     }
-
   }
 
   Future<DateTime?> pickDateTime(DateTime initialDate,
@@ -414,13 +418,11 @@ class _EventEditingState extends State<EventEditing> {
     //     toDate.minute,
     //   );
     // }
-    if(mounted)
-    {
+    if (mounted) {
       setState(() {
         toDate = date;
       });
     }
-    
   }
 
   Future saveForm() async {
@@ -433,14 +435,15 @@ class _EventEditingState extends State<EventEditing> {
 
     if (isValid) {
       final event = Event(
-        title: titleController.text,
-        location: _eventplace.text,
-        description: 'description',
-        category: selectedCategory,
-        from: fromDate,
-        to: toDate,
-        isAllDay: false,
-      );
+          title: titleController.text,
+          location: _eventplace.text,
+          description: 'description',
+          category: selectedCategory,
+          isDynamic: (selectedEventType == "Dynamic") ? true : false,
+          from: fromDate,
+          to: toDate,
+          isAllDay: false,
+          timeSlots: [TimeSlot(endTime: toDate, startTime: fromDate)]);
 
       final isEditing = widget.event != null;
       final provider = Provider.of<EventProvider>(context, listen: false);
