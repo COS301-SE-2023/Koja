@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.all(8.0),
             child: UpcomingHeader()
           ),
-          events(context),
+          Center(child: events(context)),
         ],
       ),
     );
@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
   Expanded events(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: Container(
           width: MediaQuery.of(context).size.width * 0.95,
           decoration: BoxDecoration(
