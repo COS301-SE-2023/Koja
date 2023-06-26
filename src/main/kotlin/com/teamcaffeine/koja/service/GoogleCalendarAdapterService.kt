@@ -29,10 +29,6 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
-import java.lang.reflect.Type
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -41,6 +37,10 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import java.lang.reflect.Type
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -317,7 +317,6 @@ class GoogleCalendarAdapterService(
             ?.let { ZoneId.ofOffset("UTC", it) }
             ?: ZoneId.of("UTC")
     }
-
 }
 
 class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
@@ -325,4 +324,3 @@ class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
         return JsonPrimitive(src.toString())
     }
 }
-
