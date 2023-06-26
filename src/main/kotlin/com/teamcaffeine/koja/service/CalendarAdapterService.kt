@@ -4,9 +4,9 @@ import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import jakarta.servlet.http.HttpServletRequest
-import java.time.OffsetDateTime
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.view.RedirectView
+import java.time.OffsetDateTime
 
 @Service
 abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
