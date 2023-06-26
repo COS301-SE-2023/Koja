@@ -19,21 +19,17 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget.eventProvider = Provider.of<EventProvider>(context);
+    DateFormat format = DateFormat("h:mm a");
+    for (var entry in widget.eventProvider.timeSlots.entries) {
+      if (entry.value != null) {
+        categories.add([
+          entry.key,
+          format.format(entry.value!.startTime),
+          format.format(entry.value!.endTime)
+        ]);
+      }
+    }
   }
-
-  //controllers for starting time
-  final TextEditingController _hobbyStart = TextEditingController(),
-      _choreStart = TextEditingController(),
-      _schoolStart = TextEditingController(),
-      _workStart = TextEditingController(),
-      _restStart = TextEditingController();
-
-  //controllers for ending time
-  final TextEditingController _hobbyEnd = TextEditingController(),
-      _choreEnd = TextEditingController(),
-      _schoolEnd = TextEditingController(),
-      _workEnd = TextEditingController(),
-      _restEnd = TextEditingController();
 
   //general controller for all time pickers
   late TextEditingController _start = TextEditingController();
@@ -132,7 +128,7 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                 SizedBox(width: 8),
                 Container(
                   height: 35,
-                  width: 100,
+                  width: 110,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black,

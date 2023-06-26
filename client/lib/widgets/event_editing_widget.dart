@@ -143,6 +143,7 @@ class _EventEditingState extends State<EventEditing> {
   Widget getDynamicTimeSelectors() {
     return Column(
       children: [
+        buildDateTimePickers(isDynamic: selectedEventType == 'Dynamic'),
         buildHeader(
           header: 'Select Duration',
           child: Row(
@@ -321,17 +322,17 @@ class _EventEditingState extends State<EventEditing> {
     );
   }
 
-  Widget buildDateTimePickers() => Column(
+  Widget buildDateTimePickers({bool isDynamic = false}) => Column(
         children: [
-          buildFrom(),
+          buildFrom(isDynamic),
           const SizedBox(height: 12),
-          buildTo(),
+          if (!isDynamic) buildTo(),
         ],
       );
 
-  Widget buildFrom() {
+  Widget buildFrom(bool isDynamic) {
     return buildHeader(
-      header: 'FROM',
+      header: isDynamic ? 'For' : "FROM",
       child: Row(
         children: [
           Expanded(
@@ -341,12 +342,13 @@ class _EventEditingState extends State<EventEditing> {
               onClicked: () => pickFromDateTime(pickDate: true),
             ),
           ),
-          Expanded(
-            child: buildDropdownField(
-                text: DateAndTimeUtil.toTime(fromDate),
-                //If the user clicked the time the new time is saved in the fromDate variable
-                onClicked: () => pickFromDateTime(pickDate: false)),
-          ),
+          if (!isDynamic)
+            Expanded(
+              child: buildDropdownField(
+                  text: DateAndTimeUtil.toTime(fromDate),
+                  //If the user clicked the time the new time is saved in the fromDate variable
+                  onClicked: () => pickFromDateTime(pickDate: false)),
+            ),
         ],
       ),
     );
@@ -530,6 +532,14 @@ class _EventEditingState extends State<EventEditing> {
       timeSlot.startTime = updatedStartTime;
       timeSlot.endTime = updatedEndTime;
 
+      final durationHours = int.tryParse(hoursController.text);
+      final durationMinutes = int.tryParse(minutesController.text);
+
+      var durationInSeconds = 0;
+
+      durationInSeconds =
+          ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
+
       final event = Event(
         title: titleController.text,
         location: _eventplace.text,
@@ -538,6 +548,7 @@ class _EventEditingState extends State<EventEditing> {
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
         from: fromDate,
         to: toDate,
+        duration: durationInSeconds * 1000,
         isAllDay: false,
         timeSlots: (timeSlot != null) ? [timeSlot] : [],
       );
@@ -556,16 +567,25 @@ class _EventEditingState extends State<EventEditing> {
         body: jsonEncode(data),
       );
 
-      print(response.body);
-
-      final isEditing = widget.event != null;
-
-      if (isEditing) {
-        provider.editEvent(event, widget.event!);
-        Navigator.of(context).pop();
+      if (response.statusCode == 200) {
+        provider.getEventsFromAPI();
+        const snackBar = SnackBar(
+          content: Text('Event Created!'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pop(context);
+      } else if (response.statusCode == 400) {
+        const snackBar = SnackBar(
+          content:
+              Text('Event Creation Failed - Could not fit in the time slot'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
-        provider.addEvent(event);
-        Navigator.of(context).pop();
+        const snackBar = SnackBar(
+          content: Text('Could not create event - Internal Server Error'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pop(context);
       }
     }
   }

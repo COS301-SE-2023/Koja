@@ -38,8 +38,8 @@ class Event {
         title: json['description'] ?? "",
         description: "",
         location: json['location'] ?? "",
-        from: DateTime.parse(json['startTime']),
-        to: DateTime.parse(json['endTime']),
+        from: DateTime.parse(json['startTime']).toLocal(),
+        to: DateTime.parse(json['endTime']).toLocal(),
         duration: json['duration'] ?? 0,
         timeSlots: (json['timeSlots'] as List)
             .map((i) => TimeSlot.fromJson(i))

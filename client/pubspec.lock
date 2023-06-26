@@ -621,6 +621,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.1"
+  time_duration_picker:
+    dependency: "direct main"
+    description:
+      name: time_duration_picker
+      sha256: "334c9ff4b248fed2ed4ce045c2ab2b417be27c9b77a19257eafb1e6a090d29f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   timezone:
     dependency: "direct main"
     description:

@@ -10,26 +10,27 @@ import 'screens/profile_screen.dart';
 import 'screens/navigation_management_screen.dart';
 
 void main() {
-  runApp(const KojaApp());
+  runApp(KojaApp());
 }
 
 class KojaApp extends StatelessWidget {
-  const KojaApp({Key? key}) : super(key: key);
-
+  KojaApp({Key? key}) : super(key: key);
+  final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<EventProvider>(
           create: (context) => EventProvider(),
-        ), 
+        ),
       ],
       child: Builder(
         builder: (context) {
           return MaterialApp(
+            scaffoldMessengerKey: scaffoldKey,
             debugShowCheckedModeBanner: false,
             title: 'Koja',
-            theme: ThemeData(       
+            theme: ThemeData(
               useMaterial3: true,
             ),
             home: const SplashScreen(),
@@ -61,15 +62,18 @@ class SplashScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('assets/icons/koja.png', height: 200, width: 100,),
-              Text('Koja',
-                style: TextStyle(
-                  fontSize: 50.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.ubuntu().fontFamily,
-                )
+              Image.asset(
+                'assets/icons/koja.png',
+                height: 200,
+                width: 100,
               ),
+              Text('Koja',
+                  style: TextStyle(
+                    fontSize: 50.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: GoogleFonts.ubuntu().fontFamily,
+                  )),
             ],
           ),
         ),
