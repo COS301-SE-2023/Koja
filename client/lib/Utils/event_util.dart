@@ -51,20 +51,20 @@ class Event {
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
-        'description': description,
+        'description': title,
         'location': location,
-        'from': from.toIso8601String(),
-        'to': to.toIso8601String(),
+        'startTime': from.toUtc().toIso8601String(),
+        'endTime': to.toUtc().toIso8601String(),
         'duration': duration,
         'timeSlots': timeSlots,
         'priority': priority,
-        'isDynamic': isDynamic,
+        'dynamic': isDynamic,
       };
 }
 
 class TimeSlot {
-  final DateTime startTime;
-  final DateTime endTime;
+  DateTime startTime;
+  DateTime endTime;
 
   TimeSlot({
     required this.startTime,
@@ -77,4 +77,9 @@ class TimeSlot {
       endTime: DateTime.parse(json['endTime']),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'startTime': startTime.toUtc().toIso8601String(),
+        'endTime': endTime.toUtc().toIso8601String(),
+      };
 }

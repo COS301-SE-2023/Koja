@@ -12,11 +12,26 @@ class EventProvider extends ChangeNotifier {
 
   List<EventWrapper> _eventWrappers = [];
 
+  final Map<String, TimeSlot?> _timeSlots = {
+    "Hobby": null,
+    "Work": null,
+    "School": null,
+    "Resting": null,
+    "Chore": null,
+  };
+
   //This is the list of events
   final List<Event> _events = [];
 
   //getter for the events list
   List<Event> get events => _events;
+
+  Map<String, TimeSlot?> get timeSlots => _timeSlots;
+
+  setTimeSlot(String category, TimeSlot? timeSlot) {
+    _timeSlots[category] = timeSlot;
+    notifyListeners();
+  }
 
   //This is the selected date
   late DateTime _selectedDate = DateTime.now();
@@ -91,7 +106,7 @@ class EventProvider extends ChangeNotifier {
         await http.get(url, headers: {"Authorisation": accessToken!});
 
     List<dynamic> jsonResponse = jsonDecode(response.body);
-    for(var e in jsonResponse) {
+    for (var e in jsonResponse) {
       final tempEvent = Event.fromJson(e);
       _events.add(tempEvent);
     }
