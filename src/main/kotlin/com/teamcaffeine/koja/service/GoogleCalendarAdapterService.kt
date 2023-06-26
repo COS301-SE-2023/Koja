@@ -12,6 +12,7 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -232,7 +233,6 @@ class GoogleCalendarAdapterService(
         }
     }
 
-
     override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
 
@@ -275,12 +275,11 @@ class GoogleCalendarAdapterService(
 
     override fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         val calendarService = buildCalendarService(accessToken)
-        //get the event from the calendar first
+
         val calendarId = "primary"
 
         val event: Event = calendarService.events().get(calendarId, eventDTO.getId()).execute()
 
-        // update the event
         event.setSummary(eventDTO.getDescription())
             .setSummary(eventDTO.getDescription())
             .setLocation(eventDTO.getLocation())
@@ -293,7 +292,7 @@ class GoogleCalendarAdapterService(
             extendedPropertiesMap["dynamic"] = "true"
         }
 
-        extendedPropertiesMap["duration"] = eventDTO.getDuration().toString()
+        extendedPropertiesMap["duration"] = eventDTO.getDurationInMilliseconds().toString()
         extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
 
         val gson = Gson()
@@ -304,7 +303,6 @@ class GoogleCalendarAdapterService(
             shared = extendedPropertiesMap
         }
 
-        // save the new updated event
         val updatedEvent = calendarService.events().update(calendarId, eventDTO.getId(), event).execute()
         println("Event Updated: ${updatedEvent.htmlLink}")
         return updatedEvent
@@ -316,8 +314,7 @@ class GoogleCalendarAdapterService(
 
         try {
             calendarService.events().delete(calendarId, eventDTO.getId()).execute()
-        }
-        catch (e : Exception){
+        } catch (e: Exception) {
             return false
         }
         return true
