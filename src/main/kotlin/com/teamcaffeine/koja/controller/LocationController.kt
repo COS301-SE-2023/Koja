@@ -4,10 +4,14 @@ import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
-import java.util.*
-import org.springframework.web.bind.annotation.*
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@RequestMapping("/api/v1/location")
 internal class
 LocationController {
 
@@ -50,11 +54,8 @@ LocationController {
 //        return ResponseEntity.ok("User place updated successfully.")
 //    }
 
-
-    @PostMapping("/distance")
-    fun getDistanceBetweenLocations( @PathVariable("origin") origin: String?,
-                                @PathVariable("destination") destination: String?){
-
+    @GetMapping("/distance")
+    fun getDistanceBetweenLocations(@RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?) {
         val distance = getDistance(origin, destination)
         println("Distance between $origin and $destination: $distance")
     }
@@ -71,6 +72,42 @@ LocationController {
             .await()
 
         return result.rows[0].elements[0].distance.humanReadable
+    }
+
+    @GetMapping("/travel-time")
+    fun getLocationsTravelTime(
+        @RequestParam("originLat") originLat: String?,
+        @RequestParam("originLng") originLng: String?,
+        @RequestParam("destLat") destLat: String?,
+        @RequestParam("destLng") destLng: String?
+    ): ResponseEntity<Long> {
+
+        return if (originLng != null && originLat != null && destLat != null && destLng != null) {
+            try {
+                val originLngDouble = originLng.toDouble()
+                val originLatDouble = originLat.toDouble()
+                val destLatDouble = destLat.toDouble()
+                val destLngDouble = destLng.toDouble()
+                ResponseEntity.ok(getTravelTime(originLatDouble, originLngDouble, destLatDouble, destLngDouble))
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().build()
+            }
+        } else
+            ResponseEntity.badRequest().build()
+    }
+
+    fun getTravelTime(originLat: Double, originLng: Double, destLat: Double, destLng: Double): Long? {
+        val context = GeoApiContext.Builder()
+            .apiKey(System.getProperty("API_KEY"))
+            .build()
+
+        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+            .origins(com.google.maps.model.LatLng(originLat, originLng))
+            .destinations(com.google.maps.model.LatLng(destLat, destLng))
+            .mode(TravelMode.DRIVING)
+            .await()
+
+        return result.rows[0].elements[0].duration.inSeconds
     }
 
 //    @GetMapping("/combinedDayDistance")
@@ -140,6 +177,4 @@ LocationController {
        val intervalInMinutes = 60 // Update distance every 60 minutes
        // Start auto-updating the distance every specified interval
        distanceUpdater.startAutoUpdate(intervalInMinutes, distanceUpdater::updateDistance)*/
-
 }
-
