@@ -12,6 +12,7 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -270,6 +271,53 @@ class GoogleCalendarAdapterService(
         val createdEvent = calendarService.events().insert(calendarId, event).execute()
         println("Event created: ${createdEvent.htmlLink}")
         return createdEvent
+    }
+
+    override fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event {
+        val calendarService = buildCalendarService(accessToken)
+
+        val calendarId = "primary"
+
+        val event: Event = calendarService.events().get(calendarId, eventDTO.getId()).execute()
+
+        event.setSummary(eventDTO.getDescription())
+            .setSummary(eventDTO.getDescription())
+            .setLocation(eventDTO.getLocation())
+            .setStart(EventDateTime().setDateTime(DateTime(eventDTO.getStartTime().toInstant().toString())))
+            .setEnd(EventDateTime().setDateTime(DateTime(eventDTO.getEndTime().toInstant().toString())))
+
+        val extendedPropertiesMap = mutableMapOf<String, String>()
+
+        if (eventDTO.isDynamic()) {
+            extendedPropertiesMap["dynamic"] = "true"
+        }
+
+        extendedPropertiesMap["duration"] = eventDTO.getDurationInMilliseconds().toString()
+        extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
+
+        val gson = Gson()
+        val timeSlotsJson = gson.toJson(eventDTO.getTimeSlots())
+        extendedPropertiesMap["timeSlots"] = timeSlotsJson
+
+        event.extendedProperties = Event.ExtendedProperties().apply {
+            shared = extendedPropertiesMap
+        }
+
+        val updatedEvent = calendarService.events().update(calendarId, eventDTO.getId(), event).execute()
+        println("Event Updated: ${updatedEvent.htmlLink}")
+        return updatedEvent
+    }
+
+    override fun deleteEvent(accessToken: String, eventDTO: UserEventDTO): Boolean {
+        val calendarService = buildCalendarService(accessToken)
+        val calendarId = "primary"
+
+        try {
+            calendarService.events().delete(calendarId, eventDTO.getId()).execute()
+        } catch (e: Exception) {
+            return false
+        }
+        return true
     }
 
     private fun buildCalendarService(accessToken: String): GoogleCalendar {
