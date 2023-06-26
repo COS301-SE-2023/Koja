@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.all(8.0),
             child: UpcomingHeader()
           ),
-          Center(child: events(context)),
+          events(context),
         ],
       ),
     );
@@ -137,19 +137,22 @@ class _HomeState extends State<Home> {
 
   Expanded events(BuildContext context) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.95,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.95,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child:  Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: UpcomingEvents(eventProvider: _eventProvider,),
+            ),
           ),
-          child:  Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: UpcomingEvents(eventProvider: _eventProvider,),
-          ),
-        ),
+        ],
       ),
     );
   }
