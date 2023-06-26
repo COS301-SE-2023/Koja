@@ -1,14 +1,26 @@
+import 'package:client/Utils/event_util.dart';
 import 'package:client/widgets/set_boundary_widget.dart';
 import 'package:client/widgets/time_category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+
+import '../providers/event_provider.dart';
 
 class TimeBoundaries extends StatefulWidget {
+  late EventProvider eventProvider;
   @override
   _TimeBoundariesState createState() => _TimeBoundariesState();
 }
 
 class _TimeBoundariesState extends State<TimeBoundaries> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    widget.eventProvider = Provider.of<EventProvider>(context);
+  }
+
   //controllers for starting time
   final TextEditingController _hobbyStart = TextEditingController(),
       _choreStart = TextEditingController(),
@@ -47,17 +59,24 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
 
   // function to save time
   void saveTime() {
-
-    if(_start.text == '') {
-        _start = TextEditingController(
-            text: '${DateTime.now().hour}:${DateTime.now().minute}');
+    if (_start.text == '') {
+      _start = TextEditingController(
+          text: '${DateTime.now().hour}:${DateTime.now().minute}');
     }
-    if(_end.text == '') {
+    if (_end.text == '') {
       _end = TextEditingController(
           text: '${DateTime.now().hour}:${DateTime.now().minute}');
     }
 
+    DateFormat format = DateFormat("h:mm a");
+    DateTime startTime = format.parse(_start.text);
+    DateTime endTime = format.parse(_end.text);
+
+    final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
+
     setState(() {
+      widget.eventProvider.setTimeSlot(selectedOption, timeSlot);
+      categories.removeWhere((element) => element[0] == selectedOption);
       categories.add([selectedOption, _start.text, _end.text]);
     });
 
@@ -89,9 +108,9 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
           Icons.arrow_drop_down,
         ),
         title: Text("Times Boundaries ",
-        style: GoogleFonts.ubuntu(
-          fontSize: 17,
-        )),
+            style: GoogleFonts.ubuntu(
+              fontSize: 17,
+            )),
         subtitle: Text(
           "Click here to add time boundaries for each category, select category and then click +\n\nAfter adding time boundary for a category, you can swipe to the left to edit or delete a boundary.",
           style: GoogleFonts.ubuntu(
@@ -106,11 +125,10 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(" Category:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  )
-                ),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
                 SizedBox(width: 8),
                 Container(
                   height: 35,
@@ -153,12 +171,11 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                   ),
                   onPressed: () {
                     showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SetBoundary(
-                          selectedOption, _start, _end, saveTime);
-                      }
-                    );
+                        context: context,
+                        builder: (context) {
+                          return SetBoundary(
+                              selectedOption, _start, _end, saveTime);
+                        });
                   },
                 ),
               ],
@@ -187,13 +204,11 @@ class _TimeBoundariesState extends State<TimeBoundaries> {
                   }, (context) {
                     editedindex = index;
                     showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SetBoundary(
-                          categories[index][0], _start, _end, saveTime
-                        );
-                      }
-                    );
+                        context: context,
+                        builder: (context) {
+                          return SetBoundary(
+                              categories[index][0], _start, _end, saveTime);
+                        });
                   }),
                 ),
               );

@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,8 +53,8 @@ class _EventEditingState extends State<EventEditing> {
   //controller for the title text field
   final titleController = TextEditingController();
 
-  String selectedCategory = '';
-  String selectedEventType = '';
+  String selectedCategory = 'Work';
+  String selectedEventType = 'Dynamic';
 
   void updateCategory(String category) {
     setState(() {
@@ -434,19 +436,72 @@ class _EventEditingState extends State<EventEditing> {
     }
 
     if (isValid) {
+      final provider = Provider.of<EventProvider>(context, listen: false);
+
+      final timeSlot = provider.timeSlots[selectedCategory];
+
+      int year = fromDate.year;
+      int month = fromDate.month;
+      int day = fromDate.day;
+
+      int startHour = timeSlot!.startTime.hour;
+      int startMinute = timeSlot.startTime.minute;
+      int startSecond = timeSlot.startTime.second;
+
+      int endHour = timeSlot.endTime.hour;
+      int endMinute = timeSlot.endTime.minute;
+      int endSecond = timeSlot.endTime.second;
+
+      DateTime updatedStartTime = DateTime(
+        year,
+        month,
+        day,
+        startHour,
+        startMinute,
+        startSecond,
+      );
+
+      DateTime updatedEndTime = DateTime(
+        year,
+        month,
+        day,
+        endHour,
+        endMinute,
+        endSecond,
+      );
+
+      timeSlot.startTime = updatedStartTime;
+      timeSlot.endTime = updatedEndTime;
+
       final event = Event(
-          title: titleController.text,
-          location: _eventplace.text,
-          description: 'description',
-          category: selectedCategory,
-          isDynamic: (selectedEventType == "Dynamic") ? true : false,
-          from: fromDate,
-          to: toDate,
-          isAllDay: false,
-          timeSlots: [TimeSlot(endTime: toDate, startTime: fromDate)]);
+        title: titleController.text,
+        location: _eventplace.text,
+        description: 'description',
+        category: selectedCategory,
+        isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        from: fromDate,
+        to: toDate,
+        isAllDay: false,
+        timeSlots: (timeSlot != null) ? [timeSlot] : [],
+      );
+
+      var data = {
+        "token": "${provider.accessToken}",
+        "event": event.toJson(),
+      };
+
+      var response = await http.post(
+        Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent'),
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          "Authorization": "Bearer ${provider.accessToken}",
+        },
+        body: jsonEncode(data),
+      );
+
+      print(response.body);
 
       final isEditing = widget.event != null;
-      final provider = Provider.of<EventProvider>(context, listen: false);
 
       if (isEditing) {
         provider.editEvent(event, widget.event!);
