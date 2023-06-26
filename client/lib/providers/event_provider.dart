@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
@@ -112,4 +113,31 @@ class EventProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void getLocation() async {
+    
+    Location location = Location();
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    serviceEnabled = await location.serviceEnabled();
+
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) return;
+    }
+
+    permissionGranted = await location.hasPermission();
+
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) return;
+    }
+
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      // Do something with currentLocation here
+    });
+  }
+
+  
 }
