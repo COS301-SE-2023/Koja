@@ -89,6 +89,7 @@ dependencies:
 
   # for cors-origin errors
   flutter_cors: ^1.4.0
+  time_duration_picker: ^0.0.1
 
 dev_dependencies:
   flutter_test:
