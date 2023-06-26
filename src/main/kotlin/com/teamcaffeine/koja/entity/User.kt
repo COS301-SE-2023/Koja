@@ -16,9 +16,8 @@ class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public var id: Int? = null
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinColumn(name = "calendar_id")
-    private var calendarList: List<Calendar> = ArrayList<Calendar>()
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    public val userAccounts: MutableList<UserAccount> = mutableListOf()
 
     private var homeLocation: String ?= null;
     private var workLocation: String ?= null;
@@ -38,9 +37,4 @@ class User {
         return workLocation;
     }
 
-    fun getAuthToken(): String{
-    return authToken;
-
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    public val userAccounts: MutableList<UserAccount> = mutableListOf()
 }
