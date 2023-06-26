@@ -1,29 +1,30 @@
 package com.teamcaffeine.koja.controller
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
 import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
+import org.springframework.web.bind.annotation.*
+import java.io.File
+import java.io.IOException
+import java.util.*
+
 @RestController
 internal class
 LocationController {
 
     @Autowired
     private lateinit var userService: UserService;
+
     @PostMapping("/HLocationU/{userId}")
-    fun updateUserHomeLocation(  @PathVariable("userId") userId: String?,
-                                @RequestParam("placeId") placeId: String?
-    ): ResponseEntity<String> {
+    fun updateUserHomeLocation(  @PathVariable("userId") userId: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<String> {
         val user: User = userId?.let { userService.getByUserId(it) }
             ?: return ResponseEntity.notFound().build()
         placeId?.let { user.setHomeLocation(it) }
@@ -70,17 +71,9 @@ LocationController {
         println("Distance between $origin and $destination: $distance")
     }
 
-
-
-
-
-
-
     fun getDistance(origin: String?, destination: String?): String? {
-        val apiKey = "***redacted***" // Replace with your actual API key
-
         val context = GeoApiContext.Builder()
-            .apiKey(apiKey)
+            .apiKey(retrieveAPIKey())
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -91,5 +84,97 @@ LocationController {
 
         return result.rows[0].elements[0].distance.humanReadable
     }
+
+    @GetMapping("/dayDistance")
+    fun getDistances(
+        @RequestParam("origins") origins: List<String>,
+        @RequestParam("destinations") destinations: List<String>,
+    ): DistanceMatrix {
+        val context = GeoApiContext.Builder()
+            .apiKey(retrieveAPIKey())
+            .build()
+
+        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+            .origins(*origins.toTypedArray())
+            .destinations(*destinations.toTypedArray())
+            .mode(TravelMode.DRIVING) // You can change the travel mode as needed
+            .await()
+
+        return result
+    }
+
+
+
+    fun getDistanceMatrix(origins: List<String>, destinations: List<String>): DistanceMatrix {
+        val context = GeoApiContext.Builder()
+            .apiKey(retrieveAPIKey())
+            .build()
+
+        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+            .origins(*origins.toTypedArray())
+            .destinations(*destinations.toTypedArray())
+            .mode(TravelMode.DRIVING) // You can change the travel mode as needed
+            .await()
+
+        return result
+    }
+
+    fun retrieveAPIKey() : String?{
+        val jsonFile = File("koja/config.json")
+        val objectMapper = ObjectMapper()
+        var fieldValue: JsonNode? = null;
+        try {
+            // Read the JSON file into a JsonNode object
+            val jsonNode: JsonNode = objectMapper.readTree(jsonFile)
+            // Access the desired field by providing the field name
+            fieldValue = jsonNode.get("apiKey")
+        // Do something with the field value
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return fieldValue?.asText();
+    }
+
+    // The distance variable to update, for all collective distance
+    private var distance = 0.0
+    fun startAutoUpdate( updateFunction: Runnable) {
+        val intervalInMinutes = 30
+        val timer = Timer()
+        val intervalInMillis = (intervalInMinutes * 60 * 1000).toLong() // Convert minutes to milliseconds
+        val task: TimerTask = object : TimerTask() {
+            override fun run() {
+                updateFunction.run() // Execute the update function
+            }
+        }
+        // Schedule the task to run at the specified interval
+        timer.scheduleAtFixedRate(task, 0, intervalInMillis)
+    }
+    // Example update function that increments the distance by a fixed value
+    fun updateDistance() {
+        val increment = 10.0 // Distance increment
+        distance += increment
+        println("Distance updated: $distance")
+    }
+
+/*
+    @GetMapping("/location")
+    fun getLocation(): String? {
+        val latitude = // Retrieve latitude from geolocation
+        val longitude = // Retrieve longitude from geolocation
+
+            return if (latitude != null && longitude != null) {
+                val address = "$latitude,$longitude"
+                return address;
+            } else {
+                null
+            }
+    }
+*/
+    /* val distanceUpdater = DistanceUpdater()
+       val intervalInMinutes = 60 // Update distance every 60 minutes
+       // Start auto-updating the distance every specified interval
+       distanceUpdater.startAutoUpdate(intervalInMinutes, distanceUpdater::updateDistance)*/
+
 }
 
