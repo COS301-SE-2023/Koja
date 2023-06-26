@@ -68,7 +68,7 @@ class SettingsState extends State<Settings> {
       builder: (BuildContext context, BoxConstraints constraints) {
         return Column(
           children: [
-            /*  This is the Time Input Section  */
+            /*  This is the Time Boundary Section  */
             header(LineIcons.hourglassEnd, 'Set Your Active Times'),
             const Divider(height: 1, color: Color.fromARGB(255, 211, 198, 198)),
             const SizedBox(height: 15),
@@ -140,11 +140,6 @@ class SettingsState extends State<Settings> {
     );
   }
 
-  /*  This consists of all the days from Monday To Sunday */
-
-  // Padding allDays(BoxConstraints constraints) {
-  //   // return Column();
-  // }
 
   /* This is the Header Section */
 
@@ -154,11 +149,11 @@ class SettingsState extends State<Settings> {
         Icon(iconData),
         const SizedBox(width: 2),
         Text(text,
-            style: GoogleFonts.lato(
-              fontSize: 18,
-              // color: Colors.black,
-              fontWeight: FontWeight.w500,
-            )),
+          style: GoogleFonts.lato(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          )
+        ),
       ],
     );
   }
@@ -323,7 +318,6 @@ class SettingsState extends State<Settings> {
                           home = placePredictions[index].description!;
                           placeAutoComplete("");
                         });
-                        saveHomeLocation(placePredictions[index].placeId!);
                       },
                     );
                   },
@@ -433,7 +427,7 @@ class SettingsState extends State<Settings> {
                           work = workplacePredictions[index].description!;
                           workplaceAutocomplete("");
                         });
-                        saveWorkLocation(workplacePredictions[index].placeId!);
+                        
                       },
                     );
                   },
@@ -446,17 +440,4 @@ class SettingsState extends State<Settings> {
     );
   }
 
-  void saveHomeLocation(String placeId) {
-    final backendurl = '';
-    final data = {'placeId': placeId};
-
-    // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
-  }
-
-  void saveWorkLocation(String placeId) {
-    final backendurl = '';
-    final data = {'placeId': placeId};
-
-    // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
-  }
 }

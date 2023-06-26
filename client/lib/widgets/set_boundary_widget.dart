@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class SetBoundary extends StatelessWidget {
-  VoidCallback onSave;
+  final VoidCallback onSave;
   final String selectedOption;
   
-TextEditingController start;
-TextEditingController end;
+  final TextEditingController start;
+  final TextEditingController end;
   
   SetBoundary(
     this.selectedOption, 
@@ -101,15 +101,15 @@ TextEditingController end;
 }
 
 class SelectedTimeButton extends StatefulWidget {
-  TextEditingController controller;
+  final TextEditingController controller;
 
   SelectedTimeButton({required this.controller});
 
   @override
-  _SelectedTimeButtonState createState() => _SelectedTimeButtonState();
+  SelectedTimeButtonState createState() => SelectedTimeButtonState();
 }
 
-class _SelectedTimeButtonState extends State<SelectedTimeButton> {
+class SelectedTimeButtonState extends State<SelectedTimeButton> {
   late TimeOfDay selectedTime = TimeOfDay.now();
 
   void _onPressed() async {
@@ -126,7 +126,9 @@ class _SelectedTimeButtonState extends State<SelectedTimeButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: _onPressed,
-      child: Text(selectedTime != null ? selectedTime.format(context) : 'Select Time'),
+      child: Text(
+        (selectedTime.format(context))
+      ),
     );
   }
 

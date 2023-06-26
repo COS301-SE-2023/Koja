@@ -18,10 +18,10 @@ class EventEditing extends StatefulWidget {
   const EventEditing({Key? key, this.event}) : super(key: key);
 
   @override
-  _EventEditingState createState() => _EventEditingState();
+  EventEditingState createState() => EventEditingState();
 }
 
-class _EventEditingState extends State<EventEditing> {
+class EventEditingState extends State<EventEditing> {
   List<AutocompletePrediction> eventplacepredictions = [];
   final TextEditingController _eventplace = TextEditingController();
 
@@ -550,7 +550,7 @@ class _EventEditingState extends State<EventEditing> {
         to: toDate,
         duration: durationInSeconds * 1000,
         isAllDay: false,
-        timeSlots: (timeSlot != null) ? [timeSlot] : [],
+        timeSlots: [timeSlot],
       );
 
       var data = {

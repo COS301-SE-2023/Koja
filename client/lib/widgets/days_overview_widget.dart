@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../Utils/event_data_source_util.dart';
 import '../providers/event_provider.dart';
-
-
 
 class DaysOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final eventProvider = Provider.of<EventProvider>(context);
     final events = eventProvider.events;
-    final dataSource = EventDataSource(events);
 
     // Find the day with the fewest tasks
     DateTime? dayWithFewestTasks;

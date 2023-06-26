@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ChooseCategory extends StatefulWidget {
@@ -7,10 +6,10 @@ class ChooseCategory extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ChooseCategoryState createState() => _ChooseCategoryState();
+  ChooseCategoryState createState() => ChooseCategoryState();
 }
 
-class _ChooseCategoryState extends State<ChooseCategory> {
+class ChooseCategoryState extends State<ChooseCategory> {
   int tag = 1;
   List<String> categories = ['School', 'Work', 'Hobby', 'Resting', 'Chore'];
 
