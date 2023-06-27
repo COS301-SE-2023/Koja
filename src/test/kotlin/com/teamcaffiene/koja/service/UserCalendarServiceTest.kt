@@ -16,7 +16,6 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.Date
 
 class UserCalendarServiceTest {
     private lateinit var userAccountRepository: UserAccountRepository
@@ -57,11 +56,7 @@ class UserCalendarServiceTest {
         val userAccount = listOf(UserAccount(123))
         val calendarAdapterFactoryService = mockk<CalendarAdapterFactoryService>()
         val calendarAdapterService = mockk<CalendarAdapterService>()
-        val userEvents = listOf(
-            UserEventDTO(
-                "1", "5KM Morning Jog", "LC sports center", Date(2015, 5, 28, 7, 0), Date(2015, 5, 28, 9, 0)
-            )
-        )
+        val userEvents = arrayListOf<UserEventDTO>()
 
         every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
         every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns userAccount

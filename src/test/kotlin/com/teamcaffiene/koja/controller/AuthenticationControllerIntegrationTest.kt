@@ -32,7 +32,7 @@ class AuthenticationControllerIntegrationTest {
         val authCode = "test_auth_code"
         val responseContent = "test_token"
 
-        `when`(googleCalendarAdapter.oauth2Callback(authCode)).thenReturn(ResponseEntity.ok(responseContent))
+        `when`(googleCalendarAdapter.oauth2Callback(authCode, false)).thenReturn(ResponseEntity.ok(responseContent).toString())
 
         mockMvc.get("/api/v1/auth/google/callback") {
             param("code", authCode)

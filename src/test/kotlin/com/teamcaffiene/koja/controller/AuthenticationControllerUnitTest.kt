@@ -33,7 +33,7 @@ class AuthenticationControllerUnitTest {
     fun testAuthenticateWithGoogle() {
         // Mock the behavior of the googleCalendarAdapterService
         val redirectView = RedirectView("https://example.com")
-        `when`(googleCalendarAdapterService.setupConnection(request)).thenReturn(redirectView)
+        `when`(googleCalendarAdapterService.setupConnection(request, false)).thenReturn(redirectView)
 
         // Invoke the authenticateWithGoogle method in the authenticationController
         val result: RedirectView = authenticationController.authenticateWithGoogle(request)
@@ -47,7 +47,7 @@ class AuthenticationControllerUnitTest {
         // Mock the behavior of the googleCalendarAdapterService
         val authCode = "testAuthCode"
         val responseEntity = ResponseEntity.status(HttpStatus.OK).body("Success")
-        `when`(googleCalendarAdapterService.oauth2Callback(authCode)).thenReturn(responseEntity)
+        `when`(googleCalendarAdapterService.oauth2Callback(authCode, false)).thenReturn(responseEntity.toString())
 
         // Invoke the handleGoogleOAuth2Callback method in the authenticationController
         val result: ResponseEntity<String> = authenticationController.handleGoogleOAuth2Callback(authCode)
