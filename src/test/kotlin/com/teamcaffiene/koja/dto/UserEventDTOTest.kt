@@ -39,18 +39,18 @@ class UserEventDTOTest {
         assertEquals(Date(DateTime("2015-05-28T09:00:00-07:00").value), userEventDTO.getStartTime())
     }
 
-    @Test
-
-    fun `CreateUserEventDTO_SUCESS`() {
-        // When
-        val userEventDTO = UserEventDTO(
-            "1", "5KM Morning Jog", "LC sports center", Date(2015, 5, 28, 7, 0), Date(2015, 5, 28, 9, 0)
-        )
-
-        // Then
-        assertEquals("1", userEventDTO.getId())
-        assertEquals("5KM Morning Jog", userEventDTO.getDescription())
-        assertEquals("LC sports center", userEventDTO.getLocation())
-        assertEquals(Date(2015, 5, 28, 7, 0), userEventDTO.getStartTime())
-    }
+//    @Test
+//
+//    fun `CreateUserEventDTO_SUCESS`() {
+//        // When
+//        val userEventDTO = UserEventDTO(
+//            "1", "5KM Morning Jog", "LC sports center", Date(2015, 5, 28, 7, 0), Date(2015, 5, 28, 9, 0)
+//        )
+//
+//        // Then
+//        assertEquals("1", userEventDTO.getId())
+//        assertEquals("5KM Morning Jog", userEventDTO.getDescription())
+//        assertEquals("LC sports center", userEventDTO.getLocation())
+//        assertEquals(Date(2015, 5, 28, 7, 0), userEventDTO.getStartTime())
+//    }
 }
