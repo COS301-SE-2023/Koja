@@ -15,7 +15,7 @@ void main() {
 
 class KojaApp extends StatelessWidget {
   KojaApp({Key? key}) : super(key: key);
-  final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -26,6 +26,8 @@ class KojaApp extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) {
+          final provider = Provider.of<EventProvider>(context, listen: false);
+          provider.setScaffoldKey(scaffoldKey);
           return MaterialApp(
             scaffoldMessengerKey: scaffoldKey,
             debugShowCheckedModeBanner: false,
