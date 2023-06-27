@@ -562,7 +562,7 @@ class EventEditingState extends State<EventEditing> {
       int month = fromDate.month;
       int day = fromDate.day;
 
-      int startHour = timeSlot!.startTime.hour;
+      int startHour = timeSlot.startTime.hour;
       int startMinute = timeSlot.startTime.minute;
       int startSecond = timeSlot.startTime.second;
 
