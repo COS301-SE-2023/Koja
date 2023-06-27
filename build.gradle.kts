@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.7.22"
     kotlin("plugin.jpa") version "1.7.22"
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+    id ("jacoco")
 }
 
 group = "com.team-caffeine"
@@ -40,6 +41,9 @@ dependencies {
     implementation("com.google.apis:google-api-services-people:v1-rev537-1.25.0")
     testImplementation("com.h2database:h2")
     testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 }
 
 tasks.withType<KotlinCompile> {
