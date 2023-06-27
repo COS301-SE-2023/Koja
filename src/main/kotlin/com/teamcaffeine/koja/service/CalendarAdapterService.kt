@@ -25,7 +25,7 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
 
     abstract fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event
 
-    abstract fun deleteEvent(accessToken: String, eventDTO: UserEventDTO): Boolean
+    abstract fun deleteEvent(accessToken: String, eventID: String): Boolean
 
     fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
