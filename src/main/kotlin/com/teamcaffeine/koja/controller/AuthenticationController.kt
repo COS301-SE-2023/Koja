@@ -20,7 +20,7 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
 
     @GetMapping("/google/callback")
     fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?): ResponseEntity<String> {
-        val jwt = googleCalendarAdapter.oauth2Callback(authCode)
+        val jwt = googleCalendarAdapter.oauth2Callback(authCode, false)
         return ResponseEntity.ok()
             .header("Authorization", "Bearer $jwt")
             .body("Authentication successful")
@@ -33,7 +33,7 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
 
     @GetMapping("/app/google/callback")
     fun handleGoogleOAuth2CallbackApp(@RequestParam("code") authCode: String?): RedirectView {
-        val jwt = googleCalendarAdapter.oauth2Callback(authCode)
+        val jwt = googleCalendarAdapter.oauth2Callback(authCode, true)
         return RedirectView("koja-login-callback://callback?token=$jwt")
     }
 }

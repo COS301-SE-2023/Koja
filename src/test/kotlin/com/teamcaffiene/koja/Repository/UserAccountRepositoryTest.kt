@@ -1,4 +1,3 @@
 package com.teamcaffiene.koja.Repository
 
-class UserAccountRepositoryTest {
-}
+class UserAccountRepositoryTest
