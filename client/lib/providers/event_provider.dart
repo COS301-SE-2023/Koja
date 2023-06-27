@@ -16,9 +16,9 @@ class EventProvider extends ChangeNotifier {
 
   LocationData? locationData;
 
-  var scaffoldKey = GlobalKey<ScaffoldState>();
+  late GlobalKey<ScaffoldMessengerState> scaffoldKey;
 
-  void setScaffoldKey(var s) => scaffoldKey = s;
+  void setScaffoldKey(GlobalKey<ScaffoldMessengerState> s) => scaffoldKey = s;
 
   final Map<String, TimeSlot?> _timeSlots = {
     "Hobby": null,
@@ -182,14 +182,14 @@ class EventProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final key = scaffoldKey as GlobalKey<ScaffoldMessengerState>;
+        final key = scaffoldKey;
         key.currentState!.showSnackBar(
           const SnackBar(
             content: Text('Event successfully deleted.'),
           ),
         );
       } else {
-        final key = scaffoldKey as GlobalKey<ScaffoldMessengerState>;
+        final key = scaffoldKey;
         key.currentState!.showSnackBar(
           const SnackBar(
             content: Text('Failed to delete event.'),
@@ -198,7 +198,7 @@ class EventProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) print(e);
-      final key = scaffoldKey as GlobalKey<ScaffoldMessengerState>;
+      final key = scaffoldKey;
       key.currentState!.showSnackBar(
         const SnackBar(
           content: Text('Failed to delete event.'),
