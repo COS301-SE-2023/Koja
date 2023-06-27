@@ -116,20 +116,22 @@ class ChooseEventTypeState extends State<ChooseEventType> {
                   fontSize: 14,
                   fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
-          Wrap(
-            spacing: 5,
-            children: [
-              for (var i = 0; i < categories.length; i++)
-                ChoiceChip(
-                    label: Text(categories[i]),
-                    selected: tag == i,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        if (selected) tag = i;
-                      });
-                      widget.onEventSelected(categories[i]);
-                    }),
-            ],
+          Center(
+            child: Wrap(
+              spacing: 5,
+              children: [
+                for (var i = 0; i < categories.length; i++)
+                  ChoiceChip(
+                      label: Text(categories[i]),
+                      selected: tag == i,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) tag = i;
+                        });
+                        widget.onEventSelected(categories[i]);
+                      }),
+              ],
+            ),
           )
         ],
       ),
