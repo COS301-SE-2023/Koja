@@ -4,6 +4,7 @@ import com.teamcaffeine.koja.controller.CalendarController
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
@@ -42,7 +43,18 @@ class CalendarControllerUnitTest {
         // Verify the result
         assertEquals(HttpStatus.OK, responseEntity.statusCode)
         assertEquals(userEvents, responseEntity.body)
+    }
 
+    @Test
+    fun test_empty_userEvent_list() {
+        val token = "token"
+        val userEvents = emptyList<UserEventDTO>()
 
+        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(userEvents)
+
+        val responseEntity: ResponseEntity<List<UserEventDTO>> = calendarController.getAllUserEvents(token)
+
+        assertEquals(userEvents, responseEntity.body)
+        assertEquals(0, responseEntity.body?.size )
     }
 }
