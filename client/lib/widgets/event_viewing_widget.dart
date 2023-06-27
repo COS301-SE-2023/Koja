@@ -3,19 +3,19 @@ import 'package:provider/provider.dart';
 
 import '../Utils/event_util.dart';
 
+import '../providers/event_provider.dart';
 import 'event_editing_widget.dart';
-import 'event_provider.dart';
 
 class EventViewing extends StatefulWidget {
-  final Event userEvent;
-  const EventViewing({Key? key, required this.userEvent}) : super(key: key);
+  final Event event;
+  const EventViewing({Key? key, required this.event}) : super(key: key);
 
   @override
   EventViewingState createState() => EventViewingState();
 }
 
 class EventViewingState extends State<EventViewing> {
-  late Event userEvent;
+  late Event event;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class EventViewingState extends State<EventViewing> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventEditing(userEvent: userEvent),
+                  builder: (context) => EventEditing(event: event),
                 ),
               );
             },
@@ -40,7 +40,7 @@ class EventViewingState extends State<EventViewing> {
             icon: const Icon(Icons.delete),
             onPressed: () {
               Provider.of<EventProvider>(context, listen: false)
-                  .deleteEvent(userEvent);
+                  .deleteEvent(event);
               Navigator.of(context).pop();
             },
           ),
@@ -49,7 +49,7 @@ class EventViewingState extends State<EventViewing> {
       body: ListView(
         padding: const EdgeInsets.all(12.0),
         children: <Widget>[
-          buildDateTime(userEvent),
+          buildDateTime(event),
           const SizedBox(height: 12.0),
           buildDescription(),
         ],
@@ -57,11 +57,11 @@ class EventViewingState extends State<EventViewing> {
     );
   }
 
-  Widget buildDateTime(Event userEvent) {
+  Widget buildDateTime(Event event) {
     return Column(
       children: [
-        buildDate(userEvent.isAllDay ? 'All-day' : 'From', userEvent.from),
-        if (!userEvent.isAllDay) buildDate('To', userEvent.to),
+        buildDate(event.isAllDay ? 'All-day' : 'From', event.from),
+        if (!event.isAllDay) buildDate('To', event.to),
       ],
     );
   }
@@ -99,7 +99,7 @@ class EventViewingState extends State<EventViewing> {
         ),
         const SizedBox(height: 8.0),
         Text(
-          userEvent.description,
+          event.description,
           style: const TextStyle(fontSize: 16.0),
         ),
       ],

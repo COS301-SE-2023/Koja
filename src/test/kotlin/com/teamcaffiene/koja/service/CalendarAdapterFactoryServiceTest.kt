@@ -6,7 +6,6 @@ import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.CalendarAdapterFactoryService
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import io.mockk.mockk
-import io.mockk.mockkClass
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
