@@ -41,7 +41,8 @@ class Profile extends StatelessWidget {
         child: Column(
           children: <Widget>[
             UserDetails(
-                profile: "assets/icons/coffee.png", email: "koja@epi-use.io"),
+                profile: "assets/icons/coffee.png",
+                email: "u19012366@tuks.co.za"),
             const Divider(
               thickness: 0,
               height: 40,

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -74,39 +73,39 @@ class LoginModalState extends State<LoginModal> {
 
             ///*
             SizedBox(height: 10.0),
-            if (kDebugMode)
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NavigationScreen()),
-                      (Route<dynamic> route) => false,
-                    );
-                  },
-                  child: const SizedBox(
-                    height: 30,
-                    width: 200,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Bootstrap.terminal,
-                          size: 16.0,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 10.0),
-                        Text('Debug Mode Route',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16.0)),
-                      ],
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  )),
+            // if (kDebugMode)
+            //   ElevatedButton(
+            //       onPressed: () {
+            //         Navigator.pushAndRemoveUntil(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (context) => const NavigationScreen()),
+            //           (Route<dynamic> route) => false,
+            //         );
+            //       },
+            //       child: const SizedBox(
+            //         height: 30,
+            //         width: 200,
+            //         child: Row(
+            //           children: [
+            //             Icon(
+            //               Bootstrap.terminal,
+            //               size: 16.0,
+            //               color: Colors.white,
+            //             ),
+            //             SizedBox(width: 10.0),
+            //             Text('Debug Mode Route',
+            //                 style:
+            //                     TextStyle(color: Colors.white, fontSize: 16.0)),
+            //           ],
+            //         ),
+            //       ),
+            //       style: ElevatedButton.styleFrom(
+            //         backgroundColor: Colors.blue,
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(20.0),
+            //         ),
+            //       )),
             // */
           ],
         ),

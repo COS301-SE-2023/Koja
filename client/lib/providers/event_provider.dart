@@ -16,7 +16,7 @@ class EventProvider extends ChangeNotifier {
 
   LocationData? locationData;
 
-  late var scaffoldKey;
+  var scaffoldKey = GlobalKey<ScaffoldState>();
 
   void setScaffoldKey(var s) => scaffoldKey = s;
 
@@ -115,6 +115,7 @@ class EventProvider extends ChangeNotifier {
         await http.get(url, headers: {"Authorisation": accessToken!});
 
     List<dynamic> jsonResponse = jsonDecode(response.body);
+    _events.clear();
     for (var e in jsonResponse) {
       final tempEvent = Event.fromJson(e);
       _events.add(tempEvent);
@@ -205,6 +206,4 @@ class EventProvider extends ChangeNotifier {
       );
     }
   }
-
-  
 }

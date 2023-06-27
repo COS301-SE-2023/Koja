@@ -78,7 +78,7 @@ class TimeCategory extends StatelessWidget {
                     ),
                     SizedBox(width: 5),
                     Text(
-                      startTime as String,
+                      startTime,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -90,7 +90,7 @@ class TimeCategory extends StatelessWidget {
                     ),
                     SizedBox(width: 5),
                     Text(
-                      endTime as String,
+                      endTime,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
