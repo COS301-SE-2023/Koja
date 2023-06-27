@@ -4,46 +4,39 @@ import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.CalendarAdapterFactoryService
-import com.teamcaffeine.koja.service.CalendarAdapterService
-import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
+import io.mockk.mockk
+import io.mockk.mockkClass
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 
-class CalendarAdapterFactoryServiceTest {
-    @Mock
+internal class CalendarAdapterFactoryServiceTest {
     private lateinit var userRepository: UserRepository
-
-    @Mock
     private lateinit var userAccountRepository: UserAccountRepository
-
-    @InjectMocks
     private lateinit var calendarAdapterFactoryService: CalendarAdapterFactoryService
 
     @BeforeEach
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
+    fun setUp() {
+        userRepository = mockk()
+        userAccountRepository = mockk()
+        calendarAdapterFactoryService = CalendarAdapterFactoryService(userRepository, userAccountRepository)
     }
 
     @Test
-    fun testCreateCalendarAdapter_withValidAuthProvider() {
-        // Prepare test data
+    fun `createCalendarAdapter should return GoogleCalendarAdapterService for AuthProviderEnum GOOGLE`() {
         val authProvider = AuthProviderEnum.GOOGLE
 
-        assertDoesNotThrow {
-            calendarAdapterFactoryService.createCalendarAdapter(authProvider)
-        }
+        val result = calendarAdapterFactoryService.createCalendarAdapter(authProvider)
+
+        assertEquals(GoogleCalendarAdapterService::class.java, result::class.java)
     }
 
     @Test
-    fun testCreateCalendarAdapter_withInvalidAuthProvider() {
-        // Prepare test data
+    fun `createCalendarAdapter should throw IllegalArgumentException for invalid AuthProviderEnum value`() {
         val authProvider = AuthProviderEnum.NONE
 
-        // Invoke and verify
         assertThrows(IllegalArgumentException::class.java) {
             calendarAdapterFactoryService.createCalendarAdapter(authProvider)
         }
