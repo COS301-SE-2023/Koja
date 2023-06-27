@@ -310,12 +310,12 @@ class GoogleCalendarAdapterService(
         return updatedEvent
     }
 
-    override fun deleteEvent(accessToken: String, eventDTO: UserEventDTO): Boolean {
+    override fun deleteEvent(accessToken: String, eventID: String): Boolean {
         val calendarService = buildCalendarService(accessToken)
         val calendarId = "primary"
 
         try {
-            calendarService.events().delete(calendarId, eventDTO.getId()).execute()
+            calendarService.events().delete(calendarId, eventID).execute()
         } catch (e: Exception) {
             return false
         }

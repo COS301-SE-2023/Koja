@@ -3,6 +3,7 @@ package com.teamcaffeine.koja.controller
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -47,10 +48,10 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         return ResponseEntity.ok("Event updated")
     }
 
-    @PostMapping("/deleteEvent")
-    fun deleteEvent(@RequestBody eventToDelete: AddEventRequest): ResponseEntity<String> {
+    @DeleteMapping("/deleteEvent")
+    fun deleteEvent(@RequestHeader("Authorisation") token: String, @RequestBody eventToDeleteID: String): ResponseEntity<String> {
         try {
-            userCalendar.deleteEvent(eventToDelete.token, eventToDelete.event)
+            userCalendar.deleteEvent(token, eventToDeleteID)
         } catch (e: Exception) {
             return ResponseEntity.badRequest().body("Event could not be deleted.")
         }
