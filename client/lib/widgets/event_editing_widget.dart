@@ -22,10 +22,11 @@ class EventEditing extends StatefulWidget {
 }
 
 class EventEditingState extends State<EventEditing> {
-  List<AutocompletePrediction> eventplacepredictions = [];
-  final TextEditingController _eventplace = TextEditingController();
+  List<AutocompletePrediction> eventPlacePredictions = [];
+  final TextEditingController _eventPlace = TextEditingController();
+  String placeId = "";
 
-  Future<void> eventplaceAutocomplete(String query) async {
+  Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
         'maps/api/place/autocomplete/json', {"input": query, "key": apiKey});
 
@@ -36,7 +37,7 @@ class EventEditingState extends State<EventEditing> {
       if (result.predictions != null) {
         if (mounted) {
           setState(() {
-            eventplacepredictions =
+            eventPlacePredictions =
                 result.predictions!.cast<AutocompletePrediction>();
           });
         }
@@ -132,6 +133,9 @@ class EventEditingState extends State<EventEditing> {
                 ChooseEventType(onEventSelected: updateEventType),
                 const SizedBox(height: 12),
                 location(),
+                TimeEstimationWidget(
+                  placeID: placeId,
+                ),
                 const SizedBox(height: 12),
                 deleteEventButton(),
               ],
@@ -218,7 +222,7 @@ class EventEditingState extends State<EventEditing> {
             Row(
               children: [
                 Expanded(
-                  child: Text("LOCATION: ${_eventplace.text}",
+                  child: Text("LOCATION: ${_eventPlace.text}",
                       maxLines: 2,
                       style: TextStyle(
                           fontFamily: 'Railway',
@@ -230,7 +234,7 @@ class EventEditingState extends State<EventEditing> {
             TextFormField(
               onChanged: onLocationChanged,
               cursorColor: Colors.white,
-              controller: _eventplace,
+              controller: _eventPlace,
               style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 focusedBorder: const OutlineInputBorder(
@@ -262,16 +266,17 @@ class EventEditingState extends State<EventEditing> {
             ListView.builder(
               shrinkWrap: true,
               physics: ScrollPhysics(),
-              itemCount: eventplacepredictions.length,
+              itemCount: eventPlacePredictions.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                    eventplacepredictions[index].description!,
+                    eventPlacePredictions[index].description!,
                     textAlign: TextAlign.start,
                     style: const TextStyle(color: Colors.black),
                   ),
                   onTap: () {
-                    selectLocation(eventplacepredictions[index].description!);
+                    placeId = eventPlacePredictions[index].placeId!;
+                    selectLocation(eventPlacePredictions[index].description!);
                   },
                 );
               },
@@ -284,25 +289,25 @@ class EventEditingState extends State<EventEditing> {
 
   void onLocationChanged(String value) {
     if (value.length > 2) {
-      eventplaceAutocomplete(value);
+      eventPlaceAutocomplete(value);
     } else {
       setState(() {
-        eventplaceAutocomplete("");
+        eventPlaceAutocomplete("");
       });
     }
   }
 
   void clearLocation() {
-    _eventplace.clear();
+    _eventPlace.clear();
     setState(() {
-      eventplaceAutocomplete("");
+      eventPlaceAutocomplete("");
     });
   }
 
   void selectLocation(String location) {
     setState(() {
-      _eventplace.text = location;
-      eventplaceAutocomplete("");
+      _eventPlace.text = location;
+      eventPlaceAutocomplete("");
     });
     // Send the selected location (placeId) to the backend
     // meetinglocation(eventplacepredictions[index].placeId!);
@@ -542,13 +547,13 @@ class EventEditingState extends State<EventEditing> {
 
       final event = Event(
         title: titleController.text,
-        location: _eventplace.text,
+        location: _eventPlace.text,
         description: 'description',
         category: selectedCategory,
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
         from: fromDate,
         to: toDate,
-        duration: durationInSeconds * 1000,
+        duration: await getDurationInMilliseconds(durationInSeconds),
         isAllDay: false,
         timeSlots: [timeSlot],
       );
@@ -588,6 +593,85 @@ class EventEditingState extends State<EventEditing> {
         Navigator.pop(context);
       }
     }
+  }
+
+  Future<int> getDurationInMilliseconds(int durationInSeconds) async {
+    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+
+    int placeTravelTime = await eventProvider.getPlaceTravelTime(placeId);
+
+    return (durationInSeconds * 1000) + placeTravelTime;
+  }
+}
+
+class TimeEstimationWidget extends StatelessWidget {
+  const TimeEstimationWidget({
+    super.key,
+    required this.placeID,
+  });
+
+  final String placeID;
+  @override
+  Widget build(BuildContext context) {
+    return (placeID == "")
+        ? Text(
+            'No Location Selected',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          )
+        : FutureBuilder(
+            builder: ((context, snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 3, left: 12),
+                  child: Row(
+                    children: [
+                      Icon(Icons.mode_of_travel),
+                      SizedBox(width: 8),
+                      Text(
+                        getHumanText(snapshot.data),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 3, left: 12),
+                  child: Text(
+                    'Loading...',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }
+            }),
+            future: Provider.of<EventProvider>(context, listen: false)
+                .getPlaceTravelTime(placeID),
+          );
+  }
+
+  String getHumanText(int? travelTimeInSeconds) {
+    if (travelTimeInSeconds == null) return 'Could not get travel time';
+
+    int hours = travelTimeInSeconds ~/ 3600;
+    int minutes = (travelTimeInSeconds % 3600) ~/ 60;
+    int seconds = travelTimeInSeconds % 60;
+
+    String hoursText = hours == 0 ? '' : '$hours hour${hours > 1 ? 's' : ''}';
+    String minutesText =
+        minutes == 0 ? '' : ' $minutes minute${minutes > 1 ? 's' : ''}';
+    String secondsText =
+        seconds == 0 ? '' : ' $seconds second${seconds > 1 ? 's' : ''}';
+
+    return '$hoursText$minutesText$secondsText'.trim();
   }
 }
 

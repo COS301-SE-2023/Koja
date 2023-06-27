@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import '../providers/event_provider.dart';
 
 class TimeBoundaries extends StatefulWidget {
-  late final EventProvider eventProvider;
+  late EventProvider eventProvider;
   @override
   TimeBoundariesState createState() => TimeBoundariesState();
 }
@@ -167,11 +167,11 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                   ),
                   onPressed: () {
                     showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SetBoundary(selectedOption, _start, _end, saveTime);
-                      }
-                    );
+                        context: context,
+                        builder: (context) {
+                          return SetBoundary(
+                              selectedOption, _start, _end, saveTime);
+                        });
                   },
                 ),
               ],
@@ -200,12 +200,11 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                   }, (context) {
                     editedindex = index;
                     showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SetBoundary(
-                          categories[index][0], _start, _end, saveTime);
-                      }
-                    );
+                        context: context,
+                        builder: (context) {
+                          return SetBoundary(
+                              categories[index][0], _start, _end, saveTime);
+                        });
                   }),
                 ),
               );
