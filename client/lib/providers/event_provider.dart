@@ -16,6 +16,10 @@ class EventProvider extends ChangeNotifier {
 
   LocationData? locationData;
 
+  late var scaffoldKey;
+
+  void setScaffoldKey(var s) => scaffoldKey = s;
+
   final Map<String, TimeSlot?> _timeSlots = {
     "Hobby": null,
     "Work": null,
@@ -67,6 +71,7 @@ class EventProvider extends ChangeNotifier {
 
   //This deletes an event from the list
   void deleteEvent(Event event) {
+    deleteEventAPICall(event.id);
     _events.remove(event);
     notifyListeners();
   }
@@ -163,4 +168,43 @@ class EventProvider extends ChangeNotifier {
 
     return 0;
   }
+
+  Future<void> deleteEventAPICall(String eventId) async {
+    try {
+      final http.Response response = await http.delete(
+        Uri.parse('http://localhost:8080/api/v1/user/calendar/deleteEvent'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': _accessToken!,
+        },
+        body: eventId,
+      );
+
+      if (response.statusCode == 200) {
+        final key = scaffoldKey as GlobalKey<ScaffoldMessengerState>;
+        key.currentState!.showSnackBar(
+          const SnackBar(
+            content: Text('Event successfully deleted.'),
+          ),
+        );
+      } else {
+        final key = scaffoldKey as GlobalKey<ScaffoldMessengerState>;
+        key.currentState!.showSnackBar(
+          const SnackBar(
+            content: Text('Failed to delete event.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) print(e);
+      final key = scaffoldKey as GlobalKey<ScaffoldMessengerState>;
+      key.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete event.'),
+        ),
+      );
+    }
+  }
+
+  
 }

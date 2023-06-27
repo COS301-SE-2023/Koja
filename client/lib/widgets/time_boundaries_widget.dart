@@ -73,7 +73,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     setState(() {
       widget.eventProvider.setTimeSlot(selectedOption, timeSlot);
       categories.removeWhere((element) => element[0] == selectedOption);
-      categories.add([selectedOption, _start.text, _end.text]);
+      // categories.add([selectedOption, _start.text, _end.text]);
     });
 
     //if editing an item, remove the current item from the list and add the edited item
