@@ -50,8 +50,9 @@ class UserCalendarService(
     private fun consolidateEvents(userEvent: UserEventDTO?) {
         TODO("Not yet implemented")
     }
+
     fun updateEvent(token: String, eventDTO: UserEventDTO) {
-        var userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
         for (adapter in calendarAdapters) {
@@ -59,6 +60,8 @@ class UserCalendarService(
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
+
+
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
             }
