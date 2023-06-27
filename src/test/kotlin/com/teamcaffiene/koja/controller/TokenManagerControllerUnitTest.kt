@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class TokenManagerControllerTest {
+class TokenManagerControllerUnitTest {
 
     private lateinit var tokenManagerController: TokenManagerController
 
@@ -23,7 +23,7 @@ class TokenManagerControllerTest {
     @Test
     fun testCreateToken() {
         val tokens = listOf(
-            JWTGoogleDTO("accessToken", "refreshToken",123L),
+            JWTGoogleDTO("accessToken", "refreshToken", 123L),
         )
         val tokenRequest = TokenRequest(tokens, AuthProviderEnum.GOOGLE, 123)
 
