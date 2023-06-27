@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:client/screens/login_screen.dart';
-import 'package:client/screens/information_screen.dart';
 
 void main() {
   testWidgets('Login elevated button text test', (WidgetTester tester) async {
