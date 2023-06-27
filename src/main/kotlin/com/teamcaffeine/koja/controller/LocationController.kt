@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+
 @RestController
 @RequestMapping("/api/v1/location")
 internal class
@@ -55,9 +56,9 @@ LocationController {
 //    }
 
     @GetMapping("/distance")
-    fun getDistanceBetweenLocations(@RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?) {
+    fun getDistanceBetweenLocations(@RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
         val distance = getDistance(origin, destination)
-        println("Distance between $origin and $destination: $distance")
+        return ResponseEntity.ok(distance)
     }
 
     fun getDistance(origin: String?, destination: String?): String? {
@@ -76,33 +77,32 @@ LocationController {
 
     @GetMapping("/travel-time")
     fun getLocationsTravelTime(
-        @RequestParam("originLat") originLat: String?,
-        @RequestParam("originLng") originLng: String?,
+        @RequestParam("placeId") placeId: String?,
         @RequestParam("destLat") destLat: String?,
         @RequestParam("destLng") destLng: String?
     ): ResponseEntity<Long> {
 
-        return if (originLng != null && originLat != null && destLat != null && destLng != null) {
+        return if (placeId != null && destLat != null && destLng != null) {
             try {
-                val originLngDouble = originLng.toDouble()
-                val originLatDouble = originLat.toDouble()
                 val destLatDouble = destLat.toDouble()
                 val destLngDouble = destLng.toDouble()
-                ResponseEntity.ok(getTravelTime(originLatDouble, originLngDouble, destLatDouble, destLngDouble))
+                val result = getTravelTime(placeId, destLatDouble, destLngDouble)
+                ResponseEntity.ok().body(result ?: 0L)
             } catch (e: Exception) {
+                print(e)
                 ResponseEntity.badRequest().build()
             }
         } else
             ResponseEntity.badRequest().build()
     }
 
-    fun getTravelTime(originLat: Double, originLng: Double, destLat: Double, destLng: Double): Long? {
+    fun getTravelTime(placeId: String, destLat: Double, destLng: Double): Long? {
         val context = GeoApiContext.Builder()
             .apiKey(System.getProperty("API_KEY"))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
-            .origins(com.google.maps.model.LatLng(originLat, originLng))
+            .origins("place_id:$placeId")
             .destinations(com.google.maps.model.LatLng(destLat, destLng))
             .mode(TravelMode.DRIVING)
             .await()

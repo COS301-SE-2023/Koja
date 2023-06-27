@@ -1,13 +1,16 @@
 import './structured_format_model.dart';
 
-class AutocompletePrediction 
-{
+class AutocompletePrediction {
   late final String? description;
   late final StructuredFormatting? structuredFormatting;
   late final String? placeId;
   late final String? reference;
 
-  AutocompletePrediction({this.description, this.placeId, this.reference, this.structuredFormatting});
+  AutocompletePrediction(
+      {this.description,
+      this.placeId,
+      this.reference,
+      this.structuredFormatting});
 
   factory AutocompletePrediction.fromJson(Map<String, dynamic> json) {
     return AutocompletePrediction(
