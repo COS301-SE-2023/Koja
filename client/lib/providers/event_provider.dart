@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,8 @@ class EventProvider extends ChangeNotifier {
   String? _accessToken;
 
   List<EventWrapper> _eventWrappers = [];
+
+  LocationData? locationData;
 
   final Map<String, TimeSlot?> _timeSlots = {
     "Hobby": null,
@@ -135,6 +138,29 @@ class EventProvider extends ChangeNotifier {
 
     // Get the current location
     LocationData currentLocation = await location.getLocation();
+    locationData = currentLocation;
     return currentLocation;
+  }
+
+  Future<int> getPlaceTravelTime(String placeID) async {
+    try {
+      final location = await getLocation();
+      if (location == null) return 0;
+
+      final response = await http.get(
+        Uri.parse(
+          'http://localhost:8080/api/v1/location/travel-time?placeId=$placeID&destLat=${locationData!.latitude}&destLng=${locationData!.longitude}',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        String travelTime = response.body;
+        return int.parse(travelTime);
+      }
+    } catch (e) {
+      if (kDebugMode) print(e);
+    }
+
+    return 0;
   }
 }
