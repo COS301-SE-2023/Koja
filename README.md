@@ -10,7 +10,7 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 
 ## Documentation:
 ## SRS Documentation & Coding Standards
-[SRS Documentation](https://docs.google.com/document/d/1V_2xfNcoMl7heFIU94IDjCwrQeWwZM3zzlxb1wnSpU0/edit?usp=sharing)
+[SRS Documentation](https://www.canva.com/design/DAFm6EdVuUo/d1PDPN7l5k5e_cx3V7UT1A/edit?utm_content=DAFm6EdVuUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 [Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
 
