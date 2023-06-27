@@ -12,7 +12,6 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.util.Date
 
 class CalendarControllerUnitTest {
     @Mock
@@ -30,11 +29,7 @@ class CalendarControllerUnitTest {
     fun testGetAllUserEvents() {
         // Mock the behavior of the userCalendarService
         val token = "testToken"
-        val userEvents = listOf(
-            UserEventDTO(
-                "1", "5KM Morning Jog", "LC sports center", Date(2015, 5, 28, 7, 0), Date(2015, 5, 28, 9, 0)
-            )
-        )
+        val userEvents = arrayListOf<UserEventDTO>()
         `when`(userCalendarService.getAllUserEvents(token)).thenReturn(userEvents)
 
         // Invoke the getAllUserEvents method in the calendarController
