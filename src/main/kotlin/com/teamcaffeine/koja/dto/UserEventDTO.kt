@@ -27,7 +27,7 @@ class UserEventDTO(
 
     constructor(googleEvent: GoogleEvent) : this(
         id = googleEvent.id,
-        description = googleEvent.summary ?: "",
+        description = googleEvent.description ?: "",
         location = googleEvent.location ?: "",
         startTime = toKotlinDate(googleEvent.start) ?: OffsetDateTime.now(ZoneOffset.UTC),
         endTime = toKotlinDate(googleEvent.end) ?: OffsetDateTime.now(ZoneOffset.UTC),
