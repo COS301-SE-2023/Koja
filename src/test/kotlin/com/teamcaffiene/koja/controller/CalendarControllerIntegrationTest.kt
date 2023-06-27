@@ -16,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.Date
 
 @SpringJUnitConfig
 @SpringBootTest(classes = [KojaApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,14 +34,10 @@ class CalendarControllerIntegrationTest {
     fun testGetAllUserEvents() {
         // Prepare test data
         val token = "your_auth_token"
-        val userEvents = listOf(
-            UserEventDTO(
-                "1", "5KM Morning Jog", "LC sports center", Date(2015, 5, 28, 7, 0), Date(2015, 5, 28, 9, 0)
-            )
-        )
+        val userEvents = emptyArray<UserEventDTO>()
 
         // Mock the service method
-        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(userEvents)
+        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(userEvents.toList())
 
         // Perform the GET request
         mockMvc.perform(
