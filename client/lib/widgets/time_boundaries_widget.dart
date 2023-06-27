@@ -9,18 +9,18 @@ import 'package:intl/intl.dart';
 import '../providers/event_provider.dart';
 
 class TimeBoundaries extends StatefulWidget {
-  late EventProvider eventProvider;
   @override
   TimeBoundariesState createState() => TimeBoundariesState();
 }
 
 class TimeBoundariesState extends State<TimeBoundaries> {
+  late EventProvider eventProvider;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.eventProvider = Provider.of<EventProvider>(context);
+    eventProvider = Provider.of<EventProvider>(context);
     DateFormat format = DateFormat("h:mm a");
-    for (var entry in widget.eventProvider.timeSlots.entries) {
+    for (var entry in eventProvider.timeSlots.entries) {
       if (entry.value != null) {
         categories.add([
           entry.key,
@@ -71,7 +71,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
 
     setState(() {
-      widget.eventProvider.setTimeSlot(selectedOption, timeSlot);
+      eventProvider.setTimeSlot(selectedOption, timeSlot);
       categories.removeWhere((element) => element[0] == selectedOption);
       // categories.add([selectedOption, _start.text, _end.text]);
     });
