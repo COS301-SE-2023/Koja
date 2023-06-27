@@ -1,10 +1,10 @@
 package com.teamcaffeine.koja
 
 import io.github.cdimascio.dotenv.Dotenv
-import java.lang.System.setProperty
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.runApplication
+import java.lang.System.setProperty
 
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
 class KojaApplication

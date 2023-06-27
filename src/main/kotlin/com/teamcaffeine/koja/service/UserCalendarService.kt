@@ -6,9 +6,9 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
-import org.springframework.stereotype.Service
 
 @Service
 class UserCalendarService(
@@ -61,14 +61,13 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
-
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
             }
         }
     }
 
-    fun deleteEvent(token: String, eventID : String) {
+    fun deleteEvent(token: String, eventID: String) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -161,7 +160,6 @@ class UserCalendarService(
                         (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
                         (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
                         (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
-
                 }
 
                 if (conflictingEvent == null) {
