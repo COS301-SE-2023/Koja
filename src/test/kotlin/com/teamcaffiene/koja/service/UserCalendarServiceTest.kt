@@ -16,7 +16,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.Date
 
 class UserCalendarServiceTest {
     private lateinit var userAccountRepository: UserAccountRepository
@@ -29,7 +29,7 @@ class UserCalendarServiceTest {
         System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
         userRepository = mockk()
         userAccountRepository = mockk()
-        userCalendarService = UserCalendarService(userAccountRepository,userRepository)
+        userCalendarService = UserCalendarService(userAccountRepository, userRepository)
     }
 
     @Test
@@ -52,14 +52,15 @@ class UserCalendarServiceTest {
         val token = "***redacted***"
         val userJWTTokenDataDTO = UserJWTTokenDataDTO(
             userID = 123,
-            userAuthDetails = listOf(JWTGoogleDTO(token,"dummyRefresh", 1L))
+            userAuthDetails = listOf(JWTGoogleDTO(token, "dummyRefresh", 1L))
         )
         val userAccount = listOf(UserAccount(123))
         val calendarAdapterFactoryService = mockk<CalendarAdapterFactoryService>()
         val calendarAdapterService = mockk<CalendarAdapterService>()
-        val userEvents = listOf(UserEventDTO(
+        val userEvents = listOf(
+            UserEventDTO(
                 "1", "5KM Morning Jog", "LC sports center", Date(2015, 5, 28, 7, 0), Date(2015, 5, 28, 9, 0)
-                )
+            )
         )
 
         every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
@@ -70,8 +71,5 @@ class UserCalendarServiceTest {
         val result = userCalendarService.getAllUserEvents(token)
 
         assertEquals(userEvents, result)
-
-
-
     }
 }
