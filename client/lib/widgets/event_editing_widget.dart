@@ -75,6 +75,26 @@ class EventEditingState extends State<EventEditing> {
   void initState() {
     super.initState();
 
+    if (widget.event != null && widget.event!.isDynamic) {
+      if (widget.event!.duration > 0) {
+        Duration d = Duration(milliseconds: widget.event!.duration);
+        _eventPlace.text = widget.event!.location;
+        hoursController.text = d.inHours.toString();
+        minutesController.text = (d.inMinutes - (d.inHours * 60)).toString();
+      } else if (widget.event!.isDynamic) {
+        _eventPlace.text = widget.event!.location;
+
+        Duration d = Duration(
+            minutes: widget.event!.from
+                .difference(widget.event!.to)
+                .inMinutes
+                .abs());
+
+        hoursController.text = d.inHours.toString();
+        minutesController.text = (d.inMinutes - (d.inHours * 60)).toString();
+      }
+    }
+
     if (widget.event == null) {
       fromDate = DateTime.now();
       toDate = DateTime.now().add(const Duration(hours: 2));
@@ -122,6 +142,7 @@ class EventEditingState extends State<EventEditing> {
             child: ListView(
               shrinkWrap: true,
               children: [
+                ChooseEventType(onEventSelected: updateEventType),
                 buildTitle(),
                 const SizedBox(height: 12),
                 (selectedEventType == 'Dynamic')
@@ -130,14 +151,12 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 12),
                 ChooseCategory(onCategorySelected: updateCategory),
                 const SizedBox(height: 12),
-                ChooseEventType(onEventSelected: updateEventType),
-                const SizedBox(height: 12),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
                 ),
                 const SizedBox(height: 12),
-                deleteEventButton(),
+                if (widget.event != null) deleteEventButton(),
               ],
             )),
       ),
@@ -492,7 +511,6 @@ class EventEditingState extends State<EventEditing> {
   }
 
   Future saveForm() async {
-    // print('Selected Category: $selectedCategory');
     late bool isValid = false;
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -502,7 +520,43 @@ class EventEditingState extends State<EventEditing> {
     if (isValid) {
       final provider = Provider.of<EventProvider>(context, listen: false);
 
-      final timeSlot = provider.timeSlots[selectedCategory];
+      var timeSlot = provider.timeSlots[selectedCategory];
+
+      if (timeSlot == null) {
+        var now = DateTime.now();
+        if (now.day == fromDate.day &&
+            now.month == fromDate.month &&
+            now.year == fromDate.year) {
+          final endOfDay = DateTime(
+            now.year,
+            now.month,
+            now.day,
+            23,
+            59,
+            59,
+          );
+
+          timeSlot = TimeSlot(startTime: now, endTime: endOfDay);
+        } else {
+          final startOfDay = DateTime(
+            fromDate.year,
+            fromDate.month,
+            fromDate.day,
+            0,
+            0,
+            0,
+          );
+          final endOfDay = DateTime(
+            fromDate.year,
+            fromDate.month,
+            fromDate.day,
+            23,
+            59,
+            59,
+          );
+          timeSlot = TimeSlot(startTime: startOfDay, endTime: endOfDay);
+        }
+      }
 
       int year = fromDate.year;
       int month = fromDate.month;
@@ -546,6 +600,7 @@ class EventEditingState extends State<EventEditing> {
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
 
       final event = Event(
+        id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
         location: _eventPlace.text,
         description: 'description',
@@ -563,34 +618,56 @@ class EventEditingState extends State<EventEditing> {
         "event": event.toJson(),
       };
 
-      var response = await http.post(
-        Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent'),
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-          "Authorization": "Bearer ${provider.accessToken}",
-        },
-        body: jsonEncode(data),
-      );
+      if (widget.event == null) {
+        var response = await http.post(
+          Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent'),
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "Authorization": "Bearer ${provider.accessToken}",
+          },
+          body: jsonEncode(data),
+        );
 
-      if (response.statusCode == 200) {
-        provider.getEventsFromAPI();
-        const snackBar = SnackBar(
-          content: Text('Event Created!'),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pop(context);
-      } else if (response.statusCode == 400) {
-        const snackBar = SnackBar(
-          content:
-              Text('Event Creation Failed - Could not fit in the time slot'),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        if (response.statusCode == 200) {
+          provider.getEventsFromAPI();
+          const snackBar = SnackBar(
+            content: Text('Event Created!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.pop(context);
+        } else if (response.statusCode == 400) {
+          const snackBar = SnackBar(
+            content:
+                Text('Event Creation Failed - Could not fit in the time slot'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          const snackBar = SnackBar(
+            content: Text('Could not create event - Internal Server Error'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.pop(context);
+        }
       } else {
-        const snackBar = SnackBar(
-          content: Text('Could not create event - Internal Server Error'),
+        var response = await http.put(
+          Uri.http('localhost:8080', '/api/v1/user/calendar/updateEvent'),
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "Authorization": "Bearer ${provider.accessToken}",
+          },
+          body: jsonEncode(data),
         );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pop(context);
+        if (response.statusCode == 200) {
+          const snackBar = SnackBar(
+            content: Text('Event Updated!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          const snackBar = SnackBar(
+            content: Text('Event Update Failed.'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       }
     }
   }
@@ -598,7 +675,8 @@ class EventEditingState extends State<EventEditing> {
   Future<int> getDurationInMilliseconds(int durationInSeconds) async {
     final eventProvider = Provider.of<EventProvider>(context, listen: false);
 
-    int placeTravelTime = await eventProvider.getPlaceTravelTime(placeId);
+    int placeTravelTime =
+        (placeId != "") ? await eventProvider.getPlaceTravelTime(placeId) : 0;
 
     return (durationInSeconds * 1000) + placeTravelTime;
   }
