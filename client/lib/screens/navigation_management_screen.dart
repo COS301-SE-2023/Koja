@@ -1,27 +1,26 @@
-//Packages
-
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 //Pages or widgets
+import '../Utils/constants_util.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
-import 'suggested_screen.dart';
+import 'tasks_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
   static const routeName = '/navigation';
   const NavigationScreen({super.key});
 
   @override
-  _NavigationScreenState createState() => _NavigationScreenState();
+  NavigationScreenState createState() => NavigationScreenState();
 }
 
-class _NavigationScreenState extends State<NavigationScreen> {
-
+class NavigationScreenState extends State<NavigationScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _tabs = [
     const Home(),
-    const Suggestions(),
+    const Tasks(),
     const Profile(),
   ];
 
@@ -30,32 +29,33 @@ class _NavigationScreenState extends State<NavigationScreen> {
     return Scaffold(
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        iconSize: 25,
+        iconSize: 18,
         currentIndex: _currentIndex,
-        
-        items: [ 
+        backgroundColor: darkBlue,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.black,
+        items: const [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
+            icon: Icon(Bootstrap.house),
             label: 'Home',
-            backgroundColor: ThemeData().colorScheme.primary,
+            activeIcon: Icon(Bootstrap.house_fill)
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.settings_suggest),
-            label: 'Suggestions',
-            backgroundColor: ThemeData().colorScheme.primary,
+            icon: Icon(Bootstrap.calendar2),
+            label: 'Tasks',
+            activeIcon: Icon(Bootstrap.calendar2_check)
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
+            icon: Icon(Bootstrap.person_badge),
             label: 'Profile',
-            backgroundColor: ThemeData().colorScheme.primary,
+            activeIcon: Icon(Bootstrap.person_badge_fill)
           ),
         ],
-        onTap: (index){
+        onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
-        }
-        
+        },
       ),
     );
   }
