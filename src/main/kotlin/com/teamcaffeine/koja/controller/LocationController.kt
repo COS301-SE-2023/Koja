@@ -5,6 +5,7 @@ import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.constants.HeaderConstant
+import com.teamcaffeine.koja.constants.ResponseConstant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -53,7 +54,11 @@ LocationController {
 //    }
 
     @GetMapping("/distance")
-    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+        if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
+
         val distance = getDistance(origin, destination)
         return ResponseEntity.ok(distance)
     }
@@ -78,9 +83,9 @@ LocationController {
         @RequestParam("placeId") placeId: String?,
         @RequestParam("destLat") destLat: String?,
         @RequestParam("destLng") destLng: String?,
-    ): ResponseEntity<Long> {
+    ): ResponseEntity<out Any> {
         return if (token == null || placeId == null || destLat == null || destLng == null) {
-            ResponseEntity.badRequest().build()
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
                 val destLatDouble = destLat.toDouble()
@@ -89,7 +94,7 @@ LocationController {
                 ResponseEntity.ok().body(result ?: 0L)
             } catch (e: Exception) {
                 print(e)
-                ResponseEntity.badRequest().build()
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
             }
         }
     }

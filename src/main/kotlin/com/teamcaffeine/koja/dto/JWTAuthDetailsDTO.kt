@@ -23,7 +23,7 @@ abstract class JWTAuthDetailsDTO(val authProvider: AuthProviderEnum) {
                 return JWTGoogleDTO(
                     map["accessToken"] as String,
                     map["refreshToken"] as String,
-                    (map["expireTimeInSeconds"] as String).toDouble().toLong()
+                    (map["expireTimeInSeconds"] as String).toDouble().toLong(),
                 )
             }
             return null

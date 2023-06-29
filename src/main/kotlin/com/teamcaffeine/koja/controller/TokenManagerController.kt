@@ -10,10 +10,11 @@ import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.Date
@@ -31,8 +32,12 @@ class TokenManagerController {
     private val oneMinuteInSeconds: Long = 60L
 
     @PostMapping("/renew")
-    fun renewToken(@RequestHeader(HeaderConstant.AUTHORISATION) token: String): String {
-        return ""
+    fun renewToken(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): Any {
+        return if (token == null) {
+            ResponseEntity.badRequest().body("ResponseConstant.REQUIRED_PARAMETERS_NOT_SET")
+        } else {
+            "TODO: implement renew token"
+        }
     }
 
     fun createToken(tokenRequest: TokenRequest): String {
