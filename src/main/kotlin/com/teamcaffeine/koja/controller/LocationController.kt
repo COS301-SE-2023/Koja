@@ -4,7 +4,7 @@ import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
-import com.teamcaffeine.koja.constants.HeaderConstants
+import com.teamcaffeine.koja.constants.HeaderConstant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -53,7 +53,7 @@ LocationController {
 //    }
 
     @GetMapping("/distance")
-    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstants.AUTHORISATION) token: String, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
         val distance = getDistance(origin, destination)
         return ResponseEntity.ok(distance)
     }
@@ -74,7 +74,7 @@ LocationController {
 
     @GetMapping("/travel-time")
     fun getLocationsTravelTime(
-        @RequestHeader(HeaderConstants.AUTHORISATION) token: String?,
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestParam("placeId") placeId: String?,
         @RequestParam("destLat") destLat: String?,
         @RequestParam("destLng") destLng: String?,

@@ -3,14 +3,17 @@ package com.teamcaffeine.koja.controller
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
-import com.teamcaffeine.koja.constants.HeaderConstants
+import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.Date
@@ -28,7 +31,7 @@ class TokenManagerController {
     private val oneMinuteInSeconds: Long = 60L
 
     @PostMapping("/renew")
-    fun renewToken(@RequestHeader(HeaderConstants.AUTHORISATION) token: String): String {
+    fun renewToken(@RequestHeader(HeaderConstant.AUTHORISATION) token: String): String {
         return ""
     }
 
