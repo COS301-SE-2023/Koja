@@ -3,16 +3,14 @@ package com.teamcaffeine.koja.controller
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
+import com.teamcaffeine.koja.constants.HeaderConstants
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.Date
@@ -30,7 +28,7 @@ class TokenManagerController {
     private val oneMinuteInSeconds: Long = 60L
 
     @PostMapping("/renew")
-    fun renewToken(@RequestBody tokenRequest: TokenRequest): String {
+    fun renewToken(@RequestHeader(HeaderConstants.AUTHORISATION) token: String): String {
         return ""
     }
 
@@ -40,7 +38,7 @@ class TokenManagerController {
         return createJwtToken(
             accessTokens = tokenRequest.tokens,
             expiryTime = expiryTime,
-            userID = tokenRequest.userId
+            userID = tokenRequest.userId,
         )
     }
 
@@ -105,7 +103,7 @@ class TokenManagerController {
             val userTokens = gson.fromJson(
                 decryptedClaims.substringAfter("userAccountTokens=")
                     .substringBefore(", userID"),
-                List::class.java
+                List::class.java,
             )
 
             val userAccountTokens = mutableListOf<JWTAuthDetailsDTO>()
@@ -119,7 +117,7 @@ class TokenManagerController {
 
             return UserJWTTokenDataDTO(
                 userAccountTokens,
-                decryptedClaims.substringAfter("userID=").substringBefore("}").toInt()
+                decryptedClaims.substringAfter("userID=").substringBefore("}").toInt(),
             )
         }
 

@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.controller
 
+import com.teamcaffeine.koja.constants.HeaderConstants
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
@@ -16,18 +17,14 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/user/calendar")
 class CalendarController(private val userCalendar: UserCalendarService) {
 
-    data class AddEventRequest(
-        val token: String,
-        val event: UserEventDTO
-    )
-
     @PostMapping("/createEvent")
-    fun addEvent(@RequestBody addEventRequest: AddEventRequest): ResponseEntity<String> {
+    fun addEvent(@RequestHeader(HeaderConstants.AUTHORISATION) token: String, @RequestBody event: UserEventDTO): ResponseEntity<String> {
         try {
-            userCalendar.createEvent(addEventRequest.token, addEventRequest.event)
+            userCalendar.createEvent(token, event)
         } catch (e: Exception) {
-            if (e.message.equals("Could not find a time slot where the event can fit"))
+            if (e.message.equals("Could not find a time slot where the event can fit")) {
                 return ResponseEntity.badRequest().body("Event not added, could not find a time slot where the event can fit.")
+            }
 
             return ResponseEntity.internalServerError().body("Event could no be created.")
         }
@@ -35,14 +32,14 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     }
 
     @GetMapping("/userEvents")
-    fun getAllUserEvents(@RequestHeader("Authorisation") token: String): ResponseEntity<List<UserEventDTO>> {
+    fun getAllUserEvents(@RequestHeader(HeaderConstants.AUTHORISATION) token: String): ResponseEntity<List<UserEventDTO>> {
         return ResponseEntity.ok(userCalendar.getAllUserEvents(token))
     }
 
     @PutMapping("/updateEvent")
-    fun updateEvent(@RequestHeader("Authorisation") token: String, @RequestBody updatedEvent: AddEventRequest): ResponseEntity<String> {
+    fun updateEvent(@RequestHeader(HeaderConstants.AUTHORISATION) token: String, @RequestBody updatedEvent: UserEventDTO): ResponseEntity<String> {
         try {
-            userCalendar.updateEvent(updatedEvent.token, updatedEvent.event)
+            userCalendar.updateEvent(token, updatedEvent)
         } catch (e: Exception) {
             return ResponseEntity.badRequest().body("Event could not be updated.")
         }
@@ -50,7 +47,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     }
 
     @DeleteMapping("/deleteEvent")
-    fun deleteEvent(@RequestHeader("Authorisation") token: String, @RequestBody eventToDeleteID: String): ResponseEntity<String> {
+    fun deleteEvent(@RequestHeader(HeaderConstants.AUTHORISATION) token: String, @RequestBody eventToDeleteID: String): ResponseEntity<String> {
         try {
             userCalendar.deleteEvent(token, eventToDeleteID)
         } catch (e: Exception) {
