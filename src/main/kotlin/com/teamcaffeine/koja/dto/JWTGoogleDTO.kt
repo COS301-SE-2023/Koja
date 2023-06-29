@@ -9,7 +9,7 @@ class JWTGoogleDTO(private val accessToken: String, private val refreshToken: St
             "googleAccessToken" to accessToken,
             "googleRefreshToken" to refreshToken,
             "googleExpireDate" to expireTimeInSeconds,
-            "provider" to AuthProviderEnum.GOOGLE.name
+            "provider" to AuthProviderEnum.GOOGLE.name,
         ).toString()
     }
 
