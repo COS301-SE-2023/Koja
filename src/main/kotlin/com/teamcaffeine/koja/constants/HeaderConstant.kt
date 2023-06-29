@@ -1,5 +1,5 @@
 package com.teamcaffeine.koja.constants
 
-object HeaderConstants {
+object HeaderConstant {
     const val AUTHORISATION = "Authorisation"
 }
