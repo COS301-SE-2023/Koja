@@ -8,6 +8,7 @@ import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.lang.NumberFormatException
 
 @RestController
 @RequestMapping("/api/v1/location")
@@ -92,9 +93,10 @@ LocationController {
                 val destLngDouble = destLng.toDouble()
                 val result = getTravelTime(placeId, destLatDouble, destLngDouble)
                 ResponseEntity.ok().body(result ?: 0L)
-            } catch (e: Exception) {
-                print(e)
+            } catch (e: NumberFormatException) {
                 ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
             }
         }
     }
