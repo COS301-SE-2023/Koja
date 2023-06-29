@@ -13,7 +13,7 @@ import java.time.OffsetDateTime
 @Service
 class UserCalendarService(
     private val userAccountRepository: UserAccountRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
 
     fun getAllUserEvents(token: String): List<UserEventDTO> {
@@ -98,8 +98,8 @@ class UserCalendarService(
                     adapter.getUserEventsInRange(
                         accessToken,
                         eventDTO.getStartTime().withHour(0).withMinute(0).withSecond(0).withNano(0),
-                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999)
-                    )
+                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999),
+                    ),
                 )
             }
         }
@@ -123,7 +123,7 @@ class UserCalendarService(
 
     private fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
-        eventDTO: UserEventDTO
+        eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
 
