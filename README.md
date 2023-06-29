@@ -9,18 +9,39 @@
 Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
 
 ## Documentation:
+<<<<<<< HEAD
 ## SRS Documentation
 [SRS Documentation](https://docs.google.com/document/d/1V_2xfNcoMl7heFIU94IDjCwrQeWwZM3zzlxb1wnSpU0/edit?usp=sharing)
+=======
+## SRS Documentation & Coding Standards
+[SRS Documentation](https://www.canva.com/design/DAFm6EdVuUo/d1PDPN7l5k5e_cx3V7UT1A/edit?utm_content=DAFm6EdVuUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
+[Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
 ## Demo Videos
 [Team Caffeine-Demo1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
 
+<<<<<<< HEAD
+=======
+[Team Caffeine-Demo2](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utm_content=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 ## Project Board
 [Project-Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
 ## Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
+<<<<<<< HEAD
+=======
+## User Manual
+[User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
+
+## Contributions
+[Contributions](https://docs.google.com/document/d/1OVnDnd-1888-pUsX0dXAO_8Iy7R1oDDPmhMQqGZD8TI/edit?usp=sharing)
+
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 ## Group Members:
 
 ## [Marthinus Ettienne van Zyl(u19012366)](https://github.com/u19012366) [LinkedIn](https://www.linkedin.com/in/ettienne-van-zyl-a2a899177)

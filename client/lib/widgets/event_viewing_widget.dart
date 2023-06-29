@@ -3,18 +3,30 @@ import 'package:provider/provider.dart';
 
 import '../Utils/event_util.dart';
 
+<<<<<<< HEAD
 import 'event_editing_widget.dart';
 import 'event_provider.dart';
+=======
+import '../providers/event_provider.dart';
+import 'event_editing_widget.dart';
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
 class EventViewing extends StatefulWidget {
   final Event event;
   const EventViewing({Key? key, required this.event}) : super(key: key);
 
   @override
+<<<<<<< HEAD
   _EventViewingState createState() => _EventViewingState();
 }
 
 class _EventViewingState extends State<EventViewing> {
+=======
+  EventViewingState createState() => EventViewingState();
+}
+
+class EventViewingState extends State<EventViewing> {
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
   late Event event;
 
   @override
@@ -65,7 +77,11 @@ class _EventViewingState extends State<EventViewing> {
       ],
     );
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
   Widget buildDate(String s, DateTime to) {
     return Row(
       children: [
@@ -84,7 +100,11 @@ class _EventViewingState extends State<EventViewing> {
       ],
     );
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
   Widget buildDescription() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

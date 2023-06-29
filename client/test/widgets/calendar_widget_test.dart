@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -29,3 +30,6 @@ void main() {
     expect(find.byType(TasksWidget), findsOneWidget);
   });
 }
+=======
+void main() {}
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9

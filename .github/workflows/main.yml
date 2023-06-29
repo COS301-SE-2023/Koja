@@ -6,7 +6,11 @@ on:
       - main
   pull_request:
     branches:
+<<<<<<< HEAD
       - main
+=======
+      - dev
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
 jobs:
   build_and_test_flutter:
@@ -23,6 +27,17 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
         working-directory: client
+<<<<<<< HEAD
+=======
+        
+      - name: Run Flutter linter
+        run: flutter analyze
+        working-directory: client
+
+      - name: Run Flutter Tests
+        run: flutter test
+        working-directory: client
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
       - name: Build Flutter app
         run: flutter build apk
@@ -39,6 +54,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+<<<<<<< HEAD
 
       - name: Build Spring Boot project
         run: ./gradlew build
+=======
+          
+      - name: Run Linter
+        run: ./gradlew ktlintCheck
+      
+      - name: Build Spring Boot project
+        run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
