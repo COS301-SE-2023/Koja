@@ -36,7 +36,14 @@ class TokenManagerController {
         return if (token == null) {
             ResponseEntity.badRequest().body("ResponseConstant.REQUIRED_PARAMETERS_NOT_SET")
         } else {
-            "TODO: implement renew token"
+            val jwtToken = getUserJWTTokenData(token)
+            val tokenRequest = TokenRequest(
+                tokens = jwtToken.userAuthDetails,
+                authProvider = AuthProviderEnum.NONE,
+                userId = jwtToken.userID,
+            )
+            val newToken = createToken(tokenRequest)
+            ResponseEntity.ok(newToken)
         }
     }
 
