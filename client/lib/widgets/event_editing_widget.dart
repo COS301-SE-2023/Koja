@@ -619,9 +619,10 @@ class EventEditingState extends State<EventEditing> {
         "event": event.toJson(),
       };
 
+      final serviceProvider =
+          Provider.of<ServiceProvider>(context, listen: false);
+
       if (widget.event == null) {
-        final serviceProvider =
-            Provider.of<ServiceProvider>(context, listen: false);
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
@@ -637,19 +638,13 @@ class EventEditingState extends State<EventEditing> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
-        var response = await http.put(
-          Uri.http('localhost:8080', '/api/v1/user/calendar/updateEvent'),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": "Bearer ${provider.accessToken}",
-          },
-          body: jsonEncode(data),
-        );
-        if (response.statusCode == 200) {
+        var response = await serviceProvider.updateEvent(event);
+        if (response) {
           const snackBar = SnackBar(
             content: Text('Event Updated!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         } else {
           const snackBar = SnackBar(
             content: Text('Event Update Failed.'),

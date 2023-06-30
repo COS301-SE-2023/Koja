@@ -28,11 +28,7 @@ class ServiceProvider extends ChangeNotifier {
       }),
     );
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
+    return response.statusCode == 200;
   }
 
   Future<List<Event>> getAllUserEvents() async {
@@ -48,7 +44,7 @@ class ServiceProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateEvent(Event event) async {
+  Future<bool> updateEvent(Event event) async {
     final url = Uri.http('localhost:8080', '/api/v1/user/calendar/updateEvent');
     final response = await http.put(
       url,
@@ -62,8 +58,7 @@ class ServiceProvider extends ChangeNotifier {
       }),
     );
 
-    if (response.statusCode == 200) {
-    } else {}
+    return response.statusCode == 200;
   }
 
   Future<void> deleteEvent(String eventId) async {
