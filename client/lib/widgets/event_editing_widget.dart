@@ -10,6 +10,7 @@ import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
 import '../providers/event_provider.dart';
+import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
 
 class EventEditing extends StatefulWidget {
@@ -619,34 +620,21 @@ class EventEditingState extends State<EventEditing> {
       };
 
       if (widget.event == null) {
-        var response = await http.post(
-          Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent'),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": "Bearer ${provider.accessToken}",
-          },
-          body: jsonEncode(data),
-        );
+        final serviceProvider =
+            Provider.of<ServiceProvider>(context, listen: false);
+        var response = await serviceProvider.createEvent(event);
 
-        if (response.statusCode == 200) {
-          provider.getEventsFromAPI();
+        if (response) {
           const snackBar = SnackBar(
             content: Text('Event Created!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pop(context);
-        } else if (response.statusCode == 400) {
-          const snackBar = SnackBar(
-            content:
-                Text('Event Creation Failed - Could not fit in the time slot'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         } else {
           const snackBar = SnackBar(
-            content: Text('Could not create event - Internal Server Error'),
+            content: Text('Event Creation failed!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pop(context);
         }
       } else {
         var response = await http.put(

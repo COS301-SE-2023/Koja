@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:client/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +16,17 @@ void main() {
 
 class KojaApp extends StatelessWidget {
   KojaApp({Key? key}) : super(key: key);
-  final GlobalKey<ScaffoldMessengerState> scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<EventProvider>(
           create: (context) => EventProvider(),
+        ),
+        ChangeNotifierProvider<ServiceProvider>(
+          create: (context) => ServiceProvider(),
         ),
       ],
       child: Builder(
