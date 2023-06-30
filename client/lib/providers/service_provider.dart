@@ -14,7 +14,7 @@ class ServiceProvider extends ChangeNotifier {
     _accessToken = token;
   }
 
-  Future<void> createEvent(Event event) async {
+  Future<bool> createEvent(Event event) async {
     final url = Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent');
     final response = await http.post(
       url,
@@ -29,7 +29,10 @@ class ServiceProvider extends ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-    } else {}
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<List<Event>> getAllUserEvents() async {
