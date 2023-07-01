@@ -1,20 +1,34 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
 import '../Utils/event_util.dart';
 
-class ServiceProvider extends ChangeNotifier {
+class ServiceProvider with ChangeNotifier {
   String? _accessToken;
   LocationData? _locationData;
 
   String? get accessToken => _accessToken;
   LocationData? get locationData => _locationData;
 
+  factory ServiceProvider() => _instance;
+
+  static final ServiceProvider _instance = ServiceProvider._internal();
+
+  ServiceProvider._internal() {
+    init();
+  }
+
   void setAccessToken(String? token) {
     _accessToken = token;
+  }
+
+  void setLocationData(LocationData? locationData) {
+    _locationData = locationData;
+    if (kDebugMode) print("User Location Set: $_locationData");
   }
 
   Future<bool> createEvent(Event event) async {
@@ -98,14 +112,14 @@ class ServiceProvider extends ChangeNotifier {
     }
   }
 
-  void startLocationListner(LocationData? locationData) async {
+  void startLocationListner() async {
     Location location = Location();
 
     location.serviceEnabled().then((serviceEnabled) {
       if (!serviceEnabled) {
         location.requestService().then((serviceEnabled) {
           if (!serviceEnabled) {
-            locationData = null;
+            setLocationData(null);
             return;
           }
         });
@@ -116,7 +130,7 @@ class ServiceProvider extends ChangeNotifier {
       if (permission == PermissionStatus.denied) {
         location.requestPermission().then((permission) {
           if (permission != PermissionStatus.granted) {
-            locationData = null;
+            setLocationData(null);
             return;
           }
         });
@@ -124,16 +138,12 @@ class ServiceProvider extends ChangeNotifier {
     });
 
     location.onLocationChanged.listen((LocationData currentLocation) {
-      locationData = currentLocation;
+      setLocationData(currentLocation);
     });
   }
 
-  ServiceProvider() {
-    init();
-  }
-
   Future<ServiceProvider> init() async {
-    startLocationListner(locationData);
+    startLocationListner();
     return this;
   }
 }
