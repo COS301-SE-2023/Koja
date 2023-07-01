@@ -2,13 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 import '../Utils/event_util.dart';
 
 class ServiceProvider extends ChangeNotifier {
   String? _accessToken;
+  LocationData? _locationData;
 
   String? get accessToken => _accessToken;
+  LocationData? get locationData => _locationData;
 
   void setAccessToken(String? token) {
     _accessToken = token;
@@ -91,8 +94,46 @@ class ServiceProvider extends ChangeNotifier {
       String travelTime = response.body;
       return int.parse(travelTime);
     } else {
-      // Handle error
       return 0;
     }
+  }
+
+  void startLocationListner(LocationData? locationData) async {
+    Location location = Location();
+
+    location.serviceEnabled().then((serviceEnabled) {
+      if (!serviceEnabled) {
+        location.requestService().then((serviceEnabled) {
+          if (!serviceEnabled) {
+            locationData = null;
+            return;
+          }
+        });
+      }
+    });
+
+    location.hasPermission().then((permission) {
+      if (permission == PermissionStatus.denied) {
+        location.requestPermission().then((permission) {
+          if (permission != PermissionStatus.granted) {
+            locationData = null;
+            return;
+          }
+        });
+      }
+    });
+
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      locationData = currentLocation;
+    });
+  }
+
+  ServiceProvider() {
+    init();
+  }
+
+  Future<ServiceProvider> init() async {
+    startLocationListner(locationData);
+    return this;
   }
 }
