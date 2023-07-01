@@ -25,9 +25,10 @@ class KojaApp extends StatelessWidget {
         ChangeNotifierProvider<EventProvider>(
           create: (context) => EventProvider(),
         ),
-        ChangeNotifierProvider<ServiceProvider>(
-          create: (context) => ServiceProvider(),
-        ),
+        FutureProvider<ServiceProvider>(
+          create: (context) => ServiceProvider().init(),
+          initialData: ServiceProvider(),
+        )
       ],
       child: Builder(
         builder: (context) {

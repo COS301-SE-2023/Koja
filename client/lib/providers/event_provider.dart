@@ -123,53 +123,6 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<LocationData?> getLocation() async {
-    Location location = Location();
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-
-    serviceEnabled = await location.serviceEnabled();
-
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) return null;
-    }
-
-    permissionGranted = await location.hasPermission();
-
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return null;
-    }
-
-    // Get the current location
-    LocationData currentLocation = await location.getLocation();
-    locationData = currentLocation;
-    return currentLocation;
-  }
-
-  Future<int> getPlaceTravelTime(String placeID) async {
-    try {
-      final location = await getLocation();
-      if (location == null) return 0;
-
-      final response = await http.get(
-        Uri.parse(
-          'http://localhost:8080/api/v1/location/travel-time?placeId=$placeID&destLat=${locationData!.latitude}&destLng=${locationData!.longitude}',
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        String travelTime = response.body;
-        return int.parse(travelTime);
-      }
-    } catch (e) {
-      if (kDebugMode) print(e);
-    }
-
-    return 0;
-  }
-
   Future<void> deleteEventAPICall(String eventId) async {
     try {
       final http.Response response = await http.delete(
