@@ -1,9 +1,7 @@
-import 'dart:convert';
-
+import 'package:client/providers/service_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
 import '../Utils/event_util.dart';
@@ -63,9 +61,9 @@ class EventProvider extends ChangeNotifier {
   }
 
   //This edits an event in the list
-  void editEvent(Event newEvent, Event oldEvent) {
-    final index = _events.indexOf(oldEvent);
-    _events[index] = newEvent;
+  void updateEvent(Event updatedEvent) {
+    final index = _events.indexWhere((event) => event.id == updatedEvent.id);
+    _events[index] = updatedEvent;
     notifyListeners();
   }
 
@@ -79,12 +77,14 @@ class EventProvider extends ChangeNotifier {
   void setEventWrappers(List<EventWrapper> r) {
     _eventWrappers = r;
     for (EventWrapper e in _eventWrappers) {
-      _events.add(Event(
-        title: e.summary,
-        description: e.description ?? '',
-        from: e.startDateTime,
-        to: e.endDateTime,
-      ));
+      _events.add(
+        Event(
+          title: e.summary,
+          description: e.description ?? '',
+          from: e.startDateTime,
+          to: e.endDateTime,
+        ),
+      );
     }
     notifyListeners();
   }
@@ -103,85 +103,20 @@ class EventProvider extends ChangeNotifier {
 
   String? get accessToken => _accessToken;
 
-  void setAccessToken({required String? accessToken}) {
-    _accessToken = accessToken;
-    notifyListeners();
-    if (accessToken != null) getEventsFromAPI();
-  }
-
-  Future<void> getEventsFromAPI() async {
-    var url = Uri.http('localhost:8080', '/api/v1/user/calendar/userEvents');
-    var response =
-        await http.get(url, headers: {"Authorisation": accessToken!});
-
-    List<dynamic> jsonResponse = jsonDecode(response.body);
+  Future<void> getEventsFromAPI(String accessToken) async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getAllUserEvents();
     _events.clear();
-    for (var e in jsonResponse) {
-      final tempEvent = Event.fromJson(e);
-      _events.add(tempEvent);
-    }
+    _events.addAll(response);
     notifyListeners();
-  }
-
-  Future<LocationData?> getLocation() async {
-    Location location = Location();
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-
-    serviceEnabled = await location.serviceEnabled();
-
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) return null;
-    }
-
-    permissionGranted = await location.hasPermission();
-
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return null;
-    }
-
-    // Get the current location
-    LocationData currentLocation = await location.getLocation();
-    locationData = currentLocation;
-    return currentLocation;
-  }
-
-  Future<int> getPlaceTravelTime(String placeID) async {
-    try {
-      final location = await getLocation();
-      if (location == null) return 0;
-
-      final response = await http.get(
-        Uri.parse(
-          'http://localhost:8080/api/v1/location/travel-time?placeId=$placeID&destLat=${locationData!.latitude}&destLng=${locationData!.longitude}',
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        String travelTime = response.body;
-        return int.parse(travelTime);
-      }
-    } catch (e) {
-      if (kDebugMode) print(e);
-    }
-
-    return 0;
   }
 
   Future<void> deleteEventAPICall(String eventId) async {
     try {
-      final http.Response response = await http.delete(
-        Uri.parse('http://localhost:8080/api/v1/user/calendar/deleteEvent'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorisation': _accessToken!,
-        },
-        body: eventId,
-      );
+      final serviceProvider = ServiceProvider();
+      final deleteSuccess = await serviceProvider.deleteEvent(eventId);
 
-      if (response.statusCode == 200) {
+      if (deleteSuccess) {
         final key = scaffoldKey;
         key.currentState!.showSnackBar(
           const SnackBar(
