@@ -60,10 +60,7 @@ class ServiceProvider with ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': _accessToken!,
       },
-      body: jsonEncode({
-        'token': _accessToken,
-        'event': event.toJson(),
-      }),
+      body: jsonEncode(event.toJson()),
     );
 
     return response.statusCode == 200;
@@ -92,16 +89,13 @@ class ServiceProvider with ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': _accessToken!,
       },
-      body: jsonEncode({
-        'token': _accessToken,
-        'event': event.toJson(),
-      }),
+      body: jsonEncode(event.toJson()),
     );
 
     return response.statusCode == 200;
   }
 
-  Future<void> deleteEvent(String eventId) async {
+  Future<bool> deleteEvent(String eventId) async {
     final url = Uri.http('localhost:8080', '/api/v1/user/calendar/deleteEvent');
     final response = await http.delete(
       url,
@@ -113,7 +107,10 @@ class ServiceProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-    } else {}
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<int> getLocationsTravelTime(
