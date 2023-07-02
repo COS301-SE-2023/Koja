@@ -65,9 +65,9 @@ class EventProvider extends ChangeNotifier {
   }
 
   //This edits an event in the list
-  void editEvent(Event newEvent, Event oldEvent) {
-    final index = _events.indexOf(oldEvent);
-    _events[index] = newEvent;
+  void updateEvent(Event updatedEvent) {
+    final index = _events.indexWhere((event) => event.id == updatedEvent.id);
+    _events[index] = updatedEvent;
     notifyListeners();
   }
 
@@ -117,16 +117,10 @@ class EventProvider extends ChangeNotifier {
 
   Future<void> deleteEventAPICall(String eventId) async {
     try {
-      final http.Response response = await http.delete(
-        Uri.parse('http://localhost:8080/api/v1/user/calendar/deleteEvent'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorisation': _accessToken!,
-        },
-        body: eventId,
-      );
+      final serviceProvider = ServiceProvider();
+      final deleteSuccess = await serviceProvider.deleteEvent(eventId);
 
-      if (response.statusCode == 200) {
+      if (deleteSuccess) {
         final key = scaffoldKey;
         key.currentState!.showSnackBar(
           const SnackBar(

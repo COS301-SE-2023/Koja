@@ -519,9 +519,9 @@ class EventEditingState extends State<EventEditing> {
     }
 
     if (isValid) {
-      final provider = Provider.of<EventProvider>(context, listen: false);
+      final eventProvider = Provider.of<EventProvider>(context, listen: false);
 
-      var timeSlot = provider.timeSlots[selectedCategory];
+      var timeSlot = eventProvider.timeSlots[selectedCategory];
 
       if (timeSlot == null) {
         var now = DateTime.now();
@@ -615,7 +615,7 @@ class EventEditingState extends State<EventEditing> {
       );
 
       var data = {
-        "token": "${provider.accessToken}",
+        "token": "${eventProvider.accessToken}",
         "event": event.toJson(),
       };
 
@@ -626,6 +626,7 @@ class EventEditingState extends State<EventEditing> {
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
+          eventProvider.addEvent(event);
           const snackBar = SnackBar(
             content: Text('Event Created!'),
           );
@@ -640,6 +641,7 @@ class EventEditingState extends State<EventEditing> {
       } else {
         var response = await serviceProvider.updateEvent(event);
         if (response) {
+          eventProvider.updateEvent(event);
           const snackBar = SnackBar(
             content: Text('Event Updated!'),
           );
