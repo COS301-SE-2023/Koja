@@ -92,6 +92,7 @@ dependencies:
   time_duration_picker: ^0.0.1
   location: ^4.4.0
   duration: ^3.0.12
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -113,6 +114,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/animations/
+    - ../.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

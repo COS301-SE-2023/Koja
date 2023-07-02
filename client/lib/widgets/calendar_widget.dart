@@ -16,7 +16,7 @@ class CalendarWidget extends StatefulWidget {
 class CalendarWidgetState extends State<CalendarWidget> {
   @override
   Widget build(BuildContext context) {
-    final events = Provider.of<EventProvider>(context).events;
+    final eventProvider = Provider.of<EventProvider>(context);
 
     return SfCalendar(
         //This sets the view of the calendar to month view
@@ -33,7 +33,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
         firstDayOfWeek: 1,
 
         //Ths displays the events on the calendar
-        dataSource: EventDataSource(events),
+        dataSource: EventDataSource(eventProvider.events),
 
         //This initialises the calendar to the current date
         initialSelectedDate: DateTime.now(),
