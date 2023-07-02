@@ -1,5 +1,3 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -613,11 +611,6 @@ class EventEditingState extends State<EventEditing> {
         isAllDay: false,
         timeSlots: [timeSlot],
       );
-
-      var data = {
-        "token": "${eventProvider.accessToken}",
-        "event": event.toJson(),
-      };
 
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
