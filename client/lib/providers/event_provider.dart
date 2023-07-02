@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:client/providers/service_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
@@ -79,12 +81,14 @@ class EventProvider extends ChangeNotifier {
   void setEventWrappers(List<EventWrapper> r) {
     _eventWrappers = r;
     for (EventWrapper e in _eventWrappers) {
-      _events.add(Event(
-        title: e.summary,
-        description: e.description ?? '',
-        from: e.startDateTime,
-        to: e.endDateTime,
-      ));
+      _events.add(
+        Event(
+          title: e.summary,
+          description: e.description ?? '',
+          from: e.startDateTime,
+          to: e.endDateTime,
+        ),
+      );
     }
     notifyListeners();
   }
@@ -103,23 +107,11 @@ class EventProvider extends ChangeNotifier {
 
   String? get accessToken => _accessToken;
 
-  void setAccessToken({required String? accessToken}) {
-    _accessToken = accessToken;
-    notifyListeners();
-    if (accessToken != null) getEventsFromAPI();
-  }
-
-  Future<void> getEventsFromAPI() async {
-    var url = Uri.http('localhost:8080', '/api/v1/user/calendar/userEvents');
-    var response =
-        await http.get(url, headers: {"Authorisation": accessToken!});
-
-    List<dynamic> jsonResponse = jsonDecode(response.body);
+  Future<void> getEventsFromAPI(String accessToken) async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getAllUserEvents();
     _events.clear();
-    for (var e in jsonResponse) {
-      final tempEvent = Event.fromJson(e);
-      _events.add(tempEvent);
-    }
+    _events.addAll(response);
     notifyListeners();
   }
 
