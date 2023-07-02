@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:client/providers/service_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:provider/provider.dart';
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
