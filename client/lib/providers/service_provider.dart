@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:client/providers/event_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
@@ -22,13 +24,32 @@ class ServiceProvider with ChangeNotifier {
     init();
   }
 
-  void setAccessToken(String? token) {
+  Future<void> setAccessToken(
+      String? token, EventProvider eventProvider) async {
     _accessToken = token;
+    if (accessToken != null) await eventProvider.getEventsFromAPI(accessToken!);
   }
 
   void setLocationData(LocationData? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
+  }
+
+  Future<bool> loginUser({required EventProvider eventProvider}) async {
+    final String authUrl = 'http://localhost:8080/api/v1/auth/app/google';
+
+    final String callbackUrlScheme = 'koja-login-callback';
+
+    String? response = await FlutterWebAuth.authenticate(
+      url: authUrl,
+      callbackUrlScheme: callbackUrlScheme,
+    );
+
+    response = Uri.parse(response).queryParameters['token'];
+
+    setAccessToken(response, eventProvider);
+
+    return accessToken != null;
   }
 
   Future<bool> createEvent(Event event) async {
@@ -50,8 +71,10 @@ class ServiceProvider with ChangeNotifier {
 
   Future<List<Event>> getAllUserEvents() async {
     final url = Uri.http('localhost:8080', '/api/v1/user/calendar/userEvents');
-    final response =
-        await http.get(url, headers: {'Authorisation': _accessToken!});
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> eventsJson = jsonDecode(response.body);
@@ -95,8 +118,7 @@ class ServiceProvider with ChangeNotifier {
 
   Future<int> getLocationsTravelTime(
       String placeID, double destLat, double destLng) async {
-    final url =
-        Uri.http('localhost:8080', '/api/v1/user/calendar/travel-time', {
+    final url = Uri.http('localhost:8080', '/api/v1/location/travel-time', {
       'placeId': placeID,
       'destLat': destLat.toString(),
       'destLng': destLng.toString(),

@@ -1,3 +1,4 @@
+import 'package:client/providers/service_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
@@ -17,7 +18,9 @@ class LoginModal extends StatefulWidget {
 class LoginModalState extends State<LoginModal> {
   @override
   Widget build(BuildContext context) {
-    final eventProvider = Provider.of<EventProvider>(context);
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
+    final eventProvider = Provider.of<EventProvider>(context, listen: false);
     return SingleChildScrollView(
       child: Container(
         height: 180, // 130
@@ -27,26 +30,22 @@ class LoginModalState extends State<LoginModal> {
           children: [
             ElevatedButton(
                 onPressed: () async {
-                  final String authUrl =
-                      'http://localhost:8080/api/v1/auth/app/google';
-
-                  final String callbackUrlScheme = 'koja-login-callback';
-
-                  FlutterWebAuth.authenticate(
-                    url: authUrl,
-                    callbackUrlScheme: callbackUrlScheme,
-                  ).then((result) {
-                    final value = Uri.parse(result).queryParameters['token'];
-                    if (value != null) {
-                      eventProvider.setAccessToken(accessToken: value);
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NavigationScreen()),
-                        (Route<dynamic> route) => false,
-                      );
-                    }
-                  });
+                  if (await serviceProvider.loginUser(
+                      eventProvider: eventProvider)) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NavigationScreen()),
+                      (Route<dynamic> route) => false,
+                    );
+                  } else {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('User login failed'),
+                      ),
+                    );
+                  }
                 },
                 child: const SizedBox(
                   height: 30,
@@ -80,7 +79,8 @@ class LoginModalState extends State<LoginModal> {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const NavigationScreen()),
+                        builder: (context) => const NavigationScreen(),
+                      ),
                       (Route<dynamic> route) => false,
                     );
                   },
