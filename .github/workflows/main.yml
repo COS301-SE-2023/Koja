@@ -20,6 +20,17 @@ jobs:
         with:
           flutter-version: '3.10'
 
+      - name: Create .env
+        run: |
+          echo KOJA_AWS_RDS_DATABASE_URL=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> .env
+          echo KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> .env
+          echo KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> .env
+          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> .env
+          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> .env
+          echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> .env
+          echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> .env
+          echo API_KEY=${{ secrets.API_KEY }} >> .env
+
       - name: Install Flutter dependencies
         run: flutter pub get
         working-directory: client
