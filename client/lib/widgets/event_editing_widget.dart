@@ -1,5 +1,3 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +8,7 @@ import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
 import '../providers/event_provider.dart';
+import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
 
 class EventEditing extends StatefulWidget {
@@ -518,9 +517,9 @@ class EventEditingState extends State<EventEditing> {
     }
 
     if (isValid) {
-      final provider = Provider.of<EventProvider>(context, listen: false);
+      final eventProvider = Provider.of<EventProvider>(context, listen: false);
 
-      var timeSlot = provider.timeSlots[selectedCategory];
+      var timeSlot = eventProvider.timeSlots[selectedCategory];
 
       if (timeSlot == null) {
         var now = DateTime.now();
@@ -613,55 +612,34 @@ class EventEditingState extends State<EventEditing> {
         timeSlots: [timeSlot],
       );
 
-      var data = {
-        "token": "${provider.accessToken}",
-        "event": event.toJson(),
-      };
+      final serviceProvider =
+          Provider.of<ServiceProvider>(context, listen: false);
 
       if (widget.event == null) {
-        var response = await http.post(
-          Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent'),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": "Bearer ${provider.accessToken}",
-          },
-          body: jsonEncode(data),
-        );
+        var response = await serviceProvider.createEvent(event);
 
-        if (response.statusCode == 200) {
-          provider.getEventsFromAPI();
+        if (response) {
+          eventProvider.addEvent(event);
           const snackBar = SnackBar(
             content: Text('Event Created!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pop(context);
-        } else if (response.statusCode == 400) {
-          const snackBar = SnackBar(
-            content:
-                Text('Event Creation Failed - Could not fit in the time slot'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         } else {
           const snackBar = SnackBar(
-            content: Text('Could not create event - Internal Server Error'),
+            content: Text('Event Creation failed!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pop(context);
         }
       } else {
-        var response = await http.put(
-          Uri.http('localhost:8080', '/api/v1/user/calendar/updateEvent'),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": "Bearer ${provider.accessToken}",
-          },
-          body: jsonEncode(data),
-        );
-        if (response.statusCode == 200) {
+        var response = await serviceProvider.updateEvent(event);
+        if (response) {
+          eventProvider.updateEvent(event);
           const snackBar = SnackBar(
             content: Text('Event Updated!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         } else {
           const snackBar = SnackBar(
             content: Text('Event Update Failed.'),
@@ -673,10 +651,18 @@ class EventEditingState extends State<EventEditing> {
   }
 
   Future<int> getDurationInMilliseconds(int durationInSeconds) async {
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
 
-    int placeTravelTime =
-        (placeId != "") ? await eventProvider.getPlaceTravelTime(placeId) : 0;
+    final locationData = serviceProvider.locationData;
+
+    int placeTravelTime = (placeId != "" && locationData != null)
+        ? await serviceProvider.getLocationsTravelTime(
+            placeId,
+            serviceProvider.locationData!.latitude,
+            serviceProvider.locationData!.longitude,
+          )
+        : 0;
 
     return (durationInSeconds * 1000) + placeTravelTime;
   }
@@ -691,49 +677,49 @@ class TimeEstimationWidget extends StatelessWidget {
   final String placeID;
   @override
   Widget build(BuildContext context) {
-    return (placeID == "")
-        ? Text(
-            'No Location Selected',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          )
-        : FutureBuilder(
-            builder: ((context, snapshot) {
-              if (snapshot.hasData) {
-                return Padding(
+    final serviceProvider = Provider.of<ServiceProvider>(context);
+    return getLocationWidget(context, serviceProvider);
+  }
+
+  Widget getLocationWidget(
+      BuildContext context, ServiceProvider serviceProvider) {
+    final locationData = serviceProvider.locationData;
+    if (placeID == "") {
+      return Text(
+        'No Location Selected',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      );
+    } else if (locationData != null) {
+      return FutureBuilder(
+          builder: ((context, snapshot) {
+            if (snapshot.hasData) {
+              return Padding(
                   padding: const EdgeInsets.only(top: 3, left: 12),
-                  child: Row(
-                    children: [
-                      Icon(Icons.mode_of_travel),
-                      SizedBox(width: 8),
-                      Text(
-                        getHumanText(snapshot.data),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+                  child: Text(getHumanText(snapshot.data)));
+            } else {
+              return Padding(
+                padding: const EdgeInsets.only(top: 3, left: 12),
+                child: Text(
+                  'Loading...',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                );
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 3, left: 12),
-                  child: Text(
-                    'Loading...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
-              }
-            }),
-            future: Provider.of<EventProvider>(context, listen: false)
-                .getPlaceTravelTime(placeID),
-          );
+                ),
+              );
+            }
+          }),
+          future: serviceProvider.getLocationsTravelTime(
+            placeID,
+            locationData.latitude,
+            locationData.longitude,
+          ));
+    } else {
+      return Text("");
+    }
   }
 
   String getHumanText(int? travelTimeInSeconds) {
