@@ -1,3 +1,5 @@
 package com.teamcaffiene.koja.service
 
-class GoogleCalendarAdapterServiceTest
+class GoogleCalendarAdapterServiceTest {
+    private val someValue = ""
+}

@@ -1,19 +1,21 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:client/providers/event_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
+import 'package:fl_location/fl_location.dart';
 
 import '../Utils/event_util.dart';
 
 class ServiceProvider with ChangeNotifier {
   String? _accessToken;
-  LocationData? _locationData;
+  Location? _locationData;
+  StreamSubscription<Location>? _locationSubscription;
 
   String? get accessToken => _accessToken;
-  LocationData? get locationData => _locationData;
+  Location? get locationData => _locationData;
 
   factory ServiceProvider() => _instance;
 
@@ -23,13 +25,18 @@ class ServiceProvider with ChangeNotifier {
     init();
   }
 
+  Future<ServiceProvider> init() async {
+    startLocationListner();
+    return this;
+  }
+
   Future<void> setAccessToken(
       String? token, EventProvider eventProvider) async {
     _accessToken = token;
     if (accessToken != null) await eventProvider.getEventsFromAPI(accessToken!);
   }
 
-  void setLocationData(LocationData? locationData) {
+  void setLocationData(Location? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
   }
@@ -131,37 +138,49 @@ class ServiceProvider with ChangeNotifier {
   }
 
   void startLocationListner() async {
-    Location location = Location();
-
-    location.serviceEnabled().then((serviceEnabled) {
-      if (!serviceEnabled) {
-        location.requestService().then((serviceEnabled) {
-          if (!serviceEnabled) {
-            setLocationData(null);
-            return;
-          }
-        });
-      }
-    });
-
-    location.hasPermission().then((permission) {
-      if (permission == PermissionStatus.denied) {
-        location.requestPermission().then((permission) {
-          if (permission != PermissionStatus.granted) {
-            setLocationData(null);
-            return;
-          }
-        });
-      }
-    });
-
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      setLocationData(currentLocation);
-    });
+    if (await _checkAndRequestPermission()) {
+      _listenLocationStream();
+    }
   }
 
-  Future<ServiceProvider> init() async {
-    startLocationListner();
-    return this;
+  Future<void> _listenLocationStream() async {
+    if (await _checkAndRequestPermission()) {
+      if (_locationSubscription != null) {
+        await _cancelLocationSubscription();
+      }
+
+      _locationSubscription = FlLocation.getLocationStream().handleError((e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }).listen((event) {
+        setLocationData(event);
+      });
+    }
+  }
+
+  Future<void> _cancelLocationSubscription() async {
+    await _locationSubscription?.cancel();
+    _locationSubscription = null;
+  }
+
+  Future<bool> _checkAndRequestPermission({bool? background}) async {
+    if (!await FlLocation.isLocationServicesEnabled) {
+      return false;
+    }
+
+    var locationPermission = await FlLocation.checkLocationPermission();
+    if (locationPermission == LocationPermission.deniedForever) {
+      return false;
+    } else if (locationPermission == LocationPermission.denied) {
+      locationPermission = await FlLocation.requestLocationPermission();
+      if (locationPermission == LocationPermission.denied ||
+          locationPermission == LocationPermission.deniedForever) return false;
+    }
+
+    if (background == true &&
+        locationPermission == LocationPermission.whileInUse) return false;
+
+    return true;
   }
 }
