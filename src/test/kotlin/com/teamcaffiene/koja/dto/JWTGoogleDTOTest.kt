@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test
 class JWTGoogleDTOTest {
 
     private val jwtGoogleDTO: JWTGoogleDTO = JWTGoogleDTO("12345accessToken", "1234refResHtOken", 1L)
+
     @Test
-    fun `CreateJWTGoogleDTO_SUCCESS`() {
+    fun createJWTGoogleDTO_SUCCESS() {
         assertEquals("12345accessToken", jwtGoogleDTO.getAccessToken())
         assertEquals("1234refResHtOken", jwtGoogleDTO.getRefreshToken())
         assertEquals(1L, jwtGoogleDTO.getExpireTime())
