@@ -145,6 +145,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
+  fl_location:
+    dependency: "direct main"
+    description:
+      name: fl_location
+      sha256: "437cfa2f2c1a033de0f073e2f28f53abe302d587677591e436f7cd9c8199f7b4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0+1"
+  fl_location_platform_interface:
+    dependency: transitive
+    description:
+      name: fl_location_platform_interface
+      sha256: "2e51523d4ebbee57212891f1d9674a179a2af3500b67e64d4af2ba040b952614"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
+  fl_location_web:
+    dependency: transitive
+    description:
+      name: fl_location_web
+      sha256: "576e64609517c524fbc6b0f221e0170a9020244cccc40e5b612612a3fb5edded"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -344,30 +368,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  location:
-    dependency: "direct main"
-    description:
-      name: location
-      sha256: "9051959f6f2ccadd887b28b66e9cbbcc25b6838e37cf9e894c421ccc0ebf80b5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.4.0"
-  location_platform_interface:
-    dependency: transitive
-    description:
-      name: location_platform_interface
-      sha256: "62eeaf1658e92e4459b727f55a3c328eccbac8ba043fa6d262ac5286ad48384c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.0"
-  location_web:
-    dependency: transitive
-    description:
-      name: location_web
-      sha256: "6c08c408a040534c0269c4ff9fe17eebb5a36dea16512fbaf116b9c8bc21545b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.1"
   lottie:
     dependency: "direct main"
     description:

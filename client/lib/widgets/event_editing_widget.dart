@@ -656,14 +656,11 @@ class EventEditingState extends State<EventEditing> {
 
     final locationData = serviceProvider.locationData;
 
-    int placeTravelTime = (placeId != "" &&
-            locationData != null &&
-            locationData.latitude != null &&
-            locationData.longitude != null)
+    int placeTravelTime = (placeId != "" && locationData != null)
         ? await serviceProvider.getLocationsTravelTime(
             placeId,
-            serviceProvider.locationData!.latitude!,
-            serviceProvider.locationData!.longitude!,
+            serviceProvider.locationData!.latitude,
+            serviceProvider.locationData!.longitude,
           )
         : 0;
 
@@ -695,9 +692,7 @@ class TimeEstimationWidget extends StatelessWidget {
           color: Colors.black,
         ),
       );
-    } else if (locationData != null &&
-        locationData.latitude != null &&
-        locationData.longitude != null) {
+    } else if (locationData != null) {
       return FutureBuilder(
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
@@ -719,8 +714,8 @@ class TimeEstimationWidget extends StatelessWidget {
           }),
           future: serviceProvider.getLocationsTravelTime(
             placeID,
-            locationData.latitude!,
-            locationData.longitude!,
+            locationData.latitude,
+            locationData.longitude,
           ));
     } else {
       return Text("");

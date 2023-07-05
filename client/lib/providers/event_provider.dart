@@ -1,8 +1,8 @@
 import 'package:client/providers/service_provider.dart';
+import 'package:fl_location/fl_location.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:location/location.dart';
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
@@ -12,7 +12,7 @@ class EventProvider extends ChangeNotifier {
 
   List<EventWrapper> _eventWrappers = [];
 
-  LocationData? locationData;
+  Location? locationData;
 
   late GlobalKey<ScaffoldMessengerState> scaffoldKey;
 
