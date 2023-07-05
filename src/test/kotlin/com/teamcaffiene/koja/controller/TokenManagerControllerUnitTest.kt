@@ -1,13 +1,6 @@
 package com.teamcaffiene.koja.controller
 
 import com.teamcaffeine.koja.controller.TokenManagerController
-import com.teamcaffeine.koja.controller.TokenRequest
-import com.teamcaffeine.koja.dto.JWTGoogleDTO
-import com.teamcaffeine.koja.enums.AuthProviderEnum
-import io.github.cdimascio.dotenv.Dotenv
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 
 class TokenManagerControllerUnitTest {
 
