@@ -1,3 +1,5 @@
 package com.teamcaffiene.koja.entity
 
-class AuthProviderEnumTest
+class AuthProviderEnumTest {
+    private val someVal = ""
+}
