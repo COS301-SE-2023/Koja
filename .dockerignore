@@ -1,0 +1,15 @@
+HELP.md
+README.md
+build/
+*.bat
+*.md
+gradlew.bat
+*.iml
+*.gradle/
+.DS_Store
+.classpath
+.project
+.settings/
+.idea/
+target/
+*.log
