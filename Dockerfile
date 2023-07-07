@@ -11,5 +11,8 @@ COPY . .
 # Build the spring boot project
 RUN ./gradlew build
 
-# Start the built spring boot project
-RUN ./gradlew bootRun
+# Document that the service listens on port 8080
+EXPOSE 8080
+
+# Start the built spring boot project when the Docker container is started
+CMD ["./gradlew", "bootRun"]
