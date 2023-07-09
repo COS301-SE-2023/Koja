@@ -13,3 +13,5 @@ gradlew.bat
 .idea/
 target/
 *.log
+client/
+*.github/
