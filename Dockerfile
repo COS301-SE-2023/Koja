@@ -13,8 +13,11 @@ RUN gradle wrapper
 # Copy the rest of the project files to the Docker image
 COPY . .
 
+# Install dos2unix and convert gradlew to Unix-style line endings
+RUN apt-get update && apt-get install -y dos2unix && dos2unix gradlew && chmod +x gradlew
+
 # Build the spring boot project without running tests or linter
-RUN ./gradlew build -x test -x check
+RUN ls -la && ./gradlew build -x test -x check
 
 # Start another stage to reduce the final image size
 FROM openjdk:17
@@ -22,7 +25,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # Copy only the built jar file from the first stage
-COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
+COPY --from=builder /home/gradle/project/build/libs/ /app/
 
 # Copy the .env file into the Docker image
 COPY .env .env
@@ -31,4 +34,6 @@ COPY .env .env
 EXPOSE 8080
 
 # Start the built spring boot project when the Docker container is started
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# You need to replace app.jar with your actual jar name.
+# For example, if your jar file is named myapp.jar, the line should look like this: ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
+ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
