@@ -9,27 +9,28 @@
 Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
 
 ## Documentation:
-## SRS Documentation & Coding Standards
+## SRS Documentation
 [SRS Documentation](https://www.canva.com/design/DAFm6EdVuUo/d1PDPN7l5k5e_cx3V7UT1A/edit?utm_content=DAFm6EdVuUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
-
-[Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
 
 ## Demo Videos
 [Team Caffeine-Demo1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
 
 [Team Caffeine-Demo2](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utm_content=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
+[Team Caffeine-Demo3](https://www.canva.com/design/DAFoP47g3sw/_QjN9Yd8liAkDbpPl9SBhg/edit?utm_content=DAFoP47g3sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
 ## Project Board
 [Project-Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
-## Team
-📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
-
-## User Manual
+## Additional Documentations
 [User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
 
-## Contributions
 [Contributions](https://docs.google.com/document/d/1OVnDnd-1888-pUsX0dXAO_8Iy7R1oDDPmhMQqGZD8TI/edit?usp=sharing)
+
+[Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
+
+## Team
+📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
 ## Group Members:
 
@@ -48,11 +49,3 @@ Lesiba is a highly skilled and versatile developer with a strong background in H
 
 ## [Elias S. Makhonjwa(u18034332)](https://github.com/U18034332)
 Elias brings a strong skill set to the project, with advanced proficiency in Node.js and relational database management, ensuring efficient backend development and data handling. He has intermediate experience in Spring Boot, Python Spacy, and Angular/Ionic, which allows him to contribute to various aspects of the project. Although Elias has no prior experience with Flutter, he is eager to learn and adapt to any new technologies that may be required. Furthermore, Elias has completed the same AI-focused courses as Ettienne, equipping him with the necessary knowledge to contribute to the AI components of this project.
-
-
-
-
-
-
-
-
