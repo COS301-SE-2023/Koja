@@ -15,19 +15,19 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 ## Demo Videos
 * [Team Caffeine-Demo1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
 
--[Team Caffeine-Demo2](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utm_content=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Team Caffeine-Demo2](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utm_content=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
--[Team Caffeine-Demo3](https://www.canva.com/design/DAFoP47g3sw/_QjN9Yd8liAkDbpPl9SBhg/edit?utm_content=DAFoP47g3sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Team Caffeine-Demo3](https://www.canva.com/design/DAFoP47g3sw/_QjN9Yd8liAkDbpPl9SBhg/edit?utm_content=DAFoP47g3sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ## Project Board
 [Project-Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
 ## Additional Documentations
--[User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
+* [User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
 
--[Contributions](https://docs.google.com/document/d/1OVnDnd-1888-pUsX0dXAO_8Iy7R1oDDPmhMQqGZD8TI/edit?usp=sharing)
+* [Contributions](https://docs.google.com/document/d/1OVnDnd-1888-pUsX0dXAO_8Iy7R1oDDPmhMQqGZD8TI/edit?usp=sharing)
 
--[Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
+* [Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
 
 ## Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
