@@ -51,4 +51,4 @@ Lesiba is a highly skilled and versatile developer with a strong background in H
 Elias brings a strong skill set to the project, with advanced proficiency in Node.js and relational database management, ensuring efficient backend development and data handling. He has intermediate experience in Spring Boot, Python Spacy, and Angular/Ionic, which allows him to contribute to various aspects of the project. Although Elias has no prior experience with Flutter, he is eager to learn and adapt to any new technologies that may be required. Furthermore, Elias has completed the same AI-focused courses as Ettienne, equipping him with the necessary knowledge to contribute to the AI components of this project.
 
 |Team Member's Details | Accounts |
-|--------------------- | ---------|
+|:-------------------- |:---------|
