@@ -352,7 +352,7 @@ class GoogleCalendarAdapterService(
 
     override fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO> {
         if (accessToken == null || startDate == null || endDate == null) {
-            throw IllegalArgumentException(ExceptionMessageConstant.REQUIRED_PARAMETERS_MISSING)
+            return emptyList()
         }
 
         try {
