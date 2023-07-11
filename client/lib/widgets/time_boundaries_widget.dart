@@ -56,15 +56,18 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   // function to save time
   void saveTime() {
     if (_start.text == '') {
-      _start = TextEditingController(
-          text: '${DateTime.now().hour}:${DateTime.now().minute}');
-    }
-    if (_end.text == '') {
-      _end = TextEditingController(
-          text: '${DateTime.now().hour}:${DateTime.now().minute}');
+      DateTime currentTime = DateTime.now();
+      String formattedStartTime = DateFormat('h:mm a').format(currentTime);
+      _start = TextEditingController(text: formattedStartTime);
     }
 
-    DateFormat format = DateFormat("h:mm a");
+    if (_end.text == '') {
+      DateTime currentTime = DateTime.now();
+      String formattedEndTime = DateFormat('h:mm a').format(currentTime);
+      _end = TextEditingController(text: formattedEndTime);
+    }
+
+    DateFormat format = DateFormat("h:mm a"); //changed from h:mm a
     DateTime startTime = format.parse(_start.text);
     DateTime endTime = format.parse(_end.text);
 

@@ -41,6 +41,23 @@ class ServiceProvider with ChangeNotifier {
     if (kDebugMode) print("User Location Set: $_locationData");
   }
 
+  Future<bool> addEmail({required EventProvider eventProvider}) async {
+    final String authUrl = 'http://192.168.254.68:8080/app/v1/auth/addEmail/google';
+
+    final String callbackUrlScheme = 'koja-login-callback';
+
+    String? response = await FlutterWebAuth.authenticate(
+      url: authUrl,
+      callbackUrlScheme: callbackUrlScheme,
+    );
+
+    response = Uri.parse(response).queryParameters['token'];
+
+    setAccessToken(response, eventProvider);
+
+    return accessToken != null;
+  }
+
   Future<bool> loginUser({required EventProvider eventProvider}) async {
     final String authUrl = 'http://192.168.254.68:8080/api/v1/auth/app/google';
 

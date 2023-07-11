@@ -42,63 +42,61 @@ class TimeCategory extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Container(
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        category == 'School'
-                            ? Icons.school_outlined
-                            : category == 'Work'
-                                ? Icons.card_travel_outlined
-                                : category == 'Hobbies'
-                                    ? Icons.self_improvement_outlined
-                                    : category == 'Resting'
-                                        ? Icons.king_bed_outlined
-                                        : category == 'Chores'
-                                            ? Icons.help
-                                            : LineAwesome.question_circle,
-                        size: 30,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      category == 'School'
+                          ? Icons.school_outlined
+                          : category == 'Work'
+                              ? Icons.card_travel_outlined
+                              : category == 'Hobbies'
+                                  ? Icons.self_improvement_outlined
+                                  : category == 'Resting'
+                                      ? Icons.king_bed_outlined
+                                      : category == 'Chores'
+                                          ? Icons.help
+                                          : LineAwesome.question_circle,
+                      size: 30,
+                    ),
+                    SizedBox(width: 7),
+                    Text(
+                      category.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(width: 7),
-                      Text(
-                        category.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(children: [
+                  Icon(
+                    Icons.watch_later_outlined,
                   ),
-                  SizedBox(height: 10),
-                  Row(children: [
-                    Icon(
-                      Icons.watch_later_outlined,
+                  SizedBox(width: 5),
+                  Text(
+                    startTime,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(width: 5),
-                    Text(
-                      startTime,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  SizedBox(width: 10),
+                  Icon(
+                    Icons.watch_later_outlined,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    endTime,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(width: 10),
-                    Icon(
-                      Icons.watch_later_outlined,
-                    ),
-                    SizedBox(width: 5),
-                    Text(
-                      endTime,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ])
-                ],
-              ),
+                  ),
+                ])
+              ],
             )),
       ),
     );

@@ -5,9 +5,11 @@ import 'package:line_icons/line_icons.dart';
 
 import '../models/autocomplete_predict_model.dart';
 import '../models/place_auto_response_model.dart';
-import '../screens/about_us_screen.dart';
 import '../models/location_predict_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'about_us_widget.dart';
+import 'account_settings_widget.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -113,7 +115,7 @@ class SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child:
-                    SingleChildScrollView(child: workLocation("Work Location")),
+                  SingleChildScrollView(child: workLocation("Work Location")),
               ),
             ),
 
@@ -122,123 +124,7 @@ class SettingsState extends State<Settings> {
             header(LineIcons.user, ' Account Settings'),
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    width: constraints.maxWidth * 0.95,
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Add another email address',
-                          style: GoogleFonts.ubuntu(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              width: constraints.maxWidth * 0.18,
-                              child: Text(
-                                'Add Email',
-                                style: GoogleFonts.ubuntu(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.blue,
-                              ),
-                            ),
-                            SizedBox(width: 2),
-                            IconButton(
-                              icon: Icon(Icons.add),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.blue,
-                                ),
-                              ),
-                              onPressed: () {
-                                
-                              },
-                            ),
-                          ],
-                        ),
-                        
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Container(
-                    width: constraints.maxWidth * 0.95,
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Delete Email Address',
-                          style: GoogleFonts.ubuntu(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              width: constraints.maxWidth * 0.18,
-                              child: Text(
-                                'Change Password',
-                                style: GoogleFonts.ubuntu(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.blue,
-                              ),
-                            ),
-                            SizedBox(width: 2),
-                            IconButton(
-                              icon: Icon(Icons.add),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.blue,
-                                ),
-                              ),
-                              onPressed: () {
-                                
-                              },
-                            ),
-                          ],
-                        ),
-                        
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            AccountSettingsWidget(),
 
             /*  This is the About Us Section  */
 
@@ -254,7 +140,7 @@ class SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 padding: const EdgeInsets.all(10.0),
-                child: aboutUs(),
+                child: AboutUsWidget(),
               ),
             ),
           ],
@@ -269,6 +155,7 @@ class SettingsState extends State<Settings> {
   Widget header(IconData iconData, String text) {
     return Row(
       children: [
+        const SizedBox(width: 8),
         Icon(iconData),
         const SizedBox(width: 2),
         Text(text,
@@ -280,69 +167,7 @@ class SettingsState extends State<Settings> {
       ],
     );
   }
-
-  /* This is About Us Section */
-  Widget aboutUs() {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Koja',
-            style: GoogleFonts.ubuntu(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              // color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Thanks for choosing Koja, with our application you will get dynamic and personalized recommendations for your next task.',
-            style: GoogleFonts.ubuntu(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              // color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 10),
-          MaterialButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AboutUsPage()),
-              );
-            },
-            elevation: 10,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Learn More',
-                  style: GoogleFonts.ubuntu(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    // color: Colors.black,
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  // color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-          Text("Version 0.1.58",
-              style: GoogleFonts.ubuntu(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                // color: Colors.black,
-              )),
-        ],
-      ),
-    );
-  }
+  
 
 /* This is the Home Location Input Section */
   Widget homeLocation(String where) {
