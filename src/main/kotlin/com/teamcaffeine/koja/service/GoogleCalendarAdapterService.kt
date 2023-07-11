@@ -326,12 +326,15 @@ class GoogleCalendarAdapterService(
         return true
     }
 
-    override fun getFutureEventsLocations(accessToken: String): List<String> {
+    override fun getFutureEventsLocations(accessToken: String?): List<String> {
+        if(accessToken == null) throw IllegalArgumentException(ExceptionMessageConstant.REQUIRED_PARAMETERS_MISSING)
         val toReturn = mutableListOf<String>()
-        getUserEventsInRange(accessToken, OffsetDateTime.now().minusDays(1), OffsetDateTime.now().plusYears(1)).forEach {
+        val eventsInRange = getUserEventsInRange(accessToken, OffsetDateTime.now().minusDays(1), OffsetDateTime.now().plusYears(1))
+        eventsInRange.forEach {
+
             if (it.getEndTime().isAfter(OffsetDateTime.now().minusDays(1))) {
                 if (!toReturn.contains(it.getLocation())) {
-                    toReturn.remove(it.getLocation())
+                    toReturn.add(it.getLocation())
                 }
             }
         }
@@ -348,7 +351,11 @@ class GoogleCalendarAdapterService(
             .build()
     }
 
-    override fun getUserEventsInRange(accessToken: String, startDate: OffsetDateTime, endDate: OffsetDateTime): List<UserEventDTO> {
+    override fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO> {
+        if(accessToken == null || startDate == null || endDate == null) {
+            return emptyList()
+        }
+
         try {
             val calendar = buildCalendarService(accessToken)
 
