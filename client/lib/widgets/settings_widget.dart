@@ -117,6 +117,129 @@ class SettingsState extends State<Settings> {
               ),
             ),
 
+            /*  This is the Account Settings Section  */
+            const SizedBox(height: 15),
+            header(LineIcons.user, ' Account Settings'),
+            const Divider(height: 1, color: Colors.grey),
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    width: constraints.maxWidth * 0.95,
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Add another email address',
+                          style: GoogleFonts.ubuntu(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              width: constraints.maxWidth * 0.18,
+                              child: Text(
+                                'Add Email',
+                                style: GoogleFonts.ubuntu(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Colors.blue,
+                              ),
+                            ),
+                            SizedBox(width: 2),
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.blue,
+                                ),
+                              ),
+                              onPressed: () {
+                                
+                              },
+                            ),
+                          ],
+                        ),
+                        
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Container(
+                    width: constraints.maxWidth * 0.95,
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Delete Email Address',
+                          style: GoogleFonts.ubuntu(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              width: constraints.maxWidth * 0.18,
+                              child: Text(
+                                'Change Password',
+                                style: GoogleFonts.ubuntu(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Colors.blue,
+                              ),
+                            ),
+                            SizedBox(width: 2),
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.blue,
+                                ),
+                              ),
+                              onPressed: () {
+                                
+                              },
+                            ),
+                          ],
+                        ),
+                        
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             /*  This is the About Us Section  */
 
             const SizedBox(height: 15),
@@ -236,9 +359,8 @@ class SettingsState extends State<Settings> {
                   ' $where : $home',
                   maxLines: 1,
                   style: const TextStyle(
-                      fontSize: 15, 
-                      //color: Colors.black, 
-                      fontFamily: 'Roboto'),
+                    fontSize: 15, 
+                    fontFamily: 'Roboto'),
                 ),
               ),
               if (home.isNotEmpty)
@@ -278,7 +400,6 @@ class SettingsState extends State<Settings> {
                       });
                     }
                   },
-                  // cursorColor: Colors.black,
                   controller: _homeTextController,
                   style: const TextStyle(color: Colors.black),
                   decoration: InputDecoration(
@@ -288,7 +409,6 @@ class SettingsState extends State<Settings> {
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Home Address',
                     hintStyle: const TextStyle(
-                      // color: Colors.black,
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -345,9 +465,8 @@ class SettingsState extends State<Settings> {
                   ' $where : $work',
                   maxLines: 1,
                   style: const TextStyle(
-                      fontSize: 15,
-                      // color: Colors.black,
-                      fontFamily: 'Roboto'),
+                    fontSize: 15,
+                    fontFamily: 'Roboto'),
                 ),
               ),
               if (work.isNotEmpty)
@@ -363,7 +482,6 @@ class SettingsState extends State<Settings> {
                       },
                       icon: const Icon(
                         Icons.clear,
-                        // color: Colors.black,
                       ),
                     ),
                   ],
