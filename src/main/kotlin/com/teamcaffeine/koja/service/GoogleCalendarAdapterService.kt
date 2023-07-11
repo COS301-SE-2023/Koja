@@ -17,6 +17,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
@@ -151,7 +152,7 @@ class GoogleCalendarAdapterService(
 
             jwtToken = TokenManagerController().createToken(
                 TokenRequest(
-                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList<JWTGoogleDTO>(),
+                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
                     this.getAuthProvider(),
                     newUser.id!!,
                 ),
@@ -323,6 +324,18 @@ class GoogleCalendarAdapterService(
             return false
         }
         return true
+    }
+
+    override fun getFutureEventsLocations(accessToken: String): List<String> {
+        val toReturn = mutableListOf<String>()
+        getUserEventsInRange(accessToken, OffsetDateTime.now().minusDays(1), OffsetDateTime.now().plusYears(1)).forEach {
+            if (it.getEndTime().isAfter(OffsetDateTime.now().minusDays(1))) {
+                if (!toReturn.contains(it.getLocation())) {
+                    toReturn.remove(it.getLocation())
+                }
+            }
+        }
+        return toReturn
     }
 
     private fun buildCalendarService(accessToken: String): GoogleCalendar {
