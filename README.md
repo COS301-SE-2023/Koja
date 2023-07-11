@@ -30,7 +30,7 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 
 * [Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
 
-## Team
+# Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
 ## Group Members:
