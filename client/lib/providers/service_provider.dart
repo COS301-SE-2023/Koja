@@ -42,7 +42,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> loginUser({required EventProvider eventProvider}) async {
-    final String authUrl = 'http://localhost:8080/api/v1/auth/app/google';
+    final String authUrl = 'http://192.168.254.68:8080/api/v1/auth/app/google';
 
     final String callbackUrlScheme = 'koja-login-callback';
 
@@ -59,7 +59,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> createEvent(Event event) async {
-    final url = Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent');
+    final url = Uri.http('192.168.254.68:8080', '/api/v1/user/calendar/createEvent');
     final response = await http.post(
       url,
       headers: {
@@ -73,7 +73,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<List<Event>> getAllUserEvents() async {
-    final url = Uri.http('localhost:8080', '/api/v1/user/calendar/userEvents');
+    final url = Uri.http('192.168.254.68:8080', '/api/v1/user/calendar/userEvents');
     final response = await http.get(
       url,
       headers: {'Authorisation': _accessToken!},
@@ -88,7 +88,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> updateEvent(Event event) async {
-    final url = Uri.http('localhost:8080', '/api/v1/user/calendar/updateEvent');
+    final url = Uri.http('192.168.254.68:8080', '/api/v1/user/calendar/updateEvent');
     final response = await http.put(
       url,
       headers: {
@@ -102,7 +102,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> deleteEvent(String eventId) async {
-    final url = Uri.http('localhost:8080', '/api/v1/user/calendar/deleteEvent');
+    final url = Uri.http('192.168.254.68:8080', '/api/v1/user/calendar/deleteEvent');
     final response = await http.delete(
       url,
       headers: {
@@ -121,7 +121,7 @@ class ServiceProvider with ChangeNotifier {
 
   Future<int> getLocationsTravelTime(
       String placeID, double destLat, double destLng) async {
-    final url = Uri.http('localhost:8080', '/api/v1/location/travel-time', {
+    final url = Uri.http('192.168.254.68:8080', '/api/v1/location/travel-time', {
       'placeId': placeID,
       'destLat': destLat.toString(),
       'destLng': destLng.toString(),
