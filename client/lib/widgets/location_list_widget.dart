@@ -7,30 +7,31 @@ class LocationListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      actions: [
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Align(
-            alignment: Alignment.topRight,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Center(
+            child: Text(
+              'From Current Locagtion',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+              ),
+              maxLines: 1,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
             child: Icon(
               Icons.cancel_outlined,
               size: 30,
             ),
-          ),
-        )
-      ],
-      // actionsAlignment: MainAxisAlignment.end,
-      title: Text(
-        'From Current Location',
-        style: TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-          decoration: TextDecoration.underline,
-        ),
-        maxLines: 1,
-        textAlign: TextAlign.center,
+          )
+        ],
       ),
       backgroundColor: Colors.grey[100],
       contentPadding: EdgeInsets.all(16),
