@@ -1,21 +1,20 @@
 package com.teamcaffeine.koja.controller
 
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
+import com.teamcaffeine.koja.service.UserAccountManagerService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.view.RedirectView
 
 @RestController
-@RequestMapping("/api/v1/auth/addEmail")
+@RequestMapping("/api/v1/auth/profile")
 
-class UserAccountManagerController(private val googleCalendarAdapter: GoogleCalendarAdapterService) {
+class UserAccountManagerController(private val googleCalendarAdapter: GoogleCalendarAdapterService,
+                                   private val userAccountManagerService: UserAccountManagerService) {
 
-    @GetMapping("/google")
-    fun authenticateWithGoogle(request: HttpServletRequest): RedirectView {
+    @GetMapping("addEmail/google")
+    fun authenticateAnotherGoogleEmail(request: HttpServletRequest): RedirectView {
         return googleCalendarAdapter.setupConnection(request, false)
     }
 
@@ -25,5 +24,13 @@ class UserAccountManagerController(private val googleCalendarAdapter: GoogleCale
         return ResponseEntity.ok()
             .header("Authorization", "Bearer $jwt")
             .body("Authentication successful")
+    }
+
+    @DeleteMapping("/users/{userId}/emails/{email}")
+    fun removeEmail(
+        @PathVariable userId: String,
+        @PathVariable email: String
+    ) {
+        userAccountManagerService.removeEmailAddress(userId, email)
     }
 }
