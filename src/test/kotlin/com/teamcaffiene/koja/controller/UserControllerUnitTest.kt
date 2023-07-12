@@ -1,8 +1,9 @@
 package com.teamcaffiene.koja.controller
 
 import com.teamcaffeine.koja.constants.ResponseConstant
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
+import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.controller.UserController
-import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
@@ -31,7 +32,7 @@ class UserControllerUnitTest {
     @Test
     fun testDeleteUserAccount() {
         val mockUserID = 1
-        val mockToken = "Bearer " + UserJWTTokenDataDTO(listOf(), mockUserID).toString() // Modify this line according to your token creation logic
+        val mockToken = createToken(TokenRequest(emptyList(), AuthProviderEnum.GOOGLE, 0))
 
         val userAccount = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
         val userAccounts = listOf(userAccount)
