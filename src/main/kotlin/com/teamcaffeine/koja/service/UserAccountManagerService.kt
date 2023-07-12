@@ -1,10 +1,7 @@
 package com.teamcaffeine.koja.service
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-import com.google.api.client.http.GenericUrl
-import com.google.api.client.http.HttpRequestInitializer
-import com.google.api.client.http.HttpResponse
-import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.*
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -25,7 +22,7 @@ class UserAccountManagerService {
             @Throws(IOException::class)
             override fun initialize(request: HttpRequest) {
                 credential.initialize(request)
-                //request.isLoggingEnabled = true
+                request.isLoggingEnabled = true
             }
         })
 
