@@ -3,14 +3,16 @@ package com.teamcaffeine.koja.controller
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
+import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.JWTTokenStructureEnum
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.MessageDigest
@@ -30,8 +32,19 @@ class TokenManagerController {
     private val oneMinuteInSeconds: Long = 60L
 
     @PostMapping("/renew")
-    fun renewToken(@RequestBody tokenRequest: TokenRequest): String {
-        return ""
+    fun renewToken(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): Any {
+        return if (token == null) {
+            ResponseEntity.badRequest().body("ResponseConstant.REQUIRED_PARAMETERS_NOT_SET")
+        } else {
+            val jwtToken = getUserJWTTokenData(token)
+            val tokenRequest = TokenRequest(
+                tokens = jwtToken.userAuthDetails,
+                authProvider = AuthProviderEnum.NONE,
+                userId = jwtToken.userID,
+            )
+            val newToken = createToken(tokenRequest)
+            ResponseEntity.ok(newToken)
+        }
     }
 
     fun createToken(tokenRequest: TokenRequest): String {
@@ -40,7 +53,7 @@ class TokenManagerController {
         return createJwtToken(
             accessTokens = tokenRequest.tokens,
             expiryTime = expiryTime,
-            userID = tokenRequest.userId
+            userID = tokenRequest.userId,
         )
     }
 
@@ -105,7 +118,7 @@ class TokenManagerController {
             val userTokens = gson.fromJson(
                 decryptedClaims.substringAfter("userAccountTokens=")
                     .substringBefore(", userID"),
-                List::class.java
+                List::class.java,
             )
 
             val userAccountTokens = mutableListOf<JWTAuthDetailsDTO>()
@@ -119,7 +132,7 @@ class TokenManagerController {
 
             return UserJWTTokenDataDTO(
                 userAccountTokens,
-                decryptedClaims.substringAfter("userID=").substringBefore("}").toInt()
+                decryptedClaims.substringAfter("userID=").substringBefore("}").toInt(),
             )
         }
 

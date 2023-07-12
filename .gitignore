@@ -100,3 +100,4 @@ env
 */node_modules
 !client/lib/
 !gradle-wrapper.jar
+config.json

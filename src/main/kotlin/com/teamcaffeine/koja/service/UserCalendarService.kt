@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
@@ -13,7 +14,7 @@ import java.time.OffsetDateTime
 @Service
 class UserCalendarService(
     private val userAccountRepository: UserAccountRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
 
     fun getAllUserEvents(token: String): List<UserEventDTO> {
@@ -36,6 +37,7 @@ class UserCalendarService(
         return userEvents
     }
 
+    @Transactional
     private fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
@@ -50,8 +52,9 @@ class UserCalendarService(
     private fun consolidateEvents(userEvent: UserEventDTO?) {
         TODO("Not yet implemented")
     }
+
     fun updateEvent(token: String, eventDTO: UserEventDTO) {
-        var userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
         for (adapter in calendarAdapters) {
@@ -59,14 +62,15 @@ class UserCalendarService(
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
+
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
             }
         }
     }
 
-    fun deleteEvent(token: String, eventDTO: UserEventDTO) {
-        var userJWTTokenData = getUserJWTTokenData(token)
+    fun deleteEvent(token: String, eventID: String) {
+        val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
         for (adapter in calendarAdapters) {
@@ -74,11 +78,13 @@ class UserCalendarService(
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
+
             if (accessToken != null) {
-                adapter.deleteEvent(accessToken, eventDTO)
+                adapter.deleteEvent(accessToken, eventID)
             }
         }
     }
+
     fun createEvent(token: String, eventDTO: UserEventDTO) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
@@ -94,8 +100,8 @@ class UserCalendarService(
                     adapter.getUserEventsInRange(
                         accessToken,
                         eventDTO.getStartTime().withHour(0).withMinute(0).withSecond(0).withNano(0),
-                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999)
-                    )
+                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999),
+                    ),
                 )
             }
         }
@@ -119,7 +125,7 @@ class UserCalendarService(
 
     private fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
-        eventDTO: UserEventDTO
+        eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
 
@@ -151,7 +157,11 @@ class UserCalendarService(
                         (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
                         (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
                         (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
-                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime))
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
                 }
 
                 if (conflictingEvent == null) {

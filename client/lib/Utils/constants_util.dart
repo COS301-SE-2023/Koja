@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const String apiKey = 'AIzaSyBeuicIBEOny8lHaf9buHLl8F2_Bq4fucc';
-const darkBlue = Color.fromARGB(255, 90, 126, 165);
+final String apiKey = dotenv.env['API_KEY'] ?? "";
+const darkBlue = Color(0xFF1976D2);
