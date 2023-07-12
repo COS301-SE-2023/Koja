@@ -42,7 +42,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> addEmail({required EventProvider eventProvider}) async {
-    final String authUrl = 'http://192.168.254.68:8080/app/v1/auth/addEmail/google';
+    final String authUrl = 'localhost:8080/app/v1/auth/addEmail/google';
 
     final String callbackUrlScheme = 'koja-login-callback';
 
@@ -59,7 +59,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> loginUser({required EventProvider eventProvider}) async {
-    final String authUrl = 'http://192.168.254.68:8080/api/v1/auth/app/google';
+    final String authUrl = 'localhost:8080/api/v1/auth/app/google';
 
     final String callbackUrlScheme = 'koja-login-callback';
 
