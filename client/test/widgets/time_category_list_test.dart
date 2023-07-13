@@ -36,5 +36,10 @@ void main() {
     // Verify the existence of the category text
     expect(find.text('SCHOOL'), findsOneWidget);
 
+    // Verify the existence of the start time icon
+    expect(find.byIcon(Icons.watch_later_outlined), findsNWidgets(2));
+
+    // Verify the existence of the start time text
+    expect(find.text('9:00 AM'), findsOneWidget);
   });
 }
