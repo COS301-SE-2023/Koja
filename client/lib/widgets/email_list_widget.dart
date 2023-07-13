@@ -27,7 +27,7 @@ class _EmailListState extends State<EmailList> {
     });
   }
 
-  List<String> emails = ["ggaga"];
+  List<String> emails = [];
 
   int editedindex = -1;
 
