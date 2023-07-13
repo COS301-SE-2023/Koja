@@ -40,6 +40,20 @@ void main() {
       expect(result, isNull);
       expect(printedError, null);
     });
+
+    test('fetchUrl should return the response body if the request is successful', () async {
+      final responseBody = 'Response Body';
+      final uri = Uri.parse('https://example.com/api');
+
+      http.Response mockResponse = http.Response(responseBody, 200);
+      http.Client mockClient = MockClient((http.Request request) async {
+        expect(request.url, uri);
+        return mockResponse;
+      });
+      final result = await LocationPredict.fetchUrl(uri, headers: null);
+
+      expect(result, null);
+    });
   });
 }
 
