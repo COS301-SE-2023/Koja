@@ -68,7 +68,6 @@ class _EmailListState extends State<EmailList> {
                 child: AllEmailsWidget(
                   emails[index][0],
                   (context) => delete(index),
-                  (context) => makeprimary(index),
                 ),
               ),
             );
