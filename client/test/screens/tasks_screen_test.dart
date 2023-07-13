@@ -28,5 +28,11 @@ void main() {
     // Verify the existence of the Current tab
     expect(find.text('Current'), findsOneWidget);
 
+    // Verify the existence of the Suggestions tab
+    expect(find.text('Suggestions'), findsOneWidget);
+
+    // Verify the existence of the CurrentTasksScreen
+    expect(find.byType(CurrentTasksScreen), findsOneWidget);
+
   });
 }
