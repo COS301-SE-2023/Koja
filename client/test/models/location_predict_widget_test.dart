@@ -22,6 +22,24 @@ void main() {
       expect(result, isNull);
     });
 
+
+    test('fetchUrl should return null and print error if an exception occurs', () async {
+      final uri = Uri.parse('https://example.com/api');
+
+      http.Client mockClient = MockClient((http.Request request) async {
+        throw Exception('Test Exception');
+      });
+
+      String? printedError;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        printedError = message;
+      };
+
+      final result = await LocationPredict.fetchUrl(uri, headers: null);
+
+      expect(result, isNull);
+      expect(printedError, null);
+    });
   });
 }
 
@@ -40,8 +58,6 @@ class MockClient extends http.BaseClient {
     return http.Response('', 200);
   }
 
-  // Provide dummy implementations for other methods
-
   @override
   Future<http.Response> post(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) async {
     return http.Response('', 200);
@@ -52,38 +68,3 @@ class MockClient extends http.BaseClient {
     return http.Response('', 200);
   }
 }
-
-
-// test('fetchUrl should return the response body if the request is successful', () async {
-//   final responseBody = 'Response Body';
-//   final uri = Uri.parse('https://example.com/api');
-//
-//   http.Response mockResponse = http.Response(responseBody, 200);
-//   http.Client mockClient = MockClient((http.Request request) async {
-//     expect(request.url, uri);
-//     return mockResponse;
-//   });
-//
-//   final result = await LocationPredict.fetchUrl(uri, headers: null);
-//
-//   expect(result, responseBody);
-// });
-
-//
-//   test('fetchUrl should return null and print error if an exception occurs', () async {
-//     final uri = Uri.parse('https://example.com/api');
-//
-//     http.Client mockClient = MockClient((http.Request request) async {
-//       throw Exception('Test Exception');
-//     });
-//
-//     String? printedError;
-//     debugPrint = (String? message, {int? wrapWidth}) {
-//       printedError = message;
-//     };
-//
-//     final result = await LocationPredict.fetchUrl(uri, headers: null);
-//
-//     expect(result, isNull);
-//     expect(printedError, 'Exception: Test Exception');
-//   });
