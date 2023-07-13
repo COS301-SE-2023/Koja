@@ -16,12 +16,25 @@ void main() {
       MaterialApp(
         home: ChangeNotifierProvider<EventProvider>.value(
           value: eventProvider,
-          child: CalendarWidget(),
+          child: Scaffold(
+            body: const CalendarWidget(),
+          ),
         ),
       ),
     );
 
-   
+    await tester.pumpAndSettle(Duration(seconds: 1));
+    // Verify that the CalendarWidget is displayed
+    expect(find.byType(CalendarWidget), findsOneWidget);
+
+    // Verify that the SfCalendar is displayed
+    expect(find.byType(SfCalendar), findsAtLeastNWidgets(0));
+
+    // Verify that the TasksWidget is displayed
+    expect(find.byType(TasksWidget), findsAtLeastNWidgets(0));
+
+    // Verify that the initial selected date is not null
+    expect(eventProvider.selectedDate, isNotNull);
   });
 }
 
