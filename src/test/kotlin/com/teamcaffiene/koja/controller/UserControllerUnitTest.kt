@@ -57,8 +57,62 @@ class UserControllerUnitTest {
         dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }
 
+    /**
+     * Get User Email Scenario1: User has one linked email
+     */
     @Test
-    fun testDeleteUserAccount() {
+    fun testGetUserEmailsScenario1() {
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = createToken(TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID))
+
+        val userAccount = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccounts = listOf(userAccount)
+
+        whenever(userAccountRepository.findByUserID(eq(mockUserID))).thenReturn(userAccounts)
+
+        val result = userController.getUserEmails(mockToken)
+
+        assertEquals(result, ResponseEntity.ok(userAccounts.map { it.email }))
+    }
+
+    /**
+     * Get User Email Scenario2: User has more than one linked email
+     */
+    @Test
+    fun testGetUserEmailsScenario2() {
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = createToken(TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID))
+
+        val userAccount1 = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount2 = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount3 = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount4 = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccounts = listOf(userAccount1, userAccount2, userAccount3, userAccount4)
+
+        whenever(userAccountRepository.findByUserID(eq(mockUserID))).thenReturn(userAccounts)
+
+        val result = userController.getUserEmails(mockToken)
+
+        assertEquals(result, ResponseEntity.ok(userAccounts.map { it.email }))
+    }
+
+    /**
+     * Get User Email Scenario3: Request made without token
+     */
+    @Test
+    fun testGetUserEmailsScenario3() {
+        val result = userController.getUserEmails(null)
+
+        assertEquals(result, ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)))
+    }
+
+    /**
+     * Delete User Account Scenario1: Request made to delete user account
+     */
+    @Test
+    fun testDeleteUserAccountScenario1() {
         val mockUserID = Int.MAX_VALUE
         val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
         val mockToken = createToken(TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID))
@@ -74,8 +128,11 @@ class UserControllerUnitTest {
         Mockito.verify(userAccountRepository).delete(userAccount)
     }
 
+    /**
+     * Delete User Account Scenario2: Request made to delete user account without token
+     */
     @Test
-    fun testDeleteUserAccountWithoutToken() {
+    fun testDeleteUserAccountScenario2() {
         val result = userController.deleteUserAccount(null)
 
         assertEquals(result, ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
