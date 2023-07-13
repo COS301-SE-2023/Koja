@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class LocationListWidget extends StatelessWidget {
-  const LocationListWidget({Key? key}) : super(key: key);
+  final List<String> locationNames;
+
+  const LocationListWidget({
+    Key? key,
+    required this.locationNames,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +17,7 @@ class LocationListWidget extends StatelessWidget {
         children: [
           Center(
             child: Text(
-              'From Current Locagtion',
+              'From Current Location',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -33,7 +38,7 @@ class LocationListWidget extends StatelessWidget {
           )
         ],
       ),
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       contentPadding: EdgeInsets.all(16),
       content: Column(
         children: [
@@ -52,20 +57,19 @@ class LocationListWidget extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.8,
             width: MediaQuery.of(context).size.width * 0.8,
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: locationNames.length,
               itemBuilder: (context, index) {
+                final locationName = locationNames[index];
                 return ListTile(
-                  title: Text('$index'),
-                  trailing: GestureDetector
-                  (
-                    onTap: ()
-                    {
+                  title: Text(locationName),
+                  trailing: GestureDetector(
+                    onTap: () {
                       Navigator.of(context).pop();
                     },
-                    child: Icon(Icons.delete_outline)
+                    child: Icon(Icons.delete_outline),
                   ),
                   onTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(locationName);
                   },
                 );
               },
