@@ -74,7 +74,8 @@ class ServiceProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      return List.of(jsonDecode(response.body));
+      final List<dynamic> result = jsonDecode(response.body);
+      return result.map((e) => e.toString()).toList();
     } else {
       return [];
     }

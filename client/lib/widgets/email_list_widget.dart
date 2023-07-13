@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +14,18 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
-
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
-    Provider.of<ServiceProvider>(context).getAllUserEmails();
-  }
+    emails.clear();
 
+    Provider.of<ServiceProvider>(context).getAllUserEmails().then((emails) {
+      setState(() {
+        if (kDebugMode) print(emails);
+        this.emails = emails;
+      });
+    });
+  }
 
   List<String> emails = [];
 
@@ -76,7 +82,7 @@ class _EmailListState extends State<EmailList> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: AllEmailsWidget(
-                  emails[index][0],
+                  emails[index],
                   (context) => delete(index),
                 ),
               ),
