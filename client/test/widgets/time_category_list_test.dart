@@ -41,5 +41,12 @@ void main() {
 
     // Verify the existence of the start time text
     expect(find.text('9:00 AM'), findsOneWidget);
+
+    // Verify the existence of the end time text
+    expect(find.text('10:00 AM'), findsOneWidget);
+
+    // Verify that the delete button is not pressed initially
+    expect(deletePressed, false);
+
   });
 }
