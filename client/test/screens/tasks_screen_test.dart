@@ -45,5 +45,12 @@ void main() {
     // Verify that the SuggestionTaskScreen is found after the button is pressed
     expect(find.byType(SuggestionsTasksScreen), findsOneWidget);
 
+    // Tap on the Current tab
+    await tester.tap(find.text('Current'));
+    await tester.pumpAndSettle();
+
+    // Verify that the CurrentTasksScreen is displayed
+    expect(find.byType(CurrentTasksScreen), findsOneWidget);
+
   });
 }
