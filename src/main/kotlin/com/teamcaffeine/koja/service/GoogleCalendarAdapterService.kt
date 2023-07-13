@@ -18,7 +18,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
-import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
@@ -140,7 +140,7 @@ class GoogleCalendarAdapterService(
                 }
             }
 
-            jwtToken = TokenManagerController().createToken(
+            jwtToken = createToken(
                 TokenRequest(
                     userTokens,
                     this.getAuthProvider(),
@@ -150,7 +150,7 @@ class GoogleCalendarAdapterService(
         } else {
             val newUser = createNewUser(userEmail, refreshToken)
 
-            jwtToken = TokenManagerController().createToken(
+            jwtToken = createToken(
                 TokenRequest(
                     arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
                     this.getAuthProvider(),
