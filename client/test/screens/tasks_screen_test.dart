@@ -22,5 +22,11 @@ void main() {
     // Verify the existence of the Tasks screen
     expect(find.byType(Tasks), findsOneWidget);
 
+    // Verify the existence of the app bar title
+    expect(find.text('Tasks'), findsOneWidget);
+
+    // Verify the existence of the Current tab
+    expect(find.text('Current'), findsOneWidget);
+
   });
 }
