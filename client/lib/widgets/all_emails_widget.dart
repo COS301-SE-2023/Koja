@@ -25,7 +25,7 @@ class AllEmailsWidget extends StatelessWidget {
                 SizedBox(width: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       emailadress,
@@ -37,7 +37,7 @@ class AllEmailsWidget extends StatelessWidget {
                     SizedBox(width: 10),
                     GestureDetector(
                       onTap: () {
-
+                        delete!(context);
                       },
                       child: Icon(
                         Icons.delete_outlined,

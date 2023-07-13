@@ -58,6 +58,21 @@ class ServiceProvider with ChangeNotifier {
     return accessToken != null;
   }
 
+  Future<List<Event>> getAllUserEmails() async {
+    final url = Uri.http('192.168.254.68:8080', '/api/v1/user/linked-emails');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final eventsJson = jsonDecode(response.body);
+      return eventsJson.map((json) => Event.fromJson(json)).toList();
+    } else {
+      return [];
+    }
+  }
+
   Future<bool> loginUser({required EventProvider eventProvider}) async {
     final String authUrl = 'http://192.168.254.68:8080/api/v1/auth/app/google';
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/service_provider.dart';
 import 'all_emails_widget.dart';
 
 class EmailList extends StatefulWidget {
@@ -11,7 +13,15 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
-  List<String> emails = ["trial@gmail.com"];
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<ServiceProvider>(context).getAllUserEmails();
+  }
+
+
+  List<String> emails = [];
 
   int editedindex = -1;
 
