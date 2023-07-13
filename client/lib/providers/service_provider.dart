@@ -81,6 +81,26 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  //added
+  Future<bool> deleteUserAccount(String userEmail) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: userEmail,
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> loginUser({required EventProvider eventProvider}) async {
     final String authUrl =
         'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';

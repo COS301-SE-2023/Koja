@@ -43,8 +43,7 @@ class AllEmailsWidget extends StatelessWidget {
                         Icons.delete_outlined,
                         size: 30,
                       ),
-                    ),
-                    
+                    ),                  
                   ],
                 ),
               ],

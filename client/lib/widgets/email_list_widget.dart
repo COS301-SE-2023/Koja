@@ -27,7 +27,7 @@ class _EmailListState extends State<EmailList> {
     });
   }
 
-  List<String> emails = [];
+  List<String> emails = ["ggaga"];
 
   int editedindex = -1;
 
@@ -35,17 +35,34 @@ class _EmailListState extends State<EmailList> {
 
   // function to delete an email from the list
   void delete(int index) {
-    setState(() {
-      emails.removeAt(index);
-    });
-  }
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirmation'),
+        content: Text('Are you sure you want to delete this email from your account?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                emails.removeAt(index);
+              });
+              Navigator.pop(context); 
+            },
+            child: Text('Delete'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  // function to delete an email from the list
-  void makeprimary(int index) {
-    // setState(() {
-    //   emails.removeAt(index);
-    // });
-  }
 
   @override
   Widget build(BuildContext context) {
