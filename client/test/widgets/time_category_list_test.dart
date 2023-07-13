@@ -30,6 +30,11 @@ void main() {
         ),
       ),
     );
+    // Verify the existence of the category icon
+    expect(find.byIcon(Icons.school_outlined), findsOneWidget);
+
+    // Verify the existence of the category text
+    expect(find.text('SCHOOL'), findsOneWidget);
 
   });
 }
