@@ -48,5 +48,7 @@ void main() {
     // Verify that the delete button is not pressed initially
     expect(deletePressed, false);
 
+    // Verify that the edit button is not pressed initially
+    expect(editPressed, false);
   });
 }
