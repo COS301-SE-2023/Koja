@@ -218,7 +218,7 @@ class GoogleCalendarAdapterService(
         return person.emailAddresses?.firstOrNull()?.value
     }
 
-    private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
+    public override fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
         val credential = GoogleCredential.Builder()
             .setJsonFactory(JacksonFactory.getDefaultInstance())
             .setTransport(GoogleNetHttpTransport.newTrustedTransport())

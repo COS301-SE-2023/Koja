@@ -38,7 +38,7 @@ class UserCalendarService(
     }
 
     @Transactional
-    private fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
+    fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
         val adapterFactory = CalendarAdapterFactoryService(userRepository, userAccountRepository)

@@ -1,6 +1,7 @@
 package com.teamcaffeine.koja.service
 
 import com.google.api.services.calendar.model.Event
+import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import jakarta.servlet.http.HttpServletRequest
@@ -26,6 +27,8 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     abstract fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event
 
     abstract fun deleteEvent(accessToken: String, eventID: String): Boolean
+
+    abstract fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTAuthDetailsDTO?
 
     abstract fun getFutureEventsLocations(accessToken: String?): List<String>
 
