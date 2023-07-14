@@ -4,7 +4,11 @@ import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserAccountManagerService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.view.RedirectView
 
 @RestController
@@ -26,11 +30,8 @@ class UserAccountManagerController(private val googleCalendarAdapter: GoogleCale
             .body("Authentication successful")
     }
 
-    @DeleteMapping("/users/{userId}/emails/{email}")
-    fun removeEmail(
-        @PathVariable userId: String,
-        @PathVariable email: String
-    ) {
-        userAccountManagerService.removeEmailAddress(userId, email)
+    @PutMapping("remove/email/token/{accessToken}")
+    fun removeEmail(@RequestParam accessToken: String) {
+        userAccountManagerService.deleteGoogleAccount(accessToken)
     }
 }
