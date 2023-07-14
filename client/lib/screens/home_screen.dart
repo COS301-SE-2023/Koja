@@ -177,7 +177,7 @@ class HomeState extends State<Home> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return LocationListWidget(locationNames: [],);
+                        return LocationListWidget();
                       },
                     );
                   },
