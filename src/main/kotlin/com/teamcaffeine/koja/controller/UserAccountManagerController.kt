@@ -6,14 +6,21 @@ import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserAccountManagerService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.view.RedirectView
 
 @RestController
 @RequestMapping("/api/v1/user")
 
-class UserAccountManagerController(private val googleCalendarAdapter: GoogleCalendarAdapterService,
-                                   private val userAccountManagerService: UserAccountManagerService) {
+class UserAccountManagerController(
+    private val googleCalendarAdapter: GoogleCalendarAdapterService,
+    private val userAccountManagerService: UserAccountManagerService
+) {
 
     @GetMapping("auth/add-email/google")
     fun authenticateAnotherGoogleEmail(request: HttpServletRequest): RedirectView {
@@ -28,14 +35,15 @@ class UserAccountManagerController(private val googleCalendarAdapter: GoogleCale
             .body("Authentication successful")
     }
 
-    @PutMapping("remove-email")
-    fun removeEmail(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
-                    @RequestParam("email") email: String?): ResponseEntity<String> {
+    @PostMapping("remove-email")
+    fun removeEmail(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestParam("email") email: String?
+    ): ResponseEntity<String> {
         return if (token == null || email == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        }
-        else {
-            userAccountManagerService.deleteGoogleAccount(token,email)
+        } else {
+            userAccountManagerService.deleteGoogleAccount(token, email)
             ResponseEntity.ok(ResponseConstant.EMAIL_REMOVED)
         }
     }
