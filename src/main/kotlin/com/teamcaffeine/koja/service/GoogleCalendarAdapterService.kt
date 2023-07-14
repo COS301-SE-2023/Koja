@@ -227,7 +227,6 @@ class GoogleCalendarAdapterService(
         return jwtToken
     }
 
-
     private fun createNewUser(userEmail: String, refreshToken: String?): User {
         val newUser = User()
         val storedUser = userRepository.save(newUser)
