@@ -28,7 +28,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
 >>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
   @override
   Widget build(BuildContext context) {
-    final events = Provider.of<EventProvider>(context).events;
+    final eventProvider = Provider.of<EventProvider>(context);
 
     return SfCalendar(
 <<<<<<< HEAD
@@ -75,7 +75,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
         firstDayOfWeek: 1,
 
         //Ths displays the events on the calendar
-        dataSource: EventDataSource(events),
+        dataSource: EventDataSource(eventProvider.events),
 
         //This initialises the calendar to the current date
         initialSelectedDate: DateTime.now(),

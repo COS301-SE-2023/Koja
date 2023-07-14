@@ -1,3 +1,4 @@
+import 'package:client/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 <<<<<<< HEAD
 
@@ -26,6 +27,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final serviceProvider = Provider.of<ServiceProvider>(context);
     final eventProvider = Provider.of<EventProvider>(context);
 >>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
     return Scaffold(
@@ -44,7 +46,10 @@ class Profile extends StatelessWidget {
             color: Colors.white,
             icon: const Icon(Icons.logout),
             onPressed: () {
-              eventProvider.setAccessToken(accessToken: null);
+              serviceProvider.setAccessToken(
+                null,
+                eventProvider,
+              );
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const Login()),

@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service
 @Service
 class CalendarAdapterFactoryService(
     private val userRepository: UserRepository,
-    private val userAccountRepository: UserAccountRepository
+    private val userAccountRepository: UserAccountRepository,
 ) {
     private val creationMap: Map<AuthProviderEnum, (UserRepository, UserAccountRepository) -> CalendarAdapterService> =
         mapOf(
             AuthProviderEnum.GOOGLE to { userRepository: UserRepository, userAccountRepository: UserAccountRepository ->
                 GoogleCalendarAdapterService(
                     userRepository,
-                    userAccountRepository
+                    userAccountRepository,
                 )
             },
         )

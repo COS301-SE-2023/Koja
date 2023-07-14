@@ -90,42 +90,9 @@ dependencies:
   # for cors-origin errors
   flutter_cors: ^1.4.0
   time_duration_picker: ^0.0.1
-  location: ^4.4.0
   duration: ^3.0.12
-
-  #for sign in with google
-  google_sign_in: ^6.1.0
-
-  #custom icons
-  line_icons: ^2.0.1
-
-  #for google navigation
-  google_nav_bar: ^5.0.6
-  googleapis_auth: ^1.4.0
-
-  #calendar
-  syncfusion_flutter_calendar: ^21.2.4
-
-  #handle dates
-  intl: ^0.18.1
-
-  floating_bottom_navigation_bar: ^1.5.1
-
-  #state management 
-  provider: ^6.0.5
-
-  #google font
-  google_fonts: ^4.0.4
-
-  #for location
-  google_maps_flutter: ^2.1.5
-  google_map_location_picker_flutter: ^2.0.5
-
-  #animated text
-  animated_text_kit: ^4.2.2
-  url_launcher: ^6.1.11
-  uni_links: ^0.5.1
-  flutter_inappwebview: ^5.7.2+3
+  flutter_dotenv: ^5.1.0
+  fl_location: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
@@ -145,12 +112,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-<<<<<<< HEAD
-    - lib/assets/
-=======
     - assets/icons/
     - assets/animations/
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
+    - ../.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

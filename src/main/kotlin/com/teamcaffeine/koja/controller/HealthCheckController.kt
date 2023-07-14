@@ -24,13 +24,13 @@ class HealthCheckController(@Autowired val dataSource: DataSource) {
             ResponseEntity.ok().body(
                 mapOf(
                     "status" to Status.RUNNING,
-                )
+                ),
             )
         } else {
             ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
                 mapOf(
                     "status" to Status.DOWN,
-                )
+                ),
             )
         }
     }
@@ -44,7 +44,7 @@ class HealthCheckController(@Autowired val dataSource: DataSource) {
                     mapOf(
                         "status" to Status.DOWN,
                         "breakdown" to healthStatus.map { it.message },
-                    )
+                    ),
                 )
             }
         }
@@ -52,7 +52,7 @@ class HealthCheckController(@Autowired val dataSource: DataSource) {
             mapOf(
                 "status" to Status.RUNNING,
                 "breakdown" to healthStatus.map { it.message },
-            )
+            ),
         )
     }
 

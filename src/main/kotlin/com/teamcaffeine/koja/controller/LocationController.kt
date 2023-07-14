@@ -4,11 +4,15 @@ import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
+import com.teamcaffeine.koja.constants.HeaderConstant
+import com.teamcaffeine.koja.constants.ResponseConstant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.lang.NumberFormatException
 
 @RestController
 @RequestMapping("/api/v1/location")
@@ -55,7 +59,11 @@ LocationController {
 //    }
 
     @GetMapping("/distance")
-    fun getDistanceBetweenLocations(@RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+        if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
+
         val distance = getDistance(origin, destination)
         return ResponseEntity.ok(distance)
     }
@@ -76,23 +84,25 @@ LocationController {
 
     @GetMapping("/travel-time")
     fun getLocationsTravelTime(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestParam("placeId") placeId: String?,
         @RequestParam("destLat") destLat: String?,
-        @RequestParam("destLng") destLng: String?
-    ): ResponseEntity<Long> {
-
-        return if (placeId != null && destLat != null && destLng != null) {
+        @RequestParam("destLng") destLng: String?,
+    ): ResponseEntity<out Any> {
+        return if (token == null || placeId == null || destLat == null || destLng == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
             try {
                 val destLatDouble = destLat.toDouble()
                 val destLngDouble = destLng.toDouble()
                 val result = getTravelTime(placeId, destLatDouble, destLngDouble)
                 ResponseEntity.ok().body(result ?: 0L)
+            } catch (e: NumberFormatException) {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
             } catch (e: Exception) {
-                print(e)
-                ResponseEntity.badRequest().build()
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
             }
-        } else
-            ResponseEntity.badRequest().build()
+        }
     }
 
     fun getTravelTime(placeId: String, destLat: Double, destLng: Double): Long? {

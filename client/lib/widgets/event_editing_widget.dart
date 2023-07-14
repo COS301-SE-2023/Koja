@@ -1,40 +1,20 @@
-<<<<<<< HEAD
-=======
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:client/Utils/constants_util.dart';
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
 import '../Utils/event_util.dart';
-<<<<<<< HEAD
-import 'event_provider.dart';
-=======
 import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
 import '../providers/event_provider.dart';
+import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
 class EventEditing extends StatefulWidget {
   final Event? event;
 
   const EventEditing({Key? key, this.event}) : super(key: key);
-<<<<<<< HEAD
-  
-  @override
-  _EventEditingState createState() => _EventEditingState();
-}
-
-class _EventEditingState extends State<EventEditing> {
-
-  late DateTime fromDate;
-  late DateTime toDate;
-  
-=======
 
   @override
   EventEditingState createState() => EventEditingState();
@@ -67,15 +47,11 @@ class EventEditingState extends State<EventEditing> {
   late DateTime fromDate;
   late DateTime toDate;
 
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
   //key which is used to validate the form
   final _formKey = GlobalKey<FormState>();
 
   //controller for the title text field
   final titleController = TextEditingController();
-<<<<<<< HEAD
- 
-=======
   final hoursController = TextEditingController();
   final minutesController = TextEditingController();
 
@@ -93,15 +69,11 @@ class EventEditingState extends State<EventEditing> {
       selectedEventType = eventType;
     });
   }
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
   @override
   void initState() {
     super.initState();
 
-<<<<<<< HEAD
-    if(widget.event == null) {
-=======
     if (widget.event != null && widget.event!.isDynamic) {
       if (widget.event!.duration > 0) {
         Duration d = Duration(milliseconds: widget.event!.duration);
@@ -123,7 +95,6 @@ class EventEditingState extends State<EventEditing> {
     }
 
     if (widget.event == null) {
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
       fromDate = DateTime.now();
       toDate = DateTime.now().add(const Duration(hours: 2));
     } else {
@@ -133,10 +104,6 @@ class EventEditingState extends State<EventEditing> {
       fromDate = event.from;
       toDate = event.to;
     }
-<<<<<<< HEAD
- 
-=======
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
   }
 
   @override
@@ -147,116 +114,6 @@ class EventEditingState extends State<EventEditing> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        actions: [
-          ElevatedButton(
-            onPressed: saveForm,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-            ),
-            child: const Text('Save'),
-          ),
-          const SizedBox(width: 12),
-          
-        ],
-        title: const Text('Event Editing',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-      ), 
-      
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              buildTitle(),
-              const SizedBox(height: 12,),
-              buildDateTimePickers(),
-            ]),
-        ),
-      ),   
-    );
-  }
-  
-  Widget buildTitle() => TextFormField(
-    style: const TextStyle(fontSize: 24),
-    decoration: const InputDecoration(
-      border: UnderlineInputBorder(),
-      hintText: 'Add Title',
-    ),
-    onFieldSubmitted: (_) => saveForm(),
-    
-    validator: (title) =>
-        title != null && title.isEmpty ? 'Title cannot be empty' : null,
-    controller: titleController,
-  );
-  
-  Widget buildDateTimePickers() => Column(
-    children: [
-      buildFrom(),
-      buildTo(),
-    ],
-  );
-  
-  Widget buildFrom() => BuildHeader(
-    header: 'FROM',
-    child: Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: buildDropdownField(
-            text: DateAndTimeUtil.toDate(fromDate),
-            //If the user clicked the date the new date is saved in the fromDate variable
-            onClicked: () => pickFromDateTime(pickDate: true),
-  
-          ),
-        ),
-        Expanded(
-          child: buildDropdownField(
-            text: DateAndTimeUtil.toTime(fromDate),
-            //If the user clicked the time the new time is saved in the fromDate variable
-             onClicked: () => pickFromDateTime(pickDate: false)
-            ),      
-        ),
-       
-      ],
-    ),
-  );
-  
-  Widget buildTo() => BuildHeader(
-    header: 'TO',
-    child: Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: buildDropdownField(
-            text: DateAndTimeUtil.toDate(toDate),
-            onClicked: () => pickToDateTime(pickDate: true)
-  
-          ),
-        ),
-        Expanded(
-          child: buildDropdownField(
-            text: DateAndTimeUtil.toTime(toDate),
-             onClicked: () => pickToDateTime(pickDate: false)
-            ),      
-        ),
-       
-      ],
-    ),
-  );
-
-=======
     return AlertDialog(
       scrollable: true,
       actions: <Widget>[
@@ -537,25 +394,10 @@ class EventEditingState extends State<EventEditing> {
           ],
         ),
       );
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 
   Widget buildDropdownField({
     required String text,
     required VoidCallback onClicked,
-<<<<<<< HEAD
-  }) =>
-      ListTile(
-        title: Text(text),
-        trailing: const Icon(Icons.arrow_drop_down),
-        onTap: onClicked,
-      );
-      
-  Widget BuildHeader({
-  required String header,
-  required Widget child,
-  }) =>
-    Column(
-=======
   }) {
     return ListTile(
       title: Text(text),
@@ -566,29 +408,16 @@ class EventEditingState extends State<EventEditing> {
 
   Widget buildHeader({required String header, required Widget child}) {
     return Column(
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           header,
-<<<<<<< HEAD
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-=======
           style:
               const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
         ),
         child,
       ],
     );
-<<<<<<< HEAD
-      
-  Future pickFromDateTime({required bool pickDate}) async {
-    final date = await pickDateTime(fromDate, pickDate: pickDate,
-      firstDate: pickDate ? fromDate : null,
-    );
-    
-=======
   }
 
   Future pickFromDateTime({required bool pickDate}) async {
@@ -598,7 +427,6 @@ class EventEditingState extends State<EventEditing> {
       firstDate: pickDate ? fromDate : null,
     );
 
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
     if (date == null) return;
 
     if (date.isAfter(toDate)) {
@@ -611,18 +439,6 @@ class EventEditingState extends State<EventEditing> {
       );
     }
 
-<<<<<<< HEAD
-    setState(() {
-      fromDate = date;
-    });
-  }
-
-  Future<DateTime?> pickDateTime(
-    DateTime initialDate, {
-    required bool pickDate,
-    DateTime? firstDate,
-  }) async {
-=======
     if (mounted) {
       setState(() {
         fromDate = date;
@@ -632,7 +448,6 @@ class EventEditingState extends State<EventEditing> {
 
   Future<DateTime?> pickDateTime(DateTime initialDate,
       {required bool pickDate, DateTime? firstDate}) async {
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
     if (pickDate) {
       final date = await showDatePicker(
         context: context,
@@ -649,12 +464,7 @@ class EventEditingState extends State<EventEditing> {
       );
 
       return date.add(time);
-<<<<<<< HEAD
-    } 
-    else {
-=======
     } else {
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
       final timeOfDay = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(initialDate),
@@ -676,19 +486,11 @@ class EventEditingState extends State<EventEditing> {
       return date.add(time);
     }
   }
-<<<<<<< HEAD
-  
-  //To Section
-  Future pickToDateTime({required bool pickDate}) async {
-    final date = await pickDateTime(toDate, pickDate: pickDate);
-    
-=======
 
   //To Section
   Future pickToDateTime({required bool pickDate}) async {
     final date = await pickDateTime(toDate, pickDate: pickDate);
 
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
     if (date == null) return;
 
     // if (date.isAfter(toDate)) {
@@ -700,43 +502,6 @@ class EventEditingState extends State<EventEditing> {
     //     toDate.minute,
     //   );
     // }
-<<<<<<< HEAD
-
-    setState(() {
-      toDate = date;
-    });
-  }
-        
-  Future saveForm() async {
-    final isValid = _formKey.currentState?.validate() ?? false;
-
-    if(isValid){
-      final event = Event(
-        title: titleController.text,
-        location: '',
-        description: 'description',
-        from: fromDate,
-        to: toDate,
-        isAllDay: false,
-      );
-
-      
-
-      final isEditing = widget.event != null;
-      final provider = Provider.of<EventProvider>(context, listen: false);
-      
-      if(isEditing){
-        provider.editEvent(event, widget.event!);
-        Navigator.of(context).pop();
-      }
-      else{
-        provider.addEvent(event);
-        Navigator.of(context).pop();
-    }
-  }
-}
-}
-=======
     if (mounted) {
       setState(() {
         toDate = date;
@@ -752,9 +517,9 @@ class EventEditingState extends State<EventEditing> {
     }
 
     if (isValid) {
-      final provider = Provider.of<EventProvider>(context, listen: false);
+      final eventProvider = Provider.of<EventProvider>(context, listen: false);
 
-      var timeSlot = provider.timeSlots[selectedCategory];
+      var timeSlot = eventProvider.timeSlots[selectedCategory];
 
       if (timeSlot == null) {
         var now = DateTime.now();
@@ -847,55 +612,34 @@ class EventEditingState extends State<EventEditing> {
         timeSlots: [timeSlot],
       );
 
-      var data = {
-        "token": "${provider.accessToken}",
-        "event": event.toJson(),
-      };
+      final serviceProvider =
+          Provider.of<ServiceProvider>(context, listen: false);
 
       if (widget.event == null) {
-        var response = await http.post(
-          Uri.http('localhost:8080', '/api/v1/user/calendar/createEvent'),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": "Bearer ${provider.accessToken}",
-          },
-          body: jsonEncode(data),
-        );
+        var response = await serviceProvider.createEvent(event);
 
-        if (response.statusCode == 200) {
-          provider.getEventsFromAPI();
+        if (response) {
+          eventProvider.addEvent(event);
           const snackBar = SnackBar(
             content: Text('Event Created!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pop(context);
-        } else if (response.statusCode == 400) {
-          const snackBar = SnackBar(
-            content:
-                Text('Event Creation Failed - Could not fit in the time slot'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         } else {
           const snackBar = SnackBar(
-            content: Text('Could not create event - Internal Server Error'),
+            content: Text('Event Creation failed!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pop(context);
         }
       } else {
-        var response = await http.put(
-          Uri.http('localhost:8080', '/api/v1/user/calendar/updateEvent'),
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "Authorization": "Bearer ${provider.accessToken}",
-          },
-          body: jsonEncode(data),
-        );
-        if (response.statusCode == 200) {
+        var response = await serviceProvider.updateEvent(event);
+        if (response) {
+          eventProvider.updateEvent(event);
           const snackBar = SnackBar(
             content: Text('Event Updated!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         } else {
           const snackBar = SnackBar(
             content: Text('Event Update Failed.'),
@@ -907,10 +651,18 @@ class EventEditingState extends State<EventEditing> {
   }
 
   Future<int> getDurationInMilliseconds(int durationInSeconds) async {
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
 
-    int placeTravelTime =
-        (placeId != "") ? await eventProvider.getPlaceTravelTime(placeId) : 0;
+    final locationData = serviceProvider.locationData;
+
+    int placeTravelTime = (placeId != "" && locationData != null)
+        ? await serviceProvider.getLocationsTravelTime(
+            placeId,
+            serviceProvider.locationData!.latitude,
+            serviceProvider.locationData!.longitude,
+          )
+        : 0;
 
     return (durationInSeconds * 1000) + placeTravelTime;
   }
@@ -925,49 +677,49 @@ class TimeEstimationWidget extends StatelessWidget {
   final String placeID;
   @override
   Widget build(BuildContext context) {
-    return (placeID == "")
-        ? Text(
-            'No Location Selected',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          )
-        : FutureBuilder(
-            builder: ((context, snapshot) {
-              if (snapshot.hasData) {
-                return Padding(
+    final serviceProvider = Provider.of<ServiceProvider>(context);
+    return getLocationWidget(context, serviceProvider);
+  }
+
+  Widget getLocationWidget(
+      BuildContext context, ServiceProvider serviceProvider) {
+    final locationData = serviceProvider.locationData;
+    if (placeID == "") {
+      return Text(
+        'No Location Selected',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      );
+    } else if (locationData != null) {
+      return FutureBuilder(
+          builder: ((context, snapshot) {
+            if (snapshot.hasData) {
+              return Padding(
                   padding: const EdgeInsets.only(top: 3, left: 12),
-                  child: Row(
-                    children: [
-                      Icon(Icons.mode_of_travel),
-                      SizedBox(width: 8),
-                      Text(
-                        getHumanText(snapshot.data),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+                  child: Text(getHumanText(snapshot.data)));
+            } else {
+              return Padding(
+                padding: const EdgeInsets.only(top: 3, left: 12),
+                child: Text(
+                  'Loading...',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                );
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 3, left: 12),
-                  child: Text(
-                    'Loading...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
-              }
-            }),
-            future: Provider.of<EventProvider>(context, listen: false)
-                .getPlaceTravelTime(placeID),
-          );
+                ),
+              );
+            }
+          }),
+          future: serviceProvider.getLocationsTravelTime(
+            placeID,
+            locationData.latitude,
+            locationData.longitude,
+          ));
+    } else {
+      return Text("");
+    }
   }
 
   String getHumanText(int? travelTimeInSeconds) {
@@ -995,4 +747,3 @@ class TimeEstimationWidget extends StatelessWidget {
 
   //   // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
   // }
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9

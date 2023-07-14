@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
@@ -13,7 +14,7 @@ import java.time.OffsetDateTime
 @Service
 class UserCalendarService(
     private val userAccountRepository: UserAccountRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
 
     fun getAllUserEvents(token: String): List<UserEventDTO> {
@@ -36,6 +37,7 @@ class UserCalendarService(
         return userEvents
     }
 
+    @Transactional
     private fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
@@ -98,8 +100,8 @@ class UserCalendarService(
                     adapter.getUserEventsInRange(
                         accessToken,
                         eventDTO.getStartTime().withHour(0).withMinute(0).withSecond(0).withNano(0),
-                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999)
-                    )
+                        eventDTO.getEndTime().withHour(23).withMinute(59).withSecond(59).withNano(999999999),
+                    ),
                 )
             }
         }
@@ -123,7 +125,7 @@ class UserCalendarService(
 
     private fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
-        eventDTO: UserEventDTO
+        eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
         val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
 

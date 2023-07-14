@@ -1,39 +1,43 @@
 package com.teamcaffeine.koja.controller
 
-import com.teamcaffeine.koja.entity.User
-import com.teamcaffeine.koja.service.UserService
+import com.teamcaffeine.koja.constants.HeaderConstant
+import com.teamcaffeine.koja.constants.ResponseConstant
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
+import com.teamcaffeine.koja.repository.UserAccountRepository
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigInteger
-import java.security.SecureRandom
-
-data class Session(val OAuth: Any)
 
 @RestController
-class UserController(val userService: UserService) {
+@RequestMapping("/api/v1/user")
+class UserController(private val userAccountRepository: UserAccountRepository) {
 
-    @PostMapping("/authenticate")
-    fun authenticateUser(user: User): String {
-        if(userService.authenticate(user)){
-            return "homepage"
+    @GetMapping("linked-emails")
+    fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
         } else {
-            return "signin"
+            val jwtTokenData = getUserJWTTokenData(token)
+            val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
+
+            ResponseEntity.ok(userAccounts.map { it.email })
         }
     }
 
-    fun generateRandomToken(length: Int): String {
-        val secureRandom = SecureRandom()
-        val token = BigInteger(130, secureRandom).toString(32)
-        return token.toString()
-    }
+    @PostMapping("delete-account")
+    fun deleteUserAccount(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            val jwtTokenData = getUserJWTTokenData(token)
+            val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
 
-    @CrossOrigin(origins = ["*"])
-    @PostMapping("/establishSession")
-    fun establishSession(@RequestBody session : Session) : ResponseEntity<String> {
-        println("Received address: $session")
-        return ResponseEntity.ok("Data received successfully, $session")
+            userAccounts.forEach { userAccountRepository.delete(it) }
+
+            ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
+        }
     }
 }
