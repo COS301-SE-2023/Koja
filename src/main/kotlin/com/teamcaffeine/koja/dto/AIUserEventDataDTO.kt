@@ -1,6 +1,6 @@
 package com.teamcaffeine.koja.dto
 
-class AIUserEventDataDTO(private val timeFrame: TimeSlot?, private val userID: String?, private val category: String?, private val weekday: String?) {
+class AIUserEventDataDTO(private val timeFrame: List<TimeSlot>, private val userID: String?, private val category: String?, private val weekday: String?) {
 
     override fun toString(): String {
         return "AIUserEventDataDTO(timeFrame=$timeFrame, userID='$userID', category='$category', weekday='$weekday')"
