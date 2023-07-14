@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.web.bind.annotation.GetMapping
-<<<<<<< HEAD:src/main/kotlin/com/teamcaffeine/koja/controller/TransferController.kt
-=======
 import org.springframework.web.bind.annotation.RequestMapping
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9:src/main/kotlin/com/teamcaffeine/koja/controller/HealthCheckController.kt
 import org.springframework.web.bind.annotation.RestController
 import javax.sql.DataSource
 
