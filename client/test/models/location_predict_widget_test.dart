@@ -36,7 +36,6 @@ void main() {
       };
 
       final result = await LocationPredict.fetchUrl(uri, headers: null);
-
       expect(result, isNull);
       expect(printedError, null);
     });
