@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
@@ -36,6 +37,7 @@ class UserCalendarService(
         return userEvents
     }
 
+    @Transactional
     private fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()

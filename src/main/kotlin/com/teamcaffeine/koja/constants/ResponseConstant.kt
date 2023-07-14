@@ -16,5 +16,9 @@ object ResponseConstant {
     const val EVENT_CREATED = "Event successfully created."
     const val EVENT_UPDATED = "Event successfully updated."
     const val EVENT_DELETED = "Event successfully deleted."
+<<<<<<< HEAD
     const val EMAIL_REMOVED = "Email successfully removed."
+=======
+    const val ACCOUNT_DELETED = "Account successfully deleted."
+>>>>>>> c6d97d9c58ff6f49089c9baca8fe90a214292364
 }
