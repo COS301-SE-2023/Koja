@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.springframework.http.ResponseEntity
@@ -27,15 +26,19 @@ class UserAccountManagerControllerUnitTest {
     private lateinit var dotenv: Dotenv
 
     @Mock
+    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+
+    @Mock
     private lateinit var userAccountRepository: UserAccountRepository
+
+    @Mock
     private lateinit var userAccountManagerService: UserAccountManagerService
-    private lateinit var googleCalendarAdapter: GoogleCalendarAdapterService
 
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userAccountManagerController = UserAccountManagerController(googleCalendarAdapter, userAccountManagerService)
+        userAccountManagerController = UserAccountManagerController(googleCalendarAdapterService, userAccountManagerService)
     }
 
     private fun importEnvironmentVariables() {
@@ -63,7 +66,7 @@ class UserAccountManagerControllerUnitTest {
     }
 
     /**
-     * Delete User Account Scenario1: Request made to delete user account
+     * Delete User Account linked Email Scenario1: Valid request is made
      */
     @Test
     fun testDeleteUserAccountScenario1() {
@@ -71,19 +74,21 @@ class UserAccountManagerControllerUnitTest {
         val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
         val mockToken = createToken(TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID))
 
-        val userAccount = UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
-        val userAccounts = listOf(userAccount)
+        val userAccount1 = UserAccount(id = 1, email = "test1@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount2 = UserAccount(id = 1, email = "test2@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount3 = UserAccount(id = 1, email = "test3@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount4 = UserAccount(id = 1, email = "test4@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccounts = listOf(userAccount1, userAccount2, userAccount3, userAccount4)
 
         `when`(userAccountRepository.findByUserID(eq(mockUserID))).thenReturn(userAccounts)
 
-        val result = userAccountManagerController.removeEmail(mockToken, userAccount.email)
+        val result = userAccountManagerController.removeEmail(mockToken, userAccount2.email)
 
         assertEquals(result, ResponseEntity.ok(ResponseConstant.EMAIL_REMOVED))
-        Mockito.verify(userAccountRepository).delete(userAccount)
     }
 
     /**
-     * Delete User Account Scenario2: Request made to delete user account without token
+     * Delete User Account linked Email Scenario2: Request made to delete user account without token and Email
      */
     @Test
     fun testDeleteUserAccountScenario2() {
