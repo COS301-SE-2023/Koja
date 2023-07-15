@@ -23,13 +23,16 @@ class UserAccountManagerController(
 ) {
 
     @GetMapping("auth/add-email/google")
-    fun authenticateAnotherGoogleEmail(request: HttpServletRequest): RedirectView {
+    fun authenticateAnotherGoogleEmail(request: HttpServletRequest, @RequestHeader(HeaderConstant.AUTHORISATION) token: String?): RedirectView {
+        if (token == null) {
+            throw Exception(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
         return googleCalendarAdapter.setupConnection(request, false)
     }
 
     @GetMapping("/google/callback")
-    fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?): ResponseEntity<String> {
-        val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, false)
+    fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?, @RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
+        val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, token, false)
         return ResponseEntity.ok()
             .header("Authorization", "Bearer $jwt")
             .body("Authentication successful")

@@ -163,7 +163,7 @@ class GoogleCalendarAdapterService(
         return jwtToken
     }
 
-    fun addAnotherEmailOauth2Callback(authCode: String?, appCallBack: Boolean): String {
+    fun addAnotherEmailOauth2Callback(authCode: String?, token: String?, appCallBack: Boolean): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -202,7 +202,10 @@ class GoogleCalendarAdapterService(
         if (existingUser != null) {
             throw Exception("Email already exits.")
         } else {
-            val jwtTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
+            if (token == null) {
+                throw Exception("Token is not set.")
+            }
+            val jwtTokenData = TokenManagerController.getUserJWTTokenData(token)
             val storedUser = userRepository.findByUserID(jwtTokenData.userID)
             val newUserAccount = UserAccount()
             newUserAccount.email = userEmail
