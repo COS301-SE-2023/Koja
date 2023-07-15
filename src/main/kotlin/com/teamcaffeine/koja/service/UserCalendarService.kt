@@ -3,6 +3,7 @@ package com.teamcaffeine.koja.service
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
+import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -184,5 +185,14 @@ class UserCalendarService(
         }
 
         return Pair(newEventStartTime, newEventEndTime)
+    }
+
+    fun addTimeBoundary (token: String, timeBoundary: TimeBoundary){
+
+        val userJWTTokenData = getUserJWTTokenData(token)
+        var user = userRepository.findById(userJWTTokenData.userID)
+
+
+
     }
 }
