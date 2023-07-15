@@ -124,19 +124,40 @@ class EventEditingState extends State<EventEditing> {
     return AlertDialog(
       scrollable: true,
       actions: <Widget>[
-        TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
+        Row(
+          textDirection: TextDirection.rtl,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Cancel')
             ),
-            child: Text('Cancel')),
-        TextButton(
-            onPressed: saveForm,
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
+
+            if(selectedEventType == 'Dynamic')
+              TextButton(
+              onPressed: saveForm,
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Reschedule',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.black)
+              )
             ),
-            child: Text('Save',
-                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+
+            TextButton(
+              onPressed: saveForm,
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Save',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.black)
+              )
+            ),
+          ],
+        )
+        
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
