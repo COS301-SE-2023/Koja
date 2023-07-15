@@ -57,6 +57,7 @@ class EventEditingState extends State<EventEditing> {
 
   String selectedCategory = 'Work';
   String selectedEventType = 'Dynamic';
+  String selectedPriority = 'Low';
 
   void updateCategory(String category) {
     setState(() {
@@ -67,6 +68,12 @@ class EventEditingState extends State<EventEditing> {
   void updateEventType(String eventType) {
     setState(() {
       selectedEventType = eventType;
+    });
+  }
+
+  void updatePriority(String priority) {
+    setState(() {
+      selectedPriority = priority;
     });
   }
 
@@ -150,6 +157,9 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 12),
                 ChooseCategory(onCategorySelected: updateCategory),
                 const SizedBox(height: 12),
+                if(selectedEventType == 'Dynamic')
+                     ChoosePriority(onPrioritySelected: updatePriority),
+                    SizedBox(height: 12),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
