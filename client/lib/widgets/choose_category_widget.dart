@@ -275,6 +275,66 @@ class ChooseColorState extends State<ChooseColor> {
   }
 }
 
+/**Class which sets recurrence */
+class ChooseRecurrence extends StatefulWidget {
+  final void Function(String category) onRecurrenceSelected;
+  const ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
+      : super(key: key);
+
+  @override
+  ChooseRecurrenceState createState() => ChooseRecurrenceState();
+}
+
+class ChooseRecurrenceState extends State<ChooseRecurrence> {
+  String selectedCategory = 'None';
+  List<String> categories = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+              value: selectedCategory,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCategory = newValue;
+                  });
+                  widget.onRecurrenceSelected(newValue);
+                }
+              },
+              items: categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                label: Text(
+                  'Select Recurrence',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+}
+
 
 // import 'package:flutter/material.dart';
 

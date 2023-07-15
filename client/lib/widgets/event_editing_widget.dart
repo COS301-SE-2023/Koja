@@ -59,6 +59,7 @@ class EventEditingState extends State<EventEditing> {
   String selectedEventType = 'Fixed';
   String selectedPriority = 'Low';
   Color selectedColor = Colors.blue;
+  String selectedRecurrence = 'None';
 
   void updateCategory(String category) {
     setState(() {
@@ -81,6 +82,12 @@ class EventEditingState extends State<EventEditing> {
   void updateColor(Color color) {
     setState(() {
       selectedColor = color;
+    });
+  }
+
+  void updateRecurrence(String recurrence) {
+    setState(() {
+      selectedRecurrence = recurrence;
     });
   }
 
