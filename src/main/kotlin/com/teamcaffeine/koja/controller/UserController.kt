@@ -60,11 +60,17 @@ class UserController(private val userAccountRepository: UserAccountRepository,
     }
 
     @PostMapping("/removeTimeBoundary")
-    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String?, ): ResponseEntity<String> {
+    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String? ): ResponseEntity<String> {
 
         if(userCalendarService.removeTimeBoundary(token,name))
             return ResponseEntity.ok("Time boundary successfully added")
         else
             return ResponseEntity.ok("Something went wrong")
+    }
+
+    @PostMapping("/getAllTimeBoundary")
+    fun getTimeBoundaries(@RequestHeader(HeaderConstant.AUTHORISATION) token: String): ResponseEntity<MutableList<TimeBoundary>> {
+
+        return ResponseEntity.ok(userCalendarService.getUserTimeBoundaries(token))
     }
 }
