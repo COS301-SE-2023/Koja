@@ -48,7 +48,7 @@ class LocationService(private val userRepository: UserRepository,
 
     }
 
-     fun getLocationTravelTimes(accessToken: String?, originLat: Double, originLng: Double): List<Long?> {
+     fun getLocationTravelTimes(accessToken: String, originLat: Double, originLng: Double): List<Long?> {
 
       val locations = googleCalendarAdapterService.getFutureEventsLocations(accessToken)
 
