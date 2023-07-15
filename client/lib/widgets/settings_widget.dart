@@ -60,12 +60,9 @@ class SettingsState extends State<Settings> {
   final TextEditingController _homeTextController = TextEditingController();
   final TextEditingController _workTextController = TextEditingController();
 
-  String home = '', work = '';
-
   @override
   Widget build(BuildContext context) {
     ctx = context;
-
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Column(
@@ -78,11 +75,10 @@ class SettingsState extends State<Settings> {
               child: Container(
                 width: constraints.maxWidth * 0.95,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(),
-                    ),
-                child: 
-                    SingleChildScrollView(child: TimeBoundaries()),              
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(),
+                ),
+                child: SingleChildScrollView(child: TimeBoundaries()),
               ),
             ),
             const SizedBox(height: 20),
@@ -115,7 +111,7 @@ class SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child:
-                  SingleChildScrollView(child: workLocation("Work Location")),
+                    SingleChildScrollView(child: workLocation("Work Location")),
               ),
             ),
 
@@ -149,7 +145,6 @@ class SettingsState extends State<Settings> {
     );
   }
 
-
   /* This is the Header Section */
 
   Widget header(IconData iconData, String text) {
@@ -159,18 +154,30 @@ class SettingsState extends State<Settings> {
         Icon(iconData),
         const SizedBox(width: 2),
         Text(text,
-          style: GoogleFonts.lato(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          )
-        ),
+            style: GoogleFonts.lato(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            )),
       ],
     );
   }
-  
 
 /* This is the Home Location Input Section */
   Widget homeLocation(String where) {
+    void updateLocation(String newLocationName, String newTime) {
+      for (var i = 0; i < locationList.length; i++) {
+        if (locationList[i][0] == newLocationName) {
+          if (locationList[i][1] != newTime) {
+            // Update the second value
+            locationList[i][1] = newTime;
+          }
+          return;
+        }
+      }
+      // Add new values to the list
+      locationList.add([newLocationName, newTime]);
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,9 +190,7 @@ class SettingsState extends State<Settings> {
                 child: Text(
                   ' $where : $home',
                   maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 15, 
-                    fontFamily: 'Roboto'),
+                  style: const TextStyle(fontSize: 15, fontFamily: 'Roboto'),
                 ),
               ),
               if (home.isNotEmpty)
@@ -199,9 +204,8 @@ class SettingsState extends State<Settings> {
                           home = '';
                         });
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.clear,
-                        // color: Colors.black,
                       ),
                     ),
                   ],
@@ -233,8 +237,7 @@ class SettingsState extends State<Settings> {
                     ),
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Home Address',
-                    hintStyle: const TextStyle(
-                    ),
+                    hintStyle: const TextStyle(),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _homeTextController.clear();
@@ -242,7 +245,7 @@ class SettingsState extends State<Settings> {
                           placeAutoComplete("");
                         });
                       },
-                      icon: const Icon(Icons.clear, color: Colors.black),
+                      icon: Icon(Icons.clear),
                     ),
                   ),
                 ),
@@ -261,6 +264,7 @@ class SettingsState extends State<Settings> {
                       onTap: () {
                         setState(() {
                           home = placePredictions[index].description!;
+                          updateLocation(home, "newTime");
                           placeAutoComplete("");
                         });
                       },
@@ -277,6 +281,20 @@ class SettingsState extends State<Settings> {
 
 /* This is the Personal Time Input Section  - only difference is the Text */
   Widget workLocation(String where) {
+    void updateLocation(String newLocationName, String newTime) {
+      for (var i = 0; i < locationList.length; i++) {
+        if (locationList[i][0] == newLocationName) {
+          if (locationList[i][1] != newTime) {
+            // Update the second value
+            locationList[i][1] = newTime;
+          }
+          return;
+        }
+      }
+      // Add new values to the list
+      locationList.add([newLocationName, newTime]);
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,9 +307,7 @@ class SettingsState extends State<Settings> {
                 child: Text(
                   ' $where : $work',
                   maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontFamily: 'Roboto'),
+                  style: const TextStyle(fontSize: 15, fontFamily: 'Roboto'),
                 ),
               ),
               if (work.isNotEmpty)
@@ -332,16 +348,13 @@ class SettingsState extends State<Settings> {
                   },
                   controller: _workTextController,
                   style: const TextStyle(color: Colors.black),
-                  // cursorColor: Colors.black,
                   decoration: InputDecoration(
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                     ),
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Work Address',
-                    hintStyle: const TextStyle(
-                      // color: Colors.black,
-                    ),
+                    hintStyle: const TextStyle(),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _workTextController.clear();
@@ -355,7 +368,7 @@ class SettingsState extends State<Settings> {
                 ),
                 const SizedBox(height: 1),
                 ListView.builder(
-                   physics: ScrollPhysics(),
+                  physics: ScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: workplacePredictions.length,
                   itemBuilder: (context, index) {
@@ -368,9 +381,9 @@ class SettingsState extends State<Settings> {
                       onTap: () {
                         setState(() {
                           work = workplacePredictions[index].description!;
+                          updateLocation(work, "newTime");
                           workplaceAutocomplete("");
                         });
-                        
                       },
                     );
                   },
@@ -382,5 +395,4 @@ class SettingsState extends State<Settings> {
       ),
     );
   }
-
 }

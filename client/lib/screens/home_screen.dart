@@ -70,6 +70,8 @@ class HomeState extends State<Home> {
       return eventsOnPresentWeek.length;
     }
 
+    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(

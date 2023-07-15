@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import '../Utils/constants_util.dart';
+
 class LocationListWidget extends StatefulWidget {
+
   const LocationListWidget({
     Key? key,
   }) : super(key: key);
@@ -11,14 +14,7 @@ class LocationListWidget extends StatefulWidget {
 }
 
 class _LocationListWidgetState extends State<LocationListWidget> {
-  List<List<String>> locationList = [
-    ['Apartments On Williams Residence', '50min'],
-    ['School', '1h 30min'],
-    ['Work', '1h 30min'],
-    ['Hobbies', '1h 30min'],
-    ['Resting', '1h 30min'],
-    ['Chores', '1h 30min'],
-  ];
+  
 
   void delete(int index) {
     setState(() {
@@ -106,7 +102,7 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                       children: [
                         Expanded(
                           child: Text(
-                            "$locationName",
+                            locationName,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
