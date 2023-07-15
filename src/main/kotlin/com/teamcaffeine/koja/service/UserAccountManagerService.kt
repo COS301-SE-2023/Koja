@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserAccountManagerService(private val userAccountRepository: UserAccountRepository) {
-    
     fun deleteGoogleAccount(token: String, email: String) {
         val jwtToken = getUserJWTTokenData(token)
         val userAccounts = userAccountRepository.findByUserID(jwtToken.userID)
