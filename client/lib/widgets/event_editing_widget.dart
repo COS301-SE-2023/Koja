@@ -56,7 +56,7 @@ class EventEditingState extends State<EventEditing> {
   final minutesController = TextEditingController();
 
   String selectedCategory = 'Work';
-  String selectedEventType = 'Dynamic';
+  String selectedEventType = 'Fixed';
   String selectedPriority = 'Low';
 
   void updateCategory(String category) {
@@ -137,14 +137,14 @@ class EventEditingState extends State<EventEditing> {
 
             if(selectedEventType == 'Dynamic')
               TextButton(
-              onPressed: saveForm,
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
+                onPressed: saveForm,
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.black),
+                ),
+                child: Text('Reschedule',
+                    style: TextStyle(fontFamily: 'Railway', color: Colors.black)
+                )
               ),
-              child: Text('Reschedule',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.black)
-              )
-            ),
 
             TextButton(
               onPressed: saveForm,
@@ -265,7 +265,7 @@ class EventEditingState extends State<EventEditing> {
 
   Widget location() {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.only(left: 8, right: 8),
       child: SingleChildScrollView(
         child: Column(
           children: [
