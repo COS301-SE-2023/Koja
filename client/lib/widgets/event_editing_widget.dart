@@ -156,10 +156,11 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 12),
                 ChooseCategory(onCategorySelected: updateCategory),
-                const SizedBox(height: 12),
+                const SizedBox(height: 1),
                 if(selectedEventType == 'Dynamic')
                      ChoosePriority(onPrioritySelected: updatePriority),
-                    SizedBox(height: 12),
+                if(selectedEventType == 'Dynamic')
+                    SizedBox(height: 1),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -250,12 +251,21 @@ class EventEditingState extends State<EventEditing> {
             Row(
               children: [
                 Expanded(
-                  child: Text("LOCATION: ${_eventPlace.text}",
-                      maxLines: 2,
+                  child: 
+                    Text(
+                      _eventPlace.text,
+                      maxLines: 1,
                       style: TextStyle(
                           fontFamily: 'Railway',
                           fontSize: 14,
-                          fontWeight: FontWeight.bold)),
+                          fontWeight: FontWeight.bold
+                      )
+                    ),
+                ),
+                if(_eventPlace.text.isNotEmpty)
+                  IconButton(
+                    onPressed: clearLocation,
+                    icon: const Icon(Icons.clear, color: Colors.black),
                 ),
               ],
             ),
@@ -265,11 +275,20 @@ class EventEditingState extends State<EventEditing> {
               controller: _eventPlace,
               style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
+                label: Text(
+                  "Meeting's Location",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16
+                  ),
+                ),
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
-                border: const OutlineInputBorder(),
-                hintText: "Meeting's Location",
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
                 hintStyle: const TextStyle(
                   color: Colors.black,
                 ),
@@ -603,6 +622,15 @@ class EventEditingState extends State<EventEditing> {
       final durationHours = int.tryParse(hoursController.text);
       final durationMinutes = int.tryParse(minutesController.text);
 
+      var priorityValue = 1;
+      if(selectedPriority == 'Low') {
+        priorityValue = 1;
+      } else if(selectedPriority == 'Medium') {
+        priorityValue = 2;
+      } else if(selectedPriority == 'High') {
+        priorityValue = 3;
+      }
+
       var durationInSeconds = 0;
 
       durationInSeconds =
@@ -620,6 +648,7 @@ class EventEditingState extends State<EventEditing> {
         duration: await getDurationInMilliseconds(durationInSeconds),
         isAllDay: false,
         timeSlots: [timeSlot],
+        priority: priorityValue,
       );
 
       final serviceProvider =
@@ -748,12 +777,3 @@ class TimeEstimationWidget extends StatelessWidget {
     return '$hoursText$minutesText$secondsText'.trim();
   }
 }
-
-  // void sendmeetinglocation(String id) 
-  // {
-  //   //send to an api
-  //   final backendurl = '';
-  //   final data = {'placeId': id};
-
-  //   // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
-  // }
