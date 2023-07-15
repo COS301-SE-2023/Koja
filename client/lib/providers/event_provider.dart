@@ -51,6 +51,22 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Event getEventByDate(DateTime date) {
+    return _events.firstWhere(
+      (event) =>
+          event.from.year == date.year &&
+          event.from.month == date.month &&
+          event.from.day == date.day,
+      orElse: () => 
+          Event(
+            title: 'No events',
+            description: '',
+            from: DateTime.now(),
+            to: DateTime.now(),
+          ),    
+    );
+  }
+
   //This returns the events of the selected date
   List<Event> get eventsOfSelectedDate => _events;
 

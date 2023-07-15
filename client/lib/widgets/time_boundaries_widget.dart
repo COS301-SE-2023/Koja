@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../providers/event_provider.dart';
+import '../Utils/constants_util.dart';
+
 
 class TimeBoundaries extends StatefulWidget {
   @override
@@ -36,7 +38,6 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   late TextEditingController _end = TextEditingController();
 
   // list of categories
-  List categories = [];
 
   // index of list item which is being edited so that we can delete the current item and add the edited item
   int editedindex = -1;

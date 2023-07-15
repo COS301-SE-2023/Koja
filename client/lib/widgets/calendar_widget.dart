@@ -1,8 +1,10 @@
+import 'package:client/widgets/event_viewing_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../Utils/event_data_source_util.dart';
+import '../Utils/event_util.dart';
 import '../providers/event_provider.dart';
 import 'tasks_widget.dart';
 
@@ -49,6 +51,23 @@ class CalendarWidgetState extends State<CalendarWidget> {
           provider.setDate(details.date!);
           showModalBottomSheet(
               context: context, builder: (context) => const TasksWidget());
+
+          // Event event = provider.getEventByDate(details.date!);
+
+          // showModalBottomSheet(
+          //   showDragHandle: true,
+          //   isDismissible: true,
+          //   isScrollControlled: true,
+          //   clipBehavior: Clip.antiAliasWithSaveLayer,
+          //   shape: const RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.only(
+          //       topLeft: Radius.circular(20.0),
+          //       topRight: Radius.circular(20.0),
+          //     ),
+          //   ),
+          //   context: context,
+          //   builder: (context) => EventViewing(event: event),
+          // );
         });
   }
 }
