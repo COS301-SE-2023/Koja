@@ -4,7 +4,6 @@ import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUser
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import org.springframework.stereotype.Service
 
-
 @Service
 class UserAccountManagerService(private val userAccountRepository: UserAccountRepository) {
     
@@ -18,5 +17,4 @@ class UserAccountManagerService(private val userAccountRepository: UserAccountRe
             }
         }
     }
-
 }

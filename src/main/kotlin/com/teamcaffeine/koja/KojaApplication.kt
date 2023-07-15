@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
     // Set Google Sign In client ID and client secret properties
     setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
     setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
-    //setProperty("API_KEY", dotenv["API_KEY"]!!)
+    setProperty("API_KEY", dotenv["API_KEY"]!!)
 
     // Set JWT secret key property
     setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
