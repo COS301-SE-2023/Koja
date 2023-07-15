@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,11 +10,6 @@ void main() {
     test('fetchUrl should return null if the request fails', () async {
       final uri = Uri.parse('https://example.com/api');
 
-      http.Response mockResponse = http.Response('', 500);
-      http.Client mockClient = MockClient((http.Request request) async {
-        expect(request.url, uri);
-        return mockResponse;
-      });
 
       final result = await LocationPredict.fetchUrl(uri, headers: null);
 
@@ -26,9 +20,6 @@ void main() {
     test('fetchUrl should return null and print error if an exception occurs', () async {
       final uri = Uri.parse('https://example.com/api');
 
-      http.Client mockClient = MockClient((http.Request request) async {
-        throw Exception('Test Exception');
-      });
 
       String? printedError;
       debugPrint = (String? message, {int? wrapWidth}) {
@@ -41,14 +32,8 @@ void main() {
     });
 
     test('fetchUrl should return the response body if the request is successful', () async {
-      final responseBody = 'Response Body';
       final uri = Uri.parse('https://example.com/api');
 
-      http.Response mockResponse = http.Response(responseBody, 200);
-      http.Client mockClient = MockClient((http.Request request) async {
-        expect(request.url, uri);
-        return mockResponse;
-      });
       final result = await LocationPredict.fetchUrl(uri, headers: null);
 
       expect(result, null);
@@ -76,7 +61,6 @@ class MockClient extends http.BaseClient {
     return http.Response('', 200);
   }
 
-  @override
   Future<http.Response> sendRequest(http.BaseRequest request) async {
     return http.Response('', 200);
   }
