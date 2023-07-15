@@ -82,14 +82,17 @@ class TasksWidgetState extends State<TasksWidget> {
           }
 
           final userEvent = details.appointments!.first;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EventEditing(
-                event: userEvent,
-              ),
-            ),
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return Dialog(
+                child: EventEditing(
+                  event: userEvent,
+                ),
+              );
+            },
           );
+
         },
       ),
     );
