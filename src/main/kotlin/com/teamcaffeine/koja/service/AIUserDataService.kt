@@ -4,15 +4,16 @@ import com.teamcaffeine.koja.dto.AIUserEventDataDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
+@Transactional
 class AIUserDataService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) {
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
     fun getUserEventData(authKey: String): MutableList<Map<Any, Any>> {
-
         val userAccounts = userAccountRepository.findAll()
         val userEvents = ArrayList<UserEventDTO>()
         for (userAccount in userAccounts) {
@@ -30,24 +31,20 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
 
         userEvents.sortBy { it.getStartTime() }
 
-        val eventSemesterMap = HashMap<Int, ArrayList<UserEventDTO>>()
+        val eventSemesterMap = mutableMapOf<Int, List<UserEventDTO>>()
         var semesterNum = 1
-        val startTime = userEvents[0].getStartTime()
-        val endTime = startTime.plusMonths(6)
+        var startTime = userEvents.first().getStartTime()
+        var endTime = startTime.plusMonths(6)
 
         do {
-            val semesterEvents = ArrayList<UserEventDTO>()
-            for (event in userEvents) {
-                if (event.getStartTime().isBefore(endTime) && event.getStartTime().isAfter(startTime)) {
-                    semesterEvents.add(event)
-                } else {
-                    break
-                }
-            }
-            eventSemesterMap[semesterNum++] = semesterEvents
+            val semesterEvents = userEvents.filter { it.getStartTime().isBefore(endTime) && (it.getStartTime().isAfter(startTime) || it.getStartTime().isEqual(startTime)) }
+
+            if (semesterEvents.isNotEmpty()) eventSemesterMap[semesterNum++] = semesterEvents
+            startTime = endTime
+            endTime = endTime.plusMonths(6)
         } while (endTime.isBefore(OffsetDateTime.now().plusMonths(6)))
 
-        val results = mutableListOf<Map<Any,Any>>()
+        val results = mutableListOf<Map<Any, Any>>()
 
         val semesterTrainingData = ArrayList<AIUserEventDataDTO>()
         val semesterTestingData = ArrayList<AIUserEventDataDTO>()
