@@ -40,4 +40,6 @@ class UserController(private val userAccountRepository: UserAccountRepository) {
             ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
         }
     }
+
+
 }
