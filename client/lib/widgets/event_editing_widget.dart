@@ -233,18 +233,18 @@ class EventEditingState extends State<EventEditing> {
   }
 
   Widget location() {
-    void updateLocation(String newLocationName, String newTime) {
+    void updateLocation(String newLocationName, String locationID) {
       for (var i = 0; i < locationList.length; i++) {
         if (locationList[i][0] == newLocationName) {
-          if (locationList[i][1] != newTime) {
+          if (locationList[i][1] != locationID) {
             // Update the second value
-            locationList[i][1] = newTime;
+            locationList[i][1] = locationID;
           }
           return;
         }
       }
       // Add new values to the list
-      locationList.add([newLocationName, newTime]);
+      locationList.add([newLocationName, locationID]);
     }
 
     return Padding(
@@ -313,7 +313,7 @@ class EventEditingState extends State<EventEditing> {
                     
                     /** Add the added place in the list */
                     placeName = eventPlacePredictions[index].description!;
-                    updateLocation(placeName, "newTime");
+                    updateLocation(placeName, placeId);
                   },
                 );
               },

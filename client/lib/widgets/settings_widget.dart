@@ -60,6 +60,8 @@ class SettingsState extends State<Settings> {
   final TextEditingController _homeTextController = TextEditingController();
   final TextEditingController _workTextController = TextEditingController();
 
+  String placeId = "";
+
   @override
   Widget build(BuildContext context) {
     ctx = context;
@@ -164,18 +166,18 @@ class SettingsState extends State<Settings> {
 
 /* This is the Home Location Input Section */
   Widget homeLocation(String where) {
-    void updateLocation(String newLocationName, String newTime) {
+    void updateLocation(String newLocationName, String locationID) {
       for (var i = 0; i < locationList.length; i++) {
         if (locationList[i][0] == newLocationName) {
-          if (locationList[i][1] != newTime) {
+          if (locationList[i][1] != locationID) {
             // Update the second value
-            locationList[i][1] = newTime;
+            locationList[i][1] = locationID;
           }
           return;
         }
       }
       // Add new values to the list
-      locationList.add([newLocationName, newTime]);
+      locationList.add([newLocationName, locationID]);
     }
 
     return SingleChildScrollView(
@@ -264,7 +266,8 @@ class SettingsState extends State<Settings> {
                       onTap: () {
                         setState(() {
                           home = placePredictions[index].description!;
-                          updateLocation(home, "newTime");
+                          placeId = placePredictions[index].placeId!;
+                          updateLocation(home, placeId);
                           placeAutoComplete("");
                         });
                       },
@@ -281,18 +284,18 @@ class SettingsState extends State<Settings> {
 
 /* This is the Personal Time Input Section  - only difference is the Text */
   Widget workLocation(String where) {
-    void updateLocation(String newLocationName, String newTime) {
+    void updateLocation(String newLocationName, String locationID) {
       for (var i = 0; i < locationList.length; i++) {
         if (locationList[i][0] == newLocationName) {
-          if (locationList[i][1] != newTime) {
+          if (locationList[i][1] != locationID) {
             // Update the second value
-            locationList[i][1] = newTime;
+            locationList[i][1] = locationID;
           }
           return;
         }
       }
       // Add new values to the list
-      locationList.add([newLocationName, newTime]);
+      locationList.add([newLocationName, locationID]);
     }
 
     return SingleChildScrollView(
@@ -381,7 +384,8 @@ class SettingsState extends State<Settings> {
                       onTap: () {
                         setState(() {
                           work = workplacePredictions[index].description!;
-                          updateLocation(work, "newTime");
+                          placeId = placePredictions[index].placeId!;
+                          updateLocation(work, placeId);
                           workplaceAutocomplete("");
                         });
                       },

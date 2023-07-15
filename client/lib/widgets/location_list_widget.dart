@@ -98,6 +98,7 @@ class _LocationListWidgetState extends State<LocationListWidget> {
 
                   /* Update the traveling time before displaying  */
                   for (var i = 0; i < locationList.length; i++) {
+                    //caluculate the time using locationList[i][1] and locationData
                     locationList[i][1] = "just now";
                   }
                   
