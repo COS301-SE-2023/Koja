@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.reflect.Type
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/api/v1/ai")
@@ -27,36 +26,19 @@ class AIDataController(private val userAccountRepository: UserAccountRepository,
             val gsonBuilder = GsonBuilder()
             gsonBuilder.registerTypeAdapter(
                 OffsetDateTime::class.java,
-                OffsetDateTimeSerializer(),
+                OffsetDateTimeAdapter(),
             )
-            gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeDeserializer())
+            gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
             val gson: Gson = gsonBuilder.setPrettyPrinting().create()
-            ResponseEntity.ok(gson.toJson(aiUserDataService.getUserEventData(token)))
+            val userEvents = aiUserDataService.getUserEventData(token)
+            val jsonObject = gson.toJson(userEvents)
+            ResponseEntity.ok(jsonObject)
         }
     }
 
-    internal class OffsetDateTimeSerializer : JsonSerializer<OffsetDateTime?> {
-        override fun serialize(
-            offsetDateTime: OffsetDateTime?,
-            srcType: Type?,
-            context: JsonSerializationContext?,
-        ): JsonElement {
-            return JsonPrimitive(formatter.format(offsetDateTime))
-        }
-
-        companion object {
-            private val formatter = DateTimeFormatter.ofPattern("d-MMM-yyyy HH:mm:ss XXX")
-        }
-    }
-
-    internal class OffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime?> {
-        @Throws(JsonParseException::class)
-        override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?): OffsetDateTime {
-            return OffsetDateTime.parse(json.asString, formatter)
-        }
-
-        companion object {
-            private val formatter = DateTimeFormatter.ofPattern("d-MMM-yyyy HH:mm:ss XXX")
+    class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
+        override fun serialize(src: OffsetDateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return JsonPrimitive(src.toString())
         }
     }
 }
