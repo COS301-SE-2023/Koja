@@ -95,6 +95,12 @@ class _LocationListWidgetState extends State<LocationListWidget> {
               child: ListView.builder(
                 itemCount: locationList.length,
                 itemBuilder: (context, index) {
+
+                  /* Update the traveling time before displaying  */
+                  for (var i = 0; i < locationList.length; i++) {
+                    locationList[i][1] = "just now";
+                  }
+                  
                   final locationName = locationList[index][0];
                   final locationTime = locationList[index][1];
                   return ListTile(
