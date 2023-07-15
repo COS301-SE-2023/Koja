@@ -45,7 +45,6 @@ class TasksWidgetState extends State<TasksWidget> {
             child: Lottie.asset(
               'assets/animations/empty.json',
               height: 200, width: 300,
-              // repeat: false,
             ),
           ),
         ],
@@ -70,6 +69,7 @@ class TasksWidgetState extends State<TasksWidget> {
         ),
         //Builds the events on the calendar
         appointmentBuilder: appointmentBuilder,
+        
         initialDisplayDate: provider.selectedDate,
         headerHeight: 0,
         todayHighlightColor: Colors.black,

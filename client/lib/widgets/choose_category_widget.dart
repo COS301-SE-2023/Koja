@@ -51,6 +51,9 @@ class ChooseCategoryState extends State<ChooseCategory> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
+              ),
             )
           ),
         ],
@@ -109,6 +112,9 @@ class ChooseEventTypeState extends State<ChooseEventType> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
+              ),
             )
           ),
         ],
@@ -166,6 +172,9 @@ class ChoosePriorityState extends State<ChoosePriority> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
               ),
             )
           ),
