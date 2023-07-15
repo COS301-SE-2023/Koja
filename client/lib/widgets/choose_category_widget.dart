@@ -23,39 +23,36 @@ class ChooseCategoryState extends State<ChooseCategory> {
         children: [
           SizedBox(height: 10),
           DropdownButtonFormField<String>(
-            value: selectedCategory,
-            onChanged: (String? newValue) {
-              if (newValue != null) {
-                setState(() {
-                  selectedCategory = newValue;
-                });
-                widget.onCategorySelected(newValue);
-              }
-            },
-            items: categories.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-
-            decoration: InputDecoration(
-              label: Text(
-                'Select Category',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17
+              value: selectedCategory,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCategory = newValue;
+                  });
+                  widget.onCategorySelected(newValue);
+                }
+              },
+              items: categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                label: Text(
+                  'Select Category',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
                 ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 2.0),
-              ),
-            )
-          ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
+              )),
         ],
       ),
     );
@@ -82,41 +79,38 @@ class ChooseEventTypeState extends State<ChooseEventType> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [         
+        children: [
           DropdownButtonFormField<String>(
-            value: selectedCategory,
-            onChanged: (String? newValue) {
-              if (newValue != null) {
-                setState(() {
-                  selectedCategory = newValue;
-                });
-                widget.onEventSelected(newValue);
-              }
-            },
-            items: categories.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-
-            decoration: InputDecoration(
-              label: Text(
-                'Select Event Type',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17
+              value: selectedCategory,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCategory = newValue;
+                  });
+                  widget.onEventSelected(newValue);
+                }
+              },
+              items: categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                label: Text(
+                  'Select Event Type',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
                 ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 2.0),
-              ),
-            )
-          ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
+              )),
         ],
       ),
     );
@@ -143,31 +137,128 @@ class ChoosePriorityState extends State<ChoosePriority> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [         
+        children: [
           DropdownButtonFormField<String>(
+              value: selectedCategory,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCategory = newValue;
+                  });
+                  widget.onPrioritySelected(newValue);
+                }
+              },
+              items: categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                label: Text(
+                  'Select Priority Level',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class ChooseColor extends StatefulWidget {
+  final void Function(Color category) onColorSelected;
+
+  const ChooseColor({Key? key, required this.onColorSelected})
+      : super(key: key);
+
+  @override
+  ChooseColorState createState() => ChooseColorState();
+}
+
+class ChooseColorState extends State<ChooseColor> {
+  Color selectedCategory = Colors.blue;
+  List<Color> categories = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.purple,  
+  ];
+
+  String getColorName(Color color) {
+    if (color == Colors.blue) {
+      return 'Blue';
+    } else if (color == Colors.red) {
+      return 'Red';
+    } else if (color == Colors.green) {
+      return 'Green';
+    }
+    else if(color == Colors.yellow){
+      return 'Yellow';
+    }
+    else if(color == Colors.purple){
+      return 'Purple';
+    }
+    else{
+      return 'Blue';
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          DropdownButtonFormField<Color>(
             value: selectedCategory,
-            onChanged: (String? newValue) {
+            onChanged: (Color? newValue) {
               if (newValue != null) {
                 setState(() {
                   selectedCategory = newValue;
                 });
-                widget.onPrioritySelected(newValue);
+                widget.onColorSelected(newValue);
               }
             },
-            items: categories.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
+            items: categories.map<DropdownMenuItem<Color>>((Color value) {
+              return DropdownMenuItem<Color>(
                 value: value,
-                child: Text(value),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: value,
+                      )
+                    ),
+                    SizedBox(width: 8),
+                    Text(getColorName(value)),
+                  ],
+                ),
               );
             }).toList(),
-
             decoration: InputDecoration(
               label: Text(
-                'Select Priority Level',
+                'Select Color',
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 17
+                  fontSize: 17,
                 ),
               ),
               border: OutlineInputBorder(
@@ -176,13 +267,14 @@ class ChoosePriorityState extends State<ChoosePriority> {
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.black, width: 2.0),
               ),
-            )
+            ),
           ),
         ],
       ),
     );
   }
 }
+
 
 // import 'package:flutter/material.dart';
 

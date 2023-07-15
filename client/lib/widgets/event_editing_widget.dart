@@ -58,6 +58,7 @@ class EventEditingState extends State<EventEditing> {
   String selectedCategory = 'Work';
   String selectedEventType = 'Fixed';
   String selectedPriority = 'Low';
+  Color selectedColor = Colors.blue;
 
   void updateCategory(String category) {
     setState(() {
@@ -74,6 +75,12 @@ class EventEditingState extends State<EventEditing> {
   void updatePriority(String priority) {
     setState(() {
       selectedPriority = priority;
+    });
+  }
+
+  void updateColor(Color color) {
+    setState(() {
+      selectedColor = color;
     });
   }
 
@@ -180,6 +187,8 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 1),
                 if(selectedEventType == 'Dynamic')
                      ChoosePriority(onPrioritySelected: updatePriority),
+                const SizedBox(height: 1),
+                ChooseColor(onColorSelected: updateColor),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -668,6 +677,7 @@ class EventEditingState extends State<EventEditing> {
         isAllDay: false,
         timeSlots: [timeSlot],
         priority: priorityValue,
+        backgroundColor: selectedColor,
       );
 
       final serviceProvider =
