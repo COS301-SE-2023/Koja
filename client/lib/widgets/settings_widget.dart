@@ -384,7 +384,7 @@ class SettingsState extends State<Settings> {
                       onTap: () {
                         setState(() {
                           work = workplacePredictions[index].description!;
-                          placeId = placePredictions[index].placeId!;
+                          placeId = workplacePredictions[index].placeId!;
                           updateLocation(work, placeId);
                           workplaceAutocomplete("");
                         });

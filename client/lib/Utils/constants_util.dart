@@ -8,7 +8,8 @@ const darkBlue = Color(0xFF1976D2);
 List<List<String>> locationList = [];
 
 // This store the Location of the user - Home and Work
-String home = '', work = '';
+String home = '';
+String work = '';
 
 // This store the list of categories
 List categories = [];

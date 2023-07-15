@@ -310,8 +310,6 @@ class EventEditingState extends State<EventEditing> {
                   onTap: () {
                     placeId = eventPlacePredictions[index].placeId!;
                     selectLocation(eventPlacePredictions[index].description!);
-                    
-                    /** Add the added place in the list */
                     placeName = eventPlacePredictions[index].description!;
                     updateLocation(placeName, placeId);
                   },
