@@ -6,7 +6,9 @@ import java.time.LocalTime
 
 @Entity
 @Table(name = "time_boundaries")
-class TimeBoundary {
+class TimeBoundary (    private var name: String ?=null,
+        private var startTime: String ?= null,
+        private var endTime: String ?= null) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,8 +18,19 @@ class TimeBoundary {
     @JoinColumn(name = "user_id")
     var user: User? = null
 
-    private var name: String ?=null
-    private var startTime: LocalTime ?= null
-    private var endTime: LocalTime ?= null
+
+
+
+    fun getName(): String? {
+        return name
+    }
+
+    fun getStartTime(): String? {
+        return startTime
+    }
+
+    fun getEndTime(): String? {
+        return endTime
+    }
 
 }

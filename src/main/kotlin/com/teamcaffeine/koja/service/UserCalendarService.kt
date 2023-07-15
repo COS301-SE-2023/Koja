@@ -187,12 +187,44 @@ class UserCalendarService(
         return Pair(newEventStartTime, newEventEndTime)
     }
 
-    fun addTimeBoundary (token: String, timeBoundary: TimeBoundary){
+    fun addTimeBoundary (token: String, timeBoundary: TimeBoundary): Boolean{
 
         val userJWTTokenData = getUserJWTTokenData(token)
-        var user = userRepository.findById(userJWTTokenData.userID)
+        val user = userRepository.findById(userJWTTokenData.userID)
 
+        val retrievedUserBoundaries = user.get().getTimeBoundaries()
+        if(retrievedUserBoundaries!=null) {
+            retrievedUserBoundaries.add(timeBoundary)
+            return true
+        }
+        return false
+    }
+    fun removeTimeBoundary (token: String, name : String?): Boolean{
 
+        val userJWTTokenData = getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID)
 
+        val retrievedUserBoundaries = user.get().getTimeBoundaries()
+        if(retrievedUserBoundaries!=null) {
+            for(i in 1..retrievedUserBoundaries.size){
+                if(retrievedUserBoundaries.get(i).getName() == name) {
+                    retrievedUserBoundaries.removeAt(i)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun getUserTimeBoundaries (token: String): MutableList<TimeBoundary>{
+
+        val userJWTTokenData = getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID)
+
+        val retrievedUserBoundaries = user.get().getTimeBoundaries()
+        if(retrievedUserBoundaries!=null) {
+            return retrievedUserBoundaries
+        }
+        return mutableListOf()
     }
 }

@@ -3,17 +3,21 @@ package com.teamcaffeine.koja.controller
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
+import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/user")
-class UserController(private val userAccountRepository: UserAccountRepository) {
+class UserController(private val userAccountRepository: UserAccountRepository,
+                     private val userCalendarService: UserCalendarService) {
 
     @GetMapping("linked-emails")
     fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
@@ -42,4 +46,25 @@ class UserController(private val userAccountRepository: UserAccountRepository) {
     }
 
 
+    @PostMapping("/addTimeBoundary")
+    fun addTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String?,
+                        @RequestParam("startTime")startTime: String?,
+                        @RequestParam("endTime")endTime: String?): ResponseEntity<String> {
+
+       var boundary: TimeBoundary = TimeBoundary(name, startTime, endTime)
+
+       if(userCalendarService.addTimeBoundary(token,boundary))
+          return ResponseEntity.ok("Time boundary successfully added")
+        else
+           return ResponseEntity.ok("Something went wrong")
+    }
+
+    @PostMapping("/removeTimeBoundary")
+    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String?, ): ResponseEntity<String> {
+
+        if(userCalendarService.removeTimeBoundary(token,name))
+            return ResponseEntity.ok("Time boundary successfully added")
+        else
+            return ResponseEntity.ok("Something went wrong")
+    }
 }
