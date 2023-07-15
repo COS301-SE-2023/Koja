@@ -81,8 +81,8 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
-  //added
-  Future<bool> deleteUserAccount(String userEmail) async {
+  //added - might need update
+  Future<bool> deleteUserAccount() async {
     final url = Uri.http(
         '$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
     final response = await http.delete(
@@ -91,7 +91,7 @@ class ServiceProvider with ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': _accessToken!,
       },
-      body: userEmail,
+      // body: userEmail,
     );
 
     if (response.statusCode == 200) {
