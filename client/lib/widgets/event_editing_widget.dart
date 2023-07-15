@@ -24,6 +24,7 @@ class EventEditingState extends State<EventEditing> {
   List<AutocompletePrediction> eventPlacePredictions = [];
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
+  String placeName = "";
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -278,6 +279,20 @@ class EventEditingState extends State<EventEditing> {
   }
 
   Widget location() {
+    void updateLocation(String newLocationName, String locationID) {
+      for (var i = 0; i < locationList.length; i++) {
+        if (locationList[i][0] == newLocationName) {
+          if (locationList[i][1] != locationID) {
+            // Update the second value
+            locationList[i][1] = locationID;
+          }
+          return;
+        }
+      }
+      // Add new values to the list
+      locationList.add([newLocationName, locationID]);
+    }
+
     return Padding(
       padding: EdgeInsets.only(left: 8, right: 8),
       child: SingleChildScrollView(
@@ -359,6 +374,8 @@ class EventEditingState extends State<EventEditing> {
                   onTap: () {
                     placeId = eventPlacePredictions[index].placeId!;
                     selectLocation(eventPlacePredictions[index].description!);
+                    placeName = eventPlacePredictions[index].description!;
+                    updateLocation(placeName, placeId);
                   },
                 );
               },

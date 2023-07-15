@@ -70,6 +70,8 @@ class HomeState extends State<Home> {
       return eventsOnPresentWeek.length;
     }
 
+    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -177,7 +179,7 @@ class HomeState extends State<Home> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return LocationListWidget(locationNames: [],);
+                        return LocationListWidget();
                       },
                     );
                   },
