@@ -19,8 +19,16 @@ class User {
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     public val userAccounts: MutableList<UserAccount> = mutableListOf()
 
+    private var currentLocation: String ? = null
     private var homeLocation: String ? = null
     private var workLocation: String ? = null
+
+    fun setCurrentLocation(currentLocation: String) {
+        this.currentLocation = currentLocation
+    }
+    fun getCurrentLocation(): String? {
+        return currentLocation
+    }
 
     fun setHomeLocation(homeLocation: String) {
         this.homeLocation = homeLocation

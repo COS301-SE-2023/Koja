@@ -6,67 +6,82 @@ import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
+import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.service.LocationService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.lang.NumberFormatException
 
 @RestController
 @RequestMapping("/api/v1/location")
 internal class
-LocationController {
+LocationController(private val locationService: LocationService) {
+    /*  @PostMapping("/HomeLocationDel/{userId}")
+    fun deleteUserHomeLocation( @RequestParam @PathVariable("userId") userId: String?
+    ): ResponseEntity<String> {
+        val user: User = userId?.let { userService.getByUserId(it) }
+            ?: return ResponseEntity.notFound().build()
+       user.setHomeLocation("")
+        userService.saveUser(user)
+        return ResponseEntity.ok("User place updated successfully.")
+    }
 
-//    @PostMapping("/HomeLocationUpdater/{userId}")
-//    fun updateUserHomeLocation(  @PathVariable("userId") userId: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<String> {
-//        val user: User = userId?.let { userService.getByUserId(it) }
-//            ?: return ResponseEntity.notFound().build()
-//        placeId?.let { user.setHomeLocation(it) }
-//        userService.saveUser(user)
-//        return ResponseEntity.ok("User place updated successfully.")
-//    }
-//
-//    @PostMapping("/HomeLocationDel/{userId}")
-//    fun deleteUserHomeLocation( @RequestParam @PathVariable("userId") userId: String?
-//    ): ResponseEntity<String> {
-//        val user: User = userId?.let { userService.getByUserId(it) }
-//            ?: return ResponseEntity.notFound().build()
-//       user.setHomeLocation("")
-//        userService.saveUser(user)
-//        return ResponseEntity.ok("User place updated successfully.")
-//    }
-//
-//    @PostMapping("/WorkLocationDel/{userId}")
-//    fun deleteUserWorkLocation(  @PathVariable("userId") userId: String?
-//    ): ResponseEntity<String> {
-//        val user: User = userId?.let { userService.getByUserId(it) }
-//            ?: return ResponseEntity.notFound().build()
-//        user.setWorkLocation("")
-//        userService.saveUser(user)
-//        return ResponseEntity.ok("User place updated successfully.")
-//    }
-//    @PostMapping("/WorkLocationUpdater/{userId}")
-//    fun updateUserWorkLocation( @PathVariable("userId") userId: String?,
-//                                @RequestParam("placeId") placeId: String?
-//    ): ResponseEntity<String> {
-//        val user: User = userId?.let { userService.getByUserId(it) }
-//            ?: return ResponseEntity.notFound().build()
-//        placeId?.let { user.setWorkLocation(it) }
-//        userService.saveUser(user)
-//        return ResponseEntity.ok("User place updated successfully.")
-//    }
+    @PostMapping("/WorkLocationDel/{userId}")
+    fun deleteUserWorkLocation(  @PathVariable("userId") userId: String?
+    ): ResponseEntity<String> {
+        val user: User = userId?.let { userService.getByUserId(it) }
+            ?: return ResponseEntity.notFound().build()
+        user.setWorkLocation("")
+        userService.saveUser(user)
+        return ResponseEntity.ok("User place updated successfully.")
+    }*/
+
+    @PostMapping("/HomeLocationUpdater")
+    fun updateUserHomeLocation(  @RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<out Any> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            ResponseEntity.ok( locationService.setHomeLocation(token, placeId))
+        }
+    }
+    @PostMapping("/WorkLocationUpdater")
+    fun updateUserWorkLocation (@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<out Any> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            ResponseEntity.ok( locationService.setWorkLocation(token, placeId))
+        }
+
+    }
 
     @GetMapping("/distance")
     fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
         if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
 
         val distance = getDistance(origin, destination)
         return ResponseEntity.ok(distance)
     }
+
+    @GetMapping("/allLocationsTravelTime")
+    fun getTravelTimeBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("originLat") originLat: String?,
+                                      @RequestParam("originLng") originLng: String?,): ResponseEntity<out Any> {
+        if (token == null || originLng == null || originLat == null) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
+        val originLatDouble = originLat.toDouble()
+        val originLngDouble = originLng.toDouble()
+       var travelTimeList = locationService.getLocationTravelTimes(token,originLatDouble,originLngDouble)
+
+        if(!travelTimeList.isEmpty())
+        return ResponseEntity.ok(travelTimeList)
+        else
+            return ResponseEntity.ok("There are no future locations.")
+    }
+
+
 
     fun getDistance(origin: String?, destination: String?): String? {
         val context = GeoApiContext.Builder()
@@ -168,20 +183,9 @@ LocationController {
 //        println("Distance updated: $distance")
 //    }
 
-/*
-    @GetMapping("/location")
-    fun getLocation(): String? {
-        val latitude = // Retrieve latitude from geolocation
-        val longitude = // Retrieve longitude from geolocation
 
-            return if (latitude != null && longitude != null) {
-                val address = "$latitude,$longitude"
-                return address;
-            } else {
-                null
-            }
-    }
-*/
+
+
     /* val distanceUpdater = DistanceUpdater()
        val intervalInMinutes = 60 // Update distance every 60 minutes
        // Start auto-updating the distance every specified interval
