@@ -180,8 +180,6 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 1),
                 if(selectedEventType == 'Dynamic')
                      ChoosePriority(onPrioritySelected: updatePriority),
-                if(selectedEventType == 'Dynamic')
-                    SizedBox(height: 1),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -292,7 +290,7 @@ class EventEditingState extends State<EventEditing> {
             ),
             TextFormField(
               onChanged: onLocationChanged,
-              cursorColor: Colors.white,
+              cursorColor: Colors.black,
               controller: _eventPlace,
               style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
@@ -305,7 +303,7 @@ class EventEditingState extends State<EventEditing> {
                   ),
                 ),
                 focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                  borderSide: BorderSide(color: Colors.blue),
                 ),
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
