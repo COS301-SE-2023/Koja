@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/service_provider.dart';
 import 'all_emails_widget.dart';
 
 class EmailList extends StatefulWidget {
@@ -11,7 +14,20 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
-  List<String> emails = ["trial@gmail.com"];
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    emails.clear();
+
+    Provider.of<ServiceProvider>(context).getAllUserEmails().then((emails) {
+      setState(() {
+        if (kDebugMode) print(emails);
+        this.emails = emails;
+      });
+    });
+  }
+
+  List<String> emails = [];
 
   int editedindex = -1;
 
@@ -19,17 +35,34 @@ class _EmailListState extends State<EmailList> {
 
   // function to delete an email from the list
   void delete(int index) {
-    setState(() {
-      emails.removeAt(index);
-    });
-  }
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirmation'),
+        content: Text('Are you sure you want to delete this email from your account?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                emails.removeAt(index);
+              });
+              Navigator.pop(context); 
+            },
+            child: Text('Delete'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  // function to delete an email from the list
-  void makeprimary(int index) {
-    // setState(() {
-    //   emails.removeAt(index);
-    // });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +99,8 @@ class _EmailListState extends State<EmailList> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: AllEmailsWidget(
-                  emails[index][0],
+                  emails[index],
                   (context) => delete(index),
-                  (context) => makeprimary(index),
                 ),
               ),
             );

@@ -37,3 +37,6 @@ EXPOSE 8080
 # You need to replace app.jar with your actual jar name.
 # For example, if your jar file is named myapp.jar, the line should look like this: ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
 ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
+
+# To run the Docker container, use the following command:
+# docker build -t koja-image .
