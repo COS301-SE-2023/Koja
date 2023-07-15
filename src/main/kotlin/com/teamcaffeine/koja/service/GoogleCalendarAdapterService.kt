@@ -198,7 +198,7 @@ class GoogleCalendarAdapterService(
         val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
         val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
 
-        var jwtToken = ""
+        val jwtToken: String
         if (existingUser != null) {
             throw Exception("Email already exits.")
         } else {
@@ -206,25 +206,23 @@ class GoogleCalendarAdapterService(
                 throw Exception("Token is not set.")
             }
             val jwtTokenData = TokenManagerController.getUserJWTTokenData(token)
-            val storedUser = userRepository.findByUserID(jwtTokenData.userID)
+            val storedUser = userRepository.findById(jwtTokenData.userID)
             val newUserAccount = UserAccount()
             newUserAccount.email = userEmail
             newUserAccount.refreshToken = refreshToken ?: ""
             newUserAccount.authProvider = AuthProviderEnum.GOOGLE
             newUserAccount.userID = jwtTokenData.userID
-            newUserAccount.user = userRepository.findByUserID(jwtTokenData.userID)
+            newUserAccount.user = userRepository.findById(jwtTokenData.userID).get()
 
-            storedUser?.userAccounts?.add(newUserAccount)
+            storedUser.get().userAccounts.add(newUserAccount)
 
-            if (storedUser != null) {
-                jwtToken = createToken(
-                    TokenRequest(
-                        arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
-                        this.getAuthProvider(),
-                        storedUser.id!!,
-                    ),
-                )
-            }
+            jwtToken = createToken(
+                TokenRequest(
+                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
+                    this.getAuthProvider(),
+                    storedUser.get().id!!,
+                ),
+            )
         }
 
         return jwtToken
