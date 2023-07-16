@@ -42,7 +42,13 @@ LocationController(private val locationService: LocationService) {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            ResponseEntity.ok( locationService.setHomeLocation(token, placeId))
+            try {
+                ResponseEntity.ok(locationService.setHomeLocation(token, placeId))
+            }catch (e: Exception){
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
         }
     }
     @PostMapping("/WorkLocationUpdater")
@@ -50,7 +56,13 @@ LocationController(private val locationService: LocationService) {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            ResponseEntity.ok( locationService.setWorkLocation(token, placeId))
+            try {
+                ResponseEntity.ok(locationService.setWorkLocation(token, placeId))
+            }catch (e: Exception){
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
         }
 
     }
@@ -71,6 +83,7 @@ LocationController(private val locationService: LocationService) {
         if (token == null || originLng == null || originLat == null) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
+        else{
         val originLatDouble = originLat.toDouble()
         val originLngDouble = originLng.toDouble()
        var travelTimeList = locationService.getLocationTravelTimes(token,originLatDouble,originLngDouble)
@@ -79,6 +92,8 @@ LocationController(private val locationService: LocationService) {
         return ResponseEntity.ok(travelTimeList)
         else
             return ResponseEntity.ok("There are no future locations.")
+        }
+
     }
 
 
@@ -132,6 +147,26 @@ LocationController(private val locationService: LocationService) {
             .await()
 
         return result.rows[0].elements[0].duration.inSeconds
+    }
+
+    @PostMapping("/updateLocation")
+    fun updateCurrentUserLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+                                  @RequestParam("latitude") latitude: String,
+                                  @RequestParam("longitude") longitude: String): ResponseEntity<out Any>{
+        return if (token == null || latitude == null || longitude == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try{
+                val destLatDouble = latitude.toDouble()
+                val destLngDouble = longitude.toDouble()
+                ResponseEntity.ok(locationService.updateUserLocation(token,destLatDouble,destLngDouble))
+        }catch (e: Exception){
+            ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+        }
+            catch (e: Exception){
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
+        }
     }
 
 //    @GetMapping("/combinedDayDistance")

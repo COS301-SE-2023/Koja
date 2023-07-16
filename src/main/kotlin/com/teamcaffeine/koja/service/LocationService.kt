@@ -94,4 +94,14 @@ class LocationService(private val userRepository: UserRepository,
 
         return result.rows[0].elements[0].duration.inSeconds
     }
+
+    fun updateUserLocation(token: String, latitude: Double,longitude: Double){
+        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
+        val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
+
+        if(retrievedUser!=null){
+            retrievedUser.setCurrentLocation(longitude,latitude)
+        }
+
+    }
 }
