@@ -1,9 +1,7 @@
-import 'package:client/widgets/login_modal_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:client/screens/information_screen.dart';
-import 'package:icons_plus/icons_plus.dart'; // Replace 'your_app' with the actual package name
 
 void main() {
   testWidgets('Info widget should render without error', (WidgetTester tester) async {
@@ -56,5 +54,5 @@ void main() {
     expect(
         find.text('Integration With Existing \nCalendar Apps'), findsOneWidget);
   });
-  
+
 }
