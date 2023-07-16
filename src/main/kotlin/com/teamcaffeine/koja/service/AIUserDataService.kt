@@ -1,15 +1,17 @@
 package com.teamcaffeine.koja.service
 
 import com.teamcaffeine.koja.dto.AIUserEventDataDTO
+import com.teamcaffeine.koja.dto.TimeSlot
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
-import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.springframework.stereotype.Service
+import java.time.Duration
+import java.time.OffsetDateTime
 
 @Service
 @Transactional
@@ -29,6 +31,41 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                     val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()) }
                     events?.forEach { event ->
                         event.setUserID(userAccount.userID.toString())
+                        val eventTimeslots = event.getTimeSlots().toMutableList()
+                        if (eventTimeslots.isEmpty()) {
+                            eventTimeslots.add(
+                                TimeSlot(
+                                    event.getStartTime(),
+                                    event.getEndTime(),
+                                ),
+                            )
+                        } else {
+                            val eventDuration = Duration.between(event.getStartTime(), event.getEndTime()).seconds
+                            val tempTimeSlots = mutableListOf<TimeSlot>()
+                            for (timeSlot in eventTimeslots) {
+                                val timeSlotDuration = Duration.between(timeSlot.startTime, timeSlot.endTime).seconds
+                                if (timeSlotDuration / eventDuration >= 2) {
+                                    var timeSlotOffset = 0L
+                                    while (timeSlot.startTime.plusSeconds(timeSlotOffset).isBefore(timeSlot.endTime))
+                                        tempTimeSlots.add(
+                                            TimeSlot(
+                                                timeSlot.startTime.plusSeconds(timeSlotOffset),
+                                                timeSlot.startTime.plusSeconds(eventDuration),
+                                            ),
+                                        )
+                                    timeSlotOffset += eventDuration
+                                } else {
+                                    tempTimeSlots.add(
+                                        TimeSlot(
+                                            event.getStartTime(),
+                                            event.getEndTime(),
+                                        ),
+                                    )
+                                }
+                            }
+                            eventTimeslots.clear()
+                            event.setTimeSlots(tempTimeSlots)
+                        }
                         userEvents.add(event)
                     }
                 }
