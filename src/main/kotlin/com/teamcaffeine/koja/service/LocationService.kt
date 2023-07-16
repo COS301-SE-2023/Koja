@@ -12,6 +12,7 @@ import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
+import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
@@ -125,5 +126,18 @@ class LocationService(private val userRepository: UserRepository,
             e.printStackTrace();
             return null;
         }
+    }
+
+    fun getUserSavedLocations(token: String): JSONObject{
+        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
+        val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
+
+        val jsonObject = JSONObject()
+        jsonObject.put("currentLocation",retrievedUser.getCurrentLocation())
+        jsonObject.put("homeLocation",retrievedUser.getHomeLocation())
+        jsonObject.put("workLocation",retrievedUser.getWorkLocation())
+
+        return jsonObject
+
     }
 }

@@ -169,7 +169,18 @@ LocationController(private val locationService: LocationService) {
         }
     }
 
-    @GetMapping("/use")
+    @GetMapping("/savedLocations")
+    fun getUserSavedLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            ResponseEntity.ok(locationService.getUserSavedLocations(token))
+        }
+    }
+
+
+
+    }
 //    @GetMapping("/combinedDayDistance")
 //    fun getDistances(
 //        @RequestParam("origins") origins: List<String>,
@@ -226,4 +237,4 @@ LocationController(private val locationService: LocationService) {
        val intervalInMinutes = 60 // Update distance every 60 minutes
        // Start auto-updating the distance every specified interval
        distanceUpdater.startAutoUpdate(intervalInMinutes, distanceUpdater::updateDistance)*/
-}
+
