@@ -24,6 +24,7 @@ class EventEditingState extends State<EventEditing> {
   List<AutocompletePrediction> eventPlacePredictions = [];
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
+  String placeName = "";
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -56,7 +57,10 @@ class EventEditingState extends State<EventEditing> {
   final minutesController = TextEditingController();
 
   String selectedCategory = 'Work';
-  String selectedEventType = 'Dynamic';
+  String selectedEventType = 'Fixed';
+  String selectedPriority = 'Low';
+  Color selectedColor = Colors.blue;
+  String selectedRecurrence = 'None';
 
   void updateCategory(String category) {
     setState(() {
@@ -67,6 +71,24 @@ class EventEditingState extends State<EventEditing> {
   void updateEventType(String eventType) {
     setState(() {
       selectedEventType = eventType;
+    });
+  }
+
+  void updatePriority(String priority) {
+    setState(() {
+      selectedPriority = priority;
+    });
+  }
+
+  void updateColor(Color color) {
+    setState(() {
+      selectedColor = color;
+    });
+  }
+
+  void updateRecurrence(String recurrence) {
+    setState(() {
+      selectedRecurrence = recurrence;
     });
   }
 
@@ -117,19 +139,40 @@ class EventEditingState extends State<EventEditing> {
     return AlertDialog(
       scrollable: true,
       actions: <Widget>[
-        TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
+        Row(
+          textDirection: TextDirection.rtl,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Cancel')
             ),
-            child: Text('Cancel')),
-        TextButton(
-            onPressed: saveForm,
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.black),
+
+            if(selectedEventType == 'Dynamic')
+              TextButton(
+                onPressed: saveForm,
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.black),
+                ),
+                child: Text('Reschedule',
+                    style: TextStyle(fontFamily: 'Railway', color: Colors.black)
+                )
+              ),
+
+            TextButton(
+              onPressed: saveForm,
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Save',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.black)
+              )
             ),
-            child: Text('Save',
-                style: TextStyle(fontFamily: 'Railway', color: Colors.black))),
+          ],
+        )
+        
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
@@ -149,7 +192,11 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 12),
                 ChooseCategory(onCategorySelected: updateCategory),
-                const SizedBox(height: 12),
+                const SizedBox(height: 1),
+                if(selectedEventType == 'Dynamic')
+                     ChoosePriority(onPrioritySelected: updatePriority),
+                const SizedBox(height: 1),
+                ChooseColor(onColorSelected: updateColor),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -232,34 +279,66 @@ class EventEditingState extends State<EventEditing> {
   }
 
   Widget location() {
+    void updateLocation(String newLocationName, String locationID) {
+      for (var i = 0; i < locationList.length; i++) {
+        if (locationList[i][0] == newLocationName) {
+          if (locationList[i][1] != locationID) {
+            // Update the second value
+            locationList[i][1] = locationID;
+          }
+          return;
+        }
+      }
+      // Add new values to the list
+      locationList.add([newLocationName, locationID]);
+    }
+
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.only(left: 8, right: 8),
       child: SingleChildScrollView(
         child: Column(
           children: [
             Row(
               children: [
                 Expanded(
-                  child: Text("LOCATION: ${_eventPlace.text}",
-                      maxLines: 2,
+                  child: 
+                    Text(
+                      _eventPlace.text,
+                      maxLines: 1,
                       style: TextStyle(
                           fontFamily: 'Railway',
                           fontSize: 14,
-                          fontWeight: FontWeight.bold)),
+                          fontWeight: FontWeight.bold
+                      )
+                    ),
+                ),
+                if(_eventPlace.text.isNotEmpty)
+                  IconButton(
+                    onPressed: clearLocation,
+                    icon: const Icon(Icons.clear, color: Colors.black),
                 ),
               ],
             ),
             TextFormField(
               onChanged: onLocationChanged,
-              cursorColor: Colors.white,
+              cursorColor: Colors.black,
               controller: _eventPlace,
               style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                label: Text(
+                  "Meeting's Location",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16
+                  ),
                 ),
-                border: const OutlineInputBorder(),
-                hintText: "Meeting's Location",
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
                 hintStyle: const TextStyle(
                   color: Colors.black,
                 ),
@@ -295,6 +374,8 @@ class EventEditingState extends State<EventEditing> {
                   onTap: () {
                     placeId = eventPlacePredictions[index].placeId!;
                     selectLocation(eventPlacePredictions[index].description!);
+                    placeName = eventPlacePredictions[index].description!;
+                    updateLocation(placeName, placeId);
                   },
                 );
               },
@@ -593,6 +674,15 @@ class EventEditingState extends State<EventEditing> {
       final durationHours = int.tryParse(hoursController.text);
       final durationMinutes = int.tryParse(minutesController.text);
 
+      var priorityValue = 1;
+      if(selectedPriority == 'Low') {
+        priorityValue = 1;
+      } else if(selectedPriority == 'Medium') {
+        priorityValue = 2;
+      } else if(selectedPriority == 'High') {
+        priorityValue = 3;
+      }
+
       var durationInSeconds = 0;
 
       durationInSeconds =
@@ -610,6 +700,8 @@ class EventEditingState extends State<EventEditing> {
         duration: await getDurationInMilliseconds(durationInSeconds),
         isAllDay: false,
         timeSlots: [timeSlot],
+        priority: priorityValue,
+        backgroundColor: selectedColor,
       );
 
       final serviceProvider =
@@ -738,12 +830,3 @@ class TimeEstimationWidget extends StatelessWidget {
     return '$hoursText$minutesText$secondsText'.trim();
   }
 }
-
-  // void sendmeetinglocation(String id) 
-  // {
-  //   //send to an api
-  //   final backendurl = '';
-  //   final data = {'placeId': id};
-
-  //   // final response = http.post(Uri.parse(backendurl), body: json.encode(data));
-  // }

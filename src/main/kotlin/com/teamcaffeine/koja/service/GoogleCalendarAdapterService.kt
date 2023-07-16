@@ -17,7 +17,9 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
@@ -139,7 +141,7 @@ class GoogleCalendarAdapterService(
                 }
             }
 
-            jwtToken = TokenManagerController().createToken(
+            jwtToken = createToken(
                 TokenRequest(
                     userTokens,
                     this.getAuthProvider(),
@@ -149,11 +151,76 @@ class GoogleCalendarAdapterService(
         } else {
             val newUser = createNewUser(userEmail, refreshToken)
 
-            jwtToken = TokenManagerController().createToken(
+            jwtToken = createToken(
                 TokenRequest(
-                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList<JWTGoogleDTO>(),
+                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
                     this.getAuthProvider(),
                     newUser.id!!,
+                ),
+            )
+        }
+
+        return jwtToken
+    }
+
+    fun addAnotherEmailOauth2Callback(authCode: String?, token: String?, appCallBack: Boolean): String {
+        val restTemplate = RestTemplate()
+        val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
+
+        val headers = org.springframework.http.HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE)
+
+        val parameters = LinkedMultiValueMap<String, String>()
+        parameters.add("grant_type", "authorization_code")
+        parameters.add("code", authCode)
+        parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
+        parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
+        if (!appCallBack) {
+            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
+        } else {
+            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/app/google/callback")
+        }
+
+        val requestEntity = HttpEntity(parameters, headers)
+
+        val builder = UriComponentsBuilder
+            .fromHttpUrl(tokenEndpointUrl)
+            .queryParams(parameters)
+        val requestUrl = builder.build().encode().toUri()
+        val responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java)
+
+        val responseJson = ObjectMapper().readTree(responseEntity.body)
+        val accessToken = responseJson.get("access_token").asText()
+        val refreshToken = responseJson.get("refresh_token")?.asText()
+        val expiresIn = responseJson.get("expires_in").asLong()
+
+        val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
+        val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
+
+        val jwtToken: String
+        if (existingUser != null) {
+            throw Exception("Email already exits.")
+        } else {
+            if (token == null) {
+                throw Exception("Token is not set.")
+            }
+            val jwtTokenData = TokenManagerController.getUserJWTTokenData(token)
+            val storedUser = userRepository.findById(jwtTokenData.userID)
+            val newUserAccount = UserAccount()
+            newUserAccount.email = userEmail
+            newUserAccount.refreshToken = refreshToken ?: ""
+            newUserAccount.authProvider = AuthProviderEnum.GOOGLE
+            newUserAccount.userID = jwtTokenData.userID
+            newUserAccount.user = userRepository.findById(jwtTokenData.userID).get()
+
+            storedUser.get().userAccounts.add(newUserAccount)
+
+            jwtToken = createToken(
+                TokenRequest(
+                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
+                    this.getAuthProvider(),
+                    storedUser.get().id!!,
                 ),
             )
         }
@@ -325,6 +392,20 @@ class GoogleCalendarAdapterService(
         return true
     }
 
+    override fun getFutureEventsLocations(accessToken: String?): List<String> {
+        if (accessToken == null) throw IllegalArgumentException(ExceptionMessageConstant.REQUIRED_PARAMETERS_MISSING)
+        val toReturn = mutableListOf<String>()
+        val eventsInRange = getUserEventsInRange(accessToken, OffsetDateTime.now().minusDays(1), OffsetDateTime.now().plusYears(1))
+        eventsInRange.forEach {
+            if (it.getEndTime().isAfter(OffsetDateTime.now().minusDays(1))) {
+                if (!toReturn.contains(it.getLocation())) {
+                    toReturn.add(it.getLocation())
+                }
+            }
+        }
+        return toReturn
+    }
+
     private fun buildCalendarService(accessToken: String): GoogleCalendar {
         val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
         val jsonFactory = JacksonFactory.getDefaultInstance()
@@ -335,7 +416,11 @@ class GoogleCalendarAdapterService(
             .build()
     }
 
-    override fun getUserEventsInRange(accessToken: String, startDate: OffsetDateTime, endDate: OffsetDateTime): List<UserEventDTO> {
+    override fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO> {
+        if (accessToken == null || startDate == null || endDate == null) {
+            return emptyList()
+        }
+
         try {
             val calendar = buildCalendarService(accessToken)
 
