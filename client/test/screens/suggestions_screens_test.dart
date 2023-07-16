@@ -12,7 +12,7 @@ void main() {
 
     // Verify if the Lottie animation is displayed.
     expect(find.byType(Lottie), findsOneWidget);
-    
+
     // Verify the dimensions of the Lottie widget.
     final lottieElement = tester.firstElement(find.byType(Lottie));
     final lottieHeight = lottieElement.size!.height;
