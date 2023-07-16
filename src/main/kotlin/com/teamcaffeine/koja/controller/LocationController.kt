@@ -165,10 +165,11 @@ LocationController(private val locationService: LocationService) {
         }
             catch (e: Exception){
                 ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
-            }
+            } 
         }
     }
 
+    @GetMapping("/use")
 //    @GetMapping("/combinedDayDistance")
 //    fun getDistances(
 //        @RequestParam("origins") origins: List<String>,
