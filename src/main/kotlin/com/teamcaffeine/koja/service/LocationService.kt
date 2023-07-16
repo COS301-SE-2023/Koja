@@ -95,13 +95,35 @@ class LocationService(private val userRepository: UserRepository,
         return result.rows[0].elements[0].duration.inSeconds
     }
 
-    fun updateUserLocation(token: String, latitude: Double,longitude: Double){
+    fun updateUserLocation(token: String, latitude: Double,longitude: Double):DistanceMatrix?{
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
         if(retrievedUser!=null){
             retrievedUser.setCurrentLocation(longitude,latitude)
-        }
 
+            return updateLocationMatrix(longitude,latitude,retrievedUser,*googleCalendarAdapterService.getFutureEventsLocations(token).toTypedArray())
+        }
+    return null
+    }
+
+    fun  updateLocationMatrix(originLat: Double, originLng: Double,
+                              user: User, vararg futureEventsLocations: String  ):DistanceMatrix? {
+
+    val context = GeoApiContext.Builder()
+            .apiKey(System.getProperty("API_KEY"))
+            .build();
+
+        try {
+            return DistanceMatrixApi.newRequest(context)
+                .origins(com.google.maps.model.LatLng(originLat, originLng))
+                .origins( user.getHomeLocation(), user.getWorkLocation())
+                .destinations(*futureEventsLocations)
+                .mode(TravelMode.DRIVING) // You can choose different travel modes (DRIVING, WALKING, BICYCLING, etc.)
+                .await();
+        } catch (e: Exception) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
