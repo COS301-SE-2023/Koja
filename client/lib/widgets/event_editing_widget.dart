@@ -186,11 +186,11 @@ class EventEditingState extends State<EventEditing> {
               children: [
                 ChooseEventType(onEventSelected: updateEventType),
                 buildTitle(),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 (selectedEventType == 'Dynamic')
                     ? getDynamicTimeSelectors()
                     : buildDateTimePickers(),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
                 const SizedBox(height: 1),
                 if(selectedEventType == 'Dynamic')
@@ -429,7 +429,7 @@ class EventEditingState extends State<EventEditing> {
   Widget buildDateTimePickers({bool isDynamic = false}) => Column(
         children: [
           buildFrom(isDynamic),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           if (!isDynamic) buildTo(),
         ],
       );

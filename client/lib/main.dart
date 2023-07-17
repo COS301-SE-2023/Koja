@@ -78,12 +78,13 @@ class SplashScreen extends StatelessWidget {
                 width: 100,
               ),
               Text('Koja',
-                  style: TextStyle(
-                    fontSize: 50.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: GoogleFonts.ubuntu().fontFamily,
-                  )),
+                style: TextStyle(
+                  fontSize: 50.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.ubuntu().fontFamily,
+                )
+              ),
             ],
           ),
         ),
