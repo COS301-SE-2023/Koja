@@ -187,27 +187,25 @@ class UserCalendarService(
         return Pair(newEventStartTime, newEventEndTime)
     }
 
-    fun addTimeBoundary (token: String, timeBoundary: TimeBoundary): Boolean{
-
+    fun addTimeBoundary(token: String, timeBoundary: TimeBoundary): Boolean {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
 
         val retrievedUserBoundaries = user.get().getTimeBoundaries()
-        if(retrievedUserBoundaries!=null) {
+        if (retrievedUserBoundaries != null) {
             retrievedUserBoundaries.add(timeBoundary)
             return true
         }
         return false
     }
-    fun removeTimeBoundary (token: String, name : String?): Boolean{
-
+    fun removeTimeBoundary(token: String, name: String?): Boolean {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
 
         val retrievedUserBoundaries = user.get().getTimeBoundaries()
-        if(retrievedUserBoundaries!=null) {
-            for(i in 1..retrievedUserBoundaries.size){
-                if(retrievedUserBoundaries.get(i).getName() == name) {
+        if (retrievedUserBoundaries != null) {
+            for (i in 1..retrievedUserBoundaries.size) {
+                if (retrievedUserBoundaries.get(i).getName() == name) {
                     retrievedUserBoundaries.removeAt(i)
                     return true
                 }
@@ -216,37 +214,35 @@ class UserCalendarService(
         return false
     }
 
-    fun getUserTimeBoundaries (token: String): MutableList<TimeBoundary>{
-
+    fun getUserTimeBoundaries(token: String): MutableList<TimeBoundary> {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
 
         val retrievedUserBoundaries = user.get().getTimeBoundaries()
-        if(retrievedUserBoundaries!=null) {
+        if (retrievedUserBoundaries != null) {
             return retrievedUserBoundaries
         }
         return mutableListOf()
     }
 
-    fun getUserTimeBoundaryAndLocation(token: String, name: String): Pair<TimeBoundary?,String?>{
-
+    fun getUserTimeBoundaryAndLocation(token: String, name: String): Pair<TimeBoundary?, String?> {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID).get()
-        var timeBoundary : TimeBoundary ?= null
+        var timeBoundary: TimeBoundary ? = null
 
-        if(user!=null) {
+        if (user != null) {
             for (i in 0..(user.getTimeBoundaries()?.size ?: 0))
-                if(user.getTimeBoundaries()?.get(i)?.getName() == name)
+                if (user.getTimeBoundaries()?.get(i)?.getName() == name) {
                     timeBoundary = user.getTimeBoundaries()?.get(i)
-
+                }
         }
-        when(name){
-            "Work"-> return Pair(timeBoundary, user.getWorkLocation())
-            "Resting"-> return Pair(timeBoundary, user.getHomeLocation())
-            "School"->  return Pair(timeBoundary, user.getWorkLocation())
-            "Hobby"->  return Pair(timeBoundary, "")
-            "Chore"->  return Pair(timeBoundary, "")
+        when (name) {
+            "Work" -> return Pair(timeBoundary, user.getWorkLocation())
+            "Resting" -> return Pair(timeBoundary, user.getHomeLocation())
+            "School" -> return Pair(timeBoundary, user.getWorkLocation())
+            "Hobby" -> return Pair(timeBoundary, "")
+            "Chore" -> return Pair(timeBoundary, "")
         }
-    return Pair(null,null)
+        return Pair(null, null)
     }
 }

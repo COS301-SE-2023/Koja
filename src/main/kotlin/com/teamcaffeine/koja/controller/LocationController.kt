@@ -8,7 +8,6 @@ import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -63,7 +62,7 @@ LocationController {
     fun getDistanceBetweenLocations(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestParam("origin") origin: String?,
-        @RequestParam("destination") destination: String?
+        @RequestParam("destination") destination: String?,
     ): ResponseEntity<String> {
         if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
@@ -109,8 +108,6 @@ LocationController {
             }
         }
     }
-
-
     fun getTravelTime(placeId: String, destLat: Double, destLng: Double): Long? {
         val context = GeoApiContext.Builder()
             .apiKey(System.getProperty("API_KEY"))
