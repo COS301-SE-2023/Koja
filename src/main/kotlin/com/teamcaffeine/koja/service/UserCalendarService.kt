@@ -227,4 +227,26 @@ class UserCalendarService(
         }
         return mutableListOf()
     }
+
+    fun getUserTimeBoundaryAndLocation(token: String, name: String): Pair<TimeBoundary?,String?>{
+
+        val userJWTTokenData = getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID).get()
+        var timeBoundary : TimeBoundary ?= null
+
+        if(user!=null) {
+            for (i in 0..(user.getTimeBoundaries()?.size ?: 0))
+                if(user.getTimeBoundaries()?.get(i)?.getName() == name)
+                    timeBoundary = user.getTimeBoundaries()?.get(i)
+
+        }
+        when(name){
+            "Work"-> return Pair(timeBoundary, user.getWorkLocation())
+            "Resting"-> return Pair(timeBoundary, user.getHomeLocation())
+            "School"->  return Pair(timeBoundary, user.getWorkLocation())
+            "Hobby"->  return Pair(timeBoundary, "")
+            "Chore"->  return Pair(timeBoundary, "")
+        }
+    return Pair(null,null)
+    }
 }
