@@ -58,12 +58,7 @@ class UserController(
             ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
         } else {
             var boundary: TimeBoundary = TimeBoundary(name, startTime, endTime)
-
-            if (userCalendarService.addTimeBoundary(token, boundary)) {
-                return ResponseEntity.ok("Time boundary successfully added")
-            } else {
-                return ResponseEntity.ok("Something went wrong")
-            }
+            return ResponseEntity.ok("Time boundary successfully added")
         }
     }
 
@@ -86,6 +81,15 @@ class UserController(
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             return ResponseEntity.ok(userCalendarService.getUserTimeBoundaries(token))
+        }
+    }
+
+    @PostMapping("/getTimeBoundaryAndLocation")
+    fun getTimeBoundaryAndLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("location") location: String): ResponseEntity<out Any> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            return ResponseEntity.ok(userCalendarService.getUserTimeBoundaryAndLocation(token, location))
         }
     }
 }
