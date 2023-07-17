@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/user")
-class UserController(private val userAccountRepository: UserAccountRepository,
-                     private val userCalendarService: UserCalendarService) {
+class UserController(
+    private val userAccountRepository: UserAccountRepository,
+    private val userCalendarService: UserCalendarService,
+) {
 
     @GetMapping("linked-emails")
     fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
@@ -45,49 +47,45 @@ class UserController(private val userAccountRepository: UserAccountRepository,
         }
     }
 
-
     @PostMapping("/addTimeBoundary")
-    fun addTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String?,
-                        @RequestParam("startTime")startTime: String?,
-                        @RequestParam("endTime")endTime: String?): ResponseEntity<out Any> {
-
-
+    fun addTimeBoundary(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String,
+        @RequestParam("name") name: String?,
+        @RequestParam("startTime")startTime: String?,
+        @RequestParam("endTime")endTime: String?,
+    ): ResponseEntity<out Any> {
         return if (token == null) {
             ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
         } else {
             var boundary: TimeBoundary = TimeBoundary(name, startTime, endTime)
 
-            if(userCalendarService.addTimeBoundary(token,boundary))
+            if (userCalendarService.addTimeBoundary(token, boundary)) {
                 return ResponseEntity.ok("Time boundary successfully added")
-            else
+            } else {
                 return ResponseEntity.ok("Something went wrong")
+            }
         }
-        }
-
+    }
 
     @PostMapping("/removeTimeBoundary")
-    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String? ): ResponseEntity<String> {
-
+    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String?): ResponseEntity<String> {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-
-            if(userCalendarService.removeTimeBoundary(token,name))
+            if (userCalendarService.removeTimeBoundary(token, name)) {
                 return ResponseEntity.ok("Time boundary successfully removed")
-            else
+            } else {
                 return ResponseEntity.ok("Something went wrong")
+            }
         }
-
     }
 
     @PostMapping("/getAllTimeBoundary")
     fun getTimeBoundaries(@RequestHeader(HeaderConstant.AUTHORISATION) token: String): ResponseEntity<out Any> {
-
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             return ResponseEntity.ok(userCalendarService.getUserTimeBoundaries(token))
         }
-
     }
 }
