@@ -9,6 +9,4 @@ interface
 UserAccountRepository : JpaRepository<UserAccount, Int> {
     fun findByEmail(email: String): UserAccount?
     fun findByUserID(userId: Int): List<UserAccount>
-
-
 }
