@@ -22,53 +22,50 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
         val userAccounts = userAccountRepository.findAll()
         val userEvents = ArrayList<UserEventDTO>()
 
-        runBlocking {
-            userAccounts.forEach { userAccount ->
-                launch(Dispatchers.IO) {
-                    val adapter = CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(userAccount.authProvider)
+        userAccounts.forEach { userAccount ->
+            val adapter = CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(userAccount.authProvider)
 
-                    val accessToken = adapter.refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
-                    val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()) }
-                    events?.forEach { event ->
-                        event.setUserID(userAccount.userID.toString())
-                        val eventTimeslots = event.getTimeSlots().toMutableList()
-                        if (eventTimeslots.isEmpty()) {
-                            eventTimeslots.add(
+            val accessToken = adapter.refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
+            val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()) }
+            events?.forEach { event ->
+                event.setUserID(userAccount.userID.toString())
+                val eventTimeslots = event.getTimeSlots().toMutableList()
+                if (eventTimeslots.isEmpty()) {
+                    eventTimeslots.add(
+                        TimeSlot(
+                            event.getStartTime(),
+                            event.getEndTime(),
+                        ),
+                    )
+                } else {
+                    val eventDuration = Duration.between(event.getStartTime(), event.getEndTime()).seconds
+                    val tempTimeSlots = mutableListOf<TimeSlot>()
+                    for (timeSlot in eventTimeslots) {
+                        val timeSlotDuration = Duration.between(timeSlot.startTime, timeSlot.endTime).seconds
+                        if (timeSlotDuration / eventDuration >= 2) {
+                            var timeSlotOffset = 0L
+                            while (timeSlot.startTime.plusSeconds(timeSlotOffset).isBefore(timeSlot.endTime)) {
+                                tempTimeSlots.add(
+                                    TimeSlot(
+                                        timeSlot.startTime.plusSeconds(timeSlotOffset),
+                                        timeSlot.startTime.plusSeconds(eventDuration),
+                                    ),
+                                )
+                                timeSlotOffset += eventDuration
+                            }
+                        } else {
+                            tempTimeSlots.add(
                                 TimeSlot(
                                     event.getStartTime(),
                                     event.getEndTime(),
                                 ),
                             )
-                        } else {
-                            val eventDuration = Duration.between(event.getStartTime(), event.getEndTime()).seconds
-                            val tempTimeSlots = mutableListOf<TimeSlot>()
-                            for (timeSlot in eventTimeslots) {
-                                val timeSlotDuration = Duration.between(timeSlot.startTime, timeSlot.endTime).seconds
-                                if (timeSlotDuration / eventDuration >= 2) {
-                                    var timeSlotOffset = 0L
-                                    while (timeSlot.startTime.plusSeconds(timeSlotOffset).isBefore(timeSlot.endTime))
-                                        tempTimeSlots.add(
-                                            TimeSlot(
-                                                timeSlot.startTime.plusSeconds(timeSlotOffset),
-                                                timeSlot.startTime.plusSeconds(eventDuration),
-                                            ),
-                                        )
-                                    timeSlotOffset += eventDuration
-                                } else {
-                                    tempTimeSlots.add(
-                                        TimeSlot(
-                                            event.getStartTime(),
-                                            event.getEndTime(),
-                                        ),
-                                    )
-                                }
-                            }
-                            eventTimeslots.clear()
-                            event.setTimeSlots(tempTimeSlots)
                         }
-                        userEvents.add(event)
                     }
+                    eventTimeslots.clear()
+                    event.setTimeSlots(tempTimeSlots)
                 }
+                userEvents.add(event)
             }
         }
 
