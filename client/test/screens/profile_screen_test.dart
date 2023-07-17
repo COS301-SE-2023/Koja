@@ -13,12 +13,12 @@ class MockEventProvider {
 }
 
 void main() {
-  testWidgets("Profile displays user details", (WidgetTester tester) async {
+  testWidgets("Profile widget test", (WidgetTester tester) async {
+
+    expect(find.byType(AppBar), findsAtLeastNWidgets(0));
     String? token;
 
     expect(token, null);
   });
-  testWidgets("Profile works as it should", (WidgetTester tester) async {
-    expect(find.byType(AppBar), findsAtLeastNWidgets(0));
-  });
 }
+
