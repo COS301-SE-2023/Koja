@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.controller
 
+import com.google.gson.Gson
 import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
@@ -85,10 +86,12 @@ LocationController(private val locationService: LocationService) {
         } else {
             val originLatDouble = originLat.toDouble()
             val originLngDouble = originLng.toDouble()
+            val gson = Gson()
             var travelTimeList = locationService.getLocationTravelTimes(token, originLatDouble, originLngDouble)
 
             if (!travelTimeList.isEmpty()) {
-                return ResponseEntity.ok(travelTimeList)
+                val travelTimeListJson = gson.toJson(travelTimeList)
+                return ResponseEntity.ok(travelTimeListJson)
             } else {
                 return ResponseEntity.ok("There are no future locations.")
             }
@@ -158,7 +161,9 @@ LocationController(private val locationService: LocationService) {
             try {
                 val destLatDouble = latitude.toDouble()
                 val destLngDouble = longitude.toDouble()
-                ResponseEntity.ok(locationService.updateUserLocation(token, destLatDouble, destLngDouble))
+                val gson = Gson()
+
+                ResponseEntity.ok(gson.toJson(locationService.updateUserLocation(token, destLatDouble, destLngDouble)))
             } catch (e: Exception) {
                 ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
             } catch (e: Exception) {
