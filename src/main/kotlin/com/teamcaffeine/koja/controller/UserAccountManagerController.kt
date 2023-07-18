@@ -15,27 +15,35 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.view.RedirectView
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/user/")
 
 class UserAccountManagerController(
     private val googleCalendarAdapter: GoogleCalendarAdapterService,
     private val userAccountManagerService: UserAccountManagerService
 ) {
 
-    @GetMapping("auth/add-email/google")
+    @GetMapping("add-email/google")
     fun authenticateAnotherGoogleEmail(request: HttpServletRequest, @RequestHeader(HeaderConstant.AUTHORISATION) token: String?): RedirectView {
-        if (token == null) {
-            throw Exception(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        return if (token == null) {
+            RedirectView("http://localhost:8080/api/v1/user/auth/google/callback")
+        } else {
+            return googleCalendarAdapter.setupConnection(request, false)
         }
-        return googleCalendarAdapter.setupConnection(request, false)
     }
 
-    @GetMapping("/google/callback")
-    fun handleGoogleOAuth2Callback(@RequestParam("code") authCode: String?, @RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
-        val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, token, false)
-        return ResponseEntity.ok()
-            .header("Authorization", "Bearer $jwt")
-            .body("Authentication successful")
+    @GetMapping("auth/google/callback")
+    fun handleGoogleOAuth2Callback(
+        @RequestParam("code") authCode: String?,
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?
+    ): ResponseEntity<String> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, token, false)
+            return ResponseEntity.ok()
+                .header("Authorization", "Bearer $jwt")
+                .body("Authentication successful")
+        }
     }
 
     @PostMapping("remove-email")
