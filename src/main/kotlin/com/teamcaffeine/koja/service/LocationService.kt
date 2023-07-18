@@ -11,9 +11,10 @@ import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
-class LocationService {
-    private lateinit var userRepository: UserRepository
-    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+class LocationService(
+    private val userRepository: UserRepository,
+    private var googleCalendarAdapterService: GoogleCalendarAdapterService,
+) {
     fun setHomeLocation(accessToken: String, homeLocation: String?): String? {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
         val user = userRepository.findById(userJWTTokenData.userID)
@@ -22,13 +23,13 @@ class LocationService {
             val retrievedUser = user.get()
             retrievedUser.setHomeLocation(homeLocation)
             userRepository.save(retrievedUser)
-            return retrievedUser.toString() + userRepository.findById(retrievedUser.id).get().getHomeLocation()
+            return retrievedUser.getHomeLocation()
         }
 
         return null
     }
 
-    fun setWorkLocation(accessToken: String, workLocation: String?): User? {
+    fun setWorkLocation(accessToken: String, workLocation: String?): String? {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
 
         val user = userRepository.findById(userJWTTokenData.userID)
@@ -37,7 +38,7 @@ class LocationService {
             val retrievedUser = user.get()
             retrievedUser.setWorkLocation(workLocation)
             userRepository.save(retrievedUser)
-            return retrievedUser
+            return retrievedUser.getWorkLocation()
         }
 
         return null

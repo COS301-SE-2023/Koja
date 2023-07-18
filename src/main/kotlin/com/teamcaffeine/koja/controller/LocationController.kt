@@ -45,13 +45,7 @@ LocationController(private val locationService: LocationService) {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            try {
-                ResponseEntity.ok(locationService.setHomeLocation(token, placeId))
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
-            }
+            ResponseEntity.ok(locationService.setHomeLocation(token, placeId))
         }
     }
 
