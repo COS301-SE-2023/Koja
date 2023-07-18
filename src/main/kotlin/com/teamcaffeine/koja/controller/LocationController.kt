@@ -80,7 +80,7 @@ LocationController(private val locationService: LocationService) {
         return ResponseEntity.ok(distance)
     }
 
-    @GetMapping("/allLocationsTravelTime")
+    @GetMapping("/listOfLocationTravelTime")
     fun getTravelTimeBetweenLocations(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestParam("originLat") originLat: String?,

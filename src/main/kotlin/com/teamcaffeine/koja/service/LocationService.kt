@@ -11,11 +11,9 @@ import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
-class LocationService(
-    private val userRepository: UserRepository,
-    private val googleCalendarAdapterService: GoogleCalendarAdapterService,
-) {
-
+class LocationService {
+    private lateinit var userRepository: UserRepository
+    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
     fun setHomeLocation(accessToken: String, homeLocation: String?): String? {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
         val user = userRepository.findById(userJWTTokenData.userID)
