@@ -1,18 +1,26 @@
+
 import 'package:flutter/material.dart';
 
-class SetBoundary extends StatelessWidget {
+class SetBoundary extends StatefulWidget {
   final VoidCallback onSave;
   final String selectedOption;
-  
+
   final TextEditingController start;
   final TextEditingController end;
-  
-  SetBoundary(
-    this.selectedOption, 
-    this.start, this.end, 
-    this.onSave,
-    {super.key});
 
+  SetBoundary(
+    this.selectedOption,
+    this.start,
+    this.end,
+    this.onSave,
+    {Key? key}
+  );
+
+  @override
+  State<SetBoundary> createState() => _SetBoundaryState();
+}
+
+class _SetBoundaryState extends State<SetBoundary> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -22,7 +30,7 @@ class SetBoundary extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              selectedOption.toUpperCase(),
+              widget.selectedOption.toUpperCase(),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -45,11 +53,10 @@ class SetBoundary extends StatelessWidget {
                       ),
                       SizedBox(height: 5),
                       SizedBox(
-                        child: SelectedTimeButton( controller: start),
+                        child: SelectedTimeButton(controller: widget.start),
                       ),
-                    ], 
+                    ],
                   ),
-                  
                 ),
                 Expanded(
                   child: Column(
@@ -65,7 +72,7 @@ class SetBoundary extends StatelessWidget {
                       ),
                       SizedBox(height: 5),
                       SizedBox(
-                        child: SelectedTimeButton(controller: end),
+                        child: SelectedTimeButton(controller: widget.end),
                       ),
                     ],
                   ),
@@ -78,16 +85,17 @@ class SetBoundary extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    onSave();
+                    widget.onSave();
                     Navigator.of(context).pop();
                   },
-                  child: Text("Save")),
+                  child: Text("Save"),
+                ),
                 const SizedBox(width: 3),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Cancel")
+                  child: Text("Cancel"),
                 ),
               ],
             )
@@ -96,8 +104,6 @@ class SetBoundary extends StatelessWidget {
       ),
     );
   }
-
-  
 }
 
 class SelectedTimeButton extends StatefulWidget {
@@ -126,9 +132,7 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: _onPressed,
-      child: Text(
-        (selectedTime.format(context))
-      ),
+      child: Text(selectedTime.format(context)),
     );
   }
 
@@ -140,4 +144,3 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
     return selectedTime;
   }
 }
-

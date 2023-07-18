@@ -12,4 +12,4 @@ String home = '';
 String work = '';
 
 // This store the list of categories
-List categories = [];
+  List<List<String>> categories = [];

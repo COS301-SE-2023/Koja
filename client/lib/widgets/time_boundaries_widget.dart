@@ -1,13 +1,13 @@
-import 'package:client/Utils/event_util.dart';
-import 'package:client/widgets/set_boundary_widget.dart';
 import 'package:client/widgets/time_category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-import '../providers/event_provider.dart';
 import '../Utils/constants_util.dart';
+import '../Utils/event_util.dart';
+import '../providers/event_provider.dart';
+import 'set_boundary_widget.dart';
 
 
 class TimeBoundaries extends StatefulWidget {
@@ -17,6 +17,7 @@ class TimeBoundaries extends StatefulWidget {
 
 class TimeBoundariesState extends State<TimeBoundaries> {
   late EventProvider eventProvider;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -33,14 +34,12 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     }
   }
 
-  //general controller for all time pickers
+  // general controller for all time pickers
   late TextEditingController _start = TextEditingController();
   late TextEditingController _end = TextEditingController();
 
-  // list of categories
-
   // index of list item which is being edited so that we can delete the current item and add the edited item
-  int editedindex = -1;
+  int editedindex = 0;
 
   // selected option for dropdown
   late String selectedOption;
@@ -56,41 +55,42 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   // function to save time
   void saveTime() {
-    if (_start.text == '') {
-      DateTime currentTime = DateTime.now();
-      String formattedStartTime = DateFormat('h:mm a').format(currentTime);
-      _start = TextEditingController(text: formattedStartTime);
-    }
-
-    if (_end.text == '') {
-      DateTime currentTime = DateTime.now();
-      String formattedEndTime = DateFormat('h:mm a').format(currentTime);
-      _end = TextEditingController(text: formattedEndTime);
-    }
-
-    DateFormat format = DateFormat("h:mm a"); //changed from h:mm a
-    DateTime startTime = format.parse(_start.text);
-    DateTime endTime = format.parse(_end.text);
-
-    final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
-
-    setState(() {
-      eventProvider.setTimeSlot(selectedOption, timeSlot);
-      categories.removeWhere((element) => element[0] == selectedOption);
-      // categories.add([selectedOption, _start.text, _end.text]);
-    });
-
-    //if editing an item, remove the current item from the list and add the edited item
-    if (editedindex != -1) {
-      categories.removeAt(editedindex);
-      editedindex = 0;
-    }
+  if (_start.text.isEmpty) {
+    DateTime currentTime = DateTime.now();
+    String formattedStartTime = DateFormat('h:mm a').format(currentTime);
+    _start = TextEditingController(text: formattedStartTime);
   }
 
-  // function to delete an item from the list
+  if (_end.text.isEmpty) {
+    DateTime currentTime = DateTime.now();
+    String formattedEndTime = DateFormat('h:mm a').format(currentTime);
+    _end = TextEditingController(text: formattedEndTime);
+  }
+
+  DateFormat format = DateFormat("h:mm a");
+  DateTime startTime = format.parse(_start.text);
+  DateTime endTime = format.parse(_end.text);
+
+  final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
+
+  setState(() {
+    eventProvider.setTimeSlot(selectedOption, timeSlot);
+    categories.removeWhere((element) => element[0] == selectedOption);
+    categories.add([selectedOption, _start.text, _end.text]);
+
+  });
+
+  // If editing an item, remove the current item from the list and add the edited item
+  if (editedindex >= 0) {
+    categories.removeAt(editedindex);
+    editedindex = -1;
+  }
+}
+
   void delete(int index) {
     setState(() {
       categories.removeAt(index);
+      // eventProvider.setTimeSlot(categories[index][0], null);
     });
   }
 
@@ -107,15 +107,10 @@ class TimeBoundariesState extends State<TimeBoundaries> {
         trailing: Icon(
           Icons.arrow_drop_down,
         ),
-        title: Text("Times Boundaries ",
-            style: GoogleFonts.ubuntu(
-              fontSize: 17,
-            )),
+        title: Text("Times Boundaries ", style: GoogleFonts.ubuntu(fontSize: 17)),
         subtitle: Text(
           "Click here to add time boundaries for each category, select category and then click +\n\nAfter adding time boundary for a category, you can swipe to the left to edit or delete a boundary.",
-          style: GoogleFonts.ubuntu(
-            fontSize: 12.5,
-          ),
+          style: GoogleFonts.ubuntu(fontSize: 12.5),
         ),
         children: [
           Padding(
@@ -124,11 +119,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(" Category:",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(" Category:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(width: 8),
                 Container(
                   height: 35,
@@ -171,11 +162,11 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                   ),
                   onPressed: () {
                     showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SetBoundary(
-                              selectedOption, _start, _end, saveTime);
-                        });
+                      context: context,
+                      builder: (context) {
+                        return SetBoundary(selectedOption, _start, _end, saveTime);
+                      },
+                    );
                   },
                 ),
               ],
@@ -198,18 +189,28 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: TimeCategory(categories[index][0],
-                      categories[index][1], categories[index][2], (context) {
-                    delete(index);
-                  }, (context) {
-                    editedindex = index;
-                    showDialog(
+                  child: TimeCategory(
+                    categories[index][0],
+                    categories[index][1],
+                    categories[index][2],
+                    (context) {
+                      delete(index);
+                    },
+                    (context) {
+                      editedindex = index;
+                      showDialog(
                         context: context,
                         builder: (context) {
                           return SetBoundary(
-                              categories[index][0], _start, _end, saveTime);
-                        });
-                  }),
+                            categories[index][0],
+                            _start,
+                            _end,
+                            saveTime,
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               );
             },
