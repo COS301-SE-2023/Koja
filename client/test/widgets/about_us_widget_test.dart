@@ -4,7 +4,6 @@ import 'package:mockito/mockito.dart';
 
 // import your widgets
 import 'package:client/widgets/about_us_widget.dart';
-import 'package:client/screens/about_us_screen.dart';
 
 // Create a mock navigator
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
