@@ -17,6 +17,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -28,7 +31,6 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
     fun getUserEventData(authKey: String): MutableList<Map<String, ArrayList<AIUserEventDataDTO>>> {
         val userAccounts = userAccountRepository.findAll()
         val userEvents = ArrayList<UserEventDTO>()
-        // TODO: Adjust timeslot to be time follow ISO 8601 but without date attached
         userAccounts.forEach { userAccount ->
             val adapter = CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(userAccount.authProvider)
 
@@ -111,9 +113,10 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
 
                     val semesterTrainingDataSize = (semester.size * 0.8).toInt()
                     for (i in 0 until semesterTrainingDataSize) {
+                        val timeSlots = getTimeslotPairList(semester, i)
                         semesterTrainingData.add(
                             AIUserEventDataDTO(
-                                semester[i].getTimeSlots(),
+                                timeSlots,
                                 semester[i].getUserID(),
                                 semester[i].getDescription(),
                                 semester[i].getStartTime().dayOfWeek!!.toString(),
@@ -122,9 +125,10 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                     }
 
                     for (i in semesterTrainingDataSize until semester.size) {
+                        val timeSlots = getTimeslotPairList(semester, i)
                         semesterTestingData.add(
                             AIUserEventDataDTO(
-                                semester[i].getTimeSlots(),
+                                timeSlots,
                                 semester[i].getUserID(),
                                 semester[i].getDescription(),
                                 semester[i].getStartTime().dayOfWeek!!.toString(),
@@ -139,6 +143,24 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
             }
         }
         return results
+    }
+
+    private fun getTimeslotPairList(
+        semester: List<UserEventDTO>,
+        i: Int,
+    ): MutableList<Pair<String, String>> {
+        val timeSlots = mutableListOf<Pair<String, String>>()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        semester[i].getTimeSlots().forEach { timeSlot ->
+            timeSlots.add(
+                Pair(
+                    timeSlot.startTime.withOffsetSameInstant(ZoneOffset.UTC).format(formatter),
+                    timeSlot.endTime.withOffsetSameInstant(ZoneOffset.UTC).format(formatter),
+                ),
+            )
+        }
+        return timeSlots
     }
 
     fun descriptionToCategories(events: List<UserEventDTO>): Map<Int, String>? {
