@@ -16,23 +16,23 @@ class TimeBoundaries extends StatefulWidget {
 }
 
 class TimeBoundariesState extends State<TimeBoundaries> {
-  late EventProvider eventProvider;
+  // late EventProvider eventProvider;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    eventProvider = Provider.of<EventProvider>(context);
-    DateFormat format = DateFormat("h:mm a");
-    for (var entry in eventProvider.timeSlots.entries) {
-      if (entry.value != null) {
-        categories.add([
-          entry.key,
-          format.format(entry.value!.startTime),
-          format.format(entry.value!.endTime)
-        ]);
-      }
-    }
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   eventProvider = Provider.of<EventProvider>(context);
+  //   DateFormat format = DateFormat("h:mm a");
+  //   for (var entry in eventProvider.timeSlots.entries) {
+  //     if (entry.value != null) {
+  //       categories.add([
+  //         entry.key,
+  //         format.format(entry.value!.startTime),
+  //         format.format(entry.value!.endTime)
+  //       ]);
+  //     }
+  //   }
+  // }
 
   // general controller for all time pickers
   late TextEditingController _start = TextEditingController();
@@ -74,7 +74,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
 
   setState(() {
-    eventProvider.setTimeSlot(selectedOption, timeSlot);
+    // eventProvider.setTimeSlot(selectedOption, timeSlot);
     categories.removeWhere((element) => element[0] == selectedOption);
     categories.add([selectedOption, _start.text, _end.text]);
 
@@ -82,7 +82,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   // If editing an item, remove the current item from the list and add the edited item
   if (editedindex >= 0) {
-    categories.removeAt(editedindex);
+    // categories.removeAt(editedindex);
     editedindex = -1;
   }
 }
@@ -201,10 +201,12 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                       showDialog(
                         context: context,
                         builder: (context) {
+                          TextEditingController _start1 = TextEditingController(text: categories[index][1]);
+                          TextEditingController _end1 = TextEditingController(text: categories[index][2]);                    
                           return SetBoundary(
                             categories[index][0],
-                            _start,
-                            _end,
+                            _start1,
+                            _end1,
                             saveTime,
                           );
                         },

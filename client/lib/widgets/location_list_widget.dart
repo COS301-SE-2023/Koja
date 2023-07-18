@@ -1,10 +1,10 @@
+import 'package:client/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 import '../Utils/constants_util.dart';
 
 class LocationListWidget extends StatefulWidget {
-
   const LocationListWidget({
     Key? key,
   }) : super(key: key);
@@ -14,13 +14,17 @@ class LocationListWidget extends StatefulWidget {
 }
 
 class _LocationListWidgetState extends State<LocationListWidget> {
-  
-
   void delete(int index) {
     setState(() {
       locationList.removeAt(index);
     });
   }
+
+  Future<int> getLocation(int index)  {
+    return ServiceProvider().getLocationsTravelTime(
+      locationList[index][1], -25.7562574, 28.2409557); 
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,15 +99,18 @@ class _LocationListWidgetState extends State<LocationListWidget> {
               child: ListView.builder(
                 itemCount: locationList.length,
                 itemBuilder: (context, index) {
-
                   /* Update the traveling time before displaying  */
-                  for (var i = 0; i < locationList.length; i++) {
-                    //caluculate the time using locationList[i][1] and locationData
-                    locationList[i][1] = "just now";
-                  }
-                  
+                  // for (var i = 0; i < locationList.length; i++) {
+                  //   //caluculate the time using locationList[i][1] and locationData
+                  //   locationList[i][1] = "just now";
+                  // }
+
                   final locationName = locationList[index][0];
-                  final locationTime = locationList[index][1];
+                  final locationTime = getLocation(index);
+
+                  final locationTimeString = locationTime.toString();
+
+                  // print(locationTime);
                   return ListTile(
                     title: Row(
                       children: [
@@ -124,11 +131,13 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          locationTime,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            locationTimeString,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],

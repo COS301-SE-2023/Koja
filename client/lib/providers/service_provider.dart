@@ -42,10 +42,79 @@ class ServiceProvider with ChangeNotifier {
     if (accessToken != null) await eventProvider.getEventsFromAPI(accessToken!);
   }
 
+  // Locations
   void setLocationData(Location? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
   }
+
+  Future<int> getLocationsTravelTime(
+      String placeID, double destLat, double destLng) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/location/travel-time', {
+      'placeId': placeID,
+      'destLat': destLat.toString(),
+      'destLng': destLng.toString(),
+    });
+    final response =
+        await http.get(url, headers: {'Authorisation': _accessToken!});
+
+    if (response.statusCode == 200) {
+      String travelTime = response.body;
+      return int.parse(travelTime);
+    } else {
+      return 0;
+    }
+  }
+
+  void startLocationListner() async {
+    if (await _checkAndRequestPermission()) {
+      _listenLocationStream();
+    }
+  }
+
+  Future<void> _listenLocationStream() async {
+    if (await _checkAndRequestPermission()) {
+      if (_locationSubscription != null) {
+        await _cancelLocationSubscription();
+      }
+
+      _locationSubscription = FlLocation.getLocationStream().handleError((e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }).listen((event) {
+        setLocationData(event);
+      });
+    }
+  }
+
+  Future<void> _cancelLocationSubscription() async {
+    await _locationSubscription?.cancel();
+    _locationSubscription = null;
+  }
+
+  Future<bool> _checkAndRequestPermission({bool? background}) async {
+    if (!await FlLocation.isLocationServicesEnabled) {
+      return false;
+    }
+
+    var locationPermission = await FlLocation.checkLocationPermission();
+    if (locationPermission == LocationPermission.deniedForever) {
+      return false;
+    } else if (locationPermission == LocationPermission.denied) {
+      locationPermission = await FlLocation.requestLocationPermission();
+      if (locationPermission == LocationPermission.denied ||
+          locationPermission == LocationPermission.deniedForever) return false;
+    }
+
+    if (background == true &&
+        locationPermission == LocationPermission.whileInUse) return false;
+
+    return true;
+  }
+
+  // Emails
 
   Future<bool> addEmail({required EventProvider eventProvider}) async {
     final String authUrl =
@@ -119,6 +188,8 @@ class ServiceProvider with ChangeNotifier {
     return accessToken != null;
   }
 
+  // Events
+
   Future<bool> createEvent(Event event) async {
     final url = Uri.http(
         '$_serverAddress:$_serverPort', '/api/v1/user/calendar/createEvent');
@@ -182,71 +253,5 @@ class ServiceProvider with ChangeNotifier {
     } else {
       return false;
     }
-  }
-
-  Future<int> getLocationsTravelTime(
-      String placeID, double destLat, double destLng) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/location/travel-time', {
-      'placeId': placeID,
-      'destLat': destLat.toString(),
-      'destLng': destLng.toString(),
-    });
-    final response =
-        await http.get(url, headers: {'Authorisation': _accessToken!});
-
-    if (response.statusCode == 200) {
-      String travelTime = response.body;
-      return int.parse(travelTime);
-    } else {
-      return 0;
-    }
-  }
-
-  void startLocationListner() async {
-    if (await _checkAndRequestPermission()) {
-      _listenLocationStream();
-    }
-  }
-
-  Future<void> _listenLocationStream() async {
-    if (await _checkAndRequestPermission()) {
-      if (_locationSubscription != null) {
-        await _cancelLocationSubscription();
-      }
-
-      _locationSubscription = FlLocation.getLocationStream().handleError((e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }).listen((event) {
-        setLocationData(event);
-      });
-    }
-  }
-
-  Future<void> _cancelLocationSubscription() async {
-    await _locationSubscription?.cancel();
-    _locationSubscription = null;
-  }
-
-  Future<bool> _checkAndRequestPermission({bool? background}) async {
-    if (!await FlLocation.isLocationServicesEnabled) {
-      return false;
-    }
-
-    var locationPermission = await FlLocation.checkLocationPermission();
-    if (locationPermission == LocationPermission.deniedForever) {
-      return false;
-    } else if (locationPermission == LocationPermission.denied) {
-      locationPermission = await FlLocation.requestLocationPermission();
-      if (locationPermission == LocationPermission.denied ||
-          locationPermission == LocationPermission.deniedForever) return false;
-    }
-
-    if (background == true &&
-        locationPermission == LocationPermission.whileInUse) return false;
-
-    return true;
   }
 }

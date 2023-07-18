@@ -19,12 +19,14 @@ class _EmailListState extends State<EmailList> {
     super.didChangeDependencies();
     emails.clear();
 
-    Provider.of<ServiceProvider>(context).getAllUserEmails().then((emails) {
-      setState(() {
-        if (kDebugMode) print(emails);
-        this.emails = emails;
+    if (emails.isNotEmpty) {
+      Provider.of<ServiceProvider>(context).getAllUserEmails().then((emails) {
+        setState(() {
+          if (kDebugMode) print(emails);
+          this.emails = emails;
+        });
       });
-    });
+    }
   }
 
   List<String> emails = [];
