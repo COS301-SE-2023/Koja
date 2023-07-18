@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.google.gson.Gson
 import com.teamcaffeine.koja.dto.AIUserEventDataDTO
 import com.teamcaffeine.koja.dto.TimeSlot
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -9,26 +10,39 @@ import jakarta.transaction.Transactional
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
+import java.util.concurrent.TimeUnit
 
 @Service
 @Transactional
 class AIUserDataService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) {
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
+
     fun getUserEventData(authKey: String): MutableList<Map<String, ArrayList<AIUserEventDataDTO>>> {
         val userAccounts = userAccountRepository.findAll()
         val userEvents = ArrayList<UserEventDTO>()
-
+        // TODO: Adjust timeslot to be time follow ISO 8601 but without date attached
         userAccounts.forEach { userAccount ->
             val adapter = CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(userAccount.authProvider)
 
             val accessToken = adapter.refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
             val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()) }
+
+            val eventCategories = events?.let { descriptionToCategories(events) }
+
+            for (i in 0 until events!!.size) {
+                eventCategories!![i]?.let { events[i].setDescription(it) }
+            }
+
             runBlocking {
-                events?.forEach { event ->
+                events.forEach { event ->
                     launch(Dispatchers.IO) {
                         event.setUserID(userAccount.userID.toString())
                         val tempTimeSlots = mutableListOf<TimeSlot>()
@@ -124,7 +138,74 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                 }
             }
         }
-
         return results
+    }
+
+    fun descriptionToCategories(events: List<UserEventDTO>): Map<Int, String>? {
+        val userEvents = mutableListOf<String>()
+        for (event in events) {
+            userEvents.add(event.getDescription().lowercase().trim())
+        }
+
+        val client = OkHttpClient.Builder()
+            .readTimeout(40, TimeUnit.SECONDS)
+            .build()
+
+        val body = mutableMapOf<String, Any>()
+        body["model"] = "text-davinci-003"
+        body["max_tokens"] = 2048
+        body["temperature"] = 0
+
+        var prompt = "Please analyze this array: `["
+        val eventsSize = events.size
+        for (i in 0 until eventsSize - 1) {
+            prompt += "'$i: ${userEvents[i]}', "
+        }
+        prompt += "'${userEvents.size - 1}: ${userEvents[userEvents.size - 1]}']`"
+        prompt += "of calendar event descriptions and create a new array that classifies each event using these provided " +
+            "categories: `['Conference', 'Seminar', 'Training', 'Webinar', 'Panel', 'Keynote', 'Symposium', 'Exhibition', " +
+            "'Launch', 'Networking', 'Meeting', 'Retreat', 'Hackathon', 'Dinner', 'Charity', 'Fundraising', 'Awards', " +
+            "'Concert', 'Festival', 'Performance', 'Theater', 'Screening', 'Dance', 'Comedy', 'Sports', 'Marathon', " +
+            "'Tournament', 'Class', 'Lecture', 'Reading', 'Poetry', 'Fashion', 'Food', 'Tasting', 'Cultural', 'Fair', " +
+            "'Parade', 'Wedding', 'Party', 'Anniversary', 'Birthday', 'Shower', 'Graduation', 'Reunion', 'Retirement', " +
+            "'Holiday', 'Religious', 'Run/Walk', 'Volunteer', 'Community', 'Cleanup', 'Rally', 'Protest', 'Workshop', " +
+            "'Recruitment', 'Mentorship', 'Auction', 'Cooking']`. It's important that no event is left uncategorized; " +
+            "if it's not possible to determine an exact category, then assign an estimated one from the categories list " +
+            "provided. The expected format for the response is ['1:<>', '2:<>', ...], where <> denotes the category " +
+            "name from the given list of categories, and the number corresponds to the description in the event description array."
+
+        body["prompt"] = prompt
+
+        val gson = Gson()
+
+        val json = gson.toJson(body)
+
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toRequestBody(mediaType)
+
+        val request = Request.Builder()
+            .url("https://api.openai.com/v1/completions")
+            .header("Authorization", "Bearer ${System.getProperty("OPENAI_API_KEY")}")
+            .post(requestBody)
+            .build()
+
+        val response = client.newCall(request).execute()
+        val responseMap = response.use { gson.fromJson(it.body?.string(), Map::class.java) }
+
+        client.connectionPool.evictAll()
+
+        val choices = responseMap["choices"] as List<*>
+        val choice = choices[0] as Map<*, *>
+        val text = choice["text"] as String
+
+        val getArray = text.substringAfter("[").substringBefore("]")
+        val array = getArray.split(", ")
+        val mapOfItems = mutableMapOf<Int, String>()
+        for (item in array) {
+            val splitItem = item.split(":")
+            mapOfItems[splitItem[0].trim().substringAfter("'").toInt()] = splitItem[1].trim().substringAfter(" ").substringBefore("'")
+        }
+
+        return mapOfItems
     }
 }
