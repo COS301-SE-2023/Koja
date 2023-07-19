@@ -106,7 +106,7 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                   // }
 
                   final locationName = locationList[index][0];
-                  final locationTime = getLocation(index);
+                  final locationTime = "still calculating";
 
                   final locationTimeString = locationTime.toString();
 

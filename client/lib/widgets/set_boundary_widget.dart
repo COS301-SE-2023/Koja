@@ -1,4 +1,4 @@
-
+import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 
 class SetBoundary extends StatefulWidget {
@@ -8,13 +8,8 @@ class SetBoundary extends StatefulWidget {
   final TextEditingController start;
   final TextEditingController end;
 
-  SetBoundary(
-    this.selectedOption,
-    this.start,
-    this.end,
-    this.onSave,
-    {Key? key}
-  );
+  SetBoundary(this.selectedOption, this.start, this.end, this.onSave,
+      {Key? key});
 
   @override
   State<SetBoundary> createState() => _SetBoundaryState();
@@ -137,10 +132,34 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
   }
 
   Future<TimeOfDay?> selectTime(BuildContext context) async {
-    var selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    return selectedTime;
+    if(isEditing == false)
+    {
+        var selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          );
+        },
+      );
+      return selectedTime;
+    }
+    else
+    {
+      var selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: int.parse(widget.controller.text.split(":")[0]), minute: int.parse(widget.controller.text.split(":")[1].split(" ")[0])),
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          );
+        },
+      );
+      return selectedTime;
+    }
+    
   }
 }

@@ -200,13 +200,11 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                       editedindex = index;
                       showDialog(
                         context: context,
-                        builder: (context) {
-                          TextEditingController _start1 = TextEditingController(text: categories[index][1]);
-                          TextEditingController _end1 = TextEditingController(text: categories[index][2]);                    
+                        builder: (context) {                   
                           return SetBoundary(
                             categories[index][0],
-                            _start1,
-                            _end1,
+                            _start,
+                            _end,
                             saveTime,
                           );
                         },
