@@ -57,9 +57,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                           time: widget.startTime,
                           onTimeChanged: (time) {
                             setState(() {
-                              widget.startTime = time;
                               start = time;
-                              print(widget.startTime);
                             });
                           },
                         ),
@@ -85,9 +83,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                           time: widget.endTime,
                           onTimeChanged: (time) {
                             setState(() {
-                              widget.endTime = time;
                               end = time;
-                              print(widget.endTime);
                             });
                           },
                         ),
@@ -167,7 +163,7 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
       initialTime: TimeOfDay.now(),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), // Ensure 24-hour format
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), 
           child: child!,
         );
       },

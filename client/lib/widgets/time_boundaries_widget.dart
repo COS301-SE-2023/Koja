@@ -16,27 +16,24 @@ class TimeBoundaries extends StatefulWidget {
 }
 
 class TimeBoundariesState extends State<TimeBoundaries> {
-  // late EventProvider eventProvider;
+  late EventProvider eventProvider;
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   eventProvider = Provider.of<EventProvider>(context);
-  //   DateFormat format = DateFormat("h:mm a");
-  //   for (var entry in eventProvider.timeSlots.entries) {
-  //     if (entry.value != null) {
-  //       categories.add([
-  //         entry.key,
-  //         format.format(entry.value!.startTime),
-  //         format.format(entry.value!.endTime)
-  //       ]);
-  //     }
-  //   }
-  // }
-
-  // general controller for all time pickers
-  // late String start = '';
-  // late String end = '';
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    eventProvider = Provider.of<EventProvider>(context);
+    DateFormat format = DateFormat('HH:MM');
+    for (var entry in eventProvider.timeSlots.entries) {
+      if (entry.value != null) {
+        categories.removeWhere((element) => element[0] == entry.key);
+        categories.add([
+          entry.key,
+          format.format(entry.value!.startTime),
+          format.format(entry.value!.endTime)
+        ]);
+      }
+    }
+  }
 
   // index of list item which is being edited so that we can delete the current item and add the edited item
   int editedindex = 0;
@@ -44,7 +41,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   // selected option for dropdown
   late String selectedOption;
 
-  // list of options for dropdown
+  /// list of options for dropdown
   List<String> dropdownOptions = [
     'School',
     'Work',
@@ -53,7 +50,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     'Chores',
   ];
 
-  // function to save time
+  /// function to save timein the category list
   void saveTime() {
 
     if (start.isEmpty) {
@@ -74,11 +71,13 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
     final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
 
+
     setState(() {
-      // eventProvider.setTimeSlot(selectedOption, timeSlot);
+      eventProvider.setTimeSlot(selectedOption, timeSlot);
       categories.removeWhere((element) => element[0] == selectedOption);
       categories.add([selectedOption, start, end]);
-
+      start = '';
+      end = '';
     });
 
     // If editing an item, remove the current item from the list and add the edited item
@@ -91,7 +90,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   void delete(int index) {
     setState(() {
       categories.removeAt(index);
-      // eventProvider.setTimeSlot(categories[index][0], null);
+      eventProvider.setTimeSlot(categories[index][0], null);
     });
   }
 
