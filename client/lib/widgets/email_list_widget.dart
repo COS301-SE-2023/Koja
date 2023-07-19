@@ -78,7 +78,7 @@ class _EmailListState extends State<EmailList> {
             fontSize: 17,
           )),
       subtitle: Text(
-        "\nClick here to view all the email addresses you have added. You can manage them by just swiping to the left to make an email primary or delete it",
+        "\nClick here to view all the email addresses you have added. You can delete an email by just clicking on the delete icon.",
         style: GoogleFonts.ubuntu(
           fontSize: 12.5,
         ),

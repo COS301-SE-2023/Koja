@@ -275,7 +275,7 @@ class ChooseColorState extends State<ChooseColor> {
   }
 }
 
-/**Class which sets recurrence */
+/// Class which sets recurrence
 class ChooseRecurrence extends StatefulWidget {
   final void Function(String category) onRecurrenceSelected;
   const ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
