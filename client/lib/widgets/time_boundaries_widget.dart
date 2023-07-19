@@ -16,24 +16,24 @@ class TimeBoundaries extends StatefulWidget {
 }
 
 class TimeBoundariesState extends State<TimeBoundaries> {
-  late EventProvider eventProvider;
+  late EventProvider eventProvider = Provider.of<EventProvider>(context, listen: false);
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    eventProvider = Provider.of<EventProvider>(context);
-    DateFormat format = DateFormat('HH:MM');
-    for (var entry in eventProvider.timeSlots.entries) {
-      if (entry.value != null) {
-        categories.removeWhere((element) => element[0] == entry.key);
-        categories.add([
-          entry.key,
-          format.format(entry.value!.startTime),
-          format.format(entry.value!.endTime)
-        ]);
-      }
-    }
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   eventProvider = Provider.of<EventProvider>(context);
+  //   DateFormat format = DateFormat('HH:MM');
+  //   for (var entry in eventProvider.timeSlots.entries) {
+  //     if (entry.value != null) {
+  //       categories.removeWhere((element) => element[0] == entry.key);
+  //       categories.add([
+  //         entry.key,
+  //         format.format(entry.value!.startTime),
+  //         format.format(entry.value!.endTime)
+  //       ]);
+  //     }
+  //   }
+  // }
 
   // index of list item which is being edited so that we can delete the current item and add the edited item
   int editedindex = 0;
@@ -89,8 +89,8 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   void delete(int index) {
     setState(() {
-      categories.removeAt(index);
       eventProvider.setTimeSlot(categories[index][0], null);
+      categories.removeAt(index);
     });
   }
 
@@ -203,8 +203,8 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                         builder: (context) {                   
                           return SetBoundary(
                             categories[index][0],
-                            start,
-                            end,
+                            categories[index][1],
+                            categories[index][2],
                             saveTime,
                           );
                         },
