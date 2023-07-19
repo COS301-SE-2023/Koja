@@ -16,3 +16,5 @@ List<List<String>> categories = [];
 
 /// Helper variables for when editing a boundary
 bool isEditing = false;
+String start = '';
+String end = '';
