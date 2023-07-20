@@ -1,24 +1,13 @@
 import json
-from typing import Dict, Text
-import requests
+import numpy as np
 import pandas as pd
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
-import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 
+# Load data
 f = open('test.json')
-
 data = json.load(f)
-
-# Define the URL
-# url = "http://192.168.50.5:8080/api/v1/ai/all-users-events"
-
-# headers = {
-#     "Authorisation": "secret"
-# }
-
-# response = requests.get(url, headers=headers)
-# data = response.json()
 
 # For every block of data
 for block in data:
@@ -43,31 +32,43 @@ for block in data:
     all_events = expanded_training_events + expanded_testing_events
 
 print(len(all_events))
+
+# Create pandas DataFrame
 all_df = pd.DataFrame(all_events)
 
-# Extract user_ids and category_ids as numpy arrays
+# Extract user_ids, category_ids and weekdays as numpy arrays
 user_ids = all_df['userID'].values
 category_ids = all_df['category'].values
+weekdays = all_df['weekday'].values
 
-# Create TensorFlow dataset from pandas DataFrame
+# Convert weekdays to one-hot encoding
+enc = OneHotEncoder(sparse=False)
+weekdays_one_hot = enc.fit_transform(weekdays.reshape(-1, 1))
+
+# Create TensorFlow datasets
 all_data = tf.data.Dataset.from_tensor_slices({
     "user_id": user_ids,
-    "category_id": category_ids
+    "category_id": category_ids,
+    "weekday": weekdays_one_hot
 })
-
-# We will also need a dataset of all unique user ids and category ids for model fitting
 user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
 category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
 
-# Define user and category models
+# Define user, category and weekday models
 user_model = tf.keras.Sequential([
     tf.keras.layers.StringLookup(vocabulary=np.unique(user_ids), mask_token=None),
-    tf.keras.layers.Embedding(len(np.unique(user_ids)) + 1, 10),
+    tf.keras.layers.Embedding(len(np.unique(user_ids)) + 1, 5),
 ])
 
 category_model = tf.keras.Sequential([
     tf.keras.layers.StringLookup(vocabulary=np.unique(category_ids), mask_token=None),
     tf.keras.layers.Embedding(len(np.unique(category_ids)) + 1, 10),
+])
+
+weekday_model = tf.keras.Sequential([
+    tf.keras.layers.Dense(7, activation='relu'),  # Fully connected layer for one-hot encoded input
+    tf.keras.layers.Flatten(),  # Flatten the output
+    tf.keras.layers.Dense(5),  # Final embedding size
 ])
 
 # Define the task as retrieval (recommendation)
@@ -77,24 +78,26 @@ task = tfrs.tasks.Retrieval(metrics=tfrs.metrics.FactorizedTopK(
 
 # Create a TFRS model
 class CategoryRecommender(tfrs.models.Model):
-    def __init__(self, user_model, category_model, task):
+    def __init__(self, user_model, category_model, weekday_model, task):
         super().__init__()
         self.user_model = user_model
         self.category_model = category_model
+        self.weekday_model = weekday_model
         self.task = task
 
     def compute_loss(self, features, training=False):
         user_embeddings = self.user_model(features["user_id"])
         category_embeddings = self.category_model(features["category_id"])
-        return self.task(user_embeddings, category_embeddings)
+        weekday_embeddings = self.weekday_model(features["weekday"])
+        return self.task(tf.concat([user_embeddings, weekday_embeddings], axis=1), category_embeddings)
 
-model = CategoryRecommender(user_model, category_model, task)
+model = CategoryRecommender(user_model, category_model, weekday_model, task)
 
 # Configure and train the model
-model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.007))
+model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
 # Train the model
-model.fit(all_data.batch(128), epochs=10000)
+model.fit(all_data.batch(128), epochs=100)
 
 index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
 index.index_from_dataset(
