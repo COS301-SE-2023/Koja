@@ -20,6 +20,7 @@ class LoginModalState extends State<LoginModal> {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final editingController = TextEditingController();
     return SingleChildScrollView(
       child: Container(
         height: 180, // 130
@@ -75,13 +76,37 @@ class LoginModalState extends State<LoginModal> {
             if (kDebugMode)
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NavigationScreen(),
-                      ),
-                      (Route<dynamic> route) => false,
-                    );
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (ctx) {
+                          return SizedBox(
+                            height: 180,
+                            width: double.infinity,
+                            child: Column(children: [
+                              TextFormField(
+                                controller: editingController,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  serviceProvider.setAccessToken(
+                                    editingController.text.trim(),
+                                    eventProvider,
+                                  );
+                                  Navigator.pop(context);
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NavigationScreen(),
+                                    ),
+                                    (Route<dynamic> route) => false,
+                                  );
+                                },
+                                child: const Text('Login'),
+                              )
+                            ]),
+                          );
+                        });
                   },
                   child: const SizedBox(
                     height: 30,
