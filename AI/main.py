@@ -1,88 +1,108 @@
+import json
+from typing import Dict, Text
+import requests
 import pandas as pd
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
+import numpy as np
 
-# Load dataframe
-df = pd.read_csv('weekly_schedule_dataset.csv')
-# print(df)
+f = open('test.json')
 
-# Define the user and item feature columns
-user_col = 'userID'
-item_col = 'description'
+data = json.load(f)
 
-# Create tensorflow dataset
+# Define the URL
+# url = "http://192.168.50.5:8080/api/v1/ai/all-users-events"
 
-dataset = tf.data.Dataset.from_tensor_slices(dict(df))
+# headers = {
+#     "Authorisation": "secret"
+# }
 
-train_size = int(len(df) * 0.8)  # 80% for training, 20% for testing
-train_dataset = dataset.take(train_size)
-test_dataset = dataset.skip(train_size)
+# response = requests.get(url, headers=headers)
+# data = response.json()
 
-user_ids = df[user_col].unique().tolist()
-item_ids = df[item_col].unique()
-items = tf.data.Dataset.from_tensor_slices(item_ids)
+# For every block of data
+for block in data:
+    # Training block
+    expanded_training_events = []
+    for event in block['training']:
+        for time_frame in event['timeFrame']:
+            new_event = event.copy()
+            new_event['startTime'] = time_frame['first']
+            new_event['endTime'] = time_frame['second']
+            expanded_training_events.append(new_event)
+    # Testing block
+    expanded_testing_events = []
+    for event in block['testing']:
+        for time_frame in event['timeFrame']:
+            new_event = event.copy()
+            new_event['startTime'] = time_frame['first']
+            new_event['endTime'] = time_frame['second']
+            expanded_testing_events.append(new_event)
 
-item_model = tf.keras.Sequential([
-    tf.keras.layers.StringLookup(
-        vocabulary=item_ids, mask_token=None
-    ),
-    tf.keras.layers.Embedding(len(item_ids) + 1, 32)
-])
+    # Concatenate training and testing data
+    all_events = expanded_training_events + expanded_testing_events
 
+print(len(all_events))
+all_df = pd.DataFrame(all_events)
+
+# Extract user_ids and category_ids as numpy arrays
+user_ids = all_df['userID'].values
+category_ids = all_df['category'].values
+
+# Create TensorFlow dataset from pandas DataFrame
+all_data = tf.data.Dataset.from_tensor_slices({
+    "user_id": user_ids,
+    "category_id": category_ids
+})
+
+# We will also need a dataset of all unique user ids and category ids for model fitting
+user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
+category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
+
+# Define user and category models
 user_model = tf.keras.Sequential([
-    tf.keras.layers.StringLookup(
-        vocabulary=user_ids, mask_token=None
-    ),
-    tf.keras.layers.Embedding(len(item_ids) + 1, 32)
+    tf.keras.layers.StringLookup(vocabulary=np.unique(user_ids), mask_token=None),
+    tf.keras.layers.Embedding(len(np.unique(user_ids)) + 1, 10),
 ])
 
-metrics = tfrs.metrics.FactorizedTopK(
-    candidates=items.batch(16).map(item_model)
-)
+category_model = tf.keras.Sequential([
+    tf.keras.layers.StringLookup(vocabulary=np.unique(category_ids), mask_token=None),
+    tf.keras.layers.Embedding(len(np.unique(category_ids)) + 1, 10),
+])
 
-task = tfrs.tasks.Retrieval(
-    metrics=metrics
-)
-class EventRecommenderModel(tfrs.Model):
-    def __init__(self, user_model, item_model):
+# Define the task as retrieval (recommendation)
+task = tfrs.tasks.Retrieval(metrics=tfrs.metrics.FactorizedTopK(
+    candidates=category_dataset.batch(128).map(category_model)
+))
+
+# Create a TFRS model
+class CategoryRecommender(tfrs.models.Model):
+    def __init__(self, user_model, category_model, task):
         super().__init__()
-        self.user_model: tf.keras.Model = user_model
-        self.item_model: tf.keras.Model = item_model
-        self.task: tf.keras.layers.Layer = task
+        self.user_model = user_model
+        self.category_model = category_model
+        self.task = task
 
     def compute_loss(self, features, training=False):
-        user_embeddings = self.user_model(features[user_col])
-        item_embeddings = self.item_model(features[item_col])
-        return self.task(user_embeddings, item_embeddings)
-    def call(self, inputs):
-        return self.user_model(inputs)
+        user_embeddings = self.user_model(features["user_id"])
+        category_embeddings = self.category_model(features["category_id"])
+        return self.task(user_embeddings, category_embeddings)
 
+model = CategoryRecommender(user_model, category_model, task)
 
-model = EventRecommenderModel(user_model, item_model)
+# Configure and train the model
+model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.007))
 
-model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.1))
+# Train the model
+model.fit(all_data.batch(128), epochs=10000)
 
-train_dataset = train_dataset.shuffle(1000).batch(16)
-test_dataset = test_dataset.batch(16)
+index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
+index.index_from_dataset(
+    tf.data.Dataset.zip((category_dataset.batch(100), category_dataset.batch(100).map(model.category_model)))
+)
 
-model.fit(train_dataset, epochs=10)
-# Get recommendations for a single user
-user_id = tf.constant(['3A'])  # Example user ID
+# Get recommendations.
+user_id = "502"  # change this to the user id you want to recommend for
+_, titles = index(np.array([user_id]))
 
-# Encode the user ID
-encoded_user_id = user_model(user_id).numpy()
-
-# Get item embeddings
-item_embeddings = item_model(item_ids).numpy()
-
-# Retrieve the top-k recommendations for the user
-user_embeddings = tf.repeat(encoded_user_id, repeats=len(item_ids), axis=0)
-scores = tf.linalg.matmul(user_embeddings, item_embeddings, transpose_b=True)
-top_k = tf.argsort(scores, direction='DESCENDING')[:1]
-recommended_items = tf.gather(item_ids, top_k)
-
-print("Recommended items for user", user_id, ":")
-for item in recommended_items:
-    print(item)
-
-
+print(f"Recommendations for user {user_id}: {titles[0][:10]}")
