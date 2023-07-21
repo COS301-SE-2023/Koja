@@ -45,9 +45,23 @@ class Profile extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            UserDetails(
-                profile: "assets/icons/coffee.png",
-                email: "u19012366@tuks.co.za"),
+            FutureBuilder(
+              future: serviceProvider.getAllUserEmails(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return UserDetails(
+                    profile: "assets/icons/coffee.png",
+                    email: (snapshot.data != null) ? snapshot.data!.first : "could not find email",
+                  );
+                } else {
+                  return UserDetails(
+                    profile: "assets/icons/coffee.png",
+                    email: "Loading...",
+                  );
+                }
+               
+              }
+            ),
             const Divider(
               thickness: 0,
               height: 40,
