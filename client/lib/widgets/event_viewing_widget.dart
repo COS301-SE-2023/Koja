@@ -6,7 +6,7 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 
 class EventViewing extends StatefulWidget {
   late final Event event = Event(
@@ -26,15 +26,15 @@ class EventViewingState extends State<EventViewing> {
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
     return SingleChildScrollView(
       child: Container(
-        height: 350, 
+        height: 350,
         padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
         child: ListView(
           shrinkWrap: true,
           children: [
-            if(widget.event.title != 'No events')
+            if (widget.event.title != 'No events')
               Column(
                 children: [
                   const SizedBox(height: 10),
@@ -44,10 +44,9 @@ class EventViewingState extends State<EventViewing> {
                       child: Text(
                         'No Tasks Found',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Raleway'
-                        ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Raleway'),
                       ),
                     ),
                   ),
@@ -55,13 +54,13 @@ class EventViewingState extends State<EventViewing> {
                     alignment: Alignment.center,
                     child: Lottie.asset(
                       'assets/animations/empty.json',
-                      height: 200, width: 300,
+                      height: 200,
+                      width: 300,
                     ),
                   ),
                 ],
               ),
-
-            if(widget.event.title == 'No events')
+            if (widget.event.title == 'No events')
               Column(
                 children: [
                   Row(
@@ -70,7 +69,7 @@ class EventViewingState extends State<EventViewing> {
                         Bootstrap.calendar_date,
                         size: 20,
                       ),
-                      const SizedBox(width: 10), 
+                      const SizedBox(width: 10),
                       Text(
                         widget.event.title,
                         style: GoogleFonts.raleway(
@@ -79,10 +78,9 @@ class EventViewingState extends State<EventViewing> {
                         ),
                       ),
                       Spacer(),
-                      IconButton(onPressed: 
-                      (){}, 
-                      icon: Icon(Bootstrap.pencil_square)
-                      ),
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(Bootstrap.pencil_square)),
                       IconButton(
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -100,18 +98,16 @@ class EventViewingState extends State<EventViewing> {
                       Text(
                         widget.event.category,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Raleway'
-                        ),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Raleway'),
                       ),
                       Text(
                         widget.event.location,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Raleway'
-                        ),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Raleway'),
                       ),
                     ],
                   ),
@@ -121,18 +117,16 @@ class EventViewingState extends State<EventViewing> {
                       Text(
                         widget.event.from.toString(),
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Raleway'
-                        ),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Raleway'),
                       ),
                       Text(
                         widget.event.to.toString(),
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Raleway'
-                        ),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Raleway'),
                       ),
                     ],
                   ),
@@ -140,14 +134,12 @@ class EventViewingState extends State<EventViewing> {
                   Text(
                     widget.event.description,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Raleway'
-                    ),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Raleway'),
                   ),
                 ],
               ),
-            
           ],
         ),
       ),

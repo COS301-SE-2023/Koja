@@ -6,9 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../Utils/constants_util.dart';
 import '../Utils/event_util.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import 'set_boundary_widget.dart';
-
 
 class TimeBoundaries extends StatefulWidget {
   @override
@@ -16,7 +15,8 @@ class TimeBoundaries extends StatefulWidget {
 }
 
 class TimeBoundariesState extends State<TimeBoundaries> {
-  late EventProvider eventProvider = Provider.of<EventProvider>(context, listen: false);
+  late ContextProvider eventProvider =
+      Provider.of<ContextProvider>(context, listen: false);
 
   // @override
   // void didChangeDependencies() {
@@ -52,7 +52,6 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   /// function to save timein the category list
   void saveTime() {
-
     if (start.isEmpty) {
       DateTime currentTime = DateTime.now();
       String formattedStartTime = DateFormat('HH:MM').format(currentTime);
@@ -70,7 +69,6 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     DateTime endTime = format.parse(end);
 
     final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
-
 
     setState(() {
       eventProvider.setTimeSlot(selectedOption, timeSlot);
@@ -107,7 +105,8 @@ class TimeBoundariesState extends State<TimeBoundaries> {
         trailing: Icon(
           Icons.arrow_drop_down,
         ),
-        title: Text("Times Boundaries ", style: GoogleFonts.ubuntu(fontSize: 17)),
+        title:
+            Text("Times Boundaries ", style: GoogleFonts.ubuntu(fontSize: 17)),
         subtitle: Text(
           "Click here to add time boundaries for each category, select category and then click +\n\nAfter adding time boundary for a category, you can swipe to the left to edit or delete a boundary.",
           style: GoogleFonts.ubuntu(fontSize: 12.5),
@@ -119,7 +118,9 @@ class TimeBoundariesState extends State<TimeBoundaries> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(" Category:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(" Category:",
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(width: 8),
                 Container(
                   height: 35,
@@ -164,7 +165,8 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return SetBoundary(selectedOption, start, end, saveTime);
+                        return SetBoundary(
+                            selectedOption, start, end, saveTime);
                       },
                     );
                   },
@@ -200,7 +202,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                       editedindex = index;
                       showDialog(
                         context: context,
-                        builder: (context) {                   
+                        builder: (context) {
                           return SetBoundary(
                             categories[index][0],
                             categories[index][1],

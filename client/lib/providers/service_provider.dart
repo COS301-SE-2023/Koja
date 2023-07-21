@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:client/providers/event_provider.dart';
+import 'package:client/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
@@ -37,15 +37,19 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<void> setAccessToken(
-      String? token, EventProvider eventProvider) async {
+      String? token, ContextProvider eventProvider) async {
     _accessToken = token;
-    if (accessToken != null) await eventProvider.getEventsFromAPI(accessToken!);
+    if (token != null) {
+       eventProvider.init(token);
+    }
   }
+
+
 
   /// This Section deals with all the user related functions (emails, login, etc.)
 
   /// This function will attempt to login the user using AuthController
-  Future<bool> loginUser({required EventProvider eventProvider}) async {
+  Future<bool> loginUser({required ContextProvider eventProvider}) async {
     final String authUrl =
         'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
 
@@ -64,7 +68,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will attempt to add another email using UserAccountController
-  Future<bool> addEmail({required EventProvider eventProvider}) async {
+  Future<bool> addEmail({required ContextProvider eventProvider}) async {
     final String authUrl =
         'http://$_serverAddress:$_serverPort/api/v1/user/auth/addEmail/google';
 
@@ -85,8 +89,8 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to delete an email from the user's account
   /// From UserAccountController
   Future<bool> deleteUserEmail(String email) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/remove-email');
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/remove-email');
     final response = await http.delete(
       url,
       headers: {
@@ -126,7 +130,7 @@ class ServiceProvider with ChangeNotifier {
   Future<bool> deleteUserAccount() async {
     final url =
         Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
-    final response = await http.delete(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -142,7 +146,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This section deals with all the calendar related functions (events, etc.)
-  
+
   /// This function will attempt to create an event using CalendarController
   Future<bool> createEvent(Event event) async {
     final url = Uri.http(
@@ -214,7 +218,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This section deals with all the location related functions (travel time, etc.)
-  
+
   /// This function will set the current location of the user
   void setLocationData(Location? locationData) {
     _locationData = locationData;

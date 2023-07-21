@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/service_provider.dart';
+import '../screens/login_screen.dart';
 import 'add_email_widget.dart';
 import 'email_list_widget.dart';
 
@@ -164,9 +165,14 @@ class AccountSettingsWidget extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Provider.of<ServiceProvider>(context)
+                                      Provider.of<ServiceProvider>(context, listen: false)
                                           .deleteUserAccount();
-                                      Navigator.pop(context);
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Login()),
+                                        (Route<dynamic> route) => false,
+                                      );
                                     },
                                     child: Text('Delete'),
                                   ),

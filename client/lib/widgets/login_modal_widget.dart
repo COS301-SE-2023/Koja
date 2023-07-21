@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import '../screens/navigation_management_screen.dart';
 
 class LoginModal extends StatefulWidget {
@@ -19,7 +19,7 @@ class LoginModalState extends State<LoginModal> {
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
     final editingController = TextEditingController();
     return SingleChildScrollView(
       child: Container(
@@ -88,15 +88,14 @@ class LoginModalState extends State<LoginModal> {
                               child: Column(
                                 children: [
                                   TextFormField(
-                                    controller: editingController,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
-                                        ),                                 
-                                      ),
-                                    )
-                                  ),
+                                      controller: editingController,
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                      )),
                                   const SizedBox(height: 10.0),
                                   TextButton(
                                     style: TextButton.styleFrom(
@@ -111,7 +110,8 @@ class LoginModalState extends State<LoginModal> {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => const NavigationScreen(),
+                                          builder: (context) =>
+                                              const NavigationScreen(),
                                         ),
                                         (Route<dynamic> route) => false,
                                       );

@@ -7,7 +7,7 @@ import '../Utils/event_util.dart';
 import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
 
@@ -143,36 +143,30 @@ class EventEditingState extends State<EventEditing> {
           textDirection: TextDirection.rtl,
           children: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text('Cancel')
-            ),
-
-            if(selectedEventType == 'Dynamic')
+                onPressed: () => Navigator.of(context).pop(),
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.black),
+                ),
+                child: Text('Cancel')),
+            if (selectedEventType == 'Dynamic')
               TextButton(
+                  onPressed: saveForm,
+                  style: const ButtonStyle(
+                    foregroundColor: MaterialStatePropertyAll(Colors.black),
+                  ),
+                  child: Text('Reschedule',
+                      style: TextStyle(
+                          fontFamily: 'Railway', color: Colors.black))),
+            TextButton(
                 onPressed: saveForm,
                 style: const ButtonStyle(
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
-                child: Text('Reschedule',
-                    style: TextStyle(fontFamily: 'Railway', color: Colors.black)
-                )
-              ),
-
-            TextButton(
-              onPressed: saveForm,
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text('Save',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.black)
-              )
-            ),
+                child: Text('Save',
+                    style:
+                        TextStyle(fontFamily: 'Railway', color: Colors.black))),
           ],
         )
-        
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
@@ -193,8 +187,8 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
                 const SizedBox(height: 1),
-                if(selectedEventType == 'Dynamic')
-                     ChoosePriority(onPrioritySelected: updatePriority),
+                if (selectedEventType == 'Dynamic')
+                  ChoosePriority(onPrioritySelected: updatePriority),
                 const SizedBox(height: 1),
                 ChooseColor(onColorSelected: updateColor),
                 location(),
@@ -268,7 +262,7 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
-            Provider.of<EventProvider>(context, listen: false)
+            Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
             Navigator.of(context).pop();
           }
@@ -301,22 +295,18 @@ class EventEditingState extends State<EventEditing> {
             Row(
               children: [
                 Expanded(
-                  child: 
-                    Text(
-                      _eventPlace.text,
+                  child: Text(_eventPlace.text,
                       maxLines: 1,
                       style: TextStyle(
                           fontFamily: 'Railway',
                           fontSize: 14,
-                          fontWeight: FontWeight.bold
-                      )
-                    ),
+                          fontWeight: FontWeight.bold)),
                 ),
-                if(_eventPlace.text.isNotEmpty)
+                if (_eventPlace.text.isNotEmpty)
                   IconButton(
                     onPressed: clearLocation,
                     icon: const Icon(Icons.clear, color: Colors.black),
-                ),
+                  ),
               ],
             ),
             TextFormField(
@@ -328,10 +318,9 @@ class EventEditingState extends State<EventEditing> {
                 label: Text(
                   "Meeting's Location",
                   style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16
-                  ),
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16),
                 ),
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
@@ -589,18 +578,17 @@ class EventEditingState extends State<EventEditing> {
       });
     }
   }
-  
 
   Future saveForm() async {
     late bool isValid = false;
 
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
     final existingEvents = eventProvider.events;
 
     final isDuplicateEvent = existingEvents.any((existingEvent) {
       return existingEvent.title == titleController.text &&
-            existingEvent.from == fromDate &&
-            existingEvent.to == toDate;
+          existingEvent.from == fromDate &&
+          existingEvent.to == toDate;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -615,7 +603,8 @@ class EventEditingState extends State<EventEditing> {
     }
 
     if (isValid) {
-      final eventProvider = Provider.of<EventProvider>(context, listen: false);
+      final eventProvider =
+          Provider.of<ContextProvider>(context, listen: false);
 
       var timeSlot = eventProvider.timeSlots[selectedCategory];
 
@@ -692,11 +681,11 @@ class EventEditingState extends State<EventEditing> {
       final durationMinutes = int.tryParse(minutesController.text);
 
       var priorityValue = 1;
-      if(selectedPriority == 'Low') {
+      if (selectedPriority == 'Low') {
         priorityValue = 1;
-      } else if(selectedPriority == 'Medium') {
+      } else if (selectedPriority == 'Medium') {
         priorityValue = 2;
-      } else if(selectedPriority == 'High') {
+      } else if (selectedPriority == 'High') {
         priorityValue = 3;
       }
 

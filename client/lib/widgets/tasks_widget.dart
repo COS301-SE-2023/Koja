@@ -6,7 +6,7 @@ import 'package:syncfusion_flutter_core/theme.dart';
 
 import '../Utils/constants_util.dart';
 import '../Utils/event_data_source_util.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import 'event_editing_widget.dart';
 
 class TasksWidget extends StatefulWidget {
@@ -19,7 +19,7 @@ class TasksWidget extends StatefulWidget {
 class TasksWidgetState extends State<TasksWidget> {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<EventProvider>(context);
+    final provider = Provider.of<ContextProvider>(context);
     final selectedEvents = provider.eventsOfSelectedDate;
 
     //This checks if the selected date has any events
@@ -33,10 +33,9 @@ class TasksWidgetState extends State<TasksWidget> {
               child: Text(
                 'No Tasks Found',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Raleway'
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Raleway'),
               ),
             ),
           ),
@@ -44,7 +43,8 @@ class TasksWidgetState extends State<TasksWidget> {
             alignment: Alignment.center,
             child: Lottie.asset(
               'assets/animations/empty.json',
-              height: 200, width: 300,
+              height: 200,
+              width: 300,
             ),
           ),
         ],
@@ -69,7 +69,7 @@ class TasksWidgetState extends State<TasksWidget> {
         ),
         //Builds the events on the calendar
         appointmentBuilder: appointmentBuilder,
-        
+
         initialDisplayDate: provider.selectedDate,
         headerHeight: 0,
         todayHighlightColor: Colors.black,
@@ -88,14 +88,13 @@ class TasksWidgetState extends State<TasksWidget> {
               return EventEditing(event: userEvent);
             },
           );
-
         },
       ),
     );
   }
 
   Widget appointmentBuilder(
-    BuildContext context, CalendarAppointmentDetails details) {
+      BuildContext context, CalendarAppointmentDetails details) {
     final event = details.appointments.first;
     return Container(
       width: details.bounds.width,
@@ -108,11 +107,8 @@ class TasksWidgetState extends State<TasksWidget> {
         child: Text(
           event.title,
           style: const TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontFamily: 'Raleway'
-          ),
-        ),     
+              color: Colors.white, fontSize: 15, fontFamily: 'Raleway'),
+        ),
       ),
     );
   }

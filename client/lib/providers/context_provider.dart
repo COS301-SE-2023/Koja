@@ -7,8 +7,15 @@ import 'package:intl/intl.dart';
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
 
-class EventProvider extends ChangeNotifier {
+class ContextProvider extends ChangeNotifier {
   String? _accessToken;
+  List<String> userEmails = [];
+
+  void init(String accessToken) {
+    _accessToken = accessToken;
+    getEventsFromAPI(accessToken);
+    getAllUserEmails();
+  }
 
   List<EventWrapper> _eventWrappers = [];
 
@@ -57,13 +64,12 @@ class EventProvider extends ChangeNotifier {
           event.from.year == date.year &&
           event.from.month == date.month &&
           event.from.day == date.day,
-      orElse: () => 
-          Event(
-            title: 'No events',
-            description: '',
-            from: DateTime.now(),
-            to: DateTime.now(),
-          ),    
+      orElse: () => Event(
+        title: 'No events',
+        description: '',
+        from: DateTime.now(),
+        to: DateTime.now(),
+      ),
     );
   }
 
@@ -124,6 +130,14 @@ class EventProvider extends ChangeNotifier {
     final response = await serviceProvider.getAllUserEvents();
     _events.clear();
     _events.addAll(response);
+    notifyListeners();
+  }
+
+  Future<void> getAllUserEmails() async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getAllUserEmails();
+    userEmails.clear();
+    userEmails.addAll(response);
     notifyListeners();
   }
 
