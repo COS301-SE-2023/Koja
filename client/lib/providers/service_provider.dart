@@ -91,7 +91,7 @@ class ServiceProvider with ChangeNotifier {
   Future<bool> deleteUserEmail(String email) async {
     final url =
         Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/remove-email');
-    final response = await http.delete(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',

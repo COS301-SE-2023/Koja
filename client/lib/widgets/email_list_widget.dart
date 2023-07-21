@@ -1,3 +1,4 @@
+import 'package:client/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,22 +15,14 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-    emails.clear();
-
-    if (emails.isNotEmpty) {
-      Provider.of<ServiceProvider>(context).getAllUserEmails().then((emails) {
-        setState(() {
-          if (kDebugMode) print(emails);
-          this.emails = emails;
-        });
-      });
-    }
-  }
 
   List<String> emails = [];
+
+  @override
+  void initState() {
+    super.initState();
+    emails = Provider.of<ContextProvider>(context, listen: false).userEmails;
+  }
 
   int editedindex = -1;
 
@@ -46,8 +39,8 @@ class _EmailListState extends State<EmailList> {
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                Provider.of<ServiceProvider>(context).deleteUserEmail(emails[index]);
+              setState(() {  
+                Provider.of<ServiceProvider>(context, listen: false).deleteUserEmail(emails[index]);
                 emails.removeAt(index);
               });
               Navigator.pop(context); 
