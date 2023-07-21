@@ -76,6 +76,7 @@ class LoginModalState extends State<LoginModal> {
             if (kDebugMode)
               ElevatedButton(
                   onPressed: () {
+                    Navigator.pop(context);
                     showDialog(
                       context: context,
                       builder: (ctx) {
@@ -88,6 +89,8 @@ class LoginModalState extends State<LoginModal> {
                               child: Column(
                                 children: [
                                   TextFormField(
+                                    scrollController: ScrollController(),
+                                    scrollPhysics: BouncingScrollPhysics(),
                                       controller: editingController,
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(
