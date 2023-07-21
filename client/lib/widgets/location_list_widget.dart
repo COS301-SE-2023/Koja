@@ -20,11 +20,10 @@ class _LocationListWidgetState extends State<LocationListWidget> {
     });
   }
 
-  Future<int> getLocation(int index)  {
+  Future<int> getLocation(int index) {
     return ServiceProvider().getLocationsTravelTime(
-      locationList[index][1], -25.7562574, 28.2409557); 
+        locationList[index][1], -25.7562574, 28.2409557);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -132,13 +131,32 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            locationTimeString,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: FutureBuilder(
+                              future: locationTime,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.toString(),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Wrap(
+                                      children: [
+                                        SizedBox(
+                                          height: 10,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }),
                         ),
                       ],
                     ),
