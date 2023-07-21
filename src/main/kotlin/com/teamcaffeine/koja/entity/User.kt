@@ -21,6 +21,16 @@ class User {
 
     private var homeLocation: String ? = null
     private var workLocation: String ? = null
+    private var currentLatitude: Double ? = null
+    private var currentLongitude: Double ? = null
+
+    fun setCurrentLocation(latitude: Double, longitude: Double) {
+        this.currentLatitude = latitude
+        this.currentLongitude = longitude
+    }
+    fun getCurrentLocation(): Pair<Double, Double>? {
+        return Pair(currentLatitude ?: return null, currentLongitude ?: return null)
+    }
 
     fun setHomeLocation(homeLocation: String) {
         this.homeLocation = homeLocation

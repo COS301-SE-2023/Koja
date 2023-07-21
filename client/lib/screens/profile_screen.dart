@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/constants_util.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import '../widgets/user_details_widget.dart';
 import '../widgets/settings_widget.dart';
 import './login_screen.dart';
@@ -15,7 +15,7 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final serviceProvider = Provider.of<ServiceProvider>(context);
-    final eventProvider = Provider.of<EventProvider>(context);
+    final eventProvider = Provider.of<ContextProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile',
@@ -45,9 +45,12 @@ class Profile extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            UserDetails(
-                profile: "assets/icons/coffee.png",
-                email: "u19012366@tuks.co.za"),
+             UserDetails(
+                      profile: "assets/icons/coffee.png",
+                      email: (eventProvider.userEmails.isNotEmpty)
+                          ? eventProvider.userEmails[0]
+                          : "No email found",
+                    ),
             const Divider(
               thickness: 0,
               height: 40,

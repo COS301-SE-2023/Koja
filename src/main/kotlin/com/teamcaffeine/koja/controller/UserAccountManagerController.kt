@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 class UserAccountManagerController(
     private val googleCalendarAdapter: GoogleCalendarAdapterService,
-    private val userAccountManagerService: UserAccountManagerService
+    private val userAccountManagerService: UserAccountManagerService,
 ) {
 
     @GetMapping("add-email/google")
@@ -49,7 +49,7 @@ class UserAccountManagerController(
     @PostMapping("remove-email")
     fun removeEmail(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
-        @RequestParam("email") email: String?
+        @RequestParam("email") email: String?,
     ): ResponseEntity<String> {
         return if (token == null || email == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)

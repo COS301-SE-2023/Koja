@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'providers/event_provider.dart';
+import 'providers/context_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -12,7 +12,7 @@ import 'screens/navigation_management_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: "../.env");
+  await dotenv.load(fileName: "assets/.env");
   runApp(KojaApp());
 }
 
@@ -24,8 +24,8 @@ class KojaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<EventProvider>(
-          create: (context) => EventProvider(),
+        ChangeNotifierProvider<ContextProvider>(
+          create: (context) => ContextProvider(),
         ),
         FutureProvider<ServiceProvider>(
           create: (context) => ServiceProvider().init(),
@@ -34,7 +34,7 @@ class KojaApp extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) {
-          final provider = Provider.of<EventProvider>(context, listen: false);
+          final provider = Provider.of<ContextProvider>(context, listen: false);
           provider.setScaffoldKey(scaffoldKey);
           return MaterialApp(
             scaffoldMessengerKey: scaffoldKey,
