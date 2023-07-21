@@ -47,7 +47,7 @@ class LoginModalState extends State<LoginModal> {
                     );
                   }
                 },
-                child: const SizedBox(
+                child: SizedBox(
                   height: 30,
                   width: 200,
                   child: Row(
@@ -90,8 +90,11 @@ class LoginModalState extends State<LoginModal> {
                                   TextFormField(
                                     controller: editingController,
                                     decoration: const InputDecoration(
-                                      labelText: 'Enter Access Token',
-
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),                                 
+                                      ),
                                     )
                                   ),
                                   const SizedBox(height: 10.0),

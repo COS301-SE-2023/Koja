@@ -42,12 +42,186 @@ class ServiceProvider with ChangeNotifier {
     if (accessToken != null) await eventProvider.getEventsFromAPI(accessToken!);
   }
 
-  // Locations
+  /// This Section deals with all the user related functions (emails, login, etc.)
+
+  /// This function will attempt to login the user using AuthController
+  Future<bool> loginUser({required EventProvider eventProvider}) async {
+    final String authUrl =
+        'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
+
+    final String callbackUrlScheme = 'koja-login-callback';
+
+    String? response = await FlutterWebAuth.authenticate(
+      url: authUrl,
+      callbackUrlScheme: callbackUrlScheme,
+    );
+
+    response = Uri.parse(response).queryParameters['token'];
+
+    setAccessToken(response, eventProvider);
+
+    return accessToken != null;
+  }
+
+  /// This function will attempt to add another email using UserAccountController
+  Future<bool> addEmail({required EventProvider eventProvider}) async {
+    final String authUrl =
+        'http://$_serverAddress:$_serverPort/api/v1/user/auth/addEmail/google';
+
+    final String callbackUrlScheme = 'koja-login-callback';
+
+    String? response = await FlutterWebAuth.authenticate(
+      url: authUrl,
+      callbackUrlScheme: callbackUrlScheme,
+    );
+
+    response = Uri.parse(response).queryParameters['token'];
+
+    setAccessToken(response, eventProvider);
+
+    return accessToken != null;
+  }
+
+  /// This function will attempt to delete an email from the user's account
+  /// From UserAccountController
+  Future<bool> deleteUserEmail(String email) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/remove-email');
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: email,
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /// This function will attempt to get all the emails entered by the user
+  /// From UserController
+  Future<List<String>> getAllUserEmails() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/linked-emails');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(response.body);
+      return result.map((e) => e.toString()).toList();
+    } else {
+      return [];
+    }
+  }
+
+  /// This function will delete the user's account from Koja
+  /// From UserController
+  Future<bool> deleteUserAccount() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /// This section deals with all the calendar related functions (events, etc.)
+  
+  /// This function will attempt to create an event using CalendarController
+  Future<bool> createEvent(Event event) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/createEvent');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: jsonEncode(event.toJson()),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  /// This function will attempt to get all the events created by the user
+  /// From CalendarController
+  Future<List<Event>> getAllUserEvents() async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/userEvents');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> eventsJson = jsonDecode(response.body);
+      return eventsJson.map((json) => Event.fromJson(json)).toList();
+    } else {
+      return [];
+    }
+  }
+
+  /// This function will attempt to update an event using CalendarController
+  Future<bool> updateEvent(Event event) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/updateEvent');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: jsonEncode(event.toJson()),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  /// This function will attempt to delete an event using CalendarController
+  Future<bool> deleteEvent(String eventId) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/deleteEvent');
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: eventId,
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /// This section deals with all the location related functions (travel time, etc.)
+  
+  /// This function will set the current location of the user
   void setLocationData(Location? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
   }
 
+  /// This function will attempt to get the travel time from the user's current location
   Future<int> getLocationsTravelTime(
       String placeID, double destLat, double destLng) async {
     final url = Uri.http(
@@ -67,12 +241,14 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  /// This function will wait for the user to grant location permissions
   void startLocationListner() async {
     if (await _checkAndRequestPermission()) {
       _listenLocationStream();
     }
   }
 
+  /// This function will start listening to the location stream
   Future<void> _listenLocationStream() async {
     if (await _checkAndRequestPermission()) {
       if (_locationSubscription != null) {
@@ -89,11 +265,13 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  /// This function will cancel the location subscription
   Future<void> _cancelLocationSubscription() async {
     await _locationSubscription?.cancel();
     _locationSubscription = null;
   }
 
+  /// This function will check if the user has granted location permissions
   Future<bool> _checkAndRequestPermission({bool? background}) async {
     if (!await FlLocation.isLocationServicesEnabled) {
       return false;
@@ -112,146 +290,5 @@ class ServiceProvider with ChangeNotifier {
         locationPermission == LocationPermission.whileInUse) return false;
 
     return true;
-  }
-
-  // Emails
-
-  Future<bool> addEmail({required EventProvider eventProvider}) async {
-    final String authUrl =
-        'http://$_serverAddress:$_serverPort/app/v1/auth/addEmail/google';
-
-    final String callbackUrlScheme = 'koja-login-callback';
-
-    String? response = await FlutterWebAuth.authenticate(
-      url: authUrl,
-      callbackUrlScheme: callbackUrlScheme,
-    );
-
-    response = Uri.parse(response).queryParameters['token'];
-
-    setAccessToken(response, eventProvider);
-
-    return accessToken != null;
-  }
-
-  Future<List<String>> getAllUserEmails() async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/linked-emails');
-    final response = await http.get(
-      url,
-      headers: {'Authorisation': _accessToken!},
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> result = jsonDecode(response.body);
-      return result.map((e) => e.toString()).toList();
-    } else {
-      return [];
-    }
-  }
-
-  //added - might need update
-  Future<bool> deleteUserAccount() async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
-    final response = await http.delete(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
-      },
-      // body: userEmail,
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<bool> loginUser({required EventProvider eventProvider}) async {
-    final String authUrl =
-        'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
-
-    final String callbackUrlScheme = 'koja-login-callback';
-
-    String? response = await FlutterWebAuth.authenticate(
-      url: authUrl,
-      callbackUrlScheme: callbackUrlScheme,
-    );
-
-    response = Uri.parse(response).queryParameters['token'];
-
-    setAccessToken(response, eventProvider);
-
-    return accessToken != null;
-  }
-
-  // Events
-
-  Future<bool> createEvent(Event event) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/createEvent');
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
-      },
-      body: jsonEncode(event.toJson()),
-    );
-
-    return response.statusCode == 200;
-  }
-
-  Future<List<Event>> getAllUserEvents() async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/userEvents');
-    final response = await http.get(
-      url,
-      headers: {'Authorisation': _accessToken!},
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> eventsJson = jsonDecode(response.body);
-      return eventsJson.map((json) => Event.fromJson(json)).toList();
-    } else {
-      return [];
-    }
-  }
-
-  Future<bool> updateEvent(Event event) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/updateEvent');
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
-      },
-      body: jsonEncode(event.toJson()),
-    );
-
-    return response.statusCode == 200;
-  }
-
-  Future<bool> deleteEvent(String eventId) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/deleteEvent');
-    final response = await http.delete(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
-      },
-      body: eventId,
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }

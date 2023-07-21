@@ -26,49 +26,48 @@ class _AddEmailModalState extends State<AddEmailModal> {
           shrinkWrap: true,
           children: [
             ElevatedButton(
-                onPressed: () async {
-                  if (await serviceProvider.addEmail(
-                      eventProvider: eventProvider)) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Email was added'),
-                          ),
-                        );
-                  } else {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Email was not added'),
-                      ),
-                    );
-                  }
-                },
-                child: const SizedBox(
-                  height: 30,
-                  width: 200,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Bootstrap.google,
-                        size: 16.0,
-                        color: Colors.red,
-                      ),
-                      SizedBox(width: 10.0),
-                      Text('Sign In With Google',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 16.0)),
-                    ],
-                  ),
+              onPressed: () async {
+                if (await serviceProvider.addEmail(
+                    eventProvider: eventProvider)) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Email was added'),
+                    ),
+                  );
+                } else {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Email was not added'),
+                    ),
+                  );
+                }
+              },
+              child: const SizedBox(
+                height: 30,
+                width: 200,
+                child: Row(
+                  children: [
+                    Icon(
+                      Bootstrap.google,
+                      size: 16.0,
+                      color: Colors.red,
+                    ),
+                    SizedBox(width: 10.0),
+                    Text('Sign In With Google',
+                        style:
+                          TextStyle(color: Colors.white, fontSize: 16.0)),
+                  ],
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                )),
-                SizedBox(height: 10.0),
-            
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              )),
+              SizedBox(height: 10.0), 
           ],
         ),
       ),

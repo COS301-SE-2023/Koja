@@ -47,6 +47,7 @@ class _EmailListState extends State<EmailList> {
           TextButton(
             onPressed: () {
               setState(() {
+                Provider.of<ServiceProvider>(context).deleteUserEmail(emails[index]);
                 emails.removeAt(index);
               });
               Navigator.pop(context); 

@@ -34,8 +34,7 @@ class UserController(private val userAccountRepository: UserAccountRepository) {
         } else {
             val jwtTokenData = getUserJWTTokenData(token)
             val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
-
-            userAccounts.forEach { userAccountRepository.delete(it) }
+`           userAccounts.forEach { userAccountRepository.delete(it) }
 
             ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
         }
