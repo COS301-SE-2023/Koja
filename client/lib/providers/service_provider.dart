@@ -31,7 +31,7 @@ class ServiceProvider with ChangeNotifier {
 
   Future<ServiceProvider> init() async {
     startLocationListner();
-    _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "localhost");
+    _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
     _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
     return this;
   }
