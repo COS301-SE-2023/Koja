@@ -230,6 +230,9 @@ class GoogleCalendarAdapterService(
 
     private fun createNewUser(userEmail: String, refreshToken: String?): User {
         val newUser = User()
+        newUser.setCurrentLocation(.0,.0)
+        newUser.setHomeLocation("Uninitialised")
+        newUser.setWorkLocation("Uninitialised")
         val storedUser = userRepository.save(newUser)
 
         val newUserAccount = UserAccount()
