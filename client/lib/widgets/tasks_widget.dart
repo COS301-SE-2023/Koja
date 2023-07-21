@@ -84,12 +84,8 @@ class TasksWidgetState extends State<TasksWidget> {
           final userEvent = details.appointments!.first;
           showDialog(
             context: context,
-            builder: (BuildContext dialogContext) {
-              return Dialog(
-                child: EventEditing(
-                  event: userEvent,
-                ),
-              );
+            builder: (BuildContext context) {
+              return EventEditing(event: userEvent);
             },
           );
 

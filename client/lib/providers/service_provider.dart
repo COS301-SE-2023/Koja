@@ -31,7 +31,7 @@ class ServiceProvider with ChangeNotifier {
 
   Future<ServiceProvider> init() async {
     startLocationListner();
-    _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "localhost");
+    _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
     _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
     return this;
   }
@@ -152,8 +152,8 @@ class ServiceProvider with ChangeNotifier {
 
   //added - might need update
   Future<bool> deleteUserAccount() async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
     final response = await http.delete(
       url,
       headers: {

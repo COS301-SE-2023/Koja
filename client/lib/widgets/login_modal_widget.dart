@@ -76,37 +76,52 @@ class LoginModalState extends State<LoginModal> {
             if (kDebugMode)
               ElevatedButton(
                   onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (ctx) {
-                          return SizedBox(
+                    showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return Dialog(
+                          child: SizedBox(
                             height: 180,
                             width: double.infinity,
-                            child: Column(children: [
-                              TextFormField(
-                                controller: editingController,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  serviceProvider.setAccessToken(
-                                    editingController.text.trim(),
-                                    eventProvider,
-                                  );
-                                  Navigator.pop(context);
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const NavigationScreen(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    controller: editingController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Enter Access Token',
+
+                                    )
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.blue,
                                     ),
-                                    (Route<dynamic> route) => false,
-                                  );
-                                },
-                                child: const Text('Login'),
-                              )
-                            ]),
-                          );
-                        });
+                                    onPressed: () {
+                                      serviceProvider.setAccessToken(
+                                        editingController.text.trim(),
+                                        eventProvider,
+                                      );
+                                      Navigator.pop(context);
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const NavigationScreen(),
+                                        ),
+                                        (Route<dynamic> route) => false,
+                                      );
+                                    },
+                                    child: const Text('Login'),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   },
                   child: const SizedBox(
                     height: 30,

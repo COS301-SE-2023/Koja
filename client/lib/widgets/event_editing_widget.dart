@@ -589,12 +589,29 @@ class EventEditingState extends State<EventEditing> {
       });
     }
   }
+  
 
   Future saveForm() async {
     late bool isValid = false;
 
+    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final existingEvents = eventProvider.events;
+
+    final isDuplicateEvent = existingEvents.any((existingEvent) {
+      return existingEvent.title == titleController.text &&
+            existingEvent.from == fromDate &&
+            existingEvent.to == toDate;
+    });
+
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
-      isValid = true;
+      if (isDuplicateEvent) {
+        const snackBar = SnackBar(
+          content: Text('Event already exists!'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        isValid = true;
+      }
     }
 
     if (isValid) {
