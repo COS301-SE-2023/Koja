@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/service_provider.dart';
+import '../screens/login_screen.dart';
 import 'all_emails_widget.dart';
 
 class EmailList extends StatefulWidget {
@@ -42,6 +43,17 @@ class _EmailListState extends State<EmailList> {
               setState(() {  
                 Provider.of<ServiceProvider>(context, listen: false).deleteUserEmail(emails[index]);
                 emails.removeAt(index);
+                Provider.of<ContextProvider>(context, listen: false).userEmails = emails;
+                if (emails.isEmpty) {
+                  Provider.of<ServiceProvider>(context, listen: false)
+                      .deleteUserAccount();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Login()),
+                    (Route<dynamic> route) => false,
+                  );
+                }
               });
               Navigator.pop(context); 
             },
