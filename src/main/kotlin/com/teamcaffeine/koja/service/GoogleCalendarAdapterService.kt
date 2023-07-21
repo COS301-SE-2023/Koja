@@ -138,6 +138,14 @@ class GoogleCalendarAdapterService(
                             updatedCredentials.expireTimeInSeconds,
                         ),
                     )
+                } else {
+                    userTokens.add(
+                        JWTGoogleDTO(
+                            accessToken,
+                            userAccount.refreshToken,
+                            expiresIn,
+                        ),
+                    )
                 }
             }
 
@@ -288,15 +296,15 @@ class GoogleCalendarAdapterService(
     }
 
     private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
-        val credential = GoogleCredential.Builder()
-            .setJsonFactory(JacksonFactory.getDefaultInstance())
-            .setTransport(GoogleNetHttpTransport.newTrustedTransport())
-            .setClientSecrets(clientId, clientSecret)
-            .build()
+        return if (refreshToken.isNotEmpty()) {
+            val credential = GoogleCredential.Builder()
+                .setJsonFactory(JacksonFactory.getDefaultInstance())
+                .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+                .setClientSecrets(clientId, clientSecret)
+                .build()
 
-        credential.refreshToken = refreshToken
+            credential.refreshToken = refreshToken
 
-        return if (credential.refreshToken()) {
             JWTGoogleDTO(
                 accessToken = credential.accessToken,
                 expireTimeInSeconds = credential.expiresInSeconds,

@@ -46,12 +46,13 @@ LocationController(private val locationService: LocationService) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
-                ResponseEntity.ok(locationService.setHomeLocation(token, placeId))
-            } catch (e: Exception) {
+                locationService.setHomeLocation(token, placeId)
+            } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
             } catch (e: Exception) {
                 ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
             }
+            ResponseEntity.ok(ResponseConstant.HOME_LOCATION_SET)
         }
     }
 
@@ -61,12 +62,13 @@ LocationController(private val locationService: LocationService) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
-                ResponseEntity.ok(locationService.setWorkLocation(token, placeId))
-            } catch (e: Exception) {
+                locationService.setWorkLocation(token, placeId)
+            } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
             } catch (e: Exception) {
                 ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
             }
+            ResponseEntity.ok(ResponseConstant.WORK_LOCATION_SET)
         }
     }
 
@@ -86,17 +88,17 @@ LocationController(private val locationService: LocationService) {
         @RequestParam("originLat") originLat: String?,
         @RequestParam("originLng") originLng: String?,
     ): ResponseEntity<out Any> {
-        if (token == null || originLng == null || originLat == null) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        return if (token == null || originLng == null || originLat == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             val originLatDouble = originLat.toDouble()
             val originLngDouble = originLng.toDouble()
-            var travelTimeList = locationService.getLocationTravelTimes(token, originLatDouble, originLngDouble)
+            val travelTimeList = locationService.getLocationTravelTimes(token, originLatDouble, originLngDouble)
 
-            if (!travelTimeList.isEmpty()) {
-                return ResponseEntity.ok(travelTimeList)
+            if (travelTimeList.isNotEmpty()) {
+                ResponseEntity.ok(travelTimeList)
             } else {
-                return ResponseEntity.ok("There are no future locations.")
+                ResponseEntity.ok("There are no future locations.")
             }
         }
     }
@@ -158,7 +160,7 @@ LocationController(private val locationService: LocationService) {
         @RequestParam("latitude") latitude: String,
         @RequestParam("longitude") longitude: String,
     ): ResponseEntity<out Any> {
-        return if (token == null || latitude == null || longitude == null) {
+        return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
