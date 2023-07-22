@@ -34,6 +34,9 @@ class _EmailListState extends State<EmailList> {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      final serviceProvider = Provider.of<ServiceProvider>(context, listen: false);
+      final contextProvider = Provider.of<ContextProvider>(context, listen: false);
+
       return AlertDialog(
         title: Text('Confirmation'),
         content: Text('Are you sure you want to delete this email from your account?'),
@@ -41,12 +44,11 @@ class _EmailListState extends State<EmailList> {
           TextButton(
             onPressed: () {
               setState(() {  
-                Provider.of<ServiceProvider>(context, listen: false).deleteUserEmail(emails[index]);
+                serviceProvider.deleteUserEmail(emails[index]);
                 emails.removeAt(index);
-                Provider.of<ContextProvider>(context, listen: false).userEmails = emails;
+                contextProvider.userEmails = emails;
                 if (emails.isEmpty) {
-                  Provider.of<ServiceProvider>(context, listen: false)
-                      .deleteUserAccount();
+                      serviceProvider.deleteUserAccount();
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
