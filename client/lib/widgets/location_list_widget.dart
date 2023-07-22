@@ -1,6 +1,7 @@
 import 'package:client/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 import '../Utils/constants_util.dart';
 
@@ -20,13 +21,19 @@ class _LocationListWidgetState extends State<LocationListWidget> {
     });
   }
 
-  Future<int> getLocation(int index) {
-    return ServiceProvider().getLocationsTravelTime(
-        locationList[index][1], -25.7562574, 28.2409557);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
+
+    Future<int> getLocation(int index) async {
+      return await serviceProvider.getLocationsTravelTime(
+        locationList[index][1],
+        serviceProvider.getLocation()[0],
+        serviceProvider.getLocation()[1],
+      );
+    }
+
     return AlertDialog(
       scrollable: true,
       title: Row(
@@ -107,7 +114,7 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                   final locationName = locationList[index][0];
                   final locationTime = getLocation(index);
 
-                  final locationTimeString = locationTime.toString();
+                  // final locationTimeString = locationTime.toString();
 
                   // print(locationTime);
                   return ListTile(

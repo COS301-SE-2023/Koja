@@ -40,11 +40,9 @@ class ServiceProvider with ChangeNotifier {
       String? token, ContextProvider eventProvider) async {
     _accessToken = token;
     if (token != null) {
-       eventProvider.init(token);
+      eventProvider.init(token);
     }
   }
-
-
 
   /// This Section deals with all the user related functions (emails, login, etc.)
 
@@ -223,6 +221,15 @@ class ServiceProvider with ChangeNotifier {
   void setLocationData(Location? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
+  }
+
+  /// This function will get the longitude and latitude of _locationData
+  List<double> getLocation() {
+    if (_locationData == null) {
+      return [0.0, 0.0];
+    } else {
+      return [_locationData!.latitude, _locationData!.longitude];
+    }
   }
 
   /// This function will attempt to get the travel time from the user's current location
