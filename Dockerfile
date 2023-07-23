@@ -57,7 +57,7 @@ ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
 # gradlew build -x test -x check
 # gradlew bootRun
 # if it says KoaApplication is starting, go to Chrome
-# http://localhost:8080/api/v1/auth/google/
+# http://localhost:8080/api/v1/auth/google
 # choose your google account
 # f12 > network > callbackstate > Headers > copy the token (between Authorization and cache-ctrl)
 # click debug > add token > paste the token > click login
