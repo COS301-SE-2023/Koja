@@ -20,15 +20,17 @@ class User {
     public val userAccounts: MutableList<UserAccount> = mutableListOf()
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    public val timeBoundaries: MutableList<TimeBoundary> = mutableListOf()
-
+    val timeBoundaries: MutableList<TimeBoundary> = mutableListOf()
     private var homeLocation: String ? = null
     private var workLocation: String ? = null
 
-    fun getTimeBoundaries(): MutableList<TimeBoundary>? {
-        return return timeBoundaries
+    fun getUserTimeBoundaries(): MutableList<TimeBoundary> {
+        return timeBoundaries
     }
 
+    fun addTimeBoundary(boundary: TimeBoundary) {
+        timeBoundaries.add(boundary)
+    }
     fun setHomeLocation(homeLocation: String) {
         this.homeLocation = homeLocation
     }

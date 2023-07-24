@@ -20,8 +20,8 @@ class UserAccount(
     var refreshToken: String = "",
     var authProvider: AuthProviderEnum = AuthProviderEnum.NONE,
     var userID: Int = Int.MAX_VALUE,
-
+) {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    var user: User? = null,
-)
+    var user: User? = null
+}

@@ -5,18 +5,26 @@ import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
 
 @Service
 class UserCalendarService(
-    private val userAccountRepository: UserAccountRepository,
-    private val userRepository: UserRepository,
+    @Autowired
+    private var userRepository: UserRepository,
 ) {
+
+    @Autowired
+    private lateinit var userAccountRepository: UserAccountRepository
+
+    @Autowired
+    private lateinit var timeBoundaryRepository: TimeBoundaryRepository
 
     fun getAllUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = getUserJWTTokenData(token)
@@ -187,26 +195,32 @@ class UserCalendarService(
         return Pair(newEventStartTime, newEventEndTime)
     }
 
+    @Transactional
     fun addTimeBoundary(token: String, timeBoundary: TimeBoundary): Boolean {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
-
-        val retrievedUserBoundaries = user.get().getTimeBoundaries()
-        if (retrievedUserBoundaries != null) {
-            retrievedUserBoundaries.add(timeBoundary)
+        if (timeBoundary != null && !user.isEmpty) {
+            val retrievedUser = user.get()
+            retrievedUser.addTimeBoundary(timeBoundary)
+            timeBoundary.user = retrievedUser
+            userRepository.save(retrievedUser)
             return true
         }
         return false
     }
+
+    @Transactional
     fun removeTimeBoundary(token: String, name: String?): Boolean {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
-
-        val retrievedUserBoundaries = user.get().getTimeBoundaries()
-        if (retrievedUserBoundaries != null) {
-            for (i in 1..retrievedUserBoundaries.size) {
-                if (retrievedUserBoundaries.get(i).getName() == name) {
-                    retrievedUserBoundaries.removeAt(i)
+        if (name != null && !user.isEmpty) {
+            val retrievedUser = user.get()
+            for (i in 1..retrievedUser.getUserTimeBoundaries()!!.size) {
+                if (retrievedUser.getUserTimeBoundaries()!!.get(i).getName() == name) {
+                    val boundaryToRemove = retrievedUser.getUserTimeBoundaries()!!.get(i)
+                    boundaryToRemove.user = null
+                    retrievedUser.getUserTimeBoundaries()!!.removeAt(i)
+                    userRepository.save(retrievedUser)
                     return true
                 }
             }
@@ -217,10 +231,8 @@ class UserCalendarService(
     fun getUserTimeBoundaries(token: String): MutableList<TimeBoundary> {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
-
-        val retrievedUserBoundaries = user.get().getTimeBoundaries()
-        if (retrievedUserBoundaries != null) {
-            return retrievedUserBoundaries
+        if (user != null) {
+            return user.get().getUserTimeBoundaries()
         }
         return mutableListOf()
     }
@@ -231,9 +243,9 @@ class UserCalendarService(
         var timeBoundary: TimeBoundary ? = null
 
         if (user != null) {
-            for (i in 0..(user.getTimeBoundaries()?.size ?: 0))
-                if (user.getTimeBoundaries()?.get(i)?.getName() == name) {
-                    timeBoundary = user.getTimeBoundaries()?.get(i)
+            for (i in 0..(user.getUserTimeBoundaries()?.size ?: 0))
+                if (user.getUserTimeBoundaries()?.get(i)?.getName() == name) {
+                    timeBoundary = user.getUserTimeBoundaries()?.get(i)
                 }
         }
         when (name) {
