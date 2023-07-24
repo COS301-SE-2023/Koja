@@ -42,14 +42,15 @@ category_ids = all_df['category'].values
 weekdays = all_df['weekday'].values
 
 # Convert weekdays to one-hot encoding
-enc = OneHotEncoder(sparse=False)
-weekdays_one_hot = enc.fit_transform(weekdays.reshape(-1, 1))
+weekday_encoder = OneHotEncoder(sparse=False)
+weekday_int_encoded = weekday_encoder.fit_transform(weekdays.reshape(-1, 1))
+weekday_int_encoded = weekday_int_encoded.argmax(axis=1)
 
 # Create TensorFlow datasets
 all_data = tf.data.Dataset.from_tensor_slices({
     "user_id": user_ids,
     "category_id": category_ids,
-    "weekday": weekdays_one_hot
+    "weekday": weekday_int_encoded
 })
 user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
 category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
@@ -57,7 +58,7 @@ category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
 # Define user, category and weekday models
 user_model = tf.keras.Sequential([
     tf.keras.layers.StringLookup(vocabulary=np.unique(user_ids), mask_token=None),
-    tf.keras.layers.Embedding(len(np.unique(user_ids)) + 1, 5),
+    tf.keras.layers.Embedding(len(np.unique(user_ids)) + 1, 10),
 ])
 
 category_model = tf.keras.Sequential([
@@ -66,9 +67,7 @@ category_model = tf.keras.Sequential([
 ])
 
 weekday_model = tf.keras.Sequential([
-    tf.keras.layers.Dense(7, activation='relu'),  # Fully connected layer for one-hot encoded input
-    tf.keras.layers.Flatten(),  # Flatten the output
-    tf.keras.layers.Dense(5),  # Final embedding size
+    tf.keras.layers.Embedding(input_dim=7, output_dim=10),
 ])
 
 # Define the task as retrieval (recommendation)
@@ -97,7 +96,7 @@ model = CategoryRecommender(user_model, category_model, weekday_model, task)
 model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
 # Train the model
-model.fit(all_data.batch(128), epochs=100)
+model.fit(all_data.batch(128), epochs=10)
 
 index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
 index.index_from_dataset(
