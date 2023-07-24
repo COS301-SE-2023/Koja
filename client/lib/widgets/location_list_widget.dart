@@ -133,13 +133,33 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                               future: locationTime,
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.toString(),
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  );
+                                  if (snapshot.data! == 0) {
+                                    return Text(
+                                      "Data not available",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  } else if (snapshot.data! < 3600) {
+                                    return Text(
+                                      "${(snapshot.data! / 60).toStringAsFixed(0)} mins",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  } else {
+                                    int hours = snapshot.data! ~/ 3600;
+                                    int minutes = (snapshot.data! % 3600) ~/ 60;
+                                    return Text(
+                                      "${hours} hrs ${minutes} mins",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  }
                                 } else {
                                   return Center(
                                     child: Wrap(

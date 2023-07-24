@@ -583,23 +583,23 @@ class EventEditingState extends State<EventEditing> {
     late bool isValid = false;
 
     final eventProvider = Provider.of<ContextProvider>(context, listen: false);
-    final existingEvents = eventProvider.events;
+    // final existingEvents = eventProvider.events;
 
-    final isDuplicateEvent = existingEvents.any((existingEvent) {
-      return existingEvent.title == titleController.text &&
-          existingEvent.from == fromDate &&
-          existingEvent.to == toDate;
-    });
+    // final isDuplicateEvent = existingEvents.any((existingEvent) {
+    //   return existingEvent.title == titleController.text &&
+    //       existingEvent.from == fromDate &&
+    //       existingEvent.to == toDate;
+    // });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
-      if (isDuplicateEvent) {
-        const snackBar = SnackBar(
-          content: Text('Event already exists!'),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      } else {
+      // if (isDuplicateEvent) {
+      //   const snackBar = SnackBar(
+      //     content: Text('Event already exists!'),
+      //   );
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // } else {
         isValid = true;
-      }
+      // }
     }
 
     if (isValid) {
