@@ -1,11 +1,14 @@
 package com.teamcaffeine.koja.controller
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.service.UserCalendarService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,10 +19,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/user")
-class UserController(
-    private val userAccountRepository: UserAccountRepository,
-    private val userCalendarService: UserCalendarService,
-) {
+class UserController {
+
+    @Autowired
+    private lateinit var userAccountRepository: UserAccountRepository
+
+    @Autowired
+    private lateinit var userCalendarService: UserCalendarService
 
     @GetMapping("linked-emails")
     fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
@@ -57,8 +63,12 @@ class UserController(
         return if (token == null) {
             ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
         } else {
-            var boundary: TimeBoundary = TimeBoundary(name, startTime, endTime)
-            return ResponseEntity.ok("Time boundary successfully added")
+            var boundary = TimeBoundary(name, startTime, endTime)
+            try {
+                return ResponseEntity.ok(userCalendarService.addTimeBoundary(token, boundary))
+            } catch (e: Exception) {
+                return ResponseEntity.badRequest().body(e.message)
+            }
         }
     }
 
@@ -75,21 +85,27 @@ class UserController(
         }
     }
 
-    @PostMapping("/getAllTimeBoundary")
+    @GetMapping("/getAllTimeBoundary")
     fun getTimeBoundaries(@RequestHeader(HeaderConstant.AUTHORISATION) token: String): ResponseEntity<out Any> {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            return ResponseEntity.ok(userCalendarService.getUserTimeBoundaries(token))
+            try {
+                val gson = GsonBuilder().setLenient().excludeFieldsWithoutExposeAnnotation().create()
+                return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaries(token)))
+            } catch (e: Exception) {
+                return ResponseEntity.badRequest().body(e.message)
+            }
         }
     }
 
-    @PostMapping("/getTimeBoundaryAndLocation")
+    @GetMapping("/getTimeBoundaryAndLocation")
     fun getTimeBoundaryAndLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("location") location: String): ResponseEntity<out Any> {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            return ResponseEntity.ok(userCalendarService.getUserTimeBoundaryAndLocation(token, location))
+            val gson = Gson()
+            return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaryAndLocation(token, location)))
         }
     }
 }

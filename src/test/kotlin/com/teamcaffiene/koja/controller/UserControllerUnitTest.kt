@@ -30,7 +30,7 @@ class UserControllerUnitTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userController = UserController(userAccountRepository)
+        userController = UserController()
     }
 
     private fun importEnvironmentVariables() {
