@@ -25,7 +25,6 @@ class EventEditingState extends State<EventEditing> {
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
   String placeName = "";
-  String travelTime = "";
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -593,23 +592,29 @@ class EventEditingState extends State<EventEditing> {
     late bool isValid = false;
 
     final eventProvider = Provider.of<ContextProvider>(context, listen: false);
-    // final existingEvents = eventProvider.events;
+    final existingEvents = eventProvider.events;
 
-    // final isDuplicateEvent = existingEvents.any((existingEvent) {
-    //   return existingEvent.title == titleController.text &&
-    //       existingEvent.from == fromDate &&
-    //       existingEvent.to == toDate;
-    // });
+    final isDuplicateEvent = existingEvents.any((existingEvent) {
+      return existingEvent.title == titleController.text &&
+          existingEvent.from == fromDate &&
+          existingEvent.to == toDate &&
+          existingEvent.category == selectedCategory &&
+          existingEvent.isDynamic == (selectedEventType == "Dynamic") &&
+          existingEvent.priority == (selectedPriority == "Low" ? 1 : 
+          selectedPriority == "Medium" ? 2 : 3) &&
+          existingEvent.backgroundColor == selectedColor;
+          
+    });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
-      // if (isDuplicateEvent) {
-      //   const snackBar = SnackBar(
-      //     content: Text('Event already exists!'),
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      // } else {
+      if (isDuplicateEvent) {
+        const snackBar = SnackBar(
+          content: Text('Event already exists!'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
       isValid = true;
-      // }
+      }
     }
 
     if (isValid) {
@@ -720,10 +725,78 @@ class EventEditingState extends State<EventEditing> {
         backgroundColor: selectedColor,
       );
 
-      // if(TimeEstimationWidget.)
+      var travelTimeBlock;
+
+      if (event.location != "" ) {
+        List<String> timeParts = travelTime.split(' ');
+
+        // Initialize variables to store the hours, minutes, and seconds
+        int hours = 0;
+        int minutes = 0;
+        int seconds = 0;
+
+        // Iterate through the timeParts and extract the corresponding values
+        for (int i = 0; i < timeParts.length; i += 2) {
+          int value = int.parse(timeParts[i]);
+          String unit = timeParts[i + 1];
+
+          if (unit.contains('hour')) {
+            hours = value;
+          } else if (unit.contains('minute')) {
+            minutes = value;
+          } else if (unit.contains('second')) {
+            seconds = value;
+          }
+        }
+
+        // Construct the DateTime object
+        DateTime travelDateTime = DateTime(
+          fromDate.year,
+          fromDate.month,
+          fromDate.day,
+          fromDate.hour - hours,
+          fromDate.minute - minutes,
+          fromDate.second - seconds,
+        );
+        String meetingTitle = titleController.text;
+
+        travelTimeBlock = Event(
+          // id: (widget.event != null) ? widget.event!.id : "",
+          title: "Travel To $meetingTitle",
+          location: "",
+          description: '',
+          category: '',
+          isDynamic: (selectedEventType == "Dynamic") ? true : false,
+          from: travelDateTime,
+          to: fromDate,
+          duration: await getDurationInMilliseconds(durationInSeconds),
+          isAllDay: false,
+          timeSlots: [timeSlot],
+          priority: priorityValue,
+          backgroundColor: selectedColor,
+        );
+      }
 
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
+
+      if(travelTimeBlock != null) {
+        var response = await serviceProvider.createEvent(travelTimeBlock);
+
+        if (response) {
+          eventProvider.addEvent(travelTimeBlock);
+          const snackBar = SnackBar(
+            content: Text('Event Created!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
+        } else {
+          const snackBar = SnackBar(
+            content: Text('Event Creation failed!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
 
       if (widget.event == null) {
         var response = await serviceProvider.createEvent(event);
@@ -806,7 +879,7 @@ class TimeEstimationWidget extends StatelessWidget {
       return FutureBuilder(
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
-              // travelTime = getHumanText(snapshot.data);
+              travelTime = getHumanText(snapshot.data);
               return Padding(
                   padding: const EdgeInsets.only(top: 3, left: 12),
                   child: Text(getHumanText(snapshot.data)));

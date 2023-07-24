@@ -18,3 +18,6 @@ List<List<String>> categories = [];
 bool isEditing = false;
 String start = '';
 String end = '';
+
+/// Helper variables for when adding a block for travel time for event
+String travelTime = "";
