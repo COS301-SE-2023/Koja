@@ -1,36 +1,31 @@
 package com.teamcaffiene.koja.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenRequest
+import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
-import io.mockk.mockk
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.check
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.json.JacksonTester
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.*
 
 @SpringJUnitConfig
@@ -48,6 +43,7 @@ class UserCalendarServiceTest {
     private lateinit var service: GoogleCalendarAdapterService
     private lateinit var dotenv: Dotenv
     private lateinit var userCalendarService: UserCalendarService
+
     @BeforeEach
     fun setup() {
         val dotenv: Dotenv = Dotenv.load()
@@ -112,15 +108,40 @@ class UserCalendarServiceTest {
     @Test
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange
-        val token = "test_token"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID),
+        )
+
         val timeBoundary = TimeBoundary("Partying", "12:00", "05:00")
+        val mockUser = User().apply {
+            id = mockUserID
+            userAccounts = arrayListOf(
+                UserAccount(id = 1, email = "test@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID),
+            )
+        }
+        val optionalUserValue = Optional.of(mockUser)
+
+        whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
+        whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
 
         // Act
-        val result = userCalendarService.addTimeBoundary(token, timeBoundary)
+        val result = userCalendarService.addTimeBoundary(mockToken, timeBoundary)
 
         // Assert
         Assertions.assertTrue(result)
-        Mockito.verify(userRepository).save(Mockito.any(User::class.java))
+
+        // Verify that the time boundary is added to the user and saved in the repository
+        Assertions.assertEquals(timeBoundary, mockUser.getUserTimeBoundaries()[0])
+
+        // Verify that the user is saved in the repository
+        Mockito.verify(userRepository).save(
+            check<User> { savedUser ->
+                Assertions.assertEquals(mockUser, savedUser)
+                Assertions.assertEquals(timeBoundary, savedUser.getUserTimeBoundaries()[0])
+            },
+        )
     }
 
     @Test
