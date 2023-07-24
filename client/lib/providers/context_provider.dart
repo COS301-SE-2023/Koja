@@ -22,8 +22,10 @@ class ContextProvider extends ChangeNotifier {
   Location? locationData;
 
   late GlobalKey<ScaffoldMessengerState> scaffoldKey;
+  late GlobalKey<NavigatorState> navigationKey;
 
   void setScaffoldKey(GlobalKey<ScaffoldMessengerState> s) => scaffoldKey = s;
+  void setNavigationKey(GlobalKey<NavigatorState> s) => navigationKey = s;
 
   final Map<String, TimeSlot?> _timeSlots = {
     "Hobby": null,

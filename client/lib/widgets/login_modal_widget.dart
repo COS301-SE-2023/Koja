@@ -89,8 +89,8 @@ class LoginModalState extends State<LoginModal> {
                               child: Column(
                                 children: [
                                   TextFormField(
-                                    scrollController: ScrollController(),
-                                    scrollPhysics: BouncingScrollPhysics(),
+                                      scrollController: ScrollController(),
+                                      scrollPhysics: BouncingScrollPhysics(),
                                       controller: editingController,
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(
@@ -109,7 +109,13 @@ class LoginModalState extends State<LoginModal> {
                                         editingController.text.trim(),
                                         eventProvider,
                                       );
-                                      Navigator.pop(context);
+                                      Navigator.of(eventProvider
+                                              .navigationKey.currentContext!)
+                                          .pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (_) => NavigationScreen(),
+                                        ),
+                                      );
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
