@@ -25,6 +25,7 @@ class EventEditingState extends State<EventEditing> {
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
   String placeName = "";
+  String travelTime = "";
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -125,6 +126,15 @@ class EventEditingState extends State<EventEditing> {
       titleController.text = event.title;
       fromDate = event.from;
       toDate = event.to;
+      selectedCategory = event.category;
+      selectedEventType = event.isDynamic ? 'Dynamic' : 'Fixed';
+      selectedPriority = event.priority == 1
+          ? 'Low'
+          : event.priority == 2
+              ? 'Medium'
+              : 'High';
+      selectedColor = event.backgroundColor;
+      _eventPlace.text = event.location;
     }
   }
 
@@ -598,7 +608,7 @@ class EventEditingState extends State<EventEditing> {
       //   );
       //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
       // } else {
-        isValid = true;
+      isValid = true;
       // }
     }
 
@@ -710,6 +720,8 @@ class EventEditingState extends State<EventEditing> {
         backgroundColor: selectedColor,
       );
 
+      // if(TimeEstimationWidget.)
+
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
 
@@ -794,6 +806,7 @@ class TimeEstimationWidget extends StatelessWidget {
       return FutureBuilder(
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
+              // travelTime = getHumanText(snapshot.data);
               return Padding(
                   padding: const EdgeInsets.only(top: 3, left: 12),
                   child: Text(getHumanText(snapshot.data)));
