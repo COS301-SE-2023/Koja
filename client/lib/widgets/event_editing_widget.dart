@@ -547,6 +547,10 @@ class EventEditingState extends State<EventEditing> {
       final timeOfDay = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(initialDate),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        )
       );
 
       if (timeOfDay == null) return null;
@@ -603,7 +607,7 @@ class EventEditingState extends State<EventEditing> {
           existingEvent.priority == (selectedPriority == "Low" ? 1 : 
           selectedPriority == "Medium" ? 2 : 3) &&
           existingEvent.backgroundColor == selectedColor;
-          
+
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -785,14 +789,28 @@ class EventEditingState extends State<EventEditing> {
 
         if (response) {
           eventProvider.addEvent(travelTimeBlock);
-          const snackBar = SnackBar(
-            content: Text('Event Created!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Created!',
+                style: TextStyle(
+                  fontFamily: 'Railway', 
+                  color: Colors.white
+                )
+              ),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
         } else {
-          const snackBar = SnackBar(
-            content: Text('Event Creation failed!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Creation failed!',
+                  style: TextStyle(
+                    fontFamily: 'Railway', 
+                    color: Colors.white
+                  )
+              ),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
@@ -803,14 +821,28 @@ class EventEditingState extends State<EventEditing> {
 
         if (response) {
           eventProvider.addEvent(event);
-          const snackBar = SnackBar(
-            content: Text('Event Created!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Created!',
+                style: TextStyle(
+                  fontFamily: 'Railway', 
+                  color: Colors.white
+                )
+              ),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
         } else {
-          const snackBar = SnackBar(
-            content: Text('Event Creation failed!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Creation failed!',
+                style: TextStyle(
+                  fontFamily: 'Railway', 
+                  color: Colors.white
+                )
+              ),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
@@ -818,14 +850,28 @@ class EventEditingState extends State<EventEditing> {
         var response = await serviceProvider.updateEvent(event);
         if (response) {
           eventProvider.updateEvent(event);
-          const snackBar = SnackBar(
-            content: Text('Event Updated!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Updated!',
+                style: TextStyle(
+                  fontFamily: 'Railway', 
+                  color: Colors.white
+                )
+              ),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
         } else {
-          const snackBar = SnackBar(
-            content: Text('Event Update Failed.'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Update Failed.',
+                style: TextStyle(
+                  fontFamily: 'Railway', 
+                  color: Colors.white
+                )
+              ),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
