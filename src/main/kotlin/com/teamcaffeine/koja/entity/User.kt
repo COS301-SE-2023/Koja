@@ -17,7 +17,7 @@ class User {
     public var id: Int? = null
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    public val userAccounts: MutableList<UserAccount> = mutableListOf()
+    public var userAccounts: MutableList<UserAccount> = mutableListOf()
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val timeBoundaries: MutableList<TimeBoundary> = mutableListOf()
