@@ -18,6 +18,7 @@ import java.time.OffsetDateTime
 class UserCalendarService(
     @Autowired
     private var userRepository: UserRepository,
+    private val functionality: MyFunctionality
 ) {
 
     @Autowired
