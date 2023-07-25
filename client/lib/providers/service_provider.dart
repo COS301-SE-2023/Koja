@@ -86,7 +86,8 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to delete an email from the user's account
   /// From UserAccountController
-  Future<bool> deleteUserEmail(String email) async {
+  Future<void> deleteUserEmail(
+      {required String email, required ContextProvider eventProvider}) async {
     final url =
         Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/remove-email');
     final response = await http.post(
@@ -99,9 +100,7 @@ class ServiceProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
+      setAccessToken(response.body, eventProvider);
     }
   }
 
