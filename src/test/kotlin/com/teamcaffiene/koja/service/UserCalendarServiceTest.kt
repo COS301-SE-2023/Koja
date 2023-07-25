@@ -26,7 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
-import java.util.*
+import java.util.Optional
 
 @SpringJUnitConfig
 @SpringBootTest(classes = [KojaApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -109,6 +109,7 @@ class UserCalendarServiceTest {
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange
         val mockUserID = Int.MAX_VALUE
+        //  whenever(getUserJWTTokenData().thenReturn(optionalUserValue)
         val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
         val mockToken = TokenManagerController.createToken(
             TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID),
