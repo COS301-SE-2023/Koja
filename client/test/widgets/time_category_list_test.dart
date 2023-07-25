@@ -1,6 +1,9 @@
 import 'package:client/widgets/time_category_list.dart';
+import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 
 void main() {
@@ -50,5 +53,6 @@ void main() {
     // Verify that the edit button is not pressed initially
     expect(editPressed, false);
 
+    expect(find.byType(Slidable), findsOneWidget);
   });
 }
