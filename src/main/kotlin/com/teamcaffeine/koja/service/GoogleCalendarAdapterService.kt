@@ -12,11 +12,7 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
+import com.google.gson.*
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
@@ -68,17 +64,41 @@ class GoogleCalendarAdapterService(
             .setAccessType("offline")
             .build()
 
-    override fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView {
-        val redirectURI = if (appCallBack) {
+    override fun setupConnection(
+        request: HttpServletRequest?,
+        appCallBack: Boolean,
+        addAdditionalAccount: Boolean,
+        token: String,
+    ): RedirectView {
+        val redirectURI = if (appCallBack && !addAdditionalAccount) {
             "$redirectUriBase/app/google/callback"
-        } else {
+        } else if (!addAdditionalAccount) {
             "$redirectUriBase/google/callback"
+        } else {
+            "http://localhost:8080/api/v1/user/auth/add-email/callback"
         }
 
-        val url = flow.newAuthorizationUrl()
+        val url = if (!addAdditionalAccount) { flow.newAuthorizationUrl()
             .setRedirectUri(redirectURI)
             .setState(request?.session?.id)
             .build()
+        } else {
+            val flow = GoogleAuthorizationCodeFlow.Builder(
+                httpTransport,
+                jsonFactory,
+                clientId,
+                clientSecret,
+                scopes,
+            )
+                .setAccessType("offline")
+                .setApprovalPrompt("force")
+                .build()
+
+            flow.newAuthorizationUrl()
+                .setRedirectUri(redirectURI)
+                .setState(token) // Set state parameter here
+                .build()
+        }
 
         return RedirectView(url)
     }
@@ -184,11 +204,7 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        if (!appCallBack) {
-            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
-        } else {
-            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/app/google/callback")
-        }
+        parameters.add("redirect_uri", "http://localhost:8080/api/v1/user/auth/add-email/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
 

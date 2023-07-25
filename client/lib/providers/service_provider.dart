@@ -68,7 +68,7 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to add another email using UserAccountController
   Future<bool> addEmail({required ContextProvider eventProvider}) async {
     final String authUrl =
-        'http://$_serverAddress:$_serverPort/api/v1/user/add-email/google';
+        'http://$_serverAddress:$_serverPort/api/v1/user/auth/add-email/google?token=$_accessToken';
 
     final String callbackUrlScheme = 'koja-login-callback';
 
