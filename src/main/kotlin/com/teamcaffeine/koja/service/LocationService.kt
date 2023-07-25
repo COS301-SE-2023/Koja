@@ -8,13 +8,16 @@ import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
 import net.minidev.json.JSONObject
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class LocationService(
-    private val userRepository: UserRepository,
-    private var googleCalendarAdapterService: GoogleCalendarAdapterService,
-) {
+class LocationService {
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
     fun setHomeLocation(accessToken: String, homeLocation: String?): String? {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
         val user = userRepository.findById(userJWTTokenData.userID)
