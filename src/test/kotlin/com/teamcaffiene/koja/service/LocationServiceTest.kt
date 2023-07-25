@@ -2,10 +2,11 @@ package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
-import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.LocationService
 import io.github.cdimascio.dotenv.Dotenv
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.spy
@@ -48,5 +49,10 @@ class LocationServiceTest {
         dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
 
         service = spy(LocationService())
+    }
+
+    @Test
+    fun addition() {
+        assertEquals(2, 1 + 1)
     }
 }
