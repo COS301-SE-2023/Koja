@@ -39,16 +39,22 @@ for block in data:
     for event in block['training']:
         for time_frame in event['timeFrame']:
             new_event = event.copy()
-            new_event['startTime'] = time_frame['first']
-            new_event['endTime'] = time_frame['second']
+            new_event['startTime'] = time_frame['first'].strip()
+            new_event['endTime'] = time_frame['second'].strip()
+            new_event['category'] = event['category'].strip()
+            new_event['weekday'] = event['weekday'].strip()
+            new_event['userID'] = event['userID'].strip()
             expanded_training_events.append(new_event)
     # Testing block
     expanded_testing_events = []
     for event in block['testing']:
         for time_frame in event['timeFrame']:
             new_event = event.copy()
-            new_event['startTime'] = time_frame['first']
-            new_event['endTime'] = time_frame['second']
+            new_event['startTime'] = time_frame['first'].strip()
+            new_event['endTime'] = time_frame['second'].strip()
+            new_event['category'] = event['category'].strip()
+            new_event['weekday'] = event['weekday'].strip()
+            new_event['userID'] = event['userID'].strip()
             expanded_testing_events.append(new_event)
 
     # Concatenate training and testing data
@@ -73,14 +79,20 @@ all_data = tf.data.Dataset.from_tensor_slices({
 user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
 category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
 
+user_ids_vocabulary = tf.keras.layers.StringLookup(mask_token=None)
+user_ids_vocabulary.adapt(user_dataset)
+
+categories_vocabulary = tf.keras.layers.StringLookup(mask_token=None)
+categories_vocabulary.adapt(category_dataset)
+
 # Define user and category models
 user_model = tf.keras.Sequential([
-    tf.keras.layers.StringLookup(vocabulary=np.unique(user_ids), mask_token=None),
+    user_ids_vocabulary,
     tf.keras.layers.Embedding(len(np.unique(user_ids)) + 1, 16),
 ])
 
 category_model = tf.keras.Sequential([
-    tf.keras.layers.StringLookup(vocabulary=np.unique(category_ids), mask_token=None),
+    categories_vocabulary,
     tf.keras.layers.Embedding(len(np.unique(category_ids)) + 1, 16),
 ])
 
