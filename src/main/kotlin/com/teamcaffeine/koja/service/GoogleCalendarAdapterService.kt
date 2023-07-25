@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -319,13 +320,21 @@ class GoogleCalendarAdapterService(
 
     private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
         if (refreshToken.isNotEmpty()) {
+            val tokenResponse = GoogleTokenResponse().setRefreshToken(refreshToken)
+
             val credential = GoogleCredential.Builder()
-                .setJsonFactory(JacksonFactory.getDefaultInstance())
-                .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+                .setJsonFactory(jsonFactory)
+                .setTransport(httpTransport)
                 .setClientSecrets(clientId, clientSecret)
                 .build()
+                .setFromTokenResponse(tokenResponse)
 
-            credential.refreshToken = refreshToken
+            try {
+                credential.refreshToken()
+            } catch (exception: Exception) {
+                return null
+            }
+
             if (credential.accessToken != null) {
                 return JWTGoogleDTO(
                     accessToken = credential.accessToken,

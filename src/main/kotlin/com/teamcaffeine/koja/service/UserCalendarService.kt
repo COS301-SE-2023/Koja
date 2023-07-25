@@ -26,11 +26,12 @@ class UserCalendarService(
 
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val accessToken =
-                userJWTTokenData.userAuthDetails.firstOrNull() { it.getRefreshToken() == userAccount.refreshToken }
-                    ?.getAccessToken()
-            if (accessToken != null) {
-                userEvents.addAll(adapter.getUserEvents(accessToken))
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.addAll(adapter.getUserEvents(accessToken))
+                }
             }
         }
 
@@ -38,7 +39,7 @@ class UserCalendarService(
     }
 
     @Transactional
-    private fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
+    fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
         val adapterFactory = CalendarAdapterFactoryService(userRepository, userAccountRepository)
