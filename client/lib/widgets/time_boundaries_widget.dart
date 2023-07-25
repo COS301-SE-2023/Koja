@@ -35,9 +35,6 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   //   }
   // }
 
-  // index of list item which is being edited so that we can delete the current item and add the edited item
-  int editedindex = 0;
-
   // selected option for dropdown
   late String selectedOption;
 
@@ -52,17 +49,9 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   /// function to save timein the category list
   void saveTime() {
-    if (start.isEmpty) {
-      DateTime currentTime = DateTime.now();
-      String formattedStartTime = DateFormat('HH:MM').format(currentTime);
-      start = formattedStartTime;
-    }
-
-    if (end.isEmpty) {
-      DateTime currentTime = DateTime.now();
-      String formattedEndTime = DateFormat('HH:MM').format(currentTime);
-      end = formattedEndTime;
-    }
+  
+    print("start $start");
+    print("end $end");
 
     DateFormat format = DateFormat("HH:MM");
     DateTime startTime = format.parse(start);
@@ -74,14 +63,15 @@ class TimeBoundariesState extends State<TimeBoundaries> {
       eventProvider.setTimeSlot(selectedOption, timeSlot);
       categories.removeWhere((element) => element[0] == selectedOption);
       categories.add([selectedOption, start, end]);
-      start = '';
-      end = '';
+      start = TimeOfDay.now().toString();
+      end = TimeOfDay.now().toString();
     });
 
     // If editing an item, remove the current item from the list and add the edited item
     if (editedindex >= 0) {
       // categories.removeAt(editedindex);
       editedindex = -1;
+      isEditing = false;
     }
   }
 

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../Utils/constants_util.dart';
 
-
 class SetBoundary extends StatefulWidget {
   final VoidCallback onSave;
   final String selectedOption;
-  String startTime;
-  String endTime;
+  late String? startTime;
+  late String? endTime;
 
   SetBoundary(
     this.selectedOption,
@@ -23,6 +22,16 @@ class SetBoundary extends StatefulWidget {
 class _SetBoundaryState extends State<SetBoundary> {
   @override
   Widget build(BuildContext context) {
+    String initstart = "";
+    String initend = "";
+
+    if (isEditing == false) {
+      initstart = start;
+      initend = end;
+    } else {
+      initstart = categories[editedindex][1];
+      initend = categories[editedindex][2];
+    }
     return AlertDialog(
       content: Container(
         height: 180,
@@ -54,7 +63,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(height: 5),
                       SizedBox(
                         child: SelectedTimeButton(
-                          time: widget.startTime,
+                          time: widget.startTime = initstart,
                           onTimeChanged: (time) {
                             setState(() {
                               start = time;
@@ -80,7 +89,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(height: 5),
                       SizedBox(
                         child: SelectedTimeButton(
-                          time: widget.endTime,
+                          time: widget.endTime = initend,
                           onTimeChanged: (time) {
                             setState(() {
                               end = time;
@@ -163,7 +172,7 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
       initialTime: TimeOfDay.now(),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), 
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: child!,
         );
       },

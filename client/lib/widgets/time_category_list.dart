@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
+import '../Utils/constants_util.dart';
+
 class TimeCategory extends StatefulWidget {
   final String category;
   final String startTime;
@@ -31,14 +33,15 @@ class _TimeCategoryState extends State<TimeCategory> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               icon: Icons.delete_outline_rounded,
-              borderRadius: BorderRadius.circular(100),
             ),
             SlidableAction(
-              onPressed: (context) => widget.edit!(context),
+              onPressed: (context) => {
+                widget.edit!(context),
+                isEditing = true,
+              },
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
               icon: LineAwesome.edit,
-              borderRadius: BorderRadius.circular(200),
             ),
           ],
         ),
@@ -53,16 +56,16 @@ class _TimeCategoryState extends State<TimeCategory> {
                 children: [
                   Icon(
                     widget.category == 'School'
-                    ? Icons.school_outlined
-                      : widget.category == 'Work'
-                    ? Icons.card_travel_outlined
-                      : widget.category == 'Hobbies'
-                    ? Icons.self_improvement_outlined
-                      : widget.category == 'Resting'
-                    ? Icons.king_bed_outlined
-                      : widget.category == 'Chores'
-                    ? Icons.help
-                      : LineAwesome.question_circle,
+                        ? Bootstrap.book
+                        : widget.category == 'Work'
+                            ? Icons.card_travel_outlined
+                            : widget.category == 'Hobbies'
+                                ? Icons.self_improvement_outlined
+                                : widget.category == 'Resting'
+                                    ? Icons.king_bed_outlined
+                                    : widget.category == 'Chores'
+                                        ? Icons.help
+                                        : LineAwesome.question_circle,
                     size: 30,
                   ),
                   SizedBox(width: 7),
@@ -108,4 +111,3 @@ class _TimeCategoryState extends State<TimeCategory> {
     );
   }
 }
-
