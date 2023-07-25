@@ -231,14 +231,7 @@ class GoogleCalendarAdapterService(
             }
             val jwtTokenData = TokenManagerController.getUserJWTTokenData(token)
             val storedUser = userRepository.findById(jwtTokenData.userID)
-            val newUserAccount = UserAccount()
-            newUserAccount.email = userEmail
-            newUserAccount.refreshToken = refreshToken ?: ""
-            newUserAccount.authProvider = AuthProviderEnum.GOOGLE
-            newUserAccount.userID = jwtTokenData.userID
-            newUserAccount.user = userRepository.findById(jwtTokenData.userID).get()
-
-            storedUser.get().userAccounts.add(newUserAccount)
+            addUserEmail(userEmail, refreshToken, storedUser.get())
 
             jwtToken = createToken(
                 TokenRequest(
@@ -270,6 +263,19 @@ class GoogleCalendarAdapterService(
         storedUser.userAccounts.add(savedUserAccount)
         userRepository.save(storedUser)
         return newUser
+    }
+
+    private fun addUserEmail(newUserEmail : String, refreshToken: String?, storedUser: User){
+        val newUserAccount = UserAccount()
+        newUserAccount.email = newUserEmail
+        newUserAccount.refreshToken = refreshToken ?: ""
+        newUserAccount.authProvider = AuthProviderEnum.GOOGLE
+        newUserAccount.userID = storedUser.id!!
+        newUserAccount.user = storedUser
+        userAccountRepository.save(newUserAccount)
+
+        storedUser.userAccounts.add(newUserAccount)
+        userRepository.save(storedUser)
     }
 
     override fun getUserEvents(accessToken: String): List<UserEventDTO> {
