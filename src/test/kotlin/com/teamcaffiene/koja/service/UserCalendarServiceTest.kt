@@ -9,7 +9,6 @@ import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
-import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -27,7 +26,6 @@ import org.mockito.kotlin.check
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.Optional
@@ -115,8 +113,8 @@ class UserCalendarServiceTest {
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange
         val mockUserID = Int.MAX_VALUE
-        val  userAccounts = mutableListOf<JWTAuthDetailsDTO>()
-        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID )
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
 
         whenever(getUserJWTTokenData(mockUserID.toString())).thenReturn(mockUserJWTData)
 
