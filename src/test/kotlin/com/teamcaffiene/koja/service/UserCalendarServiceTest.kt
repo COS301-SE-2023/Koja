@@ -5,6 +5,7 @@ import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
+import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
@@ -49,6 +50,9 @@ class UserCalendarServiceTest {
     private lateinit var tokenManagerController: TokenManagerController
 
     @Mock
+    private lateinit var jwtFunctionality: JWTFunctionality
+
+    @Mock
     private lateinit var userCalendarService: UserCalendarService
 
     @BeforeEach
@@ -67,7 +71,7 @@ class UserCalendarServiceTest {
         // Set JWT secret key property
         System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
 
-        userCalendarService = UserCalendarService(userRepository)
+        userCalendarService = UserCalendarService(userRepository, jwtFunctionality)
     }
     /*  @BeforeEach
     fun setup() {
@@ -126,7 +130,7 @@ class UserCalendarServiceTest {
         val mockToken = TokenManagerController.createToken(
             TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID),
         )
-        whenever(tokenManagerController.getUserJWTTokenData(mockToken)).thenReturn(mockUserJWTData)
+        whenever(jwtFunctionality.getUserJWTTokenData(mockToken)).thenReturn(mockUserJWTData)
         val timeBoundary = TimeBoundary("Partying", "12:00", "05:00")
 
         val mockUser = User()

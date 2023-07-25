@@ -1,6 +1,7 @@
 package com.teamcaffeine.koja.service
 
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
+import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
@@ -18,7 +19,7 @@ import java.time.OffsetDateTime
 class UserCalendarService(
     @Autowired
     private var userRepository: UserRepository,
-    private val functionality: MyFunctionality
+    private val jwtFunctionality: JWTFunctionality,
 ) {
 
     @Autowired
@@ -28,7 +29,7 @@ class UserCalendarService(
     private lateinit var timeBoundaryRepository: TimeBoundaryRepository
 
     fun getAllUserEvents(token: String): List<UserEventDTO> {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -64,7 +65,7 @@ class UserCalendarService(
     }
 
     fun updateEvent(token: String, eventDTO: UserEventDTO) {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
         for (adapter in calendarAdapters) {
@@ -198,7 +199,7 @@ class UserCalendarService(
 
     @Transactional
     fun addTimeBoundary(token: String, timeBoundary: TimeBoundary): Boolean {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
         if (timeBoundary != null && !user.isEmpty) {
             val retrievedUser = user.get()
