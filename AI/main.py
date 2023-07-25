@@ -117,10 +117,16 @@ time_frame_model = tf.keras.Sequential([
     time_frame_vocabulary,
     tf.keras.layers.Embedding(time_frame_vocabulary.vocab_size() + 1, 16),
 ])
-#
+
+category_candidates = category_dataset.batch(128).map(category_model)
+weekday_candidates = weekday_dataset.batch(128).map(weekday_model)
+time_frame_candidates = time_frame_dataset.batch(128).map(time_frame_model)
+
+all_candidates = category_candidates.concatenate(weekday_candidates).concatenate(time_frame_candidates)
+
 # # Define the task as retrieval (recommendation)
 task = tfrs.tasks.Retrieval(metrics=tfrs.metrics.FactorizedTopK(
-    candidates=category_dataset.batch(128).map(category_model)
+    candidates=all_candidates
 ))
 
 # # Create a TFRS model
@@ -154,7 +160,7 @@ model = CategoryRecommender(user_model, category_model, weekday_model, time_fram
 model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
 # # Train the model
-model.fit(all_data.batch(128), epochs=5)
+model.fit(all_data.batch(128), epochs=10000)
 
 index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
 index.index_from_dataset(
