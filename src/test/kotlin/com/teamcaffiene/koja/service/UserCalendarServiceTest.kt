@@ -2,6 +2,7 @@ package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
@@ -59,6 +60,8 @@ class UserCalendarServiceTest {
 
         // Set JWT secret key property
         System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+
+        userCalendarService = UserCalendarService(userRepository)
     }
     /*  @BeforeEach
     fun setup() {
@@ -109,7 +112,11 @@ class UserCalendarServiceTest {
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange
         val mockUserID = Int.MAX_VALUE
-        //  whenever(getUserJWTTokenData().thenReturn(optionalUserValue)
+
+        val userJwtTokenData = {
+            userId : '5'
+        }
+        whenever(getUserJWTTokenData(mockUserID.toString()).thenReturn(optionalUserValue)
         val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
         val mockToken = TokenManagerController.createToken(
             TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID),
