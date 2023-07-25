@@ -234,9 +234,34 @@ class GoogleCalendarAdapterService(
             val storedUser = userRepository.findById(jwtTokenData.userID)
             addUserEmail(userEmail, refreshToken, storedUser.get())
 
+            val existingUserAccounts = storedUser.get().id?.let { userAccountRepository.findByUserID(it) }
+            val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
+            if (existingUserAccounts != null) {
+                for (userAccount in existingUserAccounts) {
+                    val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
+                    if (updatedCredentials != null) {
+                        userTokens.add(
+                            JWTGoogleDTO(
+                                updatedCredentials.getAccessToken(),
+                                userAccount.refreshToken,
+                                updatedCredentials.expireTimeInSeconds,
+                            ),
+                        )
+                    } else {
+                        userTokens.add(
+                            JWTGoogleDTO(
+                                accessToken,
+                                userAccount.refreshToken,
+                                expiresIn,
+                            ),
+                        )
+                    }
+                }
+            }
+
             jwtToken = createToken(
                 TokenRequest(
-                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
+                    userTokens,
                     this.getAuthProvider(),
                     storedUser.get().id!!,
                 ),
@@ -266,7 +291,7 @@ class GoogleCalendarAdapterService(
         return newUser
     }
 
-    private fun addUserEmail(newUserEmail : String, refreshToken: String?, storedUser: User){
+    private fun addUserEmail(newUserEmail: String, refreshToken: String?, storedUser: User) {
         val newUserAccount = UserAccount()
         newUserAccount.email = newUserEmail
         newUserAccount.refreshToken = refreshToken ?: ""
