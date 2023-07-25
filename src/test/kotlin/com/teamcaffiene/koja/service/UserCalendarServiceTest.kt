@@ -115,8 +115,8 @@ class UserCalendarServiceTest {
         val mockUserID = Int.MAX_VALUE
         val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
         val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
-
-        whenever(getUserJWTTokenData(mockUserID.toString())).thenReturn(mockUserJWTData)
+        val jwtToken = ***REDACTED***
+        whenever(getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
 
         val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
         val mockToken = TokenManagerController.createToken(
@@ -132,7 +132,8 @@ class UserCalendarServiceTest {
         whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
 
         // Act
-        val result = userCalendarService.addTimeBoundary(mockToken, timeBoundary)
+
+        val result = userCalendarService.addTimeBoundary(jwtToken, timeBoundary)
 
         // Assert
         Assertions.assertTrue(result)
