@@ -77,7 +77,7 @@ class TokenManagerController {
             return soonestExpireTime
         }
 
-        private fun createJwtToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
+        fun createJwtToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
             val algorithm = Algorithm.HMAC512(jwtSecret)
             val tokenExpireDate = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
 
