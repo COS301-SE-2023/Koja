@@ -142,9 +142,9 @@ class TimeBoundaryServiceTest {
         val timeBoundary2 = TimeBoundary("Friends")
         retrievedUser.addTimeBoundary(timeBoundary1)
         retrievedUser.addTimeBoundary(timeBoundary2)
-        val timeBoundaries  = mutableListOf(
+        val timeBoundaries = mutableListOf(
             TimeBoundary(name = "TimeBoundary1"),
-            TimeBoundary(name = "TimeBoundary2")
+            TimeBoundary(name = "TimeBoundary2"),
         )
         // Act
         val result = userCalendarService.getUserTimeBoundaries(token)
@@ -169,4 +169,3 @@ class TimeBoundaryServiceTest {
         assertTrue(result.isEmpty())
     }
 }
-
