@@ -12,19 +12,15 @@ import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
 
-class UserControllerUnitTest {
+class UserControllerUnitTest(private val userAccountRepository: UserAccountRepository) {
     private lateinit var userController: UserController
     private lateinit var dotenv: Dotenv
-
-    @Mock
-    private lateinit var userAccountRepository: UserAccountRepository
 
     @BeforeEach
     fun setup() {
