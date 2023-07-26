@@ -40,7 +40,7 @@ class ChooseCategoryState extends State<ChooseCategory> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Select Category',
+                  'Time Boundary',
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,

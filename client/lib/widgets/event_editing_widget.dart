@@ -196,11 +196,9 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                const SizedBox(height: 1),
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
-                const SizedBox(height: 1),
-                ChooseColor(onColorSelected: updateColor),
+                // ChooseColor(onColorSelected: updateColor),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -298,7 +296,7 @@ class EventEditingState extends State<EventEditing> {
     }
 
     return Padding(
-      padding: EdgeInsets.only(left: 8, right: 8),
+      padding: EdgeInsets.only(left: 4, right: 4),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -730,7 +728,7 @@ class EventEditingState extends State<EventEditing> {
         isAllDay: false,
         timeSlots: [timeSlot],
         priority: priorityValue,
-        backgroundColor: selectedColor,
+        // backgroundColor: selectedColor,
       );
 
       if (event.location != "") {
