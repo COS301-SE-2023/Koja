@@ -62,7 +62,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
 
     @DeleteMapping("/deleteEvent")
     fun deleteEvent(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestBody event: UserEventDTO?): ResponseEntity<String> {
-        if(event == null || token == null){
+        if (event == null || token == null) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
 
