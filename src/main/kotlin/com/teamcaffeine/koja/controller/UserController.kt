@@ -8,7 +8,6 @@ import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUser
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.service.UserCalendarService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
