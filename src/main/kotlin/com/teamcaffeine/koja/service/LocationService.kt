@@ -119,15 +119,17 @@ class LocationService(private val userRepository: UserRepository, private val go
         }
     }
 
-    fun getUserSavedLocations(token: String): JSONObject {
+    fun getUserSavedLocations(token: String): MutableMap<String, Any> {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
-        val jsonObject = JSONObject()
-        jsonObject.put("currentLocation", retrievedUser.getCurrentLocation())
-        jsonObject.put("homeLocation", retrievedUser.getHomeLocation())
-        jsonObject.put("workLocation", retrievedUser.getWorkLocation())
+        val currentLocation = retrievedUser.getCurrentLocation() ?: Pair(0.0, 0.0)
 
-        return jsonObject
+        val results = mutableMapOf<String, Any>()
+        results["currentLocation"] = currentLocation
+        results["homeLocation"] = retrievedUser.getHomeLocation() ?: ""
+        results["workLocation"] = retrievedUser.getWorkLocation() ?: ""
+
+        return results
     }
 }

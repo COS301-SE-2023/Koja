@@ -201,8 +201,6 @@ class EventEditingState extends State<EventEditing> {
                 // ChooseColor(onColorSelected: updateColor),
                 ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 if(selectedRecurrence != 'None')
-                  
-
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,

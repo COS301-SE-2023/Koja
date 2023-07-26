@@ -103,8 +103,29 @@ class UserCalendarService(
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
         val userEvents = ArrayList<UserEventDTO>()
-
+        var travelDuration = 0L
         for (adapter in calendarAdapters) {
+            val googleCalendarAdapter: GoogleCalendarAdapterService? = try {
+                adapter as GoogleCalendarAdapterService
+            } catch (e: Exception) {
+                null
+            }
+
+            var locationService: LocationService?
+            val locationID = eventDTO.getLocation()
+            if (travelDuration == 0L && googleCalendarAdapter != null && locationID.isNotEmpty()) {
+                locationService = LocationService(userRepository, googleCalendarAdapter)
+                val currentLocation: Pair<Double, Double> =
+                    anyToPair(locationService.getUserSavedLocations(token)["currentLocation"])
+                val travelTime = locationService.getTravelTime(
+                    currentLocation.first,
+                    currentLocation.second,
+                    eventDTO.getLocation(),
+                )
+                if (travelTime != null) {
+                    travelDuration = travelTime
+                }
+            }
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
@@ -121,9 +142,12 @@ class UserCalendarService(
         }
 
         if (eventDTO.isDynamic()) {
+            eventDTO.setDuration(eventDTO.getDurationInSeconds() + travelDuration)
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
+        } else {
+            eventDTO.setStartTime(eventDTO.getStartTime().minusSeconds(travelDuration))
         }
 
         for (adapter in calendarAdapters) {
@@ -134,6 +158,17 @@ class UserCalendarService(
             if (accessToken != null) {
                 adapter.createEvent(accessToken, eventDTO)
             }
+        }
+    }
+
+    private fun anyToPair(any: Any?): Pair<Double, Double> {
+        return if (any is Pair<*, *> &&
+            any.first is Double &&
+            any.second is Double
+        ) {
+            Pair(any.first as Double, any.second as Double)
+        } else {
+            Pair(0.0, 0.0)
         }
     }
 
