@@ -20,6 +20,7 @@ class KojaApp extends StatelessWidget {
   KojaApp({Key? key}) : super(key: key);
   final GlobalKey<ScaffoldMessengerState> scaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -36,7 +37,9 @@ class KojaApp extends StatelessWidget {
         builder: (context) {
           final provider = Provider.of<ContextProvider>(context, listen: false);
           provider.setScaffoldKey(scaffoldKey);
+          provider.setNavigationKey(navigatorKey);
           return MaterialApp(
+            navigatorKey: navigatorKey,
             scaffoldMessengerKey: scaffoldKey,
             debugShowCheckedModeBanner: false,
             title: 'Koja',
@@ -74,7 +77,7 @@ class SplashScreen extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/icons/koja.png',
-                height: 200,
+                height : 200,
                 width: 100,
               ),
               Text('Koja',

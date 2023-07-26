@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/context_provider.dart';
 
 class AllEmailsWidget extends StatelessWidget {
   final String emailadress;
@@ -33,15 +36,16 @@ class AllEmailsWidget extends StatelessWidget {
                     maxLines: 1,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    delete?.call(context); // Use call method to invoke the function safely
-                  },
-                  child: Icon(
-                    Icons.delete_outlined,
-                    size: 30,
+                if(Provider.of<ContextProvider>(context, listen: true).userEmails.length > 1)
+                  GestureDetector(
+                    onTap: () {
+                      delete?.call(context); 
+                    },
+                    child: Icon(
+                      Icons.delete_outlined,
+                      size: 30,
+                    ),
                   ),
-                ),
               ],
             ),
           ],

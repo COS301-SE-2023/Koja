@@ -16,5 +16,29 @@ List<List<String>> categories = [];
 
 /// Helper variables for when editing a boundary
 bool isEditing = false;
-String start = '';
-String end = '';
+int editedindex = -1;
+
+bool isEditingStart = false;
+bool isEditingEnd = false;
+
+TimeOfDay now = TimeOfDay.now();
+
+String start = _formatTime(now.hour, now.minute).toString();
+String end = _formatTime(now.hour, now.minute).toString();
+
+String _formatTime(int hour, int minute) {
+  // Convert the hour and minute to a 24-hour format string
+  String formattedHour = hour.toString().padLeft(2, '0');
+  String formattedMinute = minute.toString().padLeft(2, '0');
+
+  return '$formattedHour:$formattedMinute';
+}
+
+/// Helper variables for when adding a block for travel time for event
+String travelTime = "";
+
+///helper variables for when adding recurrence
+bool isRecurrence = false;
+DateTime? recurrenceEndDate;
+int interval = 1;
+String recurrenceString = "";

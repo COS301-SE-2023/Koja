@@ -1,44 +1,56 @@
 package com.teamcaffeine.koja.service
 
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
+import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
+import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.OffsetDateTime
 
 @Service
 class UserCalendarService(
-    private val userAccountRepository: UserAccountRepository,
-    private val userRepository: UserRepository,
+    @Autowired
+    private var userRepository: UserRepository,
+    private val jwtFunctionality: JWTFunctionality,
 ) {
 
+    @Autowired
+    private lateinit var userAccountRepository: UserAccountRepository
+
+    @Autowired
+    private lateinit var timeBoundaryRepository: TimeBoundaryRepository
+
     fun getAllUserEvents(token: String): List<UserEventDTO> {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
-        val userEvents = ArrayList<UserEventDTO>()
+        val userEvents = mutableMapOf<String, UserEventDTO>()
 
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val accessToken =
-                userJWTTokenData.userAuthDetails.firstOrNull() { it.getRefreshToken() == userAccount.refreshToken }
-                    ?.getAccessToken()
-            if (accessToken != null) {
-                userEvents.addAll(adapter.getUserEvents(accessToken))
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEvents(accessToken))
+                }
             }
         }
 
-        return userEvents
+        return userEvents.values.toList()
     }
 
     @Transactional
-    private fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
+    fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
         val adapterFactory = CalendarAdapterFactoryService(userRepository, userAccountRepository)
@@ -54,7 +66,7 @@ class UserCalendarService(
     }
 
     fun updateEvent(token: String, eventDTO: UserEventDTO) {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
         for (adapter in calendarAdapters) {
@@ -69,7 +81,7 @@ class UserCalendarService(
         }
     }
 
-    fun deleteEvent(token: String, eventID: String) {
+    fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -79,8 +91,10 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
-            if (accessToken != null) {
-                adapter.deleteEvent(accessToken, eventID)
+            adapter.getUserEventsInRange(accessToken, eventStartTime, eventEndTime).forEach {
+                if (accessToken != null && it.getDescription().trim() == eventSummary.trim()) {
+                    adapter.deleteEvent(accessToken, it.getId())
+                }
             }
         }
     }
@@ -184,5 +198,68 @@ class UserCalendarService(
         }
 
         return Pair(newEventStartTime, newEventEndTime)
+    }
+
+    @Transactional
+    fun addTimeBoundary(token: String, timeBoundary: TimeBoundary?): Boolean {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID)
+        if (timeBoundary != null && !user.isEmpty) {
+            val retrievedUser = user.get()
+            retrievedUser.addTimeBoundary(timeBoundary)
+            timeBoundary.user = retrievedUser
+            userRepository.save(retrievedUser)
+            return true
+        }
+        return false
+    }
+
+    @Transactional
+    fun removeTimeBoundary(token: String, name: String?): Boolean {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID)
+        if (name != null && !user.isEmpty) {
+            val retrievedUser = user.get()
+            for (i in 0..retrievedUser.getUserTimeBoundaries()!!.size) {
+                if (retrievedUser.getUserTimeBoundaries()!!.get(i).getName() == name) {
+                    val boundaryToRemove = retrievedUser.getUserTimeBoundaries()!!.get(i)
+                    boundaryToRemove.user = null
+                    retrievedUser.getUserTimeBoundaries()!!.removeAt(i)
+                    userRepository.save(retrievedUser)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun getUserTimeBoundaries(token: String): MutableList<TimeBoundary> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID)
+        if (!user.isEmpty) {
+            return user.get().getUserTimeBoundaries()
+        }
+        return mutableListOf()
+    }
+
+    fun getUserTimeBoundaryAndLocation(token: String, name: String): Pair<TimeBoundary?, String?> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val user = userRepository.findById(userJWTTokenData.userID).get()
+        var timeBoundary: TimeBoundary ? = null
+
+        if (user != null) {
+            for (i in 0..(user.getUserTimeBoundaries()?.size ?: 0))
+                if (user.getUserTimeBoundaries()?.get(i)?.getName() == name) {
+                    timeBoundary = user.getUserTimeBoundaries()?.get(i)
+                }
+        }
+        when (name) {
+            "Work" -> return Pair(timeBoundary, user.getWorkLocation())
+            "Resting" -> return Pair(timeBoundary, user.getHomeLocation())
+            "School" -> return Pair(timeBoundary, user.getWorkLocation())
+            "Hobby" -> return Pair(timeBoundary, "")
+            "Chore" -> return Pair(timeBoundary, "")
+        }
+        return Pair(null, null)
     }
 }

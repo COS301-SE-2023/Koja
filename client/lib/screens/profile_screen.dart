@@ -46,11 +46,13 @@ class Profile extends StatelessWidget {
         child: Column(
           children: <Widget>[
              UserDetails(
-                      profile: "assets/icons/coffee.png",
-                      email: (eventProvider.userEmails.isNotEmpty)
-                          ? eventProvider.userEmails[0]
-                          : "No email found",
-                    ),
+                profile: (eventProvider.userEmails.isNotEmpty)
+                    ? eventProvider.userEmails[0][0]
+                    : "?",
+                email: (eventProvider.userEmails.isNotEmpty)
+                    ? eventProvider.userEmails[0]
+                    : "No email found",
+              ),
             const Divider(
               thickness: 0,
               height: 40,

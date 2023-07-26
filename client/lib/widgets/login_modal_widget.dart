@@ -33,9 +33,9 @@ class LoginModalState extends State<LoginModal> {
                   if (await serviceProvider.loginUser(
                       eventProvider: eventProvider)) {
                     Navigator.pushAndRemoveUntil(
-                      context,
+                      eventProvider.navigationKey.currentContext!,
                       MaterialPageRoute(
-                          builder: (context) => const NavigationScreen()),
+                          builder: (_) => const NavigationScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } else {
@@ -89,8 +89,8 @@ class LoginModalState extends State<LoginModal> {
                               child: Column(
                                 children: [
                                   TextFormField(
-                                    scrollController: ScrollController(),
-                                    scrollPhysics: BouncingScrollPhysics(),
+                                      scrollController: ScrollController(),
+                                      scrollPhysics: BouncingScrollPhysics(),
                                       controller: editingController,
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(
@@ -109,11 +109,10 @@ class LoginModalState extends State<LoginModal> {
                                         editingController.text.trim(),
                                         eventProvider,
                                       );
-                                      Navigator.pop(context);
                                       Navigator.pushAndRemoveUntil(
-                                        context,
+                                        eventProvider.navigationKey.currentContext!,
                                         MaterialPageRoute(
-                                          builder: (context) =>
+                                          builder: (_) =>
                                               const NavigationScreen(),
                                         ),
                                         (Route<dynamic> route) => false,

@@ -61,12 +61,17 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     }
 
     @DeleteMapping("/deleteEvent")
-    fun deleteEvent(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestBody eventToDeleteID: String): ResponseEntity<String> {
+    fun deleteEvent(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestBody event: UserEventDTO?): ResponseEntity<String> {
+        if (event == null || token == null) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
+
         try {
-            userCalendar.deleteEvent(token, eventToDeleteID)
+            userCalendar.deleteEvent(token, event.getDescription(), event.getStartTime(), event.getEndTime())
         } catch (e: Exception) {
             return ResponseEntity.badRequest().body(ResponseConstant.EVENT_DELETION_FAILED_INTERNAL_ERROR)
         }
+
         return ResponseEntity.ok(ResponseConstant.EVENT_DELETED)
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -12,11 +13,7 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
+import com.google.gson.*
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
@@ -43,6 +40,8 @@ import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -68,17 +67,41 @@ class GoogleCalendarAdapterService(
             .setAccessType("offline")
             .build()
 
-    override fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView {
-        val redirectURI = if (appCallBack) {
+    override fun setupConnection(
+        request: HttpServletRequest?,
+        appCallBack: Boolean,
+        addAdditionalAccount: Boolean,
+        token: String,
+    ): RedirectView {
+        val redirectURI = if (appCallBack && !addAdditionalAccount) {
             "$redirectUriBase/app/google/callback"
-        } else {
+        } else if (!addAdditionalAccount) {
             "$redirectUriBase/google/callback"
+        } else {
+            "http://localhost:8080/api/v1/user/auth/add-email/callback"
         }
 
-        val url = flow.newAuthorizationUrl()
+        val url = if (!addAdditionalAccount) { flow.newAuthorizationUrl()
             .setRedirectUri(redirectURI)
             .setState(request?.session?.id)
             .build()
+        } else {
+            val flow = GoogleAuthorizationCodeFlow.Builder(
+                httpTransport,
+                jsonFactory,
+                clientId,
+                clientSecret,
+                scopes,
+            )
+                .setAccessType("offline")
+                .setApprovalPrompt("force")
+                .build()
+
+            flow.newAuthorizationUrl()
+                .setRedirectUri(redirectURI)
+                .setState(token) // Set state parameter here
+                .build()
+        }
 
         return RedirectView(url)
     }
@@ -184,11 +207,7 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        if (!appCallBack) {
-            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
-        } else {
-            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/app/google/callback")
-        }
+        parameters.add("redirect_uri", "http://localhost:8080/api/v1/user/auth/add-email/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
 
@@ -215,18 +234,36 @@ class GoogleCalendarAdapterService(
             }
             val jwtTokenData = TokenManagerController.getUserJWTTokenData(token)
             val storedUser = userRepository.findById(jwtTokenData.userID)
-            val newUserAccount = UserAccount()
-            newUserAccount.email = userEmail
-            newUserAccount.refreshToken = refreshToken ?: ""
-            newUserAccount.authProvider = AuthProviderEnum.GOOGLE
-            newUserAccount.userID = jwtTokenData.userID
-            newUserAccount.user = userRepository.findById(jwtTokenData.userID).get()
+            addUserEmail(userEmail, refreshToken, storedUser.get())
 
-            storedUser.get().userAccounts.add(newUserAccount)
+            val existingUserAccounts = storedUser.get().id?.let { userAccountRepository.findByUserID(it) }
+            val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
+            if (existingUserAccounts != null) {
+                for (userAccount in existingUserAccounts) {
+                    val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
+                    if (updatedCredentials != null) {
+                        userTokens.add(
+                            JWTGoogleDTO(
+                                updatedCredentials.getAccessToken(),
+                                userAccount.refreshToken,
+                                updatedCredentials.expireTimeInSeconds,
+                            ),
+                        )
+                    } else {
+                        userTokens.add(
+                            JWTGoogleDTO(
+                                accessToken,
+                                userAccount.refreshToken,
+                                expiresIn,
+                            ),
+                        )
+                    }
+                }
+            }
 
             jwtToken = createToken(
                 TokenRequest(
-                    arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
+                    userTokens,
                     this.getAuthProvider(),
                     storedUser.get().id!!,
                 ),
@@ -256,7 +293,20 @@ class GoogleCalendarAdapterService(
         return newUser
     }
 
-    override fun getUserEvents(accessToken: String): List<UserEventDTO> {
+    private fun addUserEmail(newUserEmail: String, refreshToken: String?, storedUser: User) {
+        val newUserAccount = UserAccount()
+        newUserAccount.email = newUserEmail
+        newUserAccount.refreshToken = refreshToken ?: ""
+        newUserAccount.authProvider = AuthProviderEnum.GOOGLE
+        newUserAccount.userID = storedUser.id!!
+        newUserAccount.user = storedUser
+        userAccountRepository.save(newUserAccount)
+
+        storedUser.userAccounts.add(newUserAccount)
+        userRepository.save(storedUser)
+    }
+
+    override fun getUserEvents(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -267,15 +317,19 @@ class GoogleCalendarAdapterService(
 
             val events: Events? = request.execute()
 
-            val userEvents = ArrayList<UserEventDTO>()
+            val userEvents = mutableMapOf<String, UserEventDTO>()
 
             events?.items?.map {
-                userEvents.add(UserEventDTO(it))
+                val eventSummary = it.summary ?: ""
+                val eventStartTime = it.start.dateTime ?: it.start.date
+                val eventEndTime = it.end.dateTime ?: it.end.date
+                val key = Base64.getEncoder().encodeToString("${eventSummary.trim()}${eventStartTime}$eventEndTime".trim().toByteArray())
+                userEvents[key] = UserEventDTO(it)
             }
 
             return userEvents
         } catch (e: ExpiredJwtException) {
-            return emptyList()
+            return emptyMap()
         }
     }
 
@@ -297,13 +351,21 @@ class GoogleCalendarAdapterService(
 
     private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
         if (refreshToken.isNotEmpty()) {
+            val tokenResponse = GoogleTokenResponse().setRefreshToken(refreshToken)
+
             val credential = GoogleCredential.Builder()
-                .setJsonFactory(JacksonFactory.getDefaultInstance())
-                .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+                .setJsonFactory(jsonFactory)
+                .setTransport(httpTransport)
                 .setClientSecrets(clientId, clientSecret)
                 .build()
+                .setFromTokenResponse(tokenResponse)
 
-            credential.refreshToken = refreshToken
+            try {
+                credential.refreshToken()
+            } catch (exception: Exception) {
+                return null
+            }
+
             if (credential.accessToken != null) {
                 return JWTGoogleDTO(
                     accessToken = credential.accessToken,
