@@ -80,7 +80,7 @@ class UserController {
             if (userCalendarService.removeTimeBoundary(token, name)) {
                 return ResponseEntity.ok("Time boundary successfully removed")
             } else {
-                return ResponseEntity.ok("Something went wrong")
+                return ResponseEntity.badRequest().body("Something went wrong")
             }
         }
     }
