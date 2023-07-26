@@ -19,13 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/user")
-class UserController {
-
-    @Autowired
-    private lateinit var userAccountRepository: UserAccountRepository
-
-    @Autowired
-    private lateinit var userCalendarService: UserCalendarService
+class UserController(private val userAccountRepository: UserAccountRepository, private var userCalendarService: UserCalendarService) {
 
     @GetMapping("linked-emails")
     fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
