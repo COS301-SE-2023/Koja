@@ -213,7 +213,7 @@ class UserCalendarService(
 
     @Transactional
     fun removeTimeBoundary(token: String, name: String?): Boolean {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
         if (name != null && !user.isEmpty) {
             val retrievedUser = user.get()
@@ -231,7 +231,7 @@ class UserCalendarService(
     }
 
     fun getUserTimeBoundaries(token: String): MutableList<TimeBoundary> {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
         if (!user.isEmpty) {
             return user.get().getUserTimeBoundaries()
@@ -240,7 +240,7 @@ class UserCalendarService(
     }
 
     fun getUserTimeBoundaryAndLocation(token: String, name: String): Pair<TimeBoundary?, String?> {
-        val userJWTTokenData = getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID).get()
         var timeBoundary: TimeBoundary ? = null
 

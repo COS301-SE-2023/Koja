@@ -1,7 +1,6 @@
 package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.KojaApplication
-import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
