@@ -138,6 +138,14 @@ class GoogleCalendarAdapterService(
                             updatedCredentials.expireTimeInSeconds,
                         ),
                     )
+                } else {
+                    userTokens.add(
+                        JWTGoogleDTO(
+                            accessToken,
+                            userAccount.refreshToken,
+                            expiresIn,
+                        ),
+                    )
                 }
             }
 
@@ -230,7 +238,7 @@ class GoogleCalendarAdapterService(
 
     private fun createNewUser(userEmail: String, refreshToken: String?): User {
         val newUser = User()
-        newUser.setCurrentLocation(.0,.0)
+        newUser.setCurrentLocation(.0, .0)
         newUser.setHomeLocation("Uninitialised")
         newUser.setWorkLocation("Uninitialised")
         val storedUser = userRepository.save(newUser)
@@ -288,23 +296,23 @@ class GoogleCalendarAdapterService(
     }
 
     private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
-        val credential = GoogleCredential.Builder()
-            .setJsonFactory(JacksonFactory.getDefaultInstance())
-            .setTransport(GoogleNetHttpTransport.newTrustedTransport())
-            .setClientSecrets(clientId, clientSecret)
-            .build()
+        if (refreshToken.isNotEmpty()) {
+            val credential = GoogleCredential.Builder()
+                .setJsonFactory(JacksonFactory.getDefaultInstance())
+                .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+                .setClientSecrets(clientId, clientSecret)
+                .build()
 
-        credential.refreshToken = refreshToken
-
-        return if (credential.refreshToken()) {
-            JWTGoogleDTO(
-                accessToken = credential.accessToken,
-                expireTimeInSeconds = credential.expiresInSeconds,
-                refreshToken = refreshToken,
-            )
-        } else {
-            null
+            credential.refreshToken = refreshToken
+            if (credential.accessToken != null) {
+                return JWTGoogleDTO(
+                    accessToken = credential.accessToken,
+                    expireTimeInSeconds = credential.expiresInSeconds,
+                    refreshToken = refreshToken,
+                )
+            }
         }
+        return null
     }
 
     override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {

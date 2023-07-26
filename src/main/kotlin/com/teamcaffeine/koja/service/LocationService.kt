@@ -11,10 +11,9 @@ import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
-class LocationService {
-    private lateinit var userRepository: UserRepository
-    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
-    fun setHomeLocation(accessToken: String, homeLocation: String?): String? {
+class LocationService(private val userRepository: UserRepository, private val googleCalendarAdapterService: GoogleCalendarAdapterService) {
+
+    fun setHomeLocation(accessToken: String, homeLocation: String?) {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
         val user = userRepository.findById(userJWTTokenData.userID)
 
@@ -22,25 +21,22 @@ class LocationService {
             val retrievedUser = user.get()
             retrievedUser.setHomeLocation(homeLocation)
             userRepository.save(retrievedUser)
-            return retrievedUser.toString() + userRepository.findById(retrievedUser.id).get().getHomeLocation()
+        } else {
+            throw Exception("")
         }
-
-        return null
     }
 
-    fun setWorkLocation(accessToken: String, workLocation: String?): User? {
+    fun setWorkLocation(accessToken: String, workLocation: String?) {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
-
         val user = userRepository.findById(userJWTTokenData.userID)
 
         if (workLocation != null && !user.isEmpty) {
             val retrievedUser = user.get()
             retrievedUser.setWorkLocation(workLocation)
             userRepository.save(retrievedUser)
-            return retrievedUser
+        } else {
+            throw Exception("")
         }
-
-        return null
     }
 
     fun getLocationTravelTimes(accessToken: String, originLat: Double, originLng: Double): List<Long?> {

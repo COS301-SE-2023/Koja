@@ -8,6 +8,7 @@ import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.repository.UserRepository
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -26,11 +27,14 @@ class UserControllerUnitTest {
     @Mock
     private lateinit var userAccountRepository: UserAccountRepository
 
+    @Mock
+    private lateinit var userRepository: UserRepository
+
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userController = UserController(userAccountRepository)
+        userController = UserController(userAccountRepository, userRepository)
     }
 
     private fun importEnvironmentVariables() {
