@@ -7,6 +7,7 @@ import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
+import jakarta.transaction.Transactional
 import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
@@ -84,12 +85,14 @@ class LocationService(private val userRepository: UserRepository, private val go
         return result.rows[0].elements[0].duration.inSeconds
     }
 
+    @Transactional
     fun updateUserLocation(token: String, latitude: Double, longitude: Double): DistanceMatrix? {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
         if (retrievedUser != null) {
             retrievedUser.setCurrentLocation(longitude, latitude)
+            userRepository.save(retrievedUser)
 
             return updateLocationMatrix(longitude, latitude, retrievedUser, *googleCalendarAdapterService.getFutureEventsLocations(token).toTypedArray())
         }
