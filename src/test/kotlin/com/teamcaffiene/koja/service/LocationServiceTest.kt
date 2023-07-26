@@ -1,6 +1,7 @@
 package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.KojaApplication
+import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
@@ -74,51 +75,7 @@ class LocationServiceTest {
 
         dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }
-    /*  @BeforeEach
-    fun setup() {
-        val dotenv: Dotenv = Dotenv.load()
-        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
-        userRepository = mockk()
-        userAccountRepository = mockk()
-        userCalendarService = UserCalendarService(userRepository)
-    }*/
 
-//    @Test
-//    fun getAllUserEvents_ReturnsEmptyList_WhenNoUserAccountsFound() {
-//        // Arrange
-//        val token = "***redacted***"
-//        val userJWTTokenDataDTO = UserJWTTokenDataDTO(userID = 123, userAuthDetails = emptyList())
-//        every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
-//        every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns emptyList()
-//
-//        // Act
-//        val result = userCalendarService.getAllUserEvents(token)
-//
-//        // Assert
-//        assertEquals(emptyList<UserEventDTO>(), result)
-//    }
-
-    //    @Test
-//    fun getAllUserEvents_ReturnsUserEventsFromCalendarAdapters() {
-//        val token = "***redacted***"
-//        val userJWTTokenDataDTO = UserJWTTokenDataDTO(
-//            userID = 123,
-//            userAuthDetails = listOf(JWTGoogleDTO(token, "dummyRefresh", 1L))
-//        )
-//        val userAccount = listOf(UserAccount(123))
-//        val calendarAdapterFactoryService = mockk<CalendarAdapterFactoryService>()
-//        val calendarAdapterService = mockk<CalendarAdapterService>()
-//        val userEvents = arrayListOf<UserEventDTO>()
-//
-//        every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
-//        every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns userAccount
-//        every { userCalendarService.getAllUserEvents(token) } returns userEvents
-//        every { calendarAdapterFactoryService.createCalendarAdapter(any()) } returns calendarAdapterService
-//
-//        val result = userCalendarService.getAllUserEvents(token)
-//
-//        assertEquals(userEvents, result)
-//    }
     @Test
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange
@@ -152,6 +109,76 @@ class LocationServiceTest {
             },
         )
     }
+    fun setHomeLocation(accessToken: String, homeLocation: String?): String? {
+        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
+        val user = userRepository.findById(userJWTTokenData.userID)
 
+        if (homeLocation != null && !user.isEmpty) {
+            val retrievedUser = user.get()
+            retrievedUser.setHomeLocation(homeLocation)
+            userRepository.save(retrievedUser)
+            return retrievedUser.getHomeLocation()
+        }
 
+        return null
+    }
+
+    @Test
+    fun `test setHomeLocation with valid input`() {
+        val accessToken = "validAccessToken"
+        val userID = 1L
+        val homeLocation = "New York, USA"
+
+        // Mock the behavior of the userRepository.findById method
+        val user = User(userID, "John Doe", "john@example.com", null)
+        `when`(userRepository.findById(userID)).thenReturn(user)
+
+        val result = userCalendarService.setHomeLocation(accessToken, homeLocation)
+
+        assertEquals(homeLocation, result)
+        assertEquals(homeLocation, user.getHomeLocation())
+    }
+
+    @Test
+    fun `test setHomeLocation with null homeLocation`() {
+        val accessToken = "validAccessToken"
+        val userID = 1L
+
+        // Mock the behavior of the userRepository.findById method
+        val user = User(userID, "John Doe", "john@example.com", "Previous Home")
+        `when`(userRepository.findById(userID)).thenReturn(user)
+
+        val result = userCalendarService.setHomeLocation(accessToken, null)
+
+        assertEquals("Previous Home", result)
+        assertEquals("Previous Home", user.getHomeLocation())
+    }
+
+    @Test
+    fun `test setHomeLocation with invalid accessToken`() {
+        val accessToken = "invalidAccessToken"
+        val homeLocation = "New York, USA"
+
+        // Mock the behavior of the TokenManagerController.getUserJWTTokenData method to return null
+        `when`(TokenManagerController.getUserJWTTokenData(accessToken)).thenReturn(null)
+
+        val result = userCalendarService.setHomeLocation(accessToken, homeLocation)
+
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun `test setHomeLocation with invalid user`() {
+        val accessToken = "validAccessToken"
+        val userID = 1L
+        val homeLocation = "New York, USA"
+
+        // Mock the behavior of the userRepository.findById method to return empty optional
+        `when`(userRepository.findById(userID)).thenReturn(empty())
+
+        val result = userCalendarService.setHomeLocation(accessToken, homeLocation)
+
+        assertEquals(null, result)
+    }
+}
 }
