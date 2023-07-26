@@ -448,6 +448,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  number_selector:
+    dependency: "direct main"
+    description:
+      name: number_selector
+      sha256: a154056620d671a624837d70f1fd87249f9b6d837bb04da125502d1fb2f4eff9
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
   numberpicker:
     dependency: "direct main"
     description:

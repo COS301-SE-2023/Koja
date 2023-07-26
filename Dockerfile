@@ -46,7 +46,7 @@ ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
 # run container
 
 # run the container on docker
-# http://localhost:8080/api/v1/auth/app/google/ on your browser
+# http://localhost:8080/api/v1/auth/app/google on your browser
 # 10.0.2.2
 
 # F12, go to network tab, click on the link, copy the token
