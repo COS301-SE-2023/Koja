@@ -720,7 +720,7 @@ class EventEditingState extends State<EventEditing> {
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
-        location: _eventPlace.text,
+        location: placeId,
         description: 'description',
         category: selectedCategory,
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
