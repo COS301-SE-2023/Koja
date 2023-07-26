@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:number_selector/number_selector.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import '../Utils/constants_util.dart';
@@ -43,10 +44,10 @@ class ChooseCategoryState extends State<ChooseCategory> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Time Boundary',
+                  'TIME BOUNDARY',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -101,10 +102,10 @@ class ChooseEventTypeState extends State<ChooseEventType> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Select Event Type',
+                  'EVENT TYPE',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -162,7 +163,7 @@ class ChoosePriorityState extends State<ChoosePriority> {
                   'Select Priority Level',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -255,7 +256,7 @@ class ChooseColorState extends State<ChooseColor> {
                 'Select Color',
                 style: TextStyle(
                   color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   fontSize: 17,
                 ),
               ),
@@ -302,74 +303,81 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                 if (newValue != null) {
                   setState(() {
                     selectedCategory = newValue;
-                    if(newValue != 'None') {
+                    if (newValue != 'None') {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertDialog(
-                            content:
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 0.8,
-                                  height: MediaQuery.of(context).size.height * 0.3,
-                                  child: 
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'REPEAT INTERVAL:',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                          return Container(
+                            height: MediaQuery.of(context).size.height * 0.8,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: AlertDialog(
+                              title: Text('Recurrence'),
+                              content: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * 0.95,
+                                  height: MediaQuery.of(context).size.height * 0.6,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Repeats Every',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20,
+                                          fontFamily: 'Ubuntu',
                                         ),
-                                        Spacer(),
-                                        Row(
-                                          children: [                                           
-                                            NumberPicker(
-                                              value: 1,
-                                              minValue: 1,
-                                              maxValue: 20,
-                                              onChanged: (value) => {
-                                                setState(() {
-                                                  interval = value;
-                                                })
-                                              },
-                                            ),
-                                            Spacer(),
-                                            Text(
-                                              newValue,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),                                     
-                                          ],
+                                      ),                              
+                                      SizedBox(height: 4),
+                                      NumberSelector.plain(
+                                        current: 1,
+                                        min: 1,
+                                        max: 25,
+                                        onUpdate: (number) {
+                                          setState(() {
+                                            interval = number;
+                                          });
+                                        },
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Ends',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20,
+                                          fontFamily: 'Ubuntu',
                                         ),
-                                      ],
-                                    )
+                                      ),
+                                      SizedBox(height: 2),
+                                      
+                                    ],
+                                  ),
                                 ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  isRecurrence = true;
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Save'),
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Cancel'),
-                              ),
-                            ],
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Save'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                              ],
+                            ),
                           );
-                        }
+                        },
                       );
-                    }
-                    else {
-                      isRecurrence = false;
+                    } else {
                     }
                   });
                   widget.onRecurrenceSelected(newValue);
                 }
+
               },
               items: categories.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -379,10 +387,10 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Select Recurrence',
+                  'RECURRENCE',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -391,7 +399,8 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.black, width: 2.0),
                 ),
-              )),
+              )
+            ),
         ],
       ),
     );
