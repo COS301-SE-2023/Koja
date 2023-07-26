@@ -11,6 +11,7 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserAccountManagerService
 import io.github.cdimascio.dotenv.Dotenv
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -75,16 +76,19 @@ class UserAccountManagerControllerUnitTest {
         val mockToken = createToken(TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID))
 
         val userAccount1 = UserAccount(id = 1, email = "test1@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
-        val userAccount2 = UserAccount(id = 1, email = "test2@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
-        val userAccount3 = UserAccount(id = 1, email = "test3@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
-        val userAccount4 = UserAccount(id = 1, email = "test4@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount2 = UserAccount(id = 2, email = "test2@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount3 = UserAccount(id = 3, email = "test3@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
+        val userAccount4 = UserAccount(id = 4, email = "test4@test.com", refreshToken = "refresh", authProvider = AuthProviderEnum.GOOGLE, userID = mockUserID)
         val userAccounts = listOf(userAccount1, userAccount2, userAccount3, userAccount4)
+        val emailToDelete = userAccount3.email
 
         `when`(userAccountRepository.findByUserID(eq(mockUserID))).thenReturn(userAccounts)
+        `when`(userAccountManagerService.deleteGoogleAccount(mockToken, emailToDelete)).thenReturn(mockToken)
 
-        val result = userAccountManagerController.removeEmail(mockToken, userAccount2.email)
 
-        assertEquals(result, ResponseEntity.ok(ResponseConstant.EMAIL_REMOVED))
+        val result = userAccountManagerController.removeEmail(mockToken, userAccount3.email)
+
+        assertEquals(result, mockToken)
     }
 
     /**

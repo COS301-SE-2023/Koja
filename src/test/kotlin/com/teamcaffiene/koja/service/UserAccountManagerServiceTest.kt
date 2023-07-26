@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.repository.UserRepository
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -21,11 +22,14 @@ class UserAccountManagerServiceTest {
     @Mock
     private lateinit var userAccountRepository: UserAccountRepository
 
+    @Mock
+    private lateinit var userRepository: UserRepository
+
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userAccountManagerService = UserAccountManagerService(userAccountRepository)
+        userAccountManagerService = UserAccountManagerService(userAccountRepository, userRepository)
     }
 
     private fun importEnvironmentVariables() {
