@@ -16,7 +16,7 @@ List<List<String>> categories = [];
 
 /// Helper variables for when editing a boundary
 bool isEditing = false;
-int editedindex = 0;
+int editedindex = -1;
 
 bool isEditingStart = false;
 bool isEditingEnd = false;
@@ -35,4 +35,4 @@ String _formatTime(int hour, int minute) {
 }
 
 /// Helper variables for when adding a block for travel time for event
-String travelTime = "";
+String travelTime = ""; 

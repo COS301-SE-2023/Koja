@@ -153,7 +153,7 @@ class _LocationListWidgetState extends State<LocationListWidget> {
                                     int hours = snapshot.data! ~/ 3600;
                                     int minutes = (snapshot.data! % 3600) ~/ 60;
                                     return Text(
-                                      "${hours} hrs ${minutes} mins",
+                                      "$hours hrs $minutes mins",
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
