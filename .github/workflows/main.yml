@@ -75,6 +75,3 @@ jobs:
       
       - name: Build Spring Boot project
         run: ./gradlew build
-
-      - name: Run Tests
-        run: ./gradlew test
