@@ -35,4 +35,10 @@ String _formatTime(int hour, int minute) {
 }
 
 /// Helper variables for when adding a block for travel time for event
-String travelTime = ""; 
+String travelTime = "";
+
+///helper variables for when adding recurrence
+bool isRecurrence = false;
+DateTime? recurrenceEndDate;
+int interval = 1;
+String recurrenceString = "";

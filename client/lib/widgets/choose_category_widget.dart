@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
+
+import '../Utils/constants_util.dart';
 
 class ChooseCategory extends StatefulWidget {
   final void Function(String category) onCategorySelected;
@@ -21,7 +24,7 @@ class ChooseCategoryState extends State<ChooseCategory> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           DropdownButtonFormField<String>(
               value: selectedCategory,
               onChanged: (String? newValue) {
@@ -192,7 +195,7 @@ class ChooseColorState extends State<ChooseColor> {
     Colors.red,
     Colors.green,
     Colors.yellow,
-    Colors.purple,  
+    Colors.purple,
   ];
 
   String getColorName(Color color) {
@@ -202,18 +205,14 @@ class ChooseColorState extends State<ChooseColor> {
       return 'Red';
     } else if (color == Colors.green) {
       return 'Green';
-    }
-    else if(color == Colors.yellow){
+    } else if (color == Colors.yellow) {
       return 'Yellow';
-    }
-    else if(color == Colors.purple){
+    } else if (color == Colors.purple) {
       return 'Purple';
-    }
-    else{
+    } else {
       return 'Blue';
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -239,13 +238,12 @@ class ChooseColorState extends State<ChooseColor> {
                 child: Row(
                   children: [
                     Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: value,
-                      )
-                    ),
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: value,
+                        )),
                     SizedBox(width: 8),
                     Text(getColorName(value)),
                   ],
@@ -297,13 +295,78 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           DropdownButtonFormField<String>(
               value: selectedCategory,
               onChanged: (String? newValue) {
                 if (newValue != null) {
                   setState(() {
                     selectedCategory = newValue;
+                    if(newValue != 'None') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content:
+                                Container(
+                                  width: MediaQuery.of(context).size.width * 0.8,
+                                  height: MediaQuery.of(context).size.height * 0.3,
+                                  child: 
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'REPEAT INTERVAL:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Row(
+                                          children: [                                           
+                                            NumberPicker(
+                                              value: 1,
+                                              minValue: 1,
+                                              maxValue: 20,
+                                              onChanged: (value) => {
+                                                setState(() {
+                                                  interval = value;
+                                                })
+                                              },
+                                            ),
+                                            Spacer(),
+                                            Text(
+                                              newValue,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),                                     
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  isRecurrence = true;
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Save'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                            ],
+                          );
+                        }
+                      );
+                    }
+                    else {
+                      isRecurrence = false;
+                    }
                   });
                   widget.onRecurrenceSelected(newValue);
                 }
@@ -334,145 +397,3 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
     );
   }
 }
-
-
-// import 'package:flutter/material.dart';
-
-// class ChooseCategory extends StatefulWidget {
-//   final void Function(String category) onCategorySelected;
-//   const ChooseCategory({Key? key, required this.onCategorySelected})
-//       : super(key: key);
-
-//   @override
-//   ChooseCategoryState createState() => ChooseCategoryState();
-// }
-
-// class ChooseCategoryState extends State<ChooseCategory> {
-//   int tag = 1;
-//   List<String> categories = ['School', 'Work', 'Hobby', 'Resting', 'Chore'];
-
-//   String get category => categories[tag];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text("CATEGORY",
-//               maxLines: 2,
-//               style: TextStyle(
-//                   fontFamily: 'Railway',
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.bold)),
-//           SizedBox(height: 10),
-//           Wrap(
-//             spacing: 5,
-//             children: [
-//               ChoiceChip(
-//                   label: Text(categories[0]),
-//                   selected: tag == 0,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 0 : 1;
-//                     });
-//                     widget.onCategorySelected(categories[0]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[1]),
-//                   selected: tag == 1,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 1 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[1]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[2]),
-//                   selected: tag == 2,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 2 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[2]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[3]),
-//                   selected: tag == 3,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 3 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[3]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[4]),
-//                   selected: tag == 4,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 4 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[4]);
-//                   }),
-//             ],
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// class ChooseEventType extends StatefulWidget {
-//   final void Function(String category) onEventSelected;
-//   const ChooseEventType({Key? key, required this.onEventSelected})
-//       : super(key: key);
-
-//   @override
-//   ChooseEventTypeState createState() => ChooseEventTypeState();
-// }
-
-// class ChooseEventTypeState extends State<ChooseEventType> {
-//   int tag = 1;
-//   List<String> categories = ['Fixed', 'Dynamic'];
-
-//   String get category => categories[tag];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text("EVENT TYPE",
-//               maxLines: 2,
-//               style: TextStyle(
-//                   fontFamily: 'Railway',
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.bold)),
-//           SizedBox(height: 10),
-//           Center(
-//             child: Wrap(
-//               spacing: 5,
-//               children: [
-//                 for (var i = 0; i < categories.length; i++)
-//                   ChoiceChip(
-//                       label: Text(categories[i]),
-//                       selected: tag == i,
-//                       onSelected: (bool selected) {
-//                         setState(() {
-//                           if (selected) tag = i;
-//                         });
-//                         widget.onEventSelected(categories[i]);
-//                       }),
-//               ],
-//             ),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }

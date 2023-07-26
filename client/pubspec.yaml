@@ -94,6 +94,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   fl_location: ^2.0.0+1
   geocoding: ^2.1.0
+  numberpicker: ^2.1.2
 
 dev_dependencies:
   flutter_test:

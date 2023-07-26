@@ -39,7 +39,7 @@ class AllEmailsWidget extends StatelessWidget {
                 if(Provider.of<ContextProvider>(context, listen: true).userEmails.length > 1)
                   GestureDetector(
                     onTap: () {
-                      delete?.call(context); // Use call method to invoke the function safely
+                      delete?.call(context); 
                     },
                     child: Icon(
                       Icons.delete_outlined,
