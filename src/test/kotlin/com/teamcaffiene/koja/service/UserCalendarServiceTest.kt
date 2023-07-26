@@ -210,12 +210,11 @@ class UserCalendarServiceTest {
         val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
         val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
-        val retrievedUser = User()
         val timeBoundary1 = TimeBoundary("TimeBoundary1")
         val timeBoundary2 = TimeBoundary("TimeBoundary2")
-        retrievedUser.addTimeBoundary(timeBoundary1)
-        retrievedUser.addTimeBoundary(timeBoundary2)
         val mockUser = User()
+        mockUser.addTimeBoundary(timeBoundary1)
+        mockUser.addTimeBoundary(timeBoundary2)
         val optionalUserValue = Optional.of(mockUser)
 
         // mock
@@ -223,26 +222,38 @@ class UserCalendarServiceTest {
         whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
         whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
 
-        Mockito.`when`(userRepository.save(retrievedUser)).thenReturn(retrievedUser)
-
         // Act
-        val result = userCalendarService.removeTimeBoundary(token, name)
+        val result = userCalendarService.removeTimeBoundary(jwtToken, timeBoundary1.getName())
 
         // Assert
         Assertions.assertTrue(result)
         Assertions.assertNull(timeBoundary1.user)
-        Assertions.assertEquals(1, retrievedUser.getUserTimeBoundaries()?.size)
-        Mockito.verify(userRepository).save(retrievedUser)
+        Assertions.assertEquals(1, mockUser.getUserTimeBoundaries()?.size)
+        Mockito.verify(userRepository).save(mockUser)
     }
 
     @Test
     fun `removeTimeBoundary should return false when the name is null`() {
         // Arrange
-        val token = "test_token"
-        val name: String? = null
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val timeBoundary1 = TimeBoundary("TimeBoundary1")
+        val timeBoundary2 = TimeBoundary("TimeBoundary2")
+        val mockUser = User()
+        mockUser.addTimeBoundary(timeBoundary1)
+        mockUser.addTimeBoundary(timeBoundary2)
+        val optionalUserValue = Optional.of(mockUser)
+
+        // mock
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
+        whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
 
         // Act
-        val result = userCalendarService.removeTimeBoundary(token, name)
+        val result = userCalendarService.removeTimeBoundary(jwtToken, null)
 
         // Assert
         Assertions.assertFalse(result)
@@ -252,11 +263,26 @@ class UserCalendarServiceTest {
     @Test
     fun `removeTimeBoundary should return false when the user does not exist`() {
         // Arrange
-        val token = "test_token"
-        val name = "TimeBoundary1"
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val timeBoundary1 = TimeBoundary("TimeBoundary1")
+        val timeBoundary2 = TimeBoundary("TimeBoundary2")
+        val mockUser = User()
+        mockUser.addTimeBoundary(timeBoundary1)
+        mockUser.addTimeBoundary(timeBoundary2)
+        val optionalUserValue = Optional.of(mockUser)
+
+        // mock
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
+        whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
+
 
         // Act
-        val result = userCalendarService.removeTimeBoundary(token, name)
+        val result = userCalendarService.removeTimeBoundary(jwtToken, timeBoundary1.getName())
 
         // Assert
         Assertions.assertFalse(result)
@@ -266,19 +292,28 @@ class UserCalendarServiceTest {
     @Test
     fun `getUserTimeBoundaries should return user's time boundaries when user exists`() {
         // Arrange
-        val token = "test_token"
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
-        val retrievedUser = User()
-        val timeBoundary1 = TimeBoundary("Family")
-        val timeBoundary2 = TimeBoundary("Friends")
-        retrievedUser.addTimeBoundary(timeBoundary1)
-        retrievedUser.addTimeBoundary(timeBoundary2)
+        val timeBoundary1 = TimeBoundary("TimeBoundary1")
+        val timeBoundary2 = TimeBoundary("TimeBoundary2")
+        val mockUser = User()
+        mockUser.addTimeBoundary(timeBoundary1)
+        mockUser.addTimeBoundary(timeBoundary2)
+        val optionalUserValue = Optional.of(mockUser)
+
+        // mock
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
+
         val timeBoundaries = mutableListOf(
-            TimeBoundary(name = "TimeBoundary1"),
-            TimeBoundary(name = "TimeBoundary2"),
+            timeBoundary1,
+            timeBoundary2,
         )
         // Act
-        val result = userCalendarService.getUserTimeBoundaries(token)
+        val result = userCalendarService.getUserTimeBoundaries(jwtToken)
 
         // Assert
         Assertions.assertEquals(timeBoundaries, result)
@@ -287,10 +322,25 @@ class UserCalendarServiceTest {
     @Test
     fun `getUserTimeBoundaries should return an empty list when user does not exist`() {
         // Arrange
-        val token = "test_token"
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val timeBoundary1 = TimeBoundary("TimeBoundary1")
+        val timeBoundary2 = TimeBoundary("TimeBoundary2")
+        val mockUser = User()
+        mockUser.addTimeBoundary(timeBoundary1)
+        mockUser.addTimeBoundary(timeBoundary2)
+        val optionalUserValue = Optional.of(mockUser)
+
+        // mock
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
+
 
         // Act
-        val result = userCalendarService.getUserTimeBoundaries(token)
+        val result = userCalendarService.getUserTimeBoundaries(jwtToken)
 
         // Assert
         Assertions.assertTrue(result.isEmpty())

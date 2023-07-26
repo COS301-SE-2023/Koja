@@ -233,7 +233,7 @@ class UserCalendarService(
     fun getUserTimeBoundaries(token: String): MutableList<TimeBoundary> {
         val userJWTTokenData = getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
-        if (user != null) {
+        if (!user.isEmpty) {
             return user.get().getUserTimeBoundaries()
         }
         return mutableListOf()
