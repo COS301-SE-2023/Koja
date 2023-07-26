@@ -40,6 +40,8 @@ import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 @Service
@@ -304,7 +306,7 @@ class GoogleCalendarAdapterService(
         userRepository.save(storedUser)
     }
 
-    override fun getUserEvents(accessToken: String): List<UserEventDTO> {
+    override fun getUserEvents(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -315,15 +317,19 @@ class GoogleCalendarAdapterService(
 
             val events: Events? = request.execute()
 
-            val userEvents = ArrayList<UserEventDTO>()
+            val userEvents = mutableMapOf<String, UserEventDTO>()
 
             events?.items?.map {
-                userEvents.add(UserEventDTO(it))
+                val eventSummary = it.summary ?: ""
+                val eventStartTime = it.start.dateTime ?: it.start.date
+                val eventEndTime = it.end.dateTime ?: it.end.date
+                val key = Base64.getEncoder().encodeToString("${eventSummary.trim()}${eventStartTime}$eventEndTime".trim().toByteArray())
+                userEvents[key] = UserEventDTO(it)
             }
 
             return userEvents
         } catch (e: ExpiredJwtException) {
-            return emptyList()
+            return emptyMap()
         }
     }
 

@@ -22,7 +22,7 @@ class UserCalendarService(
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
-        val userEvents = ArrayList<UserEventDTO>()
+        val userEvents = mutableMapOf<String, UserEventDTO>()
 
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
@@ -30,12 +30,12 @@ class UserCalendarService(
             for (authDetails in userAuthDetails) {
                 if (authDetails.getRefreshToken() == userAccount.refreshToken) {
                     val accessToken = authDetails.getAccessToken()
-                    userEvents.addAll(adapter.getUserEvents(accessToken))
+                    userEvents.putAll(adapter.getUserEvents(accessToken))
                 }
             }
         }
 
-        return userEvents
+        return userEvents.values.toList()
     }
 
     @Transactional

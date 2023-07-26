@@ -733,8 +733,6 @@ class EventEditingState extends State<EventEditing> {
         backgroundColor: selectedColor,
       );
 
-      late final travelTimeBlock;
-
       if (event.location != "") {
         List<String> timeParts = travelTime.split(' ');
 
@@ -768,49 +766,49 @@ class EventEditingState extends State<EventEditing> {
         );
         String meetingTitle = titleController.text;
 
-        travelTimeBlock = Event(
-          // id: (widget.event != null) ? widget.event!.id : "",
-          title: "Travel To $meetingTitle",
-          location: "",
-          description: '',
-          category: '',
-          isDynamic: (selectedEventType == "Dynamic") ? true : false,
-          from: travelDateTime,
-          to: fromDate,
-          duration: await getDurationInMilliseconds(durationInSeconds),
-          isAllDay: false,
-          timeSlots: [timeSlot],
-          priority: priorityValue,
-          backgroundColor: selectedColor,
-        );
+        // travelTimeBlock = Event(
+        //   // id: (widget.event != null) ? widget.event!.id : "",
+        //   title: "Travel To $meetingTitle",
+        //   location: "",
+        //   description: '',
+        //   category: '',
+        //   isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        //   from: travelDateTime,
+        //   to: fromDate,
+        //   duration: await getDurationInMilliseconds(durationInSeconds),
+        //   isAllDay: false,
+        //   timeSlots: [timeSlot],
+        //   priority: priorityValue,
+        //   backgroundColor: selectedColor,
+        // );
       }
 
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
 
-      if (travelTimeBlock != null) {
-        var response = await serviceProvider.createEvent(travelTimeBlock);
+      // if (travelTimeBlock != null) {
+      //   var response = await serviceProvider.createEvent(travelTimeBlock);
 
-        if (response) {
-          eventProvider.addEvent(travelTimeBlock);
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event Created!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
-        } else {
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event Creation failed!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
-      }
+      // if (response) {
+      //   eventProvider.addEvent(travelTimeBlock);
+      //   var snackBar = SnackBar(
+      //     content: Center(
+      //       child: Text('Event Created!',
+      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      //     ),
+      //   );
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      //   Navigator.of(context).pop();
+      // } else {
+      //   var snackBar = SnackBar(
+      //     content: Center(
+      //       child: Text('Event Creation failed!',
+      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      //     ),
+      //   );
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // }
+      // }
 
       if (widget.event == null) {
         var response = await serviceProvider.createEvent(event);
