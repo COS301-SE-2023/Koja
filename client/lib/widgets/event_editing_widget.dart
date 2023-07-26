@@ -199,6 +199,10 @@ class EventEditingState extends State<EventEditing> {
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
+                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                if(selectedRecurrence != 'None')
+                  
+
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
