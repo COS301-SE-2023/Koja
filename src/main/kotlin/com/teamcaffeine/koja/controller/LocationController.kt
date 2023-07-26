@@ -66,7 +66,11 @@ LocationController(private val locationService: LocationService) {
     }
 
     @GetMapping("/distance")
-    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+    fun getDistanceBetweenLocations(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestParam("origin") origin: String?,
+        @RequestParam("destination") destination: String?,
+    ): ResponseEntity<String> {
         if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
@@ -134,7 +138,6 @@ LocationController(private val locationService: LocationService) {
             }
         }
     }
-
     fun getTravelTime(placeId: String, destLat: Double, destLng: Double): Long? {
         val context = GeoApiContext.Builder()
             .apiKey(System.getProperty("API_KEY"))
@@ -229,6 +232,20 @@ LocationController(private val locationService: LocationService) {
 //        distance += increment
 //        println("Distance updated: $distance")
 //    }
+    /*
+    @GetMapping("/location")
+    fun getLocation(): String? {
+        val latitude = // Retrieve latitude from geolocation
+        val longitude = // Retrieve longitude from geolocation
+
+            return if (latitude != null && longitude != null) {
+                val address = "$latitude,$longitude"
+                return address;
+            } else {
+                null
+            }
+    }
+*/
 
     /* val distanceUpdater = DistanceUpdater()
        val intervalInMinutes = 60 // Update distance every 60 minutes

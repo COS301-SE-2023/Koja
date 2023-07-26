@@ -17,17 +17,28 @@ class User {
     public var id: Int? = null
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    public val userAccounts: MutableList<UserAccount> = mutableListOf()
+    public var userAccounts: MutableList<UserAccount> = mutableListOf()
 
     private var currentLocation: Pair<Double, Double> = Pair(0.0, 0.0)
-    private var homeLocation: String ? = null
-    private var workLocation: String ? = null
 
     fun setCurrentLocation(latitude: Double, longitude: Double) {
         this.currentLocation = Pair(latitude, longitude)
     }
     fun getCurrentLocation(): Pair<Double, Double>? {
         return currentLocation
+    }
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    val timeBoundaries: MutableList<TimeBoundary> = mutableListOf()
+    private var homeLocation: String ? = null
+    private var workLocation: String ? = null
+
+    fun getUserTimeBoundaries(): MutableList<TimeBoundary> {
+        return timeBoundaries
+    }
+
+    fun addTimeBoundary(boundary: TimeBoundary) {
+        timeBoundaries.add(boundary)
     }
 
     fun setHomeLocation(homeLocation: String) {

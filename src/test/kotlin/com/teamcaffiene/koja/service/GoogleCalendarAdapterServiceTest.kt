@@ -32,6 +32,12 @@ class GoogleCalendarAdapterServiceTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
 
+        importEnvironmentVariables()
+
+        service = spy(GoogleCalendarAdapterService(userRepository, userAccountRepository))
+    }
+
+    private fun importEnvironmentVariables() {
         dotenv = Dotenv.load()
 
         dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
@@ -43,8 +49,6 @@ class GoogleCalendarAdapterServiceTest {
         dotenv["API_KEY"]?.let { setProperty("API_KEY", it) }
 
         dotenv["KOJA_JWT_SECRET"]?.let { setProperty("KOJA_JWT_SECRET", it) }
-
-        service = spy(GoogleCalendarAdapterService(userRepository, userAccountRepository))
     }
 
     /*
