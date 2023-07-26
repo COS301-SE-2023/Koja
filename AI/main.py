@@ -160,7 +160,7 @@ model = CategoryRecommender(user_model, category_model, weekday_model, time_fram
 model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
 # # Train the model
-model.fit(all_data.batch(128), epochs=100)
+model.fit(all_data.batch(128), epochs=5)
 
 user_model_index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
 user_model_index.index_from_dataset(
@@ -172,17 +172,26 @@ weekday_model_index.index_from_dataset(
     tf.data.Dataset.zip((weekday_dataset.batch(100), weekday_dataset.batch(100).map(model.weekday_model)))
 )
 
+timeframe_model_index = tfrs.layers.factorized_top_k.BruteForce(model.time_frame_model)
+timeframe_model_index.index_from_dataset(
+    tf.data.Dataset.zip((time_frame_dataset.batch(100), time_frame_dataset.batch(100).map(model.time_frame_model)))
+)
+
 # # Get recommendations.
 user_id = "502"  # change this to the user id you want to recommend for
 _, titles = user_model_index(np.array([user_id]))
 
 print(f"Category recommendations for user {user_id}: {titles[0][:10]}")
 
-k_value = 7
+maxOutput = 7
 for category_id in titles[0][:10]:
     # Convert TensorFlow EagerTensor to numpy array
     category_id_np = category_id.numpy()
-    _, weekdays = weekday_model_index(np.array([category_id_np]), k=k_value)
+    _, weekdays = weekday_model_index(np.array([category_id_np]), k=maxOutput)
+    _, time_frames = timeframe_model_index(np.array([category_id_np]))
     print(f"Weekday recommendations for category {category_id_np}: {weekdays[0]}")
+    print(f"Time frame recommendations for category {category_id_np}: {time_frames[0]}")
+
+
 
 
