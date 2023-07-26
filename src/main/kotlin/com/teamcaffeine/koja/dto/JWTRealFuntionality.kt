@@ -15,7 +15,7 @@ import javax.crypto.spec.SecretKeySpec
 @Service
 class JWTRealFuntionality : JWTFunctionality {
     override fun createJWTToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
-        return TokenManagerController.createJwtToken(accessTokens, expiryTime, userID)
+        return ""
     }
 
     override fun getUserJWTTokenData(jwtToken: String): UserJWTTokenDataDTO {
