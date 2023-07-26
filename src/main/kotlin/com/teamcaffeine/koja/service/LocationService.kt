@@ -4,22 +4,20 @@ import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
-import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
 import net.minidev.json.JSONObject
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class LocationService {
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+class LocationService(
+    private var userRepository: UserRepository,
+    private var googleCalendarAdapterService: GoogleCalendarAdapterService,
+    private var jwtFunctionality: JWTFunctionality,
+) {
     fun setHomeLocation(accessToken: String, homeLocation: String?): String? {
-        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(accessToken)
         val user = userRepository.findById(userJWTTokenData.userID)
 
         if (homeLocation != null && !user.isEmpty) {
@@ -28,12 +26,11 @@ class LocationService {
             userRepository.save(retrievedUser)
             return retrievedUser.getHomeLocation()
         }
-
         return null
     }
 
     fun setWorkLocation(accessToken: String, workLocation: String?): String? {
-        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(accessToken)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(accessToken)
 
         val user = userRepository.findById(userJWTTokenData.userID)
 
@@ -93,7 +90,7 @@ class LocationService {
     }
 
     fun updateUserLocation(token: String, latitude: Double, longitude: Double): DistanceMatrix? {
-        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
         if (retrievedUser != null) {
@@ -128,7 +125,7 @@ class LocationService {
     }
 
     fun getUserSavedLocations(token: String): JSONObject {
-        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
         val jsonObject = JSONObject()

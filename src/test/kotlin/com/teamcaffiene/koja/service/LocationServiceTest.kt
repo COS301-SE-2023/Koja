@@ -7,6 +7,7 @@ import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
+import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.LocationService
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
@@ -37,9 +38,12 @@ class LocationServiceTest {
     lateinit var userRepository: UserRepository
 
     @Mock
-    private lateinit var jwtFunctionality: JWTFunctionality
+    lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
 
     @Mock
+    private lateinit var jwtFunctionality: JWTFunctionality
+
+
     private lateinit var locationService: LocationService
     private lateinit var dotenv: Dotenv
 
@@ -49,7 +53,7 @@ class LocationServiceTest {
 
         importEnvironmentVariables()
 
-        locationService = spy(LocationService())
+        locationService = spy(LocationService(userRepository, googleCalendarAdapterService))
     }
 
     private fun importEnvironmentVariables() {
