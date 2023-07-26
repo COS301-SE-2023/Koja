@@ -306,7 +306,6 @@ class LocationServiceTest {
         return null
     }
 
-
     @Test
     fun testUpdateUserLocation_UserExists() {
         // Given
@@ -317,26 +316,25 @@ class LocationServiceTest {
 
         val testUser = User()
         val location1 = "Las vegas"
-        val location2 ="Los angeles"
+        val location2 = "Los angeles"
         val optionalUserValue = Optional.of(testUser)
 
         val latitude = 40.7128
         val longitude = -74.0060
-        
+
         val matrix = DistanceMatrix(arrayOf(), arrayOf(), arrayOf())
 
         whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
         whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
         whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(listOf("location1", "location2"))
-        whenever(locationService.updateLocationMatrix(latitude, longitude, testUser, location1,location2)).thenReturn(
-            matrix
+        whenever(locationService.updateLocationMatrix(latitude, longitude, testUser, location1, location2)).thenReturn(
+            matrix,
         )
         // When
         val result = locationService.updateUserLocation(jwtToken, latitude, longitude)
 
         // Then
         assertNull(result)
-
     }
 
     @Test
@@ -349,7 +347,7 @@ class LocationServiceTest {
 
         val testUser = User()
         val location1 = "Las vegas"
-        val location2 ="Los angeles"
+        val location2 = "Los angeles"
         val optionalUserValue = Optional.of(testUser)
 
         val latitude = 40.7128
