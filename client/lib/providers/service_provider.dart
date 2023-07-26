@@ -195,7 +195,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will attempt to delete an event using CalendarController
-  Future<bool> deleteEvent(String eventId) async {
+  Future<bool> deleteEvent(Event event) async {
     final url = Uri.http(
         '$_serverAddress:$_serverPort', '/api/v1/user/calendar/deleteEvent');
     final response = await http.delete(
@@ -204,7 +204,7 @@ class ServiceProvider with ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': _accessToken!,
       },
-      body: eventId,
+      body: jsonEncode(event.toJson()),
     );
 
     if (response.statusCode == 200) {

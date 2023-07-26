@@ -93,7 +93,7 @@ class ContextProvider extends ChangeNotifier {
 
   //This deletes an event from the list
   void deleteEvent(Event event) {
-    deleteEventAPICall(event.id);
+    deleteEventAPICall(event);
     _events.remove(event);
     notifyListeners();
   }
@@ -143,10 +143,10 @@ class ContextProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteEventAPICall(String eventId) async {
+  Future<void> deleteEventAPICall(Event event) async {
     try {
       final serviceProvider = ServiceProvider();
-      final deleteSuccess = await serviceProvider.deleteEvent(eventId);
+      final deleteSuccess = await serviceProvider.deleteEvent(event);
 
       if (deleteSuccess) {
         final key = scaffoldKey;

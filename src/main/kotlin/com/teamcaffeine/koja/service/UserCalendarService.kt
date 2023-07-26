@@ -70,7 +70,7 @@ class UserCalendarService(
         }
     }
 
-    fun deleteEvent(token: String, eventID: String) {
+    fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -80,8 +80,10 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
-            if (accessToken != null) {
-                adapter.deleteEvent(accessToken, eventID)
+            adapter.getUserEventsInRange(accessToken, eventStartTime, eventEndTime).forEach {
+                if (accessToken != null && it.getDescription().trim() == eventSummary.trim()) {
+                    adapter.deleteEvent(accessToken, it.getId())
+                }
             }
         }
     }
