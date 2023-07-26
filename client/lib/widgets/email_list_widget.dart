@@ -16,14 +16,8 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
+  
   List<String> emails = [];
-
-  @override
-  void initState() {
-    super.initState();
-    emails = Provider.of<ContextProvider>(context, listen: false).userEmails;
-  }
-
   int editedindex = -1;
 
   late String selectedOption;
@@ -51,15 +45,7 @@ class _EmailListState extends State<EmailList> {
                     eventProvider: contextProvider,
                   );
                   emails.removeAt(index);
-                  contextProvider.userEmails = emails;
-                  if (emails.isEmpty) {
-                    serviceProvider.deleteUserAccount();
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                      (Route<dynamic> route) => false,
-                    );
-                  }
+                  // contextProvider.userEmails = emails;               
                 });
                 Navigator.pop(context);
               },
@@ -79,6 +65,7 @@ class _EmailListState extends State<EmailList> {
 
   @override
   Widget build(BuildContext context) {
+    emails = Provider.of<ContextProvider>(context, listen: false).userEmails;
     return SingleChildScrollView(
         child: ExpansionTile(
       trailing: Icon(

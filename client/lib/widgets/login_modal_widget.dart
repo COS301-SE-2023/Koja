@@ -33,9 +33,9 @@ class LoginModalState extends State<LoginModal> {
                   if (await serviceProvider.loginUser(
                       eventProvider: eventProvider)) {
                     Navigator.pushAndRemoveUntil(
-                      context,
+                      eventProvider.navigationKey.currentContext!,
                       MaterialPageRoute(
-                          builder: (context) => const NavigationScreen()),
+                          builder: (_) => const NavigationScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } else {
@@ -109,17 +109,10 @@ class LoginModalState extends State<LoginModal> {
                                         editingController.text.trim(),
                                         eventProvider,
                                       );
-                                      Navigator.of(eventProvider
-                                              .navigationKey.currentContext!)
-                                          .pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (_) => NavigationScreen(),
-                                        ),
-                                      );
                                       Navigator.pushAndRemoveUntil(
-                                        context,
+                                        eventProvider.navigationKey.currentContext!,
                                         MaterialPageRoute(
-                                          builder: (context) =>
+                                          builder: (_) =>
                                               const NavigationScreen(),
                                         ),
                                         (Route<dynamic> route) => false,
