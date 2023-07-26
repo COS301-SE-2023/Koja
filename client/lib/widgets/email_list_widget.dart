@@ -1,11 +1,9 @@
 import 'package:client/providers/context_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/service_provider.dart';
-import '../screens/login_screen.dart';
 import 'all_emails_widget.dart';
 
 class EmailList extends StatefulWidget {

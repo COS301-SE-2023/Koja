@@ -733,7 +733,7 @@ class EventEditingState extends State<EventEditing> {
         backgroundColor: selectedColor,
       );
 
-      var travelTimeBlock;
+      Event travelTimeBlock;
 
       if (event.location != "") {
         List<String> timeParts = travelTime.split(' ');
@@ -788,28 +788,26 @@ class EventEditingState extends State<EventEditing> {
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
 
-      if (travelTimeBlock != null) {
-        var response = await serviceProvider.createEvent(travelTimeBlock);
+      var response = await serviceProvider.createEvent(travelTimeBlock);
 
-        if (response) {
-          eventProvider.addEvent(travelTimeBlock);
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event Created!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
-        } else {
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event Creation failed!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
+      if (response) {
+        eventProvider.addEvent(travelTimeBlock);
+        var snackBar = SnackBar(
+          content: Center(
+            child: Text('Event Created!',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.of(context).pop();
+      } else {
+        var snackBar = SnackBar(
+          content: Center(
+            child: Text('Event Creation failed!',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
 
       if (widget.event == null) {
