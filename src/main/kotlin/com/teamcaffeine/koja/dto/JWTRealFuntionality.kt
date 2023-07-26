@@ -5,12 +5,14 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import org.springframework.stereotype.Service
 import java.security.MessageDigest
-import java.util.*
+import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
+@Service
 class JWTRealFuntionality : JWTFunctionality {
     override fun createJWTToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
         return TokenManagerController.createJwtToken(accessTokens, expiryTime, userID)

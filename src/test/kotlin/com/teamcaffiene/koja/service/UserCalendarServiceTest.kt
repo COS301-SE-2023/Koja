@@ -11,9 +11,7 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.enums.AuthProviderEnum
-import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
-import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions
@@ -21,9 +19,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -41,37 +41,43 @@ class UserCalendarServiceTest {
     lateinit var userRepository: UserRepository
 
     @Mock
-    lateinit var userAccountRepository: UserAccountRepository
-
-    private lateinit var service: GoogleCalendarAdapterService
-    private lateinit var dotenv: Dotenv
-
-    @Mock
-    private lateinit var tokenManagerController: TokenManagerController
-
-    @Mock
     private lateinit var jwtFunctionality: JWTFunctionality
 
     @Mock
     private lateinit var userCalendarService: UserCalendarService
+    private lateinit var dotenv: Dotenv
 
     @BeforeEach
     fun setup() {
-        val dotenv: Dotenv = Dotenv.load()
+        MockitoAnnotations.openMocks(this)
 
-        System.setProperty("KOJA_AWS_RDS_DATABASE_URL", dotenv["KOJA_AWS_RDS_DATABASE_URL"]!!)
-        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]!!)
-        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
+        importEnvironmentVariables()
 
-        // Set Google Sign In client ID and client secret properties
-        System.setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
-        System.setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
-        System.setProperty("API_KEY", dotenv["API_KEY"]!!)
+        userCalendarService = spy(UserCalendarService(userRepository, jwtFunctionality))
+    }
 
-        // Set JWT secret key property
-        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+    private fun importEnvironmentVariables() {
+        dotenv = Dotenv.load()
 
-        userCalendarService = UserCalendarService(userRepository, jwtFunctionality)
+        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
+        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
+            System.setProperty(
+                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
+                it,
+            )
+        }
+        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
+            System.setProperty(
+                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
+                it,
+            )
+        }
+
+        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
+        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
+        dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
+
+        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }
     /*  @BeforeEach
     fun setup() {
@@ -130,12 +136,11 @@ class UserCalendarServiceTest {
         val mockToken = TokenManagerController.createToken(
             TokenRequest(arrayListOf(authDetails), AuthProviderEnum.GOOGLE, mockUserID),
         )
-        whenever(jwtFunctionality.getUserJWTTokenData(mockToken)).thenReturn(mockUserJWTData)
         val timeBoundary = TimeBoundary("Partying", "12:00", "05:00")
-
         val mockUser = User()
         val optionalUserValue = Optional.of(mockUser)
 
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
         whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
         whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
 
