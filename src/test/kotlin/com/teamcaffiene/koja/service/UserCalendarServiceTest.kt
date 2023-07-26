@@ -280,7 +280,6 @@ class UserCalendarServiceTest {
         whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
         whenever(userRepository.save(any<User>())).thenAnswer { invocation: InvocationOnMock -> invocation.getArgument<User>(0) }
 
-
         // Act
         val result = userCalendarService.removeTimeBoundary(jwtToken, timeBoundary1.getName())
 
@@ -337,7 +336,6 @@ class UserCalendarServiceTest {
         // mock
         whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
         whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
-
 
         // Act
         val result = userCalendarService.getUserTimeBoundaries(jwtToken)
