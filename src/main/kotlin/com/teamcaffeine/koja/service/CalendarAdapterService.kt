@@ -12,7 +12,7 @@ import java.time.OffsetDateTime
 abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     private val authProviderEnum: AuthProviderEnum = authProvider
 
-    abstract fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView
+    abstract fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean, addAdditionalAccount: Boolean = false, token: String = ""): RedirectView
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?, appCallBack: Boolean): String
     abstract fun getUserEvents(accessToken: String): List<UserEventDTO>

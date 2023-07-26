@@ -16,7 +16,6 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
-
   List<String> emails = [];
 
   @override
@@ -31,48 +30,52 @@ class _EmailListState extends State<EmailList> {
 
   // function to delete an email from the list
   void delete(int index) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      final serviceProvider = Provider.of<ServiceProvider>(context, listen: false);
-      final contextProvider = Provider.of<ContextProvider>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final serviceProvider =
+            Provider.of<ServiceProvider>(context, listen: false);
+        final contextProvider =
+            Provider.of<ContextProvider>(context, listen: true);
 
-      return AlertDialog(
-        title: Text('Confirmation'),
-        content: Text('Are you sure you want to delete this email from your account?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {  
-                serviceProvider.deleteUserEmail(emails[index]);
-                emails.removeAt(index);
-                contextProvider.userEmails = emails;
-                if (emails.isEmpty) {
-                      serviceProvider.deleteUserAccount();
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Login()),
-                    (Route<dynamic> route) => false,
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text(
+              'Are you sure you want to delete this email from your account?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  serviceProvider.deleteUserEmail(
+                    email: emails[index],
+                    eventProvider: contextProvider,
                   );
-                }
-              });
-              Navigator.pop(context); 
-            },
-            child: Text('Delete'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Cancel'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
+                  emails.removeAt(index);
+                  contextProvider.userEmails = emails;
+                  if (emails.isEmpty) {
+                    serviceProvider.deleteUserAccount();
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Login()),
+                      (Route<dynamic> route) => false,
+                    );
+                  }
+                });
+                Navigator.pop(context);
+              },
+              child: Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

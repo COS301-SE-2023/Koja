@@ -77,7 +77,7 @@ class SplashScreen extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/icons/koja.png',
-                height: 200,
+                height : 200,
                 width: 100,
               ),
               Text('Koja',
