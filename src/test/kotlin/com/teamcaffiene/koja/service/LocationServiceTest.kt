@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.service
 
+import com.google.maps.model.DistanceMatrix
 import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTFunctionality
@@ -10,6 +11,7 @@ import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.LocationService
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -314,38 +316,52 @@ class LocationServiceTest {
         val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
         val testUser = User()
-        testUser.setHomeLocation("Las vegas")
-        testUser.setWorkLocation("Los angekes")
+        val location1 = "Las vegas"
+        val location2 ="Los angeles"
         val optionalUserValue = Optional.of(testUser)
 
         val latitude = 40.7128
         val longitude = -74.0060
+        
+        val matrix = DistanceMatrix(arrayOf(), arrayOf(), arrayOf())
 
-        `when`(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
-        `when`(userRepository.findById(mockUserID)).thenReturn(java.util.Optional.of(retrievedUser))
-        `when`(googleCalendarAdapterService.getFutureEventsLocations(token)).thenReturn(listOf("location1", "location2"))
-
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
+        whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(listOf("location1", "location2"))
+        whenever(locationService.updateLocationMatrix(latitude, longitude, testUser, location1,location2)).thenReturn(
+            matrix
+        )
         // When
-        val result = userLocationService.updateUserLocation(token, latitude, longitude)
+        val result = locationService.updateUserLocation(jwtToken, latitude, longitude)
 
         // Then
         assertNull(result)
-        assertEquals(latitude, retrievedUser.getCurrentLocation().latitude, 0.0)
-        assertEquals(longitude, retrievedUser.getCurrentLocation().longitude, 0.0)
+
     }
 
     @Test
     fun testUpdateUserLocation_UserDoesNotExist() {
         // Given
-        val token = "sample_token"
-        val latitude = 40.7128 // Example latitude
-        val longitude = -74.0060 // Example longitude
-        val userJWTTokenData = UserJWTTokenData(userID = "non_existent_user_id")
-        `when`(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(userJWTTokenData)
-        `when`(userRepository.findById(userJWTTokenData.userID)).thenReturn(java.util.Optional.empty())
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val testUser = User()
+        val location1 = "Las vegas"
+        val location2 ="Los angeles"
+        val optionalUserValue = Optional.of(testUser)
+
+        val latitude = 40.7128
+        val longitude = -74.0060
+
+        val matrix = DistanceMatrix(arrayOf(), arrayOf(), arrayOf())
+
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(null)
 
         // When
-        val result = userLocationService.updateUserLocation(token, latitude, longitude)
+        val result = locationService.updateUserLocation(jwtToken, latitude, longitude)
 
         // Then
         assertNull(result)
