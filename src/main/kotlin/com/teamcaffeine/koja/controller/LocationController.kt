@@ -6,10 +6,8 @@ import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
-import com.teamcaffeine.koja.service.LocationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -73,7 +71,11 @@ LocationController(private val locationService: LocationService) {
     }
 
     @GetMapping("/distance")
-    fun getDistanceBetweenLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("origin") origin: String?, @RequestParam("destination") destination: String?): ResponseEntity<String> {
+    fun getDistanceBetweenLocations(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestParam("origin") origin: String?,
+        @RequestParam("destination") destination: String?,
+    ): ResponseEntity<String> {
         if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
@@ -233,7 +235,22 @@ LocationController(private val locationService: LocationService) {
 //        println("Distance updated: $distance")
 //    }
 
+/*
+    @GetMapping("/location")
+    fun getLocation(): String? {
+        val latitude = // Retrieve latitude from geolocation
+        val longitude = // Retrieve longitude from geolocation
+
+            return if (latitude != null && longitude != null) {
+                val address = "$latitude,$longitude"
+                return address;
+            } else {
+                null
+            }
+    }
+*/
     /* val distanceUpdater = DistanceUpdater()
        val intervalInMinutes = 60 // Update distance every 60 minutes
        // Start auto-updating the distance every specified interval
        distanceUpdater.startAutoUpdate(intervalInMinutes, distanceUpdater::updateDistance)*/
+}
