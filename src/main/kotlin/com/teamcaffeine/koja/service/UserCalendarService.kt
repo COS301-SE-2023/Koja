@@ -198,7 +198,7 @@ class UserCalendarService(
     }
 
     @Transactional
-    fun addTimeBoundary(token: String, timeBoundary: TimeBoundary): Boolean {
+    fun addTimeBoundary(token: String, timeBoundary: TimeBoundary?): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val user = userRepository.findById(userJWTTokenData.userID)
         if (timeBoundary != null && !user.isEmpty) {
