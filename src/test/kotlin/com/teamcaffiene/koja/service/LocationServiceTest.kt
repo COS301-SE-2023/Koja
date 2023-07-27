@@ -10,6 +10,7 @@ import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.LocationService
 import io.github.cdimascio.dotenv.Dotenv
+import net.minidev.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -236,31 +237,42 @@ class LocationServiceTest {
     @Test
     fun testGetLocationTravelTimesWithNoLocations() {
         // Given
-        val accessToken = "your_access_token"
         val originLat = 40.7128 // Example origin latitude
         val originLng = -74.0060 // Example origin longitude
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val testUser = User()
+        val optionalUserValue = Optional.of(testUser)
+        val locations = emptyList<String>()
+        whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(locations)
 
         // When
-        val result = locationService.getLocationTravelTimes(accessToken, originLat, originLng)
+        val result = locationService.getLocationTravelTimes(jwtToken, originLat, originLng)
 
         // Then
-        assertEquals(emptyList<Long>(), result)
+        assertEquals(emptyList<Long?>(), result)
     }
 
     @Test
     fun testGetLocationTravelTimesWithSingleLocation() {
         // Given
-        val accessToken = "your_access_token"
         val originLat = 40.7128 // Example origin latitude
         val originLng = -74.0060 // Example origin longitude
-        val locations = listOf(
-            Location(41.8781, -87.6298), // Example single location (Chicago)
-        )
-        val googleCalendarAdapterService = FakeGoogleCalendarAdapterService(locations)
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
-        whenever(googleCalendarAdapterService.getFutureEventsLocations(accessToken)).thenReturn(locations)
+        val testUser = User()
+        val optionalUserValue = Optional.of(testUser)
+        val locations = listOf<String>("Eiffel Tower, Paris, France")
+        whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(locations)
+
         // When
-        val result = locationService.getLocationTravelTimes(accessToken, originLat, originLng)
+        val result = locationService.getLocationTravelTimes(jwtToken, originLat, originLng)
 
         // Then
         assertEquals(1, result.size)
@@ -270,40 +282,23 @@ class LocationServiceTest {
     @Test
     fun testGetLocationTravelTimesWithMultipleLocations() {
         // Given
-        val accessToken = "your_access_token"
         val originLat = 40.7128 // Example origin latitude
         val originLng = -74.0060 // Example origin longitude
-        val locations = listOf(
-            Location(41.8781, -87.6298), // Chicago
-            Location(34.0522, -118.2437), // Los Angeles
-            Location(29.7604, -95.3698), // Houston
-            // Add more locations as needed
-        )
-        val googleCalendarAdapterService = FakeGoogleCalendarAdapterService(locations)
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val testUser = User()
+        val optionalUserValue = Optional.of(testUser)
+        val locations = listOf<String>("Eiffel Tower, Paris, France", "Central Park, New York City, USA", "Great Wall of China, Beijing, China", "Tokyo Tower, Tokyo, Japan")
+        whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(locations)
 
         // When
-        val result = locationService.getLocationTravelTimes(accessToken, originLat, originLng)
+        val result = locationService.getLocationTravelTimes(jwtToken, originLat, originLng)
 
         // Then
         assertEquals(locations.size, result.size)
-        // Assert your expected travel time values for each location
-    }
-
-    // Helper class to simulate the GoogleCalendarAdapterService
-    class FakeGoogleCalendarAdapterService(private val locations: List<Location>) {
-        fun getFutureEventsLocations(accessToken: String): List<Location> {
-            return locations
-        }
-    }
-
-    // Sample Location class for testing purposes
-    data class Location(val lat: Double, val lng: Double)
-
-    // Sample getTravelTime function for testing purposes
-    fun getTravelTime(originLat: Double, originLng: Double, location: Location): Long? {
-        // Implement the logic to calculate the travel time between origin and location
-        // For unit testing, you can return a dummy value or mock the external service
-        return null
     }
 
     @Test
@@ -363,5 +358,62 @@ class LocationServiceTest {
 
         // Then
         assertNull(result)
+    }
+
+    @Test
+    fun testGetUserSavedLocations_UserExists() {
+        // Given
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val testUser = User()
+        testUser.setCurrentLocation(40.7128, -74.0060) // Example current location
+        testUser.setHomeLocation("los angeles") // Example home location
+        testUser.setWorkLocation("Las vegas") // Example work location
+
+        val optionalUserValue = Optional.of(testUser)
+
+        // Mocking
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(optionalUserValue)
+
+        // When
+        val result = locationService.getUserSavedLocations(jwtToken)
+
+        // Then
+        val expectedJsonObject = JSONObject()
+        expectedJsonObject.put("currentLocation", JSONObject(mapOf("lat" to 40.7128, "lng" to -74.0060)))
+        expectedJsonObject.put("homeLocation", JSONObject(mapOf("workLocation" to "Las vegas")))
+        expectedJsonObject.put("workLocation", JSONObject(mapOf("homeLocation" to "Los Angeles")))
+        assertEquals(expectedJsonObject.toString(), result.toString())
+    }
+
+    @Test
+    fun testGetUserSavedLocations_UserDoesNotExist() {
+        // Given
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val testUser = User()
+        testUser.setCurrentLocation(40.7128, -74.0060) // Example current location
+        testUser.setHomeLocation("los angeles") // Example home location
+        testUser.setWorkLocation("Las vegas") // Example work location
+
+        val optionalUserValue = Optional.of(testUser)
+
+        // Mocking
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
+
+        // When
+        val result = locationService.getUserSavedLocations(jwtToken)
+
+        // Then
+        val expectedJsonObject = JSONObject()
+        assertEquals(expectedJsonObject.toString(), result.toString())
     }
 }

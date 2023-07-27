@@ -58,7 +58,7 @@ class LocationService(
             return travelTimes
         }
 
-        return emptyList()
+        return emptyList<Long?>()
     }
 
     fun getTravelTime(originLat: Double, originLng: Double, placeId: String): Long? {
