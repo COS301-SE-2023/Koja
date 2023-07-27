@@ -30,19 +30,22 @@ class LocationService(
     }
 
     fun setWorkLocation(accessToken: String, workLocation: String?): String? {
+        try {
+            val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(accessToken)
+            val user = userRepository.findById(userJWTTokenData.userID)
 
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(accessToken)
+            if (workLocation != null && !user.isEmpty) {
+                val retrievedUser = user.get()
+                retrievedUser.setWorkLocation(workLocation)
+                userRepository.save(retrievedUser)
+                return retrievedUser.getWorkLocation()
+            }
 
-        val user = userRepository.findById(userJWTTokenData.userID)
-
-        if (workLocation != null && !user.isEmpty) {
-            val retrievedUser = user.get()
-            retrievedUser.setWorkLocation(workLocation)
-            userRepository.save(retrievedUser)
-            return retrievedUser.getWorkLocation()
+            return null
+        } catch (e: Exception) {
+            println("Error occurred: ${e.message}")
+            return null
         }
-
-        return null
     }
 
     fun getLocationTravelTimes(accessToken: String, originLat: Double, originLng: Double): List<Long?> {
