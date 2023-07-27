@@ -52,8 +52,7 @@ class UserAccountManagerController(
         return if (token == null || email == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            val jwt = userAccountManagerService.deleteGoogleAccount(token, email)
-            return jwt
+            return userAccountManagerService.deleteGoogleAccount(token, email)
         }
     }
 }

@@ -8,7 +8,6 @@ import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
-import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
