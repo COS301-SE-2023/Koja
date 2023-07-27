@@ -27,22 +27,22 @@ void main() {
     expect(find.text('Traveling Time\nCalculator'), findsNothing);
 
     // Swipe to the second page
-    await tester.drag(find.byType(PageView), Offset(-300, 0));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byType(ElevatedButton));
+    await tester.pumpAndSettle(Duration(seconds: 2));
 
     // Now, the second page should be visible
-    expect(find.text('Integration With Existing \nCalendar Apps'), findsOneWidget);
-    expect(find.text('Artificial Intelligence\nIntegration'), findsNothing);
+    expect(find.text('Integration With Existing \nCalendar Apps'), findsNothing);
+    expect(find.text('Artificial Intelligence\nIntegration'), findsOneWidget);
     expect(find.text('Traveling Time\nCalculator'), findsNothing);
 
     // Swipe to the third page
-    await tester.drag(find.byType(PageView), Offset(-300, 0));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byType(ElevatedButton));
+    await tester.pumpAndSettle(Duration(seconds: 2));
 
     // Now, the third page should be visible
-    expect(find.text('Integration With Existing \nCalendar Apps'), findsOneWidget);
+    expect(find.text('Integration With Existing \nCalendar Apps'), findsNothing);
     expect(find.text('Artificial Intelligence\nIntegration'), findsNothing);
-    expect(find.text('Traveling Time\nCalculator'), findsNothing);
+    expect(find.text('Traveling Time\nCalculator'), findsOneWidget);
   });
 
   testWidgets('Next button should change pages and show modal sheet on last page', (WidgetTester tester) async {
