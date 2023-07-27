@@ -30,6 +30,7 @@ class LocationService(
     }
 
     fun setWorkLocation(accessToken: String, workLocation: String?): String? {
+
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(accessToken)
 
         val user = userRepository.findById(userJWTTokenData.userID)
@@ -127,14 +128,14 @@ class LocationService(
     fun getUserSavedLocations(token: String): JSONObject {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
-        if(retrievedUser!=null){
-        val jsonObject = JSONObject()
-        jsonObject.put("originLat", retrievedUser.getCurrentLocation()?.first ?: 0.0)
-        jsonObject.put("originLng", retrievedUser.getCurrentLocation()?.second ?: 0.0)
-        jsonObject.put("homeLocation", retrievedUser.getHomeLocation())
-        jsonObject.put("workLocation", retrievedUser.getWorkLocation())
+        if (retrievedUser != null) {
+            val jsonObject = JSONObject()
+            jsonObject.put("originLat", retrievedUser.getCurrentLocation()?.first ?: 0.0)
+            jsonObject.put("originLng", retrievedUser.getCurrentLocation()?.second ?: 0.0)
+            jsonObject.put("homeLocation", retrievedUser.getHomeLocation())
+            jsonObject.put("workLocation", retrievedUser.getWorkLocation())
 
-        return jsonObject
+            return jsonObject
         }
         return JSONObject()
     }

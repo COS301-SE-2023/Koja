@@ -131,7 +131,7 @@ class LocationServiceTest {
         val optionalUserValue = Optional.of(testUser)
 
         whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
-        whenever(userRepository.findById(mockUserID)).thenReturn(null)
+        whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
 
         val homeLocation = "New York, USA"
 
@@ -144,14 +144,19 @@ class LocationServiceTest {
 
     @Test
     fun `test setHomeLocation with invalid user`() {
-        val accessToken = "validAccessToken"
-        val userID = 1L
-        val homeLocation = "New York, USA"
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
+
+        val testUser = User()
+        val optionalUserValue = Optional.of(testUser)
 
         // Mock the behavior of the userRepository.findById method to return empty optional
-        whenever(userRepository.findById(userID.toInt())).thenReturn(null)
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
+        whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
 
-        val result = locationService.setHomeLocation(accessToken, homeLocation)
+        val result = locationService.setHomeLocation(jwtToken, "Maldives")
 
         assertEquals(null, result)
     }
