@@ -275,28 +275,26 @@ class ChooseColorState extends State<ChooseColor> {
   }
 }
 
-/// Class which sets recurrence
+/// Class which sets recurrence of an event
+
+List<String> options = ['Occurence', 'Date'];
+
 class ChooseRecurrence extends StatefulWidget {
   final void Function(String category) onRecurrenceSelected;
-  ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
-      : super(key: key);  
+
+  ChooseRecurrence({Key? key, required this.onRecurrenceSelected}) : super(key: key);
 
   @override
   ChooseRecurrenceState createState() => ChooseRecurrenceState();
-  
 }
-
-List<String> options = ['Occurence', 'Date'];
 
 class ChooseRecurrenceState extends State<ChooseRecurrence> {
   String selectedCategory = 'None';
   List<String> categories = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
-    String selectedOption = options[0];
+  int selectedOptionIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-
-
     String getIntervalString(String interval) {
       if (interval == 'Daily') {
         return ' day(s)';
@@ -310,7 +308,7 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
         return 'None';
       }
     }
-    
+
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Column(
@@ -319,128 +317,145 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
         children: [
           SizedBox(height: 5),
           DropdownButtonFormField<String>(
-              value: selectedCategory,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    selectedCategory = newValue;
-                    if (newValue != 'None') {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Recurrence'),
-                            content: Container(
-                              width: MediaQuery.of(context).size.width * 0.95,
-                              height: MediaQuery.of(context).size.height * 0.9,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Repeats Every',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16,
-                                      fontFamily: 'Ubuntu',
-                                    ),
-                                  ),                              
-                                  SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          width: 50,
+            value: selectedCategory,
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  selectedCategory = newValue;
+                  if (newValue != 'None') {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Recurrence'),
+                          content: Container(
+                            width: MediaQuery.of(context).size.width * 0.95,
+                            height: MediaQuery.of(context).size.height * 0.9,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Repeats Every',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    fontFamily: 'Ubuntu',
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        width: 50,
+                                        height: 50,
+                                        child: NumberSelector(
+                                          min: 1,
+                                          max: 30,
+                                          width: 10,
                                           height: 50,
-                                          child: NumberSelector.plain(
-                                            min: 1,
-                                            max: 30,
-                                            width: 5,
-                                            height: 50,
-                                            showSuffix: false,
-                                            onUpdate: (value) {
-                                              interval = value;
-                                            },
-                                            showMinMax: false,
-                                            hasBorder: true,
-                                            textStyle: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: 'Ubuntu',
-                                            ),
+                                          showSuffix: false,
+                                          onUpdate: (value) {
+                                            interval = value;
+                                          },
+                                          showMinMax: false,
+                                          hasBorder: true,
+                                          textStyle: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Ubuntu',
                                           ),
                                         ),
-                                      ), 
-                                      SizedBox(width: 8),
-                                      Text(
-                                        getIntervalString(newValue),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 20,
-                                          fontFamily: 'Ubuntu',
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(height: 15),
-                                  Text(
-                                    'Ends',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16,
-                                      fontFamily: 'Ubuntu',
+                                      ),
                                     ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      getIntervalString(newValue),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 20,
+                                        fontFamily: 'Ubuntu',
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 15),
+                                Text(
+                                  'Ends',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    fontFamily: 'Ubuntu',
                                   ),
-                                  SizedBox(height: 10), 
-                                        
-                                ],
-                              ),
+                                ),
+                                SizedBox(height: 10),
+                                RadioListTile(
+                                  title: const Text('E1'),
+                                  value: 0,
+                                  groupValue: selectedOptionIndex,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedOptionIndex = value!;
+                                    });
+                                  },
+                                ),
+                                RadioListTile(
+                                  title: const Text('E2'),
+                                  value: 1,
+                                  groupValue: selectedOptionIndex,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedOptionIndex = value!;
+                                    });
+                                  },
+                                ),
+
+                              ],
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Save'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Cancel'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    } else {
-                    }
-                  });
-                  widget.onRecurrenceSelected(newValue);
-                }
-    
-              },
-              items: categories.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                label: Text(
-                  'RECURRENCE',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 17),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
-                ),
-              )
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Save'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Cancel'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    // Handle the case when 'None' is selected.
+                  }
+                });
+                widget.onRecurrenceSelected(newValue);
+              }
+            },
+            items: categories.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              label: Text(
+                'RECURRENCE',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 17),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
+              ),
             ),
+          ),
         ],
       ),
     );
