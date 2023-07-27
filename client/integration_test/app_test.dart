@@ -26,8 +26,9 @@ void main() {
       // Verify that Login screen appears after the splash screen.
       expect(find.byType(Login), findsOneWidget);
 
-      // Verify that the Learn More button appears on the Login screen.
+      // Verify that both button appears on the Login screen.
       expect(find.widgetWithText(ElevatedButton,"Learn More"), findsOneWidget);
+      expect(find.widgetWithText(ElevatedButton,"Get Started"), findsOneWidget);
 
       //Tap the Learn More button and wait for the Info widget to appear.
       await tester.tap(find.widgetWithText(ElevatedButton, "Learn More"));
