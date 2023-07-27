@@ -117,9 +117,11 @@ class UserCalendarService(
                 locationService = LocationService(userRepository, googleCalendarAdapter)
                 val currentLocation: Pair<Double, Double> =
                     anyToPair(locationService.getUserSavedLocations(token)["currentLocation"])
+                val latitude = currentLocation.second
+                val longitude = currentLocation.first
                 val travelTime = locationService.getTravelTime(
-                    currentLocation.first,
-                    currentLocation.second,
+                    latitude,
+                    longitude,
                     eventDTO.getLocation(),
                 )
                 if (travelTime != null) {
