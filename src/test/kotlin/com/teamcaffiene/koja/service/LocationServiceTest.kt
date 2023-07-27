@@ -310,6 +310,8 @@ class LocationServiceTest {
         val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
         val testUser = User()
+        testUser.setWorkLocation("Eiffel Tower, Paris, France")
+        testUser.setHomeLocation("Colosseum, Rome, Italy")
         val location1 = "Las vegas"
         val location2 = "Los angeles"
         val optionalUserValue = Optional.of(testUser)
@@ -370,8 +372,8 @@ class LocationServiceTest {
 
         val testUser = User()
         testUser.setCurrentLocation(40.7128, -74.0060) // Example current location
-        testUser.setHomeLocation("los angeles") // Example home location
-        testUser.setWorkLocation("Las vegas") // Example work location
+        testUser.setHomeLocation("Colosseum, Rome, Italy") // Example home location
+        testUser.setWorkLocation("Tokyo Tower, Tokyo, Japan") // Example work location
 
         val optionalUserValue = Optional.of(testUser)
 
@@ -384,9 +386,10 @@ class LocationServiceTest {
 
         // Then
         val expectedJsonObject = JSONObject()
-        expectedJsonObject.put("currentLocation", JSONObject(mapOf("lat" to 40.7128, "lng" to -74.0060)))
-        expectedJsonObject.put("homeLocation", JSONObject(mapOf("workLocation" to "Las vegas")))
-        expectedJsonObject.put("workLocation", JSONObject(mapOf("homeLocation" to "Los Angeles")))
+        expectedJsonObject.put("originLat", JSONObject(mapOf("originLat" to 40.7128)))
+        expectedJsonObject.put("originLng", JSONObject(mapOf("originLng" to -74.0060)))
+        expectedJsonObject.put("homeLocation", JSONObject(mapOf("workLocation" to "Colosseum, Rome, Italy")))
+        expectedJsonObject.put("workLocation", JSONObject(mapOf("homeLocation" to "Tokyo Tower, Tokyo, Japan")))
         assertEquals(expectedJsonObject.toString(), result.toString())
     }
 
