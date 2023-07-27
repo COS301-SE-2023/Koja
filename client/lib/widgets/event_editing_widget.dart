@@ -813,7 +813,7 @@ class EventEditingState extends State<EventEditing> {
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
-          eventProvider.addEvent(event);
+          eventProvider.retrieveEvents();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Created!',

@@ -33,7 +33,7 @@ class UserEventDTOTest {
         val userEventDTO = UserEventDTO(event)
 
         // Then
-        assertEquals("desc1", userEventDTO.getDescription())
+        assertEquals("desc1", userEventDTO.getSummary())
         assertEquals("1", userEventDTO.getId())
         assertEquals("800 Howard St., San Francisco, CA 94103", userEventDTO.getLocation())
     }
@@ -46,7 +46,7 @@ class UserEventDTOTest {
 
         // Then
         assertEquals("1", event.getId())
-        assertEquals("desc1", event.getDescription())
+        assertEquals("desc1", event.getSummary())
         assertEquals("loc1", event.getLocation())
     }
 }

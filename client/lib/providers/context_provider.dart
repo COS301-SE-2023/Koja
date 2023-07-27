@@ -173,4 +173,10 @@ class ContextProvider extends ChangeNotifier {
       );
     }
   }
+
+  void retrieveEvents() {
+    if (accessToken != null) {
+      getEventsFromAPI(accessToken!);
+    }
+  }
 }

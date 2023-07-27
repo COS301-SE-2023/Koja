@@ -15,7 +15,8 @@ import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTi
 
 class UserEventDTO(
     private var id: String,
-    private var description: String,
+    private var summary: String,
+    private var description: String? = null,
     private var location: String,
     private var startTime: OffsetDateTime,
     private var endTime: OffsetDateTime,
@@ -27,7 +28,8 @@ class UserEventDTO(
 
     constructor(googleEvent: GoogleEvent) : this(
         id = googleEvent.id,
-        description = googleEvent.summary ?: "",
+        summary = googleEvent.summary ?: "",
+        description = googleEvent.description ?: null,
         location = googleEvent.location ?: "",
         startTime = toKotlinDate(googleEvent.start) ?: OffsetDateTime.now(ZoneOffset.UTC),
         endTime = toKotlinDate(googleEvent.end) ?: OffsetDateTime.now(ZoneOffset.UTC),
@@ -41,8 +43,12 @@ class UserEventDTO(
         return id
     }
 
+    fun getSummary(): String {
+        return summary
+    }
+
     fun getDescription(): String {
-        return description
+        return if (description == null) "" else description!!
     }
 
     fun getLocation(): String {
@@ -59,6 +65,10 @@ class UserEventDTO(
 
     fun setId(id: String) {
         this.id = id
+    }
+
+    fun setSummary(summary: String) {
+        this.summary = summary
     }
 
     fun setDescription(description: String) {

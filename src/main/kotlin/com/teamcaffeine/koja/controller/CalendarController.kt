@@ -67,7 +67,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         }
 
         try {
-            userCalendar.deleteEvent(token, event.getDescription(), event.getStartTime(), event.getEndTime())
+            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
         } catch (e: Exception) {
             return ResponseEntity.badRequest().body(ResponseConstant.EVENT_DELETION_FAILED_INTERNAL_ERROR)
         }

@@ -92,7 +92,7 @@ class UserCalendarService(
             }?.getAccessToken()
 
             adapter.getUserEventsInRange(accessToken, eventStartTime, eventEndTime).forEach {
-                if (accessToken != null && it.getDescription().trim() == eventSummary.trim()) {
+                if (accessToken != null && it.getSummary().trim() == eventSummary.trim()) {
                     adapter.deleteEvent(accessToken, it.getId())
                 }
             }

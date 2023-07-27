@@ -392,7 +392,7 @@ class GoogleCalendarAdapterService(
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
         val event = Event()
-            .setSummary(eventDTO.getDescription())
+            .setSummary(eventDTO.getSummary())
             .setLocation(eventDTO.getLocation())
             .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
             .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
