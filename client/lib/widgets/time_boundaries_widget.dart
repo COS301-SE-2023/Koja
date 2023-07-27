@@ -57,6 +57,14 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     return timeValue;
   }
 
+  String _formatTime(int hour, int minute) {
+    // Convert the hour and minute to a 24-hour format string
+    String formattedHour = hour.toString().padLeft(2, '0');
+    String formattedMinute = minute.toString().padLeft(2, '0');
+
+    return '$formattedHour:$formattedMinute';
+  }
+
   /// function to save timein the category list
   void saveTime() {
     String currentDate = DateTime.now().toString().split(' ')[0];
@@ -81,8 +89,11 @@ class TimeBoundariesState extends State<TimeBoundaries> {
       eventProvider.setTimeSlot(selectedOption, timeSlot);
       categories.removeWhere((element) => element[0] == selectedOption);
       categories.add([selectedOption, start, end]);
-      start = TimeOfDay.now().toString();
-      end = TimeOfDay.now().toString();
+        
+        TimeOfDay now = TimeOfDay.now();
+
+        start = _formatTime(now.hour, now.minute).toString();
+        end = _formatTime(now.hour, now.minute).toString();
     });
 
     // If editing an item, remove the current item from the list and add the edited item
