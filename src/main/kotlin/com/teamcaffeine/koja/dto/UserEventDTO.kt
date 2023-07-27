@@ -24,6 +24,7 @@ class UserEventDTO(
     private var timeSlots: List<TimeSlot>,
     private var priority: Int,
     private var dynamic: Boolean = false,
+    private var travelTime: Long = 0L,
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
@@ -37,6 +38,7 @@ class UserEventDTO(
         timeSlots = googleEvent.extendedProperties?.shared?.get("timeSlots")?.let { parseTimeSlots(it) } ?: listOf(),
         priority = googleEvent.extendedProperties?.shared?.get("priority")?.toInt() ?: 0,
         dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true",
+        travelTime = googleEvent.extendedProperties?.shared?.get("travelTime")?.toLong() ?: 0L,
     )
 
     fun getId(): String {
@@ -113,6 +115,14 @@ class UserEventDTO(
 
     fun setDuration(duration: Long) {
         this.duration = duration
+    }
+
+    fun getTravelTime(): Long {
+        return travelTime
+    }
+
+    fun setTravelTime(travelTime: Long) {
+        this.travelTime = travelTime
     }
 
     fun setTimeSlots(timeSlots: List<TimeSlot>) {

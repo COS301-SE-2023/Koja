@@ -391,20 +391,27 @@ class GoogleCalendarAdapterService(
         val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
+        val travelTime = eventDTO.getTravelTime()
+        val description = eventDTO.getDescription()
+        // TODO: Update below to use current location to get correct timezone
+        description.plus("\n\nEvent Start Time: ${startDateTime}\nTravel Time: $travelTime minutes")
+
         val event = Event()
             .setSummary(eventDTO.getSummary())
+            .setDescription(eventDTO.getDescription())
             .setLocation(eventDTO.getLocation())
             .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
             .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
-
+        // TODO: Shift extended properties to values in the description
         if (eventDTO.isDynamic()) {
             extendedPropertiesMap["dynamic"] = "true"
         }
 
         extendedPropertiesMap["duration"] = eventDTO.getDurationInMilliseconds().toString()
         extendedPropertiesMap["priority"] = eventDTO.getPriority().toString()
+        extendedPropertiesMap["travelTime"] = eventDTO.getTravelTime().toString()
 
         val gson = GsonBuilder()
             .registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
