@@ -7,6 +7,7 @@ import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
+import jakarta.transaction.Transactional
 import net.minidev.json.JSONObject
 import org.springframework.stereotype.Service
 
@@ -84,12 +85,14 @@ class LocationService(private val userRepository: UserRepository, private val go
         return result.rows[0].elements[0].duration.inSeconds
     }
 
+    @Transactional
     fun updateUserLocation(token: String, latitude: Double, longitude: Double): DistanceMatrix? {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
         if (retrievedUser != null) {
             retrievedUser.setCurrentLocation(longitude, latitude)
+            userRepository.save(retrievedUser)
 
             return updateLocationMatrix(longitude, latitude, retrievedUser, *googleCalendarAdapterService.getFutureEventsLocations(token).toTypedArray())
         }
@@ -119,15 +122,17 @@ class LocationService(private val userRepository: UserRepository, private val go
         }
     }
 
-    fun getUserSavedLocations(token: String): JSONObject {
+    fun getUserSavedLocations(token: String): MutableMap<String, Any> {
         val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
         val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
 
-        val jsonObject = JSONObject()
-        jsonObject.put("currentLocation", retrievedUser.getCurrentLocation())
-        jsonObject.put("homeLocation", retrievedUser.getHomeLocation())
-        jsonObject.put("workLocation", retrievedUser.getWorkLocation())
+        val currentLocation = retrievedUser.getCurrentLocation() ?: Pair(0.0, 0.0)
 
-        return jsonObject
+        val results = mutableMapOf<String, Any>()
+        results["currentLocation"] = currentLocation
+        results["homeLocation"] = retrievedUser.getHomeLocation() ?: ""
+        results["workLocation"] = retrievedUser.getWorkLocation() ?: ""
+
+        return results
     }
 }

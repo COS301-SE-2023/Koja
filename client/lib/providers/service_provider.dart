@@ -61,6 +61,7 @@ class ServiceProvider with ChangeNotifier {
     response = Uri.parse(response).queryParameters['token'];
 
     setAccessToken(response, eventProvider);
+    storeUserLocation();
 
     return accessToken != null;
   }
@@ -220,6 +221,7 @@ class ServiceProvider with ChangeNotifier {
   void setLocationData(Location? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
+    storeUserLocation();
   }
 
   /// This function will get the longitude and latitude of _locationData
@@ -251,6 +253,26 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  Future<void> storeUserLocation() async {
+    if (_locationData != null && _accessToken != null) {
+      final url = Uri.http(
+        '$_serverAddress:$_serverPort',
+        '/api/v1/location/updateLocation',
+      );
+
+      Map<String, String> requestBody = {
+        'latitude': _locationData!.latitude.toString(),
+        'longitude': _locationData!.longitude.toString(),
+      };
+
+      await http.post(
+        url,
+        headers: {'Authorisation': _accessToken!},
+        body: requestBody,
+      );
+    }
+  }
+
   /// This function will wait for the user to grant location permissions
   void startLocationListner() async {
     if (await _checkAndRequestPermission()) {
@@ -270,7 +292,12 @@ class ServiceProvider with ChangeNotifier {
           print(e);
         }
       }).listen((event) {
-        setLocationData(event);
+        if (_locationData == null ||
+            (_locationData != null &&
+                event.latitude != _locationData!.latitude &&
+                event.longitude != _locationData!.longitude)) {
+          setLocationData(event);
+        }
       });
     }
   }
