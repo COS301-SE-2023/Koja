@@ -13,7 +13,11 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
 import com.google.api.services.people.v1.PeopleService
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
@@ -40,7 +44,7 @@ import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 import kotlin.collections.ArrayList
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
@@ -81,10 +85,11 @@ class GoogleCalendarAdapterService(
             "http://localhost:8080/api/v1/user/auth/add-email/callback"
         }
 
-        val url = if (!addAdditionalAccount) { flow.newAuthorizationUrl()
-            .setRedirectUri(redirectURI)
-            .setState(request?.session?.id)
-            .build()
+        val url = if (!addAdditionalAccount) {
+            flow.newAuthorizationUrl()
+                .setRedirectUri(redirectURI)
+                .setState(request?.session?.id)
+                .build()
         } else {
             val flow = GoogleAuthorizationCodeFlow.Builder(
                 httpTransport,
