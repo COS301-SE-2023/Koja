@@ -1,3 +1,4 @@
+import 'package:client/screens/tasks_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -277,19 +278,39 @@ class ChooseColorState extends State<ChooseColor> {
 /// Class which sets recurrence
 class ChooseRecurrence extends StatefulWidget {
   final void Function(String category) onRecurrenceSelected;
-  const ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
-      : super(key: key);
+  ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
+      : super(key: key);  
 
   @override
   ChooseRecurrenceState createState() => ChooseRecurrenceState();
+  
 }
+
+List<String> options = ['Occurence', 'Date'];
 
 class ChooseRecurrenceState extends State<ChooseRecurrence> {
   String selectedCategory = 'None';
   List<String> categories = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
+    String selectedOption = options[0];
 
   @override
   Widget build(BuildContext context) {
+
+
+    String getIntervalString(String interval) {
+      if (interval == 'Daily') {
+        return ' day(s)';
+      } else if (interval == 'Weekly') {
+        return ' week(s)';
+      } else if (interval == 'Monthly') {
+        return ' month(s)';
+      } else if (interval == 'Yearly') {
+        return ' year(s)';
+      } else {
+        return 'None';
+      }
+    }
+    
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Column(
@@ -307,68 +328,87 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height * 0.8,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            child: AlertDialog(
-                              title: Text('Recurrence'),
-                              content: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.95,
-                                  height: MediaQuery.of(context).size.height * 0.6,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                          return AlertDialog(
+                            title: Text('Recurrence'),
+                            content: Container(
+                              width: MediaQuery.of(context).size.width * 0.95,
+                              height: MediaQuery.of(context).size.height * 0.9,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Repeats Every',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16,
+                                      fontFamily: 'Ubuntu',
+                                    ),
+                                  ),                              
+                                  SizedBox(height: 10),
+                                  Row(
                                     children: [
+                                      Expanded(
+                                        child: Container(
+                                          width: 50,
+                                          height: 50,
+                                          child: NumberSelector.plain(
+                                            min: 1,
+                                            max: 30,
+                                            width: 5,
+                                            height: 50,
+                                            showSuffix: false,
+                                            onUpdate: (value) {
+                                              interval = value;
+                                            },
+                                            showMinMax: false,
+                                            hasBorder: true,
+                                            textStyle: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'Ubuntu',
+                                            ),
+                                          ),
+                                        ),
+                                      ), 
+                                      SizedBox(width: 8),
                                       Text(
-                                        'Repeats Every',
+                                        getIntervalString(newValue),
                                         style: TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 20,
                                           fontFamily: 'Ubuntu',
                                         ),
-                                      ),                              
-                                      SizedBox(height: 4),
-                                      NumberSelector.plain(
-                                        current: 1,
-                                        min: 1,
-                                        max: 25,
-                                        onUpdate: (number) {
-                                          setState(() {
-                                            interval = number;
-                                          });
-                                        },
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Ends',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 20,
-                                          fontFamily: 'Ubuntu',
-                                        ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      
+                                      )
                                     ],
                                   ),
-                                ),
+                                  SizedBox(height: 15),
+                                  Text(
+                                    'Ends',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16,
+                                      fontFamily: 'Ubuntu',
+                                    ),
+                                  ),
+                                  SizedBox(height: 10), 
+                                        
+                                ],
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Save'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Cancel'),
-                                ),
-                              ],
                             ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Save'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                            ],
                           );
                         },
                       );
@@ -377,7 +417,7 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                   });
                   widget.onRecurrenceSelected(newValue);
                 }
-
+    
               },
               items: categories.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(

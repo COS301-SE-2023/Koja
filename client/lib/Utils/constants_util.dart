@@ -39,6 +39,9 @@ String travelTime = "";
 
 ///helper variables for when adding recurrence
 bool isRecurrence = false;
+bool isInterval = false;
+
 DateTime? recurrenceEndDate;
 int interval = 1;
 String recurrenceString = "";
+String recurrenceType = "Daily";
