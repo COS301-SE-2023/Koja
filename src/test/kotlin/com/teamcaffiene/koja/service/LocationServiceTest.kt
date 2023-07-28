@@ -1,6 +1,9 @@
 package com.teamcaffiene.koja.service
 
+import com.google.maps.DistanceMatrixApi
+import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
+import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTFunctionality
@@ -12,7 +15,9 @@ import com.teamcaffeine.koja.service.LocationService
 import io.github.cdimascio.dotenv.Dotenv
 import net.minidev.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -432,5 +437,31 @@ class LocationServiceTest {
         // Then
         val expectedJsonObject = JSONObject()
         assertEquals(expectedJsonObject.toString(), result.toString())
+    }
+
+    @Test
+    fun `getTravelTime should return correct travel time for given location`() {
+        // Arrange
+        val originLat = -24.3051431561 // Replace with your desired latitude for the origin
+        val originLng = 29.4808439319 // Replace with your desired longitude for the origin
+        val placeId = "ChIJgUbEo8cfqokR5lP9_Wh_DaM"
+        val context = GeoApiContext.Builder()
+            .apiKey(System.getProperty("API_KEY"))
+            .build()
+
+        // Act
+        val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
+            .origins(com.google.maps.model.LatLng(originLat, originLng))
+            .destinations("place_id:$placeId")
+            .mode(TravelMode.DRIVING)
+            .await()
+
+        val travelTimeInSeconds = result.rows[0].elements[0].duration.inSeconds
+
+        // Assert
+        // You can add additional assertions here based on the expected result
+        // For example, you can check if travelTimeInSeconds is not null, or if the duration is reasonable for the given origin and destination.
+        assertNotNull(travelTimeInSeconds)
+        assertTrue(travelTimeInSeconds!! > 0)
     }
 }
