@@ -2,6 +2,7 @@ package com.teamcaffeine.koja.service
 
 import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
+import com.google.maps.TimeZoneApi
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.controller.TokenManagerController
@@ -9,6 +10,8 @@ import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.text.Format
+import java.time.OffsetDateTime
 
 @Service
 class LocationService(private val userRepository: UserRepository, private val googleCalendarAdapterService: GoogleCalendarAdapterService) {

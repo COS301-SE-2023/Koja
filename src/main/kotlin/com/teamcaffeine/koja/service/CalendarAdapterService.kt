@@ -21,7 +21,7 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
 
     abstract fun getUserEmail(accessToken: String): String?
 
-    abstract fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event
+    abstract fun createEvent(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event
 
     abstract fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event
 

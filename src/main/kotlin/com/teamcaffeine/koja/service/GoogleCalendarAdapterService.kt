@@ -18,6 +18,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import com.google.maps.GeoApiContext
+import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
@@ -382,7 +384,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event {
+    override fun createEvent(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val eventStartTime = eventDTO.getStartTime()
@@ -391,14 +393,33 @@ class GoogleCalendarAdapterService(
         val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
+        val context = GeoApiContext.Builder()
+            .apiKey(System.getProperty("API_KEY"))
+            .build()
+
+        val userLocations = LocationService(userRepository, this)
+        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
+        val lat = userLocation.second.toString().toDouble()
+        val lng = userLocation.first.toString().toDouble()
         val travelTime = eventDTO.getTravelTime()
-        val description = eventDTO.getDescription()
-        // TODO: Update below to use current location to get correct timezone
-        description.plus("\n\nEvent Start Time: ${startDateTime}\nTravel Time: $travelTime minutes")
+
+        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
+        val eventLocaltime = eventStartTime.toZonedDateTime()
+            .withZoneSameInstant(timezone.toZoneId())
+            .plusSeconds(travelTime)
+
+        val formattedTime = DateTimeFormatter
+            .ofPattern("HH:mm")
+            .format(eventLocaltime)
+
+        val description = "${eventDTO.getDescription()} \n" +
+            "\n" +
+            "Event Start Time: ${formattedTime}\n" +
+            "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
 
         val event = Event()
             .setSummary(eventDTO.getSummary())
-            .setDescription(eventDTO.getDescription())
+            .setDescription(description)
             .setLocation(eventDTO.getLocation())
             .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
             .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
@@ -431,7 +452,8 @@ class GoogleCalendarAdapterService(
 
     override fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event {
         deleteEvent(accessToken, eventDTO.getId())
-        return createEvent(accessToken, eventDTO)
+        // TODO: Fix this, also needs JWT token, not the accessToken
+        return createEvent(accessToken, eventDTO, accessToken)
 //        val calendarService = buildCalendarService(accessToken)
 //
 //        val calendarId = "primary"
@@ -489,6 +511,22 @@ class GoogleCalendarAdapterService(
             }
         }
         return toReturn
+    }
+
+    private fun secondsToHumanFormat(seconds: Long): String {
+        if (seconds < 0) {
+            throw IllegalArgumentException("Seconds cannot be negative.")
+        }
+
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val remainingSeconds = seconds % 60
+
+        return when {
+            hours > 0 -> String.format("%02dh %02dm %02ds", hours, minutes, remainingSeconds)
+            minutes > 0 -> String.format("%02dm %02ds", minutes, remainingSeconds)
+            else -> String.format("%02ds", remainingSeconds)
+        }
     }
 
     private fun buildCalendarService(accessToken: String): GoogleCalendar {

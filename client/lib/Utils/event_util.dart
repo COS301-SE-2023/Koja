@@ -50,8 +50,8 @@ class Event {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'title': title,
-        'description': description,
+        'summary': title,
+        'description': title,
         'location': location,
         'startTime': from.toUtc().toIso8601String(),
         'endTime': to.toUtc().toIso8601String(),

@@ -126,6 +126,7 @@ class UserCalendarService(
                 )
                 if (travelTime != null) {
                     travelDuration = travelTime
+                    eventDTO.setTravelTime(travelTime)
                 }
             }
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
@@ -158,7 +159,7 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
             if (accessToken != null) {
-                adapter.createEvent(accessToken, eventDTO)
+                adapter.createEvent(accessToken, eventDTO, token)
             }
         }
     }
