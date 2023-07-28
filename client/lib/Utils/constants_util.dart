@@ -45,3 +45,7 @@ DateTime? recurrenceEndDate;
 int interval = 1;
 String recurrenceString = "";
 String recurrenceType = "Daily";
+
+
+/// Helper variable to when you add a Dynamic event        
+bool needsReschedule = false;                                                   

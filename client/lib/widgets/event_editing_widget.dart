@@ -158,7 +158,7 @@ class EventEditingState extends State<EventEditing> {
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
                 child: Text('Cancel')),
-            if (selectedEventType == 'Dynamic')
+            if (selectedEventType == 'Dynamic' && needsReschedule == true)
               TextButton(
                   onPressed: saveForm,
                   style: const ButtonStyle(
