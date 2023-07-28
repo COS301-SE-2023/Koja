@@ -444,7 +444,7 @@ class LocationServiceTest {
         // Arrange
         val originLat = -24.3051431561 // Replace with your desired latitude for the origin
         val originLng = 29.4808439319 // Replace with your desired longitude for the origin
-        val placeId = "ChIJgUbEo8cfqokR5lP9_Wh_DaM"
+        val placeId = "Los Angeles, CA"
         val context = GeoApiContext.Builder()
             .apiKey(System.getProperty("API_KEY"))
             .build()
@@ -456,12 +456,11 @@ class LocationServiceTest {
             .mode(TravelMode.DRIVING)
             .await()
 
-        val travelTimeInSeconds = result.rows[0].elements[0].duration.inSeconds
-
+        val travelTimeInSeconds = result.rows[0].elements[0].duration?.inSeconds ?: 0
         // Assert
         // You can add additional assertions here based on the expected result
         // For example, you can check if travelTimeInSeconds is not null, or if the duration is reasonable for the given origin and destination.
         assertNotNull(travelTimeInSeconds)
-        assertTrue(travelTimeInSeconds!! > 0)
+        assertTrue(travelTimeInSeconds > 0)
     }
 }
