@@ -400,10 +400,10 @@ class LocationServiceTest {
 
         // Then
         val expectedJsonObject = JSONObject()
-        expectedJsonObject.put("originLat", JSONObject(mapOf("originLat" to 40.7128)))
-        expectedJsonObject.put("originLng", JSONObject(mapOf("originLng" to -74.0060)))
-        expectedJsonObject.put("homeLocation", JSONObject(mapOf("workLocation" to "Colosseum, Rome, Italy")))
-        expectedJsonObject.put("workLocation", JSONObject(mapOf("homeLocation" to "Tokyo Tower, Tokyo, Japan")))
+        expectedJsonObject.put("originLat", 40.7128)
+        expectedJsonObject.put("originLng", -74.0060)
+        expectedJsonObject.put("homeLocation", "Colosseum, Rome, Italy")
+        expectedJsonObject.put("workLocation", "Tokyo Tower, Tokyo, Japan")
         assertEquals(expectedJsonObject.toString(), result.toString())
     }
 

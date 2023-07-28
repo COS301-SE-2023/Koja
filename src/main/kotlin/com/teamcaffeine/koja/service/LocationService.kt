@@ -95,11 +95,11 @@ class LocationService(
 
     fun updateUserLocation(token: String, latitude: Double, longitude: Double): DistanceMatrix? {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
-        val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
+        val user = userRepository.findById(userJWTTokenData.userID)
 
-        if (retrievedUser != null) {
+        if (!user.isEmpty) {
+            val retrievedUser = user.get()
             retrievedUser.setCurrentLocation(longitude, latitude)
-
             return updateLocationMatrix(longitude, latitude, retrievedUser, *googleCalendarAdapterService.getFutureEventsLocations(token).toTypedArray())
         }
         return null
@@ -130,8 +130,9 @@ class LocationService(
 
     fun getUserSavedLocations(token: String): JSONObject {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
-        val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
-        if (retrievedUser != null) {
+        val user = userRepository.findById(userJWTTokenData.userID)
+        if (!user.isEmpty) {
+            val retrievedUser = user.get()
             val jsonObject = JSONObject()
             jsonObject.put("originLat", retrievedUser.getCurrentLocation()?.first ?: 0.0)
             jsonObject.put("originLng", retrievedUser.getCurrentLocation()?.second ?: 0.0)
