@@ -208,8 +208,12 @@ class LocationServiceTest {
         // Arrange
         val accessToken = "invalid_access_token"
         val workLocation = "Lebowakgomo, 047"
+        val mockUserID = Int.MAX_VALUE
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
-        whenever(jwtFunctionality.getUserJWTTokenData(accessToken)).thenThrow(Exception("Invalid token"))
+        whenever(jwtFunctionality.getUserJWTTokenData(accessToken)).thenReturn(null)
 
         // Act
         val result = locationService.setWorkLocation(accessToken, workLocation)
@@ -226,7 +230,7 @@ class LocationServiceTest {
         val workLocation = "New York, USA"
 
         // Mock the behavior of the userRepository.findById method to return empty optional
-        whenever(jwtFunctionality.getUserJWTTokenData(accessToken)).thenThrow(Exception("Invalid token"))
+        whenever(jwtFunctionality.getUserJWTTokenData(accessToken)).thenReturn(null)
         val result = locationService.setWorkLocation(accessToken, workLocation)
 
         assertEquals(null, result)
@@ -266,7 +270,7 @@ class LocationServiceTest {
 
         val testUser = User()
         val optionalUserValue = Optional.of(testUser)
-        val locations = listOf<String>("ChIJezCDEUDYxh4R902OsdTdIKc" + "Polokwane, South Africa")
+        val locations = listOf<String>("ChIJezCDEUDYxh4R902OsdTdIKc")
         whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(locations)
 
         // When
@@ -290,9 +294,9 @@ class LocationServiceTest {
         val testUser = User()
         val optionalUserValue = Optional.of(testUser)
         val locations = listOf<String>(
-            "ChIJezCDEUDYxh4R902OsdTdIKc" + "Polokwane, South Africa",
-            "ChIJ4WEudAxglR4RmHDutMnSdZA" + "Hatfield, Pretoria, 0083, South Africa",
-            "ChIJvXv7qr-ZtSQRiWKVgeEJRUE" + "Maldives",
+            "ChIJezCDEUDYxh4R902OsdTdIKc",
+            "ChIJ4WEudAxglR4RmHDutMnSdZA",
+            "ChIJvXv7qr-ZtSQRiWKVgeEJRUE",
         )
         whenever(googleCalendarAdapterService.getFutureEventsLocations(jwtToken)).thenReturn(locations)
 
@@ -312,8 +316,8 @@ class LocationServiceTest {
         val jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLQ1RBbE43TzB1Z3crZm1JUmxGZ25jb3EyUHcxRHc2S2RQMVcydnRFWGdIMlFOTFRLSk1sTGkwOGsrWmtsbzRVM1pTcllJb3hzaFVvSk5YU1lnMmQ2K2tRWUpNUEt3MS9ndi9JWjA4U3BHWnpNM3lJaWFlQUt0UFgwZGVQWUlOSk1ZMm1iTlhnZVVIei9Bb3NtWUthNEY3MmlkSEgra0M4N2x6T1ROcU1mSnVCNHRadE40OVJCVlVxQ0JOQ3VrQzNjOUd6NHB3SHVkVVpnbjVnaXFPaXNDNCtSUXo3Uk9EN2I4R2YzdHpJMDZhR2ZURnZld05QSTFPT3JKb3JELzd2bDVHNEtScU1rZDFJaUlKNmd3SUFZanh5bHh2ck0vUHIvUngyWTdOcmRneTBHNHhXMGZjenkzUDhoQmhsYkNSOGFMVEdZdXF0dVdNOUNTMWJmY2hMS2E4UzBvR1pycVR0ak42QzdBOENEZVNHN29VR1ZKOUViSlBLaDVQMlpxVEpKWFlOYWVUclZEQkMxQkxPQ01JeE9QdU1DTWdreHczNWp2bFkyMmFDcUdFZHRJTy9UOXJIMjl4RWJHQUlXeUQvcjNTaW9KT1d2ZzJvd3B5NExKSitTZWVaVjU4UEtCL2wrVFZzTmZBRzB3Vlk2azMxNFk5R2xTbTROUVcyNFRyeDhja01FdHg1eFE1RHhBS0NOWnBXN2pnPT0iLCJleHAiOjE2ODk3MTY5MDR9.uctphVFxJICf8OexH0ZQHWONI3rTExoyDvdAlMdxMGUQaLjGmONyyt6sGP2wn2DUUtW9M1Mg-kbelZpU-zPgbQ"
 
         val testUser = User()
-        testUser.setWorkLocation("ChIJc1ob9L5glR4Re5c20BMI8w0" + "Menlyn, Pretoria, 0181, South Africa")
-        testUser.setHomeLocation("ChIJ4WEudAxglR4RmHDutMnSdZA" + "Hatfield, Pretoria, 0083, South Africa")
+        testUser.setWorkLocation("ChIJc1ob9L5glR4Re5c20BMI8w0")
+        testUser.setHomeLocation("ChIJ4WEudAxglR4RmHDutMnSdZA")
         val location1 = "Las vegas"
         val location2 = "Los angeles"
         val optionalUserValue = Optional.of(testUser)
@@ -331,8 +335,8 @@ class LocationServiceTest {
                 latitude,
                 longitude,
                 testUser,
-                "ChIJ1-4miA9QzB0Rh6ooKPzhf2g" + "Cape Town, South Africa",
-                "ChIJs7aqhpRglR4REcCjflMR27Y" + "Struben Dam, Lynnwood Glen, Pretoria, 0081, South Africa",
+                "ChIJ1-4miA9QzB0Rh6ooKPzhf2g",
+                "ChIJs7aqhpRglR4REcCjflMR27Y",
             ),
         ).thenReturn(
             matrix,
@@ -363,7 +367,7 @@ class LocationServiceTest {
         val matrix = DistanceMatrix(arrayOf(), arrayOf(), arrayOf())
 
         whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
-        whenever(userRepository.findById(mockUserID)).thenReturn(null)
+        whenever(userRepository.findById(mockUserID)).thenReturn(Optional.empty())
 
         // When
         val result = locationService.updateUserLocation(jwtToken, latitude, longitude)
