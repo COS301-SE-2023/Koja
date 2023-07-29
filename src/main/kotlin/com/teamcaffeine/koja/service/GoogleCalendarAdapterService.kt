@@ -192,7 +192,7 @@ class GoogleCalendarAdapterService(
             val newUser = createNewUser(userEmail, refreshToken)
             val timeBoundary = TimeBoundary(
                 name = "Bed-Time",
-                startTime = "22:00",
+                startTime = "20:00",
                 endTime = "06:00",
                 type = TimeBoundaryType.BLOCKED,
             )

@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:fl_location/fl_location.dart';
+import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
 
@@ -345,5 +346,66 @@ class ServiceProvider with ChangeNotifier {
     } else {
       return [];
     }
+  }
+
+  Future<void> storeTimeFrames(
+      String? accessToken, Map<String, TimeSlot?> timeSlots) async {
+    if (accessToken != null) {
+      final url = Uri.http(
+        '$_serverAddress:$_serverPort',
+        '/api/v1/user/addTimeBoundary',
+      );
+
+      for (String key in timeSlots.keys) {
+        if (timeSlots[key] != null) {
+          await deleteTimeFrame(accessToken, key).then((_) async {
+            Map<String, String> requestBody = {
+              'name': key,
+              'startTime': DateFormat('HH:mm').format(
+                timeSlots[key]!.startTime.toUtc(),
+              ),
+              'endTime': DateFormat('HH:mm').format(
+                timeSlots[key]!.endTime.toUtc(),
+              ),
+              'type': timeSlots[key]!.bookable ? 'allowed' : 'blocked',
+            };
+
+            await http.post(
+              url,
+              headers: {'Authorisation': accessToken},
+              body: requestBody,
+            );
+          });
+        } else {
+          deleteTimeFrame(accessToken, key);
+        }
+      }
+    }
+  }
+
+  Future<bool> deleteTimeFrame(String? accessToken, String name) async {
+    if (accessToken != null) {
+      final url = Uri.http(
+        '$_serverAddress:$_serverPort',
+        '/api/v1/user/removeTimeBoundary',
+      );
+
+      Map<String, String> requestBody = {
+        'name': name,
+      };
+
+      final response = await http.post(
+        url,
+        headers: {'Authorisation': _accessToken!},
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }

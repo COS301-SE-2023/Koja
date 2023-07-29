@@ -644,7 +644,11 @@ class EventEditingState extends State<EventEditing> {
             59,
           );
 
-          timeSlot = TimeSlot(startTime: now, endTime: endOfDay);
+          timeSlot = TimeSlot(
+            startTime: now,
+            endTime: endOfDay,
+            bookable: true,
+          );
         } else {
           final startOfDay = DateTime(
             fromDate.year,
@@ -662,7 +666,11 @@ class EventEditingState extends State<EventEditing> {
             59,
             59,
           );
-          timeSlot = TimeSlot(startTime: startOfDay, endTime: endOfDay);
+          timeSlot = TimeSlot(
+            startTime: startOfDay,
+            endTime: endOfDay,
+            bookable: true,
+          );
         }
       }
 

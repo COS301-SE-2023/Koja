@@ -258,9 +258,9 @@ class UserCalendarService(
         val user = userRepository.findById(userJWTTokenData.userID)
         if (name != null && !user.isEmpty) {
             val retrievedUser = user.get()
-            for (i in 0..retrievedUser.getUserTimeBoundaries()!!.size) {
-                if (retrievedUser.getUserTimeBoundaries()!!.get(i).getName() == name) {
-                    val boundaryToRemove = retrievedUser.getUserTimeBoundaries()!!.get(i)
+            for (i in 0 until retrievedUser.getUserTimeBoundaries()!!.size) {
+                if (retrievedUser.getUserTimeBoundaries()!![i].getName() == name) {
+                    val boundaryToRemove = retrievedUser.getUserTimeBoundaries()!![i]
                     boundaryToRemove.user = null
                     retrievedUser.getUserTimeBoundaries()!!.removeAt(i)
                     userRepository.save(retrievedUser)

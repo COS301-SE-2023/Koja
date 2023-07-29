@@ -47,6 +47,7 @@ class ContextProvider extends ChangeNotifier {
 
   setTimeSlot(String category, TimeSlot? timeSlot) {
     _timeSlots[category] = timeSlot;
+    ServiceProvider().storeTimeFrames(accessToken, timeSlots);
     notifyListeners();
   }
 
@@ -60,9 +61,12 @@ class ContextProvider extends ChangeNotifier {
       if (relevantTimeslots['startTime'] != null &&
           relevantTimeslots['endTime'] != null) {
         _timeSlots[item.name!] = TimeSlot(
-          startTime: relevantTimeslots['startTime']!,
-          endTime: relevantTimeslots['endTime']!,
-        );
+            startTime: relevantTimeslots['startTime']!,
+            endTime: relevantTimeslots['endTime']!,
+            bookable: (relevantTimeslots['type'] != null &&
+                    relevantTimeslots['type']! == "allowed")
+                ? true
+                : false);
       }
     }
     notifyListeners();

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 enum TimeBoundaryType {
   allowed,
   blocked,
@@ -55,10 +57,22 @@ class UserTimeBoundaryModel {
   }
 
   factory UserTimeBoundaryModel.fromJson(Map<String, dynamic> json) {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
+    final exportFormat = DateFormat('HH:mm');
+
+    DateTime parseTime(String? timeStr) {
+      if (timeStr != null && timeStr.isNotEmpty) {
+        // Use a dummy date
+        return dateFormat.parseUtc('2000-01-01 $timeStr').toLocal();
+      } else {
+        return DateTime.now();
+      }
+    }
+
     return UserTimeBoundaryModel(
       name: json['name'],
-      startTime: json['startTime'],
-      endTime: json['endTime'],
+      startTime: exportFormat.format(parseTime(json['startTime'])),
+      endTime: exportFormat.format(parseTime(json['endTime'])),
       type: json['type'] == 'allowed'
           ? TimeBoundaryType.allowed
           : TimeBoundaryType.blocked,

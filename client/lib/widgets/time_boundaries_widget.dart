@@ -69,7 +69,8 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     DateTime startTime = DateTime.parse(startDateTimeStr);
     DateTime endTime = DateTime.parse(endDateTimeStr);
 
-    final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
+    final timeSlot =
+        TimeSlot(startTime: startTime, endTime: endTime, bookable: true);
 
     setState(() {
       contextProvider.setTimeSlot(itemName, timeSlot);

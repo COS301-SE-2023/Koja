@@ -65,21 +65,25 @@ class Event {
 class TimeSlot {
   DateTime startTime;
   DateTime endTime;
+  bool bookable = true;
 
   TimeSlot({
     required this.startTime,
     required this.endTime,
+    required this.bookable,
   });
 
   factory TimeSlot.fromJson(Map<String, dynamic> json) {
     return TimeSlot(
       startTime: DateTime.parse(json['startTime']),
       endTime: DateTime.parse(json['endTime']),
+      bookable: json['type'] == 'bookable',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'startTime': startTime.toUtc().toIso8601String(),
         'endTime': endTime.toUtc().toIso8601String(),
+        'bookable': bookable,
       };
 }
