@@ -1,6 +1,7 @@
 package com.teamcaffeine.koja.entity
 
 import com.google.gson.annotations.Expose
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -14,6 +15,7 @@ class TimeBoundary(
     @Expose private var name: String ? = null,
     @Expose private var startTime: String ? = null,
     @Expose private var endTime: String ? = null,
+    @Expose private var type: TimeBoundaryType = TimeBoundaryType.ALLOWED,
 ) {
 
     @Id
@@ -46,4 +48,16 @@ class TimeBoundary(
     fun setEndTime(endTime: String?) {
         this.endTime = endTime
     }
+
+    fun getType(): TimeBoundaryType? {
+        return type
+    }
+
+    fun setType(type: TimeBoundaryType?) {
+        if (type != null) {
+            this.type = type
+        }
+    }
 }
+
+

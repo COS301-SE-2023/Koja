@@ -7,6 +7,7 @@ import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
@@ -62,11 +63,13 @@ class UserController(
         @RequestParam("name") name: String?,
         @RequestParam("startTime")startTime: String?,
         @RequestParam("endTime")endTime: String?,
+        @RequestParam("type")type: String = "allowed",
     ): ResponseEntity<out Any> {
         return if (token == null) {
             ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
         } else {
-            var boundary = TimeBoundary(name, startTime, endTime)
+            val boundaryType = getTimeBoundaryType(type)
+            val boundary = TimeBoundary(name, startTime, endTime, boundaryType)
             try {
                 return ResponseEntity.ok(userCalendarService.addTimeBoundary(token, boundary))
             } catch (e: Exception) {
@@ -109,6 +112,14 @@ class UserController(
         } else {
             val gson = Gson()
             return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaryAndLocation(token, location)))
+        }
+    }
+
+    private fun getTimeBoundaryType(timeBoundaryType: String): TimeBoundaryType {
+        return when (timeBoundaryType) {
+            "allowed" -> TimeBoundaryType.ALLOWED
+            "blocked" -> TimeBoundaryType.BLOCKED
+            else -> throw IllegalArgumentException("Invalid TimeBoundaryType value: $timeBoundaryType")
         }
     }
 }
