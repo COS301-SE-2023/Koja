@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import '../screens/navigation_management_screen.dart';
 
 class LoginModal extends StatefulWidget {
@@ -19,7 +19,8 @@ class LoginModalState extends State<LoginModal> {
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
+    final editingController = TextEditingController();
     return SingleChildScrollView(
       child: Container(
         height: 180, // 130
@@ -32,9 +33,9 @@ class LoginModalState extends State<LoginModal> {
                   if (await serviceProvider.loginUser(
                       eventProvider: eventProvider)) {
                     Navigator.pushAndRemoveUntil(
-                      context,
+                      eventProvider.navigationKey.currentContext!,
                       MaterialPageRoute(
-                          builder: (context) => const NavigationScreen()),
+                          builder: (_) => const NavigationScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } else {
@@ -46,7 +47,7 @@ class LoginModalState extends State<LoginModal> {
                     );
                   }
                 },
-                child: const SizedBox(
+                child: SizedBox(
                   height: 30,
                   width: 200,
                   child: Row(
@@ -75,12 +76,56 @@ class LoginModalState extends State<LoginModal> {
             if (kDebugMode)
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NavigationScreen(),
-                      ),
-                      (Route<dynamic> route) => false,
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return Dialog(
+                          child: SizedBox(
+                            height: 180,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                      scrollController: ScrollController(),
+                                      scrollPhysics: BouncingScrollPhysics(),
+                                      controller: editingController,
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                      )),
+                                  const SizedBox(height: 10.0),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                    ),
+                                    onPressed: () {
+                                      serviceProvider.setAccessToken(
+                                        editingController.text.trim(),
+                                        eventProvider,
+                                      );
+                                      Navigator.pushAndRemoveUntil(
+                                        eventProvider.navigationKey.currentContext!,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const NavigationScreen(),
+                                        ),
+                                        (Route<dynamic> route) => false,
+                                      );
+                                    },
+                                    child: const Text('Login'),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                   child: const SizedBox(

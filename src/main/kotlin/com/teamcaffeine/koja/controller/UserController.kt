@@ -6,7 +6,9 @@ import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.entity.TimeBoundary
+import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,8 +20,11 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/user")
-class UserController(private val userAccountRepository: UserAccountRepository, private var userCalendarService: UserCalendarService) {
-
+class UserController(
+    private val userAccountRepository: UserAccountRepository,
+    private val userRepository: UserRepository,
+    private val userCalendarService: UserCalendarService,
+) {
     @GetMapping("linked-emails")
     fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
         return if (token == null) {
@@ -39,9 +44,14 @@ class UserController(private val userAccountRepository: UserAccountRepository, p
         } else {
             val jwtTokenData = getUserJWTTokenData(token)
             val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
-
-            userAccounts.forEach { userAccountRepository.delete(it) }
-
+            val users = mutableListOf<User>()
+            userAccounts.forEach {
+                it.user?.let { it1 -> users.add(it1) }
+                userAccountRepository.delete(it)
+            }
+            users.forEach {
+                userRepository.delete(it)
+            }
             ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
         }
     }

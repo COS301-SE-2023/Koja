@@ -7,16 +7,25 @@ import 'package:intl/intl.dart';
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
 
-class EventProvider extends ChangeNotifier {
+class ContextProvider extends ChangeNotifier {
   String? _accessToken;
+  List<String> userEmails = [];
+
+  void init(String accessToken) {
+    _accessToken = accessToken;
+    getEventsFromAPI(accessToken);
+    getAllUserEmails();
+  }
 
   List<EventWrapper> _eventWrappers = [];
 
   Location? locationData;
 
   late GlobalKey<ScaffoldMessengerState> scaffoldKey;
+  late GlobalKey<NavigatorState> navigationKey;
 
   void setScaffoldKey(GlobalKey<ScaffoldMessengerState> s) => scaffoldKey = s;
+  void setNavigationKey(GlobalKey<NavigatorState> s) => navigationKey = s;
 
   final Map<String, TimeSlot?> _timeSlots = {
     "Hobby": null,
@@ -51,6 +60,21 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Event getEventByDate(DateTime date) {
+    return _events.firstWhere(
+      (event) =>
+          event.from.year == date.year &&
+          event.from.month == date.month &&
+          event.from.day == date.day,
+      orElse: () => Event(
+        title: 'No events',
+        description: '',
+        from: DateTime.now(),
+        to: DateTime.now(),
+      ),
+    );
+  }
+
   //This returns the events of the selected date
   List<Event> get eventsOfSelectedDate => _events;
 
@@ -69,7 +93,7 @@ class EventProvider extends ChangeNotifier {
 
   //This deletes an event from the list
   void deleteEvent(Event event) {
-    deleteEventAPICall(event.id);
+    deleteEventAPICall(event);
     _events.remove(event);
     notifyListeners();
   }
@@ -111,10 +135,18 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteEventAPICall(String eventId) async {
+  Future<void> getAllUserEmails() async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getAllUserEmails();
+    userEmails.clear();
+    userEmails.addAll(response);
+    notifyListeners();
+  }
+
+  Future<void> deleteEventAPICall(Event event) async {
     try {
       final serviceProvider = ServiceProvider();
-      final deleteSuccess = await serviceProvider.deleteEvent(eventId);
+      final deleteSuccess = await serviceProvider.deleteEvent(event);
 
       if (deleteSuccess) {
         final key = scaffoldKey;
@@ -139,6 +171,12 @@ class EventProvider extends ChangeNotifier {
           content: Text('Failed to delete event.'),
         ),
       );
+    }
+  }
+
+  void retrieveEvents() {
+    if (accessToken != null) {
+      getEventsFromAPI(accessToken!);
     }
   }
 }

@@ -39,8 +39,11 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+<<<<<<< HEAD
+=======
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>To calculate user travel time more accuratley</string>
+>>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

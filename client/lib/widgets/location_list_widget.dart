@@ -1,0 +1,195 @@
+import 'package:client/providers/service_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+
+import '../Utils/constants_util.dart';
+
+class LocationListWidget extends StatefulWidget {
+  const LocationListWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<LocationListWidget> createState() => _LocationListWidgetState();
+}
+
+class _LocationListWidgetState extends State<LocationListWidget> {
+  void delete(int index) {
+    setState(() {
+      locationList.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
+
+    Future<int> getLocation(int index) async {
+      return await serviceProvider.getLocationsTravelTime(
+        locationList[index][1],
+        serviceProvider.getLocation()[0],
+        serviceProvider.getLocation()[1],
+      );
+    }
+
+    return AlertDialog(
+      scrollable: true,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (locationList.isEmpty)
+            Center(
+              child: Text(
+                'No Saved Locations',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          if (locationList.isNotEmpty)
+            Center(
+              child: Text(
+                'From Current Location',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Icon(
+              Icons.cancel_outlined,
+              size: 30,
+            ),
+          )
+        ],
+      ),
+      backgroundColor: Colors.grey[200],
+      contentPadding: EdgeInsets.all(16),
+      content: Column(
+        children: [
+          if (locationList.isEmpty)
+            Lottie.asset(
+              'assets/animations/empty.json',
+              height: 150,
+              width: 300,
+              repeat: false,
+            ),
+          if (locationList.isNotEmpty)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "To:",
+                style: TextStyle(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.bold,
+                  decorationStyle: TextDecorationStyle.wavy,
+                ),
+              ),
+            ),
+          if (locationList.isNotEmpty)
+            Container(
+              height: MediaQuery.of(context).size.height * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ListView.builder(
+                itemCount: locationList.length,
+                itemBuilder: (context, index) {
+                  final locationName = locationList[index][0];
+                  final locationTime = getLocation(index);
+
+                  return ListTile(
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            locationName,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                          ),
+                        ),
+                        Text(
+                          " - ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Expanded(
+                          child: FutureBuilder(
+                              future: locationTime,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  if (snapshot.data! == 0) {
+                                    return Text(
+                                      "Data not available",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  } else if (snapshot.data! < 3600) {
+                                    return Text(
+                                      "${(snapshot.data! / 60).toStringAsFixed(0)} mins",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  } else {
+                                    int hours = snapshot.data! ~/ 3600;
+                                    int minutes = (snapshot.data! % 3600) ~/ 60;
+                                    return Text(
+                                      "$hours hrs $minutes mins",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  return Center(
+                                    child: Wrap(
+                                      children: [
+                                        SizedBox(
+                                          height: 10,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }),
+                        ),
+                      ],
+                    ),
+                    trailing: GestureDetector(
+                      onTap: () {
+                        delete(index);
+                      },
+                      child: Icon(Icons.delete_outline),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

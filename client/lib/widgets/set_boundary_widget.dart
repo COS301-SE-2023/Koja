@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
+import '../Utils/constants_util.dart';
 
-class SetBoundary extends StatelessWidget {
+class SetBoundary extends StatefulWidget {
   final VoidCallback onSave;
   final String selectedOption;
-  
-  final TextEditingController start;
-  final TextEditingController end;
-  
+  late String? startTime;
+  late String? endTime;
+
   SetBoundary(
-    this.selectedOption, 
-    this.start, this.end, 
-    this.onSave,
-    {super.key});
+    this.selectedOption,
+    this.startTime,
+    this.endTime,
+    this.onSave, {
+    Key? key,
+  });
 
   @override
+  State<SetBoundary> createState() => _SetBoundaryState();
+}
+
+class _SetBoundaryState extends State<SetBoundary> {
+  @override
   Widget build(BuildContext context) {
+    String initstart = "";
+    String initend = "";
+
+    if (isEditing == false) {
+      initstart = start;
+      initend = end;
+    } else {
+      initstart = categories[editedindex][1];
+      initend = categories[editedindex][2];
+    }
     return AlertDialog(
       content: Container(
         height: 180,
@@ -22,7 +39,7 @@ class SetBoundary extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              selectedOption.toUpperCase(),
+              widget.selectedOption.toUpperCase(),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -45,11 +62,17 @@ class SetBoundary extends StatelessWidget {
                       ),
                       SizedBox(height: 5),
                       SizedBox(
-                        child: SelectedTimeButton( controller: start),
+                        child: SelectedTimeButton(
+                          time: widget.startTime = initstart,
+                          onTimeChanged: (time) {
+                            setState(() {
+                              start = time;
+                            });
+                          },
+                        ),
                       ),
-                    ], 
+                    ],
                   ),
-                  
                 ),
                 Expanded(
                   child: Column(
@@ -65,7 +88,14 @@ class SetBoundary extends StatelessWidget {
                       ),
                       SizedBox(height: 5),
                       SizedBox(
-                        child: SelectedTimeButton(controller: end),
+                        child: SelectedTimeButton(
+                          time: widget.endTime = initend,
+                          onTimeChanged: (time) {
+                            setState(() {
+                              end = time;
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -78,16 +108,17 @@ class SetBoundary extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    onSave();
+                    widget.onSave();
                     Navigator.of(context).pop();
                   },
-                  child: Text("Save")),
+                  child: Text("Save"),
+                ),
                 const SizedBox(width: 3),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Cancel")
+                  child: Text("Cancel"),
                 ),
               ],
             )
@@ -96,14 +127,13 @@ class SetBoundary extends StatelessWidget {
       ),
     );
   }
-
-  
 }
 
 class SelectedTimeButton extends StatefulWidget {
-  final TextEditingController controller;
+  final String time;
+  final ValueChanged<String> onTimeChanged;
 
-  SelectedTimeButton({required this.controller});
+  SelectedTimeButton({required this.time, required this.onTimeChanged});
 
   @override
   SelectedTimeButtonState createState() => SelectedTimeButtonState();
@@ -111,14 +141,25 @@ class SelectedTimeButton extends StatefulWidget {
 
 class SelectedTimeButtonState extends State<SelectedTimeButton> {
   late TimeOfDay selectedTime = TimeOfDay.now();
+  String timeHour = ""; 
+  String timeMinute = "";
+
+  @override
+  void initState() {
+    super.initState();
+    selectedTime = _parseTime(widget.time);
+  }
 
   void _onPressed() async {
     var time = await selectTime(context);
     if (time != null) {
       setState(() {
         selectedTime = time;
-        widget.controller.text = time.format(context);
+        widget.onTimeChanged(_formatTime(time));
       });
+    }
+    else {
+      widget.onTimeChanged(widget.time);
     }
   }
 
@@ -126,18 +167,58 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: _onPressed,
-      child: Text(
-        (selectedTime.format(context))
-      ),
+      child: Text(_formatTime(selectedTime)),
     );
   }
 
   Future<TimeOfDay?> selectTime(BuildContext context) async {
+    
+    if(widget.time.contains("TimeOfDay")) {
+      String trimmed = extractTime(widget.time);
+      timeHour = trimmed.split(":")[0];
+      timeMinute = trimmed.split(":")[1];
+    }
+    else {
+      timeHour = widget.time.split(":")[0];
+      timeMinute = widget.time.split(":")[1];
+    }
+
+
     var selectedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: TimeOfDay(hour: int.parse(timeHour), minute: int.parse(timeMinute)),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
     return selectedTime;
   }
-}
 
+  TimeOfDay _parseTime(String timeString) {
+    try {
+      final parts = timeString.split(":");
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1].split(" ")[0]);
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (e) {
+      return TimeOfDay.now();
+    }
+  }
+
+  String _formatTime(TimeOfDay time) {
+    return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
+  }
+
+  String extractTime(String input) {
+
+    int colonindex = input.indexOf(':');
+    int startIndex = colonindex - 2;
+    int endIndex = colonindex + 3;
+    String timeValue = input.substring(startIndex, endIndex);
+
+    return timeValue;
+  }
+}
