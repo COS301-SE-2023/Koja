@@ -30,11 +30,11 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           flutter-version: '3.10'
-
+          
       - name: Install Flutter dependencies
         run: flutter pub get
         working-directory: client
-
+        
       - name: Run Flutter linter
         run: flutter analyze
         working-directory: client
@@ -58,7 +58,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-
+          
       - name: Create .env
         run: |
           echo KOJA_AWS_RDS_DATABASE_URL=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> .env
@@ -69,9 +69,9 @@ jobs:
           echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> .env
           echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> .env
           echo API_KEY=${{ secrets.API_KEY }} >> .env
-
+          
       - name: Run Linter
         run: ./gradlew ktlintCheck
-
+      
       - name: Build Spring Boot project
         run: ./gradlew build
