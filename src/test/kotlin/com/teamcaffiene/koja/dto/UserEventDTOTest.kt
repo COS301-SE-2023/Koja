@@ -39,14 +39,30 @@ class UserEventDTOTest {
     }
 
     @Test
-
-    fun CreateUserEventDTO_SUCESS() {
+    fun createUserEventDTO_SUCESS() {
         // When
-        val event = UserEventDTO("1", "desc1", "loc1", OffsetDateTime.now().minusDays(2), OffsetDateTime.now().minusDays(1), 1, emptyList(), 1, false)
+
+        val eventID = "1"
+        val location1 = "loc1"
+        val description = "desc1"
+
+        val event = UserEventDTO(
+            id = eventID,
+            summary = description,
+            description = description,
+            location = location1,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
 
         // Then
-        assertEquals("1", event.getId())
-        assertEquals("desc1", event.getSummary())
-        assertEquals("loc1", event.getLocation())
+        assertEquals(eventID, event.getId())
+        assertEquals(description, event.getSummary())
+        assertEquals(location1, event.getLocation())
     }
 }

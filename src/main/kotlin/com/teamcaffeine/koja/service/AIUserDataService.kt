@@ -34,16 +34,17 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
             val adapter = CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(userAccount.authProvider)
 
             val accessToken = adapter.refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
-            val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()) }
+            val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()).values.toList() }
 
             val eventCategories = events?.let { descriptionToCategories(events) }
 
             for (i in 0 until events!!.size) {
+                val event: UserEventDTO = events[i]
                 eventCategories!![i]?.let { events[i].setDescription(it) }
             }
 
             runBlocking {
-                events.forEach { event ->
+                events.forEach { event: UserEventDTO ->
                     launch(Dispatchers.IO) {
                         event.setUserID(userAccount.userID.toString())
                         val tempTimeSlots = mutableListOf<TimeSlot>()

@@ -356,7 +356,7 @@ class GoogleCalendarAdapterService(
         return person.emailAddresses?.firstOrNull()?.value
     }
 
-    private fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
+    override fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTGoogleDTO? {
         if (refreshToken.isNotEmpty()) {
             val tokenResponse = GoogleTokenResponse().setRefreshToken(refreshToken)
 

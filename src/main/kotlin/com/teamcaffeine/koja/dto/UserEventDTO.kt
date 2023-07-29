@@ -25,6 +25,7 @@ class UserEventDTO(
     private var priority: Int,
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
+    private var userID: String = ""
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
@@ -131,6 +132,14 @@ class UserEventDTO(
 
     fun setPriority(priority: Int) {
         this.priority = priority
+    }
+
+    fun getUserID(): String {
+        return userID
+    }
+
+    fun setUserID(userID: String) {
+        this.userID = userID
     }
 
     companion object {

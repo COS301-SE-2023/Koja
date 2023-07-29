@@ -11,7 +11,6 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserAccountManagerService
 import io.github.cdimascio.dotenv.Dotenv
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -84,7 +83,6 @@ class UserAccountManagerControllerUnitTest {
 
         `when`(userAccountRepository.findByUserID(eq(mockUserID))).thenReturn(userAccounts)
         `when`(userAccountManagerService.deleteGoogleAccount(mockToken, emailToDelete)).thenReturn(mockToken)
-
 
         val result = userAccountManagerController.removeEmail(mockToken, userAccount3.email)
 
