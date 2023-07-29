@@ -8,6 +8,7 @@ import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUser
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.enums.TimeBoundaryType
+import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
@@ -25,6 +26,7 @@ class UserController(
     private val userAccountRepository: UserAccountRepository,
     private val userRepository: UserRepository,
     private val userCalendarService: UserCalendarService,
+    private val timeBoundaryRepository: TimeBoundaryRepository,
 ) {
     @GetMapping("linked-emails")
     fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
@@ -46,13 +48,19 @@ class UserController(
             val jwtTokenData = getUserJWTTokenData(token)
             val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
             val users = mutableListOf<User>()
+            val timeBoundaries = mutableListOf<TimeBoundary>()
+
             userAccounts.forEach {
-                it.user?.let { it1 -> users.add(it1) }
+                it.user?.let { user ->
+                    users.add(user)
+                    timeBoundaries.addAll(user.getUserTimeBoundaries())
+                }
                 userAccountRepository.delete(it)
             }
-            users.forEach {
-                userRepository.delete(it)
-            }
+
+            timeBoundaries.forEach { timeBoundaryRepository.delete(it) }
+            users.forEach { userRepository.delete(it) }
+
             ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
         }
     }
