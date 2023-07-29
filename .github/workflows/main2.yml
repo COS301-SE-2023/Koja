@@ -1,4 +1,4 @@
-name: Koja CI/CD
+name: KOJA CI/CD
 
 on:
   push:
