@@ -15,7 +15,8 @@ import com.google.api.services.calendar.model.EventDateTime as GoogleEventDateTi
 
 class UserEventDTO(
     private var id: String,
-    private var description: String,
+    private var summary: String,
+    private var description: String? = null,
     private var location: String,
     private var startTime: OffsetDateTime,
     private var endTime: OffsetDateTime,
@@ -23,12 +24,13 @@ class UserEventDTO(
     private var timeSlots: List<TimeSlot>,
     private var priority: Int,
     private var dynamic: Boolean = false,
-    private var userID: String?,
+    private var travelTime: Long = 0L,
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
         id = googleEvent.id,
-        description = googleEvent.summary ?: "",
+        summary = googleEvent.summary ?: "",
+        description = googleEvent.description ?: null,
         location = googleEvent.location ?: "",
         startTime = toKotlinDate(googleEvent.start) ?: OffsetDateTime.now(ZoneOffset.UTC),
         endTime = toKotlinDate(googleEvent.end) ?: OffsetDateTime.now(ZoneOffset.UTC),
@@ -36,15 +38,19 @@ class UserEventDTO(
         timeSlots = googleEvent.extendedProperties?.shared?.get("timeSlots")?.let { parseTimeSlots(it) } ?: listOf(),
         priority = googleEvent.extendedProperties?.shared?.get("priority")?.toInt() ?: 0,
         dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true",
-        userID = null,
+        travelTime = googleEvent.extendedProperties?.shared?.get("travelTime")?.toLong() ?: 0L,
     )
 
     fun getId(): String {
         return id
     }
 
+    fun getSummary(): String {
+        return summary
+    }
+
     fun getDescription(): String {
-        return description
+        return if (description == null) "" else description!!
     }
 
     fun getLocation(): String {
@@ -63,20 +69,16 @@ class UserEventDTO(
         this.id = id
     }
 
+    fun setSummary(summary: String) {
+        this.summary = summary
+    }
+
     fun setDescription(description: String) {
         this.description = description
     }
 
     fun setLocation(location: String) {
         this.location = location
-    }
-
-    fun setUserID(userID: String?) {
-        this.userID = userID
-    }
-
-    fun getUserID(): String? {
-        return userID
     }
 
     fun setStartTime(startTime: OffsetDateTime) {
@@ -113,6 +115,14 @@ class UserEventDTO(
 
     fun setDuration(duration: Long) {
         this.duration = duration
+    }
+
+    fun getTravelTime(): Long {
+        return travelTime
+    }
+
+    fun setTravelTime(travelTime: Long) {
+        this.travelTime = travelTime
     }
 
     fun setTimeSlots(timeSlots: List<TimeSlot>) {

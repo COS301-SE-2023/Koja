@@ -295,7 +295,7 @@ class AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderState
                     ),
                     padding: const EdgeInsets.all(10.0),
                     child: const Text(
-                      'You can create your events manually and our app will also help you by creating tasks for you dynamically based on your time boundaries.',
+                      'When creating an event, you can set it as fixed or dynamic event, whereby on fixed you allocate the time where on dynamic you just specify the duration and the app will allocate the event.',
                       style: TextStyle(
                         fontSize: 16.0,
                         color: Colors.white,
@@ -333,7 +333,7 @@ class AboutUsPageState extends State<AboutUsPage> with SingleTickerProviderState
                     ),
                     padding: const EdgeInsets.all(10.0),
                     child: const Text(
-                      'You can prioritize your tasks based on their importance and urgency and our app will schedule them accordingly.',
+                      'If you\'re task is dynamic, you can prioritize it based on it\'s importance and urgency and our app will schedule it accordingly.',
                       style: TextStyle(
                         fontSize: 16.0,
                         color: Colors.white,

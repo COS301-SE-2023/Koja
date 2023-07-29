@@ -13,16 +13,16 @@ import java.time.OffsetDateTime
 abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     private val authProviderEnum: AuthProviderEnum = authProvider
 
-    abstract fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean): RedirectView
+    abstract fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean, addAdditionalAccount: Boolean = false, token: String = ""): RedirectView
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?, appCallBack: Boolean): String
-    abstract fun getUserEvents(accessToken: String): List<UserEventDTO>
+    abstract fun getUserEvents(accessToken: String): Map<String, UserEventDTO>
 
     abstract fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO>
 
     abstract fun getUserEmail(accessToken: String): String?
 
-    abstract fun createEvent(accessToken: String, eventDTO: UserEventDTO): Event
+    abstract fun createEvent(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event
 
     abstract fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event
 

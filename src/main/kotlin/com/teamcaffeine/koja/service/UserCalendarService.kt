@@ -33,19 +33,20 @@ class UserCalendarService(
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
-        val userEvents = ArrayList<UserEventDTO>()
+        val userEvents = mutableMapOf<String, UserEventDTO>()
 
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val accessToken =
-                userJWTTokenData.userAuthDetails.firstOrNull() { it.getRefreshToken() == userAccount.refreshToken }
-                    ?.getAccessToken()
-            if (accessToken != null) {
-                userEvents.addAll(adapter.getUserEvents(accessToken))
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEvents(accessToken))
+                }
             }
         }
 
-        return userEvents
+        return userEvents.values.toList()
     }
 
     @Transactional
@@ -80,7 +81,7 @@ class UserCalendarService(
         }
     }
 
-    fun deleteEvent(token: String, eventID: String) {
+    fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -90,8 +91,10 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
-            if (accessToken != null) {
-                adapter.deleteEvent(accessToken, eventID)
+            adapter.getUserEventsInRange(accessToken, eventStartTime, eventEndTime).forEach {
+                if (accessToken != null && it.getSummary().trim() == eventSummary.trim()) {
+                    adapter.deleteEvent(accessToken, it.getId())
+                }
             }
         }
     }
@@ -100,8 +103,32 @@ class UserCalendarService(
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
         val userEvents = ArrayList<UserEventDTO>()
-
+        var travelDuration = 0L
         for (adapter in calendarAdapters) {
+            val googleCalendarAdapter: GoogleCalendarAdapterService? = try {
+                adapter as GoogleCalendarAdapterService
+            } catch (e: Exception) {
+                null
+            }
+
+            var locationService: LocationService?
+            val locationID = eventDTO.getLocation()
+            if (travelDuration == 0L && googleCalendarAdapter != null && locationID.isNotEmpty()) {
+                locationService = LocationService(userRepository, googleCalendarAdapter)
+                val currentLocation: Pair<Double, Double> =
+                    anyToPair(locationService.getUserSavedLocations(token)["currentLocation"])
+                val latitude = currentLocation.second
+                val longitude = currentLocation.first
+                val travelTime = locationService.getTravelTime(
+                    latitude,
+                    longitude,
+                    eventDTO.getLocation(),
+                )
+                if (travelTime != null) {
+                    travelDuration = travelTime
+                    eventDTO.setTravelTime(travelTime)
+                }
+            }
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
@@ -118,9 +145,12 @@ class UserCalendarService(
         }
 
         if (eventDTO.isDynamic()) {
+            eventDTO.setDuration(eventDTO.getDurationInSeconds() + travelDuration)
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
+        } else {
+            eventDTO.setStartTime(eventDTO.getStartTime().minusSeconds(travelDuration))
         }
 
         for (adapter in calendarAdapters) {
@@ -129,8 +159,19 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
             if (accessToken != null) {
-                adapter.createEvent(accessToken, eventDTO)
+                adapter.createEvent(accessToken, eventDTO, token)
             }
+        }
+    }
+
+    private fun anyToPair(any: Any?): Pair<Double, Double> {
+        return if (any is Pair<*, *> &&
+            any.first is Double &&
+            any.second is Double
+        ) {
+            Pair(any.first as Double, any.second as Double)
+        } else {
+            Pair(0.0, 0.0)
         }
     }
 

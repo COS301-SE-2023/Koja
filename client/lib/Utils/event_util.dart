@@ -61,8 +61,8 @@ class Event {
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
         id: json['id'],
-        title: json['description'] ?? "",
-        description: "",
+        title: json['summary'] ?? "",
+        description: json['description'] ?? "",
         location: json['location'] ?? "",
         from: DateTime.parse(json['startTime']).toLocal(),
         to: DateTime.parse(json['endTime']).toLocal(),
@@ -76,7 +76,7 @@ class Event {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'title': title,
+        'summary': title,
         'description': title,
         'location': location,
         'startTime': from.toUtc().toIso8601String(),
