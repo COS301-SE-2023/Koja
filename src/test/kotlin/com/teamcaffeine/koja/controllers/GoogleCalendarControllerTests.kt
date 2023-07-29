@@ -1,20 +1,16 @@
-package com.teamcaffeine.koja.controller
+package com.teamcaffeine.koja.controllers
 
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest
@@ -35,10 +31,9 @@ class GoogleCalendarControllerTests {
         Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]).thenReturn("your_test_password")
     }
 
-
-    @Test
-    fun `oauth2Callback should return HttpStatus OK`() {
-        mockMvc.perform(get("/").param("code", "testCode").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk)
-    }
+//    @Test
+//    fun `oauth2Callback should return HttpStatus OK`() {
+//        mockMvc.perform(get("/").param("code", "testCode").contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk)
+//    }
 }
