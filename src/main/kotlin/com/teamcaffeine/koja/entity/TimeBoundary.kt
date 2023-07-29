@@ -16,11 +16,12 @@ class TimeBoundary(
     @Expose private var startTime: String ? = null,
     @Expose private var endTime: String ? = null,
     @Expose private var type: TimeBoundaryType = TimeBoundaryType.ALLOWED,
-) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private var id: Int? = null
+    @Expose
+    private var id: Int? = null,
+) {
 
     @ManyToOne(fetch = FetchType.LAZY)
     var user: User? = null
@@ -59,5 +60,3 @@ class TimeBoundary(
         }
     }
 }
-
-

@@ -44,11 +44,11 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     'Hobbies',
     'Resting',
     'Chores',
+    'Bed-Time'
   ];
 
   ///Function to trim start || end from TimeOfDay("HH:mm") to HH:mm
   String extractTime(String input) {
-
     int colonindex = input.indexOf(':');
     int startIndex = colonindex - 2;
     int endIndex = colonindex + 3;
@@ -66,13 +66,16 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   }
 
   /// function to save timein the category list
-  void saveTime() {
+  void saveTime({
+    required ContextProvider contextProvider,
+    required String itemName,
+  }) {
     String currentDate = DateTime.now().toString().split(' ')[0];
 
-    if(start.contains("TimeOfDay")) {
+    if (start.contains("TimeOfDay")) {
       start = extractTime(start);
     }
-    if(end.contains("TimeOfDay")) {
+    if (end.contains("TimeOfDay")) {
       end = extractTime(end);
     }
 
@@ -86,14 +89,14 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     final timeSlot = TimeSlot(startTime: startTime, endTime: endTime);
 
     setState(() {
-      eventProvider.setTimeSlot(selectedOption, timeSlot);
-      categories.removeWhere((element) => element[0] == selectedOption);
-      categories.add([selectedOption, start, end]);
-        
-        TimeOfDay now = TimeOfDay.now();
+      contextProvider.setTimeSlot(itemName, timeSlot);
+      categories.removeWhere((element) => element[0] == itemName);
+      categories.add([itemName, start, end]);
 
-        start = _formatTime(now.hour, now.minute).toString();
-        end = _formatTime(now.hour, now.minute).toString();
+      TimeOfDay now = TimeOfDay.now();
+
+      start = _formatTime(now.hour, now.minute).toString();
+      end = _formatTime(now.hour, now.minute).toString();
     });
 
     // If editing an item, remove the current item from the list and add the edited item
@@ -119,6 +122,20 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final ContextProvider contextProvider =
+        Provider.of<ContextProvider>(context);
+    final storedEntries = contextProvider.timeSlots.entries;
+    for (var entry in storedEntries) {
+      if (entry.value != null) {
+        categories.removeWhere((element) => element[0] == entry.key);
+        categories.add([
+          entry.key,
+          extractTime(entry.value!.startTime.toString()),
+          extractTime(entry.value!.endTime.toString())
+        ]);
+      }
+    }
     return SingleChildScrollView(
       child: ExpansionTile(
         trailing: Icon(
@@ -143,7 +160,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                 SizedBox(width: 8),
                 Container(
                   height: 35,
-                  width: 110,
+                  width: screenSize.width * 0.4,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black,
@@ -152,6 +169,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: DropdownButton<String>(
+                    isExpanded: true,
                     padding: EdgeInsets.all(5),
                     underline: Container(
                       height: 0,
@@ -185,7 +203,14 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                       context: context,
                       builder: (context) {
                         return SetBoundary(
-                            selectedOption, start, end, saveTime);
+                          selectedOption,
+                          start,
+                          end,
+                          () => saveTime(
+                            contextProvider: contextProvider,
+                            itemName: selectedOption,
+                          ),
+                        );
                       },
                     );
                   },
@@ -227,7 +252,10 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                             categories[index][0],
                             categories[index][1],
                             categories[index][2],
-                            saveTime,
+                            () => saveTime(
+                              contextProvider: contextProvider,
+                              itemName: categories[index][0],
+                            ),
                           );
                         },
                       );

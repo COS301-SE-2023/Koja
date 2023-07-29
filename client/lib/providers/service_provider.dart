@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:client/models/user_time_boundary_model.dart';
 import 'package:client/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -327,5 +328,22 @@ class ServiceProvider with ChangeNotifier {
         locationPermission == LocationPermission.whileInUse) return false;
 
     return true;
+  }
+
+  Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(
+      String accessToken) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/getAllTimeBoundary');
+    final response =
+        await http.get(url, headers: {'Authorisation': _accessToken!});
+
+    if (response.statusCode == 200) {
+      final List<dynamic> timeBoundariesJson = jsonDecode(response.body);
+      return timeBoundariesJson
+          .map((json) => UserTimeBoundaryModel.fromJson(json))
+          .toList();
+    } else {
+      return [];
+    }
   }
 }

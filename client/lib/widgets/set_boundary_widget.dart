@@ -29,8 +29,8 @@ class _SetBoundaryState extends State<SetBoundary> {
       initstart = start;
       initend = end;
     } else {
-      initstart = categories[editedindex][1];
-      initend = categories[editedindex][2];
+      initstart = start = categories[editedindex][1];
+      initend = end = categories[editedindex][2];
     }
     return AlertDialog(
       content: Container(
@@ -63,6 +63,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(height: 5),
                       SizedBox(
                         child: SelectedTimeButton(
+                          isStart: true,
                           time: widget.startTime = initstart,
                           onTimeChanged: (time) {
                             setState(() {
@@ -89,6 +90,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(height: 5),
                       SizedBox(
                         child: SelectedTimeButton(
+                          isStart: false,
                           time: widget.endTime = initend,
                           onTimeChanged: (time) {
                             setState(() {
@@ -132,8 +134,10 @@ class _SetBoundaryState extends State<SetBoundary> {
 class SelectedTimeButton extends StatefulWidget {
   final String time;
   final ValueChanged<String> onTimeChanged;
+  final bool isStart;
 
-  SelectedTimeButton({required this.time, required this.onTimeChanged});
+  SelectedTimeButton(
+      {required this.time, required this.onTimeChanged, required this.isStart});
 
   @override
   SelectedTimeButtonState createState() => SelectedTimeButtonState();
@@ -141,7 +145,7 @@ class SelectedTimeButton extends StatefulWidget {
 
 class SelectedTimeButtonState extends State<SelectedTimeButton> {
   late TimeOfDay selectedTime = TimeOfDay.now();
-  String timeHour = ""; 
+  String timeHour = "";
   String timeMinute = "";
 
   @override
@@ -154,11 +158,12 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
     var time = await selectTime(context);
     if (time != null) {
       setState(() {
+        final formatedTime = _formatTime(time);
+        (widget.isStart) ? start = formatedTime : end = formatedTime;
         selectedTime = time;
-        widget.onTimeChanged(_formatTime(time));
+        widget.onTimeChanged(formatedTime);
       });
-    }
-    else {
+    } else {
       widget.onTimeChanged(widget.time);
     }
   }
@@ -172,21 +177,19 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
   }
 
   Future<TimeOfDay?> selectTime(BuildContext context) async {
-    
-    if(widget.time.contains("TimeOfDay")) {
+    if (widget.time.contains("TimeOfDay")) {
       String trimmed = extractTime(widget.time);
       timeHour = trimmed.split(":")[0];
       timeMinute = trimmed.split(":")[1];
-    }
-    else {
+    } else {
       timeHour = widget.time.split(":")[0];
       timeMinute = widget.time.split(":")[1];
     }
 
-
     var selectedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: int.parse(timeHour), minute: int.parse(timeMinute)),
+      initialTime:
+          TimeOfDay(hour: int.parse(timeHour), minute: int.parse(timeMinute)),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -213,7 +216,6 @@ class SelectedTimeButtonState extends State<SelectedTimeButton> {
   }
 
   String extractTime(String input) {
-
     int colonindex = input.indexOf(':');
     int startIndex = colonindex - 2;
     int endIndex = colonindex + 3;
