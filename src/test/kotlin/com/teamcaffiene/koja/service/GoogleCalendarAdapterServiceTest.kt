@@ -65,8 +65,8 @@ class GoogleCalendarAdapterServiceTest {
             id = "1",
             summary = "desc1",
             location = location1,
-            startTime = OffsetDateTime.now().minusDays(2),
-            endTime = OffsetDateTime.now().minusDays(1),
+            startTime = OffsetDateTime.now().plusDays(2),
+            endTime = OffsetDateTime.now().plusDays(2),
             duration = 1,
             timeSlots = emptyList(),
             priority = 1,
@@ -92,7 +92,7 @@ class GoogleCalendarAdapterServiceTest {
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
-        assertEquals((listOf(location2)), (futureEvents))
+        assertEquals((listOf(location1)), (futureEvents))
     }
 
     /*
@@ -109,8 +109,8 @@ class GoogleCalendarAdapterServiceTest {
             id = "1",
             summary = "desc1",
             location = location1,
-            startTime = OffsetDateTime.now().minusDays(2),
-            endTime = OffsetDateTime.now().minusDays(1),
+            startTime = OffsetDateTime.now().plusDays(5),
+            endTime = OffsetDateTime.now().plusDays(6),
             duration = 1,
             timeSlots = emptyList(),
             priority = 1,
@@ -121,8 +121,8 @@ class GoogleCalendarAdapterServiceTest {
             id = "2",
             summary = "desc2",
             location = location2,
-            startTime = OffsetDateTime.now().minusDays(2),
-            endTime = OffsetDateTime.now().minusDays(1),
+            startTime = OffsetDateTime.now().plusDays(2),
+            endTime = OffsetDateTime.now().plusDays(3),
             duration = 1,
             timeSlots = emptyList(),
             priority = 1,
@@ -149,7 +149,7 @@ class GoogleCalendarAdapterServiceTest {
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
-        assertEquals((listOf(location2, location1)), (futureEvents))
+        assertEquals((listOf(location1, location2)), (futureEvents))
     }
 
     /*

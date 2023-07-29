@@ -7,6 +7,7 @@ import com.teamcaffeine.koja.controller.UserController
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
@@ -34,11 +35,14 @@ class UserControllerUnitTest {
     @Mock
     private lateinit var userRepository: UserRepository
 
+    @Mock
+    private lateinit var timeBoundaryRepository: TimeBoundaryRepository
+
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userController = UserController(userAccountRepository, userRepository, userCalendarService)
+        userController = UserController(userAccountRepository, userRepository, userCalendarService, timeBoundaryRepository)
     }
 
     private fun importEnvironmentVariables() {
