@@ -343,8 +343,7 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                     fontFamily: 'Ubuntu',
                                   ),
                                 ),
-                                if (newValue != 'None')
-                                SizedBox(height: 10),
+                                if (newValue != 'None') SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Expanded(
@@ -384,13 +383,10 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                 SizedBox(height: 10),
                                 ChooseEndChoice(),
                                 SizedBox(height: 10),
-                                if(isEndDate == true)
-                                  Text("data0"),
-                                if(isEndDate == false)
-                                  Text("data1")
+                                if (isEndDate == true) Text("data0"),
+                                if (isEndDate == false) Text("data1")
                               ],
                             ),
-                            
                           ),
                           actions: [
                             TextButton(

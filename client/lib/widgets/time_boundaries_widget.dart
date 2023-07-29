@@ -17,23 +17,6 @@ class TimeBoundariesState extends State<TimeBoundaries> {
   late ContextProvider eventProvider =
       Provider.of<ContextProvider>(context, listen: false);
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   eventProvider = Provider.of<EventProvider>(context);
-  //   DateFormat format = DateFormat('HH:MM');
-  //   for (var entry in eventProvider.timeSlots.entries) {
-  //     if (entry.value != null) {
-  //       categories.removeWhere((element) => element[0] == entry.key);
-  //       categories.add([
-  //         entry.key,
-  //         format.format(entry.value!.startTime),
-  //         format.format(entry.value!.endTime)
-  //       ]);
-  //     }
-  //   }
-  // }
-
   // selected option for dropdown
   late String selectedOption;
 

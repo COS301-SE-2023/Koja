@@ -7,6 +7,9 @@ class SetBoundary extends StatefulWidget {
   late String? startTime;
   late String? endTime;
 
+  String initstart = "";
+  String initend = "";
+
   SetBoundary(
     this.selectedOption,
     this.startTime,
@@ -21,17 +24,19 @@ class SetBoundary extends StatefulWidget {
 
 class _SetBoundaryState extends State<SetBoundary> {
   @override
-  Widget build(BuildContext context) {
-    String initstart = "";
-    String initend = "";
-
+  void initState() {
+    super.initState();
     if (isEditing == false) {
-      initstart = start;
-      initend = end;
+      widget.initstart = start;
+      widget.initend = end;
     } else {
-      initstart = start = categories[editedindex][1];
-      initend = end = categories[editedindex][2];
+      widget.initstart = start = categories[editedindex][1];
+      widget.initend = end = categories[editedindex][2];
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return AlertDialog(
       content: Container(
         height: 180,
@@ -64,7 +69,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(
                         child: SelectedTimeButton(
                           isStart: true,
-                          time: widget.startTime = initstart,
+                          time: widget.startTime = widget.initstart,
                           onTimeChanged: (time) {
                             setState(() {
                               start = time;
@@ -91,7 +96,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(
                         child: SelectedTimeButton(
                           isStart: false,
-                          time: widget.endTime = initend,
+                          time: widget.endTime = widget.initend,
                           onTimeChanged: (time) {
                             setState(() {
                               end = time;
