@@ -1,9 +1,10 @@
+import 'package:client/providers/context_provider.dart';
 import 'package:client/widgets/time_boundaries_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:client/Utils/event_util.dart';
-import 'package:client/providers/event_provider.dart';
+
 
 void main() {
   testWidgets('TimeBoundaries widget test', (WidgetTester tester) async {
@@ -11,7 +12,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<EventProvider>(
+          ChangeNotifierProvider<ContextProvider>(
             create: (_) => MockEventProvider(),
           ),
         ],
@@ -59,18 +60,18 @@ void main() {
   });
 }
 
-class MockEventProvider extends EventProvider {
+class MockEventProvider extends ContextProvider {
   // Implement mock methods or properties of your EventProvider if needed for testing.
   // For example, you can mock the `timeSlots` map and return some predefined values.
   @override
   Map<String, TimeSlot?> timeSlots = {
     'School': TimeSlot(
       startTime: DateTime.now(),
-      endTime: DateTime.now().add(Duration(hours: 1)),
+      endTime: DateTime.now().add(Duration(hours: 1)), bookable: false,
     ),
     'Work': TimeSlot(
       startTime: DateTime.now(),
-      endTime: DateTime.now().add(Duration(hours: 2)),
+      endTime: DateTime.now().add(Duration(hours: 2)), bookable: false,
     ),
   };
 }
