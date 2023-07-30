@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../Utils/constants_util.dart';
 
 class UserDetails extends StatelessWidget {
-  final String profile, email;
+  final String profile;
+  final String email;
 
   UserDetails({required this.profile, required this.email});
 
@@ -12,7 +13,7 @@ class UserDetails extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 170,
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(15),
       decoration: const BoxDecoration(
         color: darkBlue,
         borderRadius: BorderRadius.only(
@@ -27,15 +28,21 @@ class UserDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const ClipOval(
+                 ClipOval(
                   //This is the profile picture
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage(
-                      'assets/icons/coffee.png',
+                    child: Text(
+                      profile.toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 70,
+                        color: darkBlue,
+                      ),
                     ),
                   ),
                 ),
+                Spacer(),
                 //This is the name of the user
                 Text(
                   email,

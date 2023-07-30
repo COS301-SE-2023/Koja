@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
 
 class AddEmailModal extends StatefulWidget {
@@ -17,7 +17,7 @@ class _AddEmailModalState extends State<AddEmailModal> {
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
-    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
     return SingleChildScrollView(
       child: Container(
         height: 130,
@@ -29,12 +29,12 @@ class _AddEmailModalState extends State<AddEmailModal> {
                 onPressed: () async {
                   if (await serviceProvider.addEmail(
                       eventProvider: eventProvider)) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Email was added'),
-                          ),
-                        );
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Email was added'),
+                      ),
+                    );
                   } else {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -67,8 +67,7 @@ class _AddEmailModalState extends State<AddEmailModal> {
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                 )),
-                SizedBox(height: 10.0),
-            
+            SizedBox(height: 10.0),
           ],
         ),
       ),

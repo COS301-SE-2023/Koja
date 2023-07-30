@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/service_provider.dart';
+import '../screens/login_screen.dart';
 import 'add_email_widget.dart';
 import 'email_list_widget.dart';
 
@@ -89,7 +90,7 @@ class AccountSettingsWidget extends StatelessWidget {
 
             /** This is the List Of Emails Block */
             Container(
-              width: constraints.maxWidth * 0.95,
+              width: MediaQuery.of(context).size.width * 0.95,
               decoration: BoxDecoration(
                 border: Border.all(),
                 borderRadius: BorderRadius.circular(8.0),
@@ -102,8 +103,8 @@ class AccountSettingsWidget extends StatelessWidget {
             Container(
               width: constraints.maxWidth * 0.95,
               decoration: BoxDecoration(
-                border: Border.all(),
                 borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(color: Colors.black),
               ),
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -128,12 +129,12 @@ class AccountSettingsWidget extends StatelessWidget {
                           style: GoogleFonts.ubuntu(
                             fontSize: 15,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
-                          color: Colors.red,
+                          border: Border.all(color: Colors.black),
                         ),
                       ),
                       SizedBox(width: 2),
@@ -164,9 +165,14 @@ class AccountSettingsWidget extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Provider.of<ServiceProvider>(context)
+                                      Provider.of<ServiceProvider>(context, listen: false)
                                           .deleteUserAccount();
-                                      Navigator.pop(context);
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Login()),
+                                        (Route<dynamic> route) => false,
+                                      );
                                     },
                                     child: Text('Delete'),
                                   ),

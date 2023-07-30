@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:client/providers/context_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -14,58 +14,56 @@ class EmailList extends StatefulWidget {
 }
 
 class _EmailListState extends State<EmailList> {
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-    emails.clear();
-
-    Provider.of<ServiceProvider>(context).getAllUserEmails().then((emails) {
-      setState(() {
-        if (kDebugMode) print(emails);
-        this.emails = emails;
-      });
-    });
-  }
-
+  
   List<String> emails = [];
-
   int editedindex = -1;
 
   late String selectedOption;
 
   // function to delete an email from the list
   void delete(int index) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Confirmation'),
-        content: Text('Are you sure you want to delete this email from your account?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                emails.removeAt(index);
-              });
-              Navigator.pop(context); 
-            },
-            child: Text('Delete'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Cancel'),
-          ),
-        ],
-      );
-    },
-  );
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final serviceProvider =
+            Provider.of<ServiceProvider>(context, listen: false);
+        final contextProvider =
+            Provider.of<ContextProvider>(context, listen: true);
 
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text(
+              'Are you sure you want to delete this email from your account?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  serviceProvider.deleteUserEmail(
+                    email: emails[index],
+                    eventProvider: contextProvider,
+                  );
+                  emails.removeAt(index);
+                  // contextProvider.userEmails = emails;               
+                });
+                Navigator.pop(context);
+              },
+              child: Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    emails = Provider.of<ContextProvider>(context, listen: false).userEmails;
     return SingleChildScrollView(
         child: ExpansionTile(
       trailing: Icon(
@@ -76,7 +74,7 @@ class _EmailListState extends State<EmailList> {
             fontSize: 17,
           )),
       subtitle: Text(
-        "\nClick here to view all the email addresses you have added. You can manage them by just swiping to the left to make an email primary or delete it",
+        "\nClick here to view all the email addresses you have added. You can delete an email by just clicking on the delete icon.",
         style: GoogleFonts.ubuntu(
           fontSize: 12.5,
         ),

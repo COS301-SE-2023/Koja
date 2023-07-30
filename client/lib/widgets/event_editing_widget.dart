@@ -7,7 +7,7 @@ import '../Utils/event_util.dart';
 import '../models/autocomplete_predict_model.dart';
 import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
 
@@ -125,6 +125,16 @@ class EventEditingState extends State<EventEditing> {
       titleController.text = event.title;
       fromDate = event.from;
       toDate = event.to;
+      selectedCategory = event.category;
+      selectedEventType = event.isDynamic ? 'Dynamic' : 'Fixed';
+      selectedPriority = event.priority == 1
+          ? 'Low'
+          : event.priority == 2
+              ? 'Medium'
+              : 'High';
+      selectedColor = event.backgroundColor;
+      _eventPlace.text = placeId;
+      // event.location;
     }
   }
 
@@ -143,36 +153,30 @@ class EventEditingState extends State<EventEditing> {
           textDirection: TextDirection.rtl,
           children: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text('Cancel')
-            ),
-
-            if(selectedEventType == 'Dynamic')
+                onPressed: () => Navigator.of(context).pop(),
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.black),
+                ),
+                child: Text('Cancel')),
+            if (selectedEventType == 'Dynamic' && needsReschedule == true)
               TextButton(
+                  onPressed: saveForm,
+                  style: const ButtonStyle(
+                    foregroundColor: MaterialStatePropertyAll(Colors.black),
+                  ),
+                  child: Text('Reschedule',
+                      style: TextStyle(
+                          fontFamily: 'Railway', color: Colors.black))),
+            TextButton(
                 onPressed: saveForm,
                 style: const ButtonStyle(
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
-                child: Text('Reschedule',
-                    style: TextStyle(fontFamily: 'Railway', color: Colors.black)
-                )
-              ),
-
-            TextButton(
-              onPressed: saveForm,
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text('Save',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.black)
-              )
-            ),
+                child: Text('Save',
+                    style:
+                        TextStyle(fontFamily: 'Railway', color: Colors.black))),
           ],
         )
-        
       ],
       backgroundColor: Colors.grey[100],
       contentPadding: const EdgeInsets.all(16),
@@ -186,17 +190,16 @@ class EventEditingState extends State<EventEditing> {
               children: [
                 ChooseEventType(onEventSelected: updateEventType),
                 buildTitle(),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 (selectedEventType == 'Dynamic')
                     ? getDynamicTimeSelectors()
                     : buildDateTimePickers(),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                const SizedBox(height: 1),
-                if(selectedEventType == 'Dynamic')
-                     ChoosePriority(onPrioritySelected: updatePriority),
-                const SizedBox(height: 1),
-                ChooseColor(onColorSelected: updateColor),
+                if (selectedEventType == 'Dynamic')
+                  ChoosePriority(onPrioritySelected: updatePriority),
+                // ChooseColor(onColorSelected: updateColor),
+                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -268,7 +271,7 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
-            Provider.of<EventProvider>(context, listen: false)
+            Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
             Navigator.of(context).pop();
           }
@@ -294,29 +297,25 @@ class EventEditingState extends State<EventEditing> {
     }
 
     return Padding(
-      padding: EdgeInsets.only(left: 8, right: 8),
+      padding: EdgeInsets.only(left: 4, right: 4),
       child: SingleChildScrollView(
         child: Column(
           children: [
             Row(
               children: [
                 Expanded(
-                  child: 
-                    Text(
-                      _eventPlace.text,
+                  child: Text(_eventPlace.text,
                       maxLines: 1,
                       style: TextStyle(
                           fontFamily: 'Railway',
                           fontSize: 14,
-                          fontWeight: FontWeight.bold
-                      )
-                    ),
+                          fontWeight: FontWeight.bold)),
                 ),
-                if(_eventPlace.text.isNotEmpty)
+                if (_eventPlace.text.isNotEmpty)
                   IconButton(
                     onPressed: clearLocation,
                     icon: const Icon(Icons.clear, color: Colors.black),
-                ),
+                  ),
               ],
             ),
             TextFormField(
@@ -328,10 +327,9 @@ class EventEditingState extends State<EventEditing> {
                 label: Text(
                   "Meeting's Location",
                   style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16
-                  ),
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16),
                 ),
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
@@ -429,7 +427,7 @@ class EventEditingState extends State<EventEditing> {
   Widget buildDateTimePickers({bool isDynamic = false}) => Column(
         children: [
           buildFrom(isDynamic),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           if (!isDynamic) buildTo(),
         ],
       );
@@ -547,9 +545,13 @@ class EventEditingState extends State<EventEditing> {
       return date.add(time);
     } else {
       final timeOfDay = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(initialDate),
-      );
+          context: context,
+          initialTime: TimeOfDay.fromDateTime(initialDate),
+          builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context)
+                    .copyWith(alwaysUse24HourFormat: true),
+                child: child!,
+              ));
 
       if (timeOfDay == null) return null;
 
@@ -593,12 +595,38 @@ class EventEditingState extends State<EventEditing> {
   Future saveForm() async {
     late bool isValid = false;
 
+    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
+    final existingEvents = eventProvider.events;
+
+    final isDuplicateEvent = existingEvents.any((existingEvent) {
+      return existingEvent.title == titleController.text &&
+          existingEvent.from == fromDate &&
+          existingEvent.to == toDate &&
+          existingEvent.category == selectedCategory &&
+          existingEvent.isDynamic == (selectedEventType == "Dynamic") &&
+          existingEvent.priority ==
+              (selectedPriority == "Low"
+                  ? 1
+                  : selectedPriority == "Medium"
+                      ? 2
+                      : 3) &&
+          existingEvent.backgroundColor == selectedColor;
+    });
+
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
-      isValid = true;
+      if (isDuplicateEvent) {
+        const snackBar = SnackBar(
+          content: Text('Event already exists!'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        isValid = true;
+      }
     }
 
     if (isValid) {
-      final eventProvider = Provider.of<EventProvider>(context, listen: false);
+      final eventProvider =
+          Provider.of<ContextProvider>(context, listen: false);
 
       var timeSlot = eventProvider.timeSlots[selectedCategory];
 
@@ -616,7 +644,11 @@ class EventEditingState extends State<EventEditing> {
             59,
           );
 
-          timeSlot = TimeSlot(startTime: now, endTime: endOfDay);
+          timeSlot = TimeSlot(
+            startTime: now,
+            endTime: endOfDay,
+            bookable: true,
+          );
         } else {
           final startOfDay = DateTime(
             fromDate.year,
@@ -634,7 +666,11 @@ class EventEditingState extends State<EventEditing> {
             59,
             59,
           );
-          timeSlot = TimeSlot(startTime: startOfDay, endTime: endOfDay);
+          timeSlot = TimeSlot(
+            startTime: startOfDay,
+            endTime: endOfDay,
+            bookable: true,
+          );
         }
       }
 
@@ -675,11 +711,11 @@ class EventEditingState extends State<EventEditing> {
       final durationMinutes = int.tryParse(minutesController.text);
 
       var priorityValue = 1;
-      if(selectedPriority == 'Low') {
+      if (selectedPriority == 'Low') {
         priorityValue = 1;
-      } else if(selectedPriority == 'Medium') {
+      } else if (selectedPriority == 'Medium') {
         priorityValue = 2;
-      } else if(selectedPriority == 'High') {
+      } else if (selectedPriority == 'High') {
         priorityValue = 3;
       }
 
@@ -691,7 +727,7 @@ class EventEditingState extends State<EventEditing> {
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
-        location: _eventPlace.text,
+        location: placeId,
         description: 'description',
         category: selectedCategory,
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
@@ -701,25 +737,105 @@ class EventEditingState extends State<EventEditing> {
         isAllDay: false,
         timeSlots: [timeSlot],
         priority: priorityValue,
-        backgroundColor: selectedColor,
+        // backgroundColor: selectedColor,
       );
+
+      if (event.location != "") {
+        List<String> timeParts = travelTime.split(' ');
+
+        // Initialize variables to store the hours, minutes, and seconds
+        int hours = 0;
+        int minutes = 0;
+        int seconds = 0;
+
+        // Iterate through the timeParts and extract the corresponding values
+        for (int i = 0; i < timeParts.length; i += 2) {
+          int value = int.parse(timeParts[i]);
+          String unit = timeParts[i + 1];
+
+          if (unit.contains('hour')) {
+            hours = value;
+          } else if (unit.contains('minute')) {
+            minutes = value;
+          } else if (unit.contains('second')) {
+            seconds = value;
+          }
+        }
+
+        // Construct the DateTime object
+        DateTime travelDateTime = DateTime(
+          fromDate.year,
+          fromDate.month,
+          fromDate.day,
+          fromDate.hour - hours,
+          fromDate.minute - minutes,
+          fromDate.second - seconds,
+        );
+        String meetingTitle = titleController.text;
+
+        // travelTimeBlock = Event(
+        //   // id: (widget.event != null) ? widget.event!.id : "",
+        //   title: "Travel To $meetingTitle",
+        //   location: "",
+        //   description: '',
+        //   category: '',
+        //   isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        //   from: travelDateTime,
+        //   to: fromDate,
+        //   duration: await getDurationInMilliseconds(durationInSeconds),
+        //   isAllDay: false,
+        //   timeSlots: [timeSlot],
+        //   priority: priorityValue,
+        //   backgroundColor: selectedColor,
+        // );
+      }
 
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
+
+      // if (travelTimeBlock != null) {
+      //   var response = await serviceProvider.createEvent(travelTimeBlock);
+
+      // if (response) {
+      //   eventProvider.addEvent(travelTimeBlock);
+      //   var snackBar = SnackBar(
+      //     content: Center(
+      //       child: Text('Event Created!',
+      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      //     ),
+      //   );
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      //   Navigator.of(context).pop();
+      // } else {
+      //   var snackBar = SnackBar(
+      //     content: Center(
+      //       child: Text('Event Creation failed!',
+      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      //     ),
+      //   );
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // }
+      // }
 
       if (widget.event == null) {
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
-          eventProvider.addEvent(event);
-          const snackBar = SnackBar(
-            content: Text('Event Created!'),
+          eventProvider.retrieveEvents();
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Created!',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
         } else {
-          const snackBar = SnackBar(
-            content: Text('Event Creation failed!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Creation failed!',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
@@ -727,14 +843,20 @@ class EventEditingState extends State<EventEditing> {
         var response = await serviceProvider.updateEvent(event);
         if (response) {
           eventProvider.updateEvent(event);
-          const snackBar = SnackBar(
-            content: Text('Event Updated!'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Updated!',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
         } else {
-          const snackBar = SnackBar(
-            content: Text('Event Update Failed.'),
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event Update Failed.',
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+            ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
@@ -788,6 +910,7 @@ class TimeEstimationWidget extends StatelessWidget {
       return FutureBuilder(
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
+              travelTime = getHumanText(snapshot.data);
               return Padding(
                   padding: const EdgeInsets.only(top: 3, left: 12),
                   child: Text(getHumanText(snapshot.data)));

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../Utils/constants_util.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 
 import '../widgets/location_list_widget.dart';
 import '../widgets/tasks_block_widget.dart';
@@ -17,13 +17,13 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  late EventProvider _eventProvider;
+  late ContextProvider _eventProvider;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Access the EventProvider instance from the provider
-    _eventProvider = Provider.of<EventProvider>(context);
+    _eventProvider = Provider.of<ContextProvider>(context);
   }
 
   @override
@@ -69,8 +69,6 @@ class HomeState extends State<Home> {
 
       return eventsOnPresentWeek.length;
     }
-
-    
 
     return Scaffold(
       appBar: AppBar(

@@ -1,4 +1,9 @@
+import 'package:client/screens/tasks_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:number_selector/number_selector.dart';
+import 'package:numberpicker/numberpicker.dart';
+
+import '../Utils/constants_util.dart';
 
 class ChooseCategory extends StatefulWidget {
   final void Function(String category) onCategorySelected;
@@ -21,7 +26,7 @@ class ChooseCategoryState extends State<ChooseCategory> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           DropdownButtonFormField<String>(
               value: selectedCategory,
               onChanged: (String? newValue) {
@@ -40,10 +45,10 @@ class ChooseCategoryState extends State<ChooseCategory> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Select Category',
+                  'TIME BOUNDARY',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -98,10 +103,10 @@ class ChooseEventTypeState extends State<ChooseEventType> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Select Event Type',
+                  'EVENT TYPE',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -159,7 +164,7 @@ class ChoosePriorityState extends State<ChoosePriority> {
                   'Select Priority Level',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -192,7 +197,7 @@ class ChooseColorState extends State<ChooseColor> {
     Colors.red,
     Colors.green,
     Colors.yellow,
-    Colors.purple,  
+    Colors.purple,
   ];
 
   String getColorName(Color color) {
@@ -202,18 +207,14 @@ class ChooseColorState extends State<ChooseColor> {
       return 'Red';
     } else if (color == Colors.green) {
       return 'Green';
-    }
-    else if(color == Colors.yellow){
+    } else if (color == Colors.yellow) {
       return 'Yellow';
-    }
-    else if(color == Colors.purple){
+    } else if (color == Colors.purple) {
       return 'Purple';
-    }
-    else{
+    } else {
       return 'Blue';
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -239,13 +240,12 @@ class ChooseColorState extends State<ChooseColor> {
                 child: Row(
                   children: [
                     Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: value,
-                      )
-                    ),
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: value,
+                        )),
                     SizedBox(width: 8),
                     Text(getColorName(value)),
                   ],
@@ -257,7 +257,7 @@ class ChooseColorState extends State<ChooseColor> {
                 'Select Color',
                 style: TextStyle(
                   color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   fontSize: 17,
                 ),
               ),
@@ -275,10 +275,12 @@ class ChooseColorState extends State<ChooseColor> {
   }
 }
 
-/// Class which sets recurrence
+/// Class which sets recurrence of an event
+
 class ChooseRecurrence extends StatefulWidget {
   final void Function(String category) onRecurrenceSelected;
-  const ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
+
+  ChooseRecurrence({Key? key, required this.onRecurrenceSelected})
       : super(key: key);
 
   @override
@@ -289,26 +291,189 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
   String selectedCategory = 'None';
   List<String> categories = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
 
+  String selectedEnd = 'None';
+  List<String> endingChoice = ['Occurences(times)', 'EndDate'];
+
   @override
   Widget build(BuildContext context) {
+    String getIntervalString(String interval) {
+      if (interval == 'Daily') {
+        return ' day(s)';
+      } else if (interval == 'Weekly') {
+        return ' week(s)';
+      } else if (interval == 'Monthly') {
+        return ' month(s)';
+      } else if (interval == 'Yearly') {
+        return ' year(s)';
+      } else {
+        return 'None';
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           DropdownButtonFormField<String>(
-              value: selectedCategory,
+            value: selectedCategory,
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  selectedCategory = newValue;
+                  if (newValue != 'None') {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Recurrence'),
+                          content: Container(
+                            width: MediaQuery.of(context).size.width * 0.95,
+                            height: MediaQuery.of(context).size.height * 0.9,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Repeats Every',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    fontFamily: 'Ubuntu',
+                                  ),
+                                ),
+                                if (newValue != 'None') SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        width: 50,
+                                        height: 50,
+                                        child: NumberSelector(
+                                          min: 1,
+                                          max: 30,
+                                          width: 10,
+                                          height: 50,
+                                          showSuffix: false,
+                                          onUpdate: (value) {
+                                            interval = value;
+                                          },
+                                          showMinMax: false,
+                                          hasBorder: true,
+                                          textStyle: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Ubuntu',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      getIntervalString(newValue),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 20,
+                                        fontFamily: 'Ubuntu',
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                ChooseEndChoice(),
+                                SizedBox(height: 10),
+                                if (isEndDate == true) Text("data0"),
+                                if (isEndDate == false) Text("data1")
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Save'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Cancel'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    // Handle the case when 'None' is selected.
+                  }
+                });
+                widget.onRecurrenceSelected(newValue);
+              }
+            },
+            items: categories.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              label: Text(
+                'RECURRENCE',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 17),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChooseEndChoice extends StatefulWidget {
+  const ChooseEndChoice({Key? key}) : super(key: key);
+
+  @override
+  ChooseEndChoiceState createState() => ChooseEndChoiceState();
+}
+
+class ChooseEndChoiceState extends State<ChooseEndChoice> {
+  String selectedEnd = 'EndDate';
+  List<String> endChoices = ['EndDate', 'Occurences(times)'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          DropdownButtonFormField<String>(
+              value: selectedEnd,
               onChanged: (String? newValue) {
                 if (newValue != null) {
                   setState(() {
-                    selectedCategory = newValue;
+                    selectedEnd = newValue;
                   });
-                  widget.onRecurrenceSelected(newValue);
+                  if (selectedEnd == 'EndDate') {
+                    isEndDate = true;
+                  } else {
+                    isEndDate = false;
+                  }
                 }
               },
-              items: categories.map<DropdownMenuItem<String>>((String value) {
+              items: endChoices.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -316,10 +481,10 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
               }).toList(),
               decoration: InputDecoration(
                 label: Text(
-                  'Select Recurrence',
+                  'ENDS',
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: 17),
                 ),
                 border: OutlineInputBorder(
@@ -334,145 +499,3 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
     );
   }
 }
-
-
-// import 'package:flutter/material.dart';
-
-// class ChooseCategory extends StatefulWidget {
-//   final void Function(String category) onCategorySelected;
-//   const ChooseCategory({Key? key, required this.onCategorySelected})
-//       : super(key: key);
-
-//   @override
-//   ChooseCategoryState createState() => ChooseCategoryState();
-// }
-
-// class ChooseCategoryState extends State<ChooseCategory> {
-//   int tag = 1;
-//   List<String> categories = ['School', 'Work', 'Hobby', 'Resting', 'Chore'];
-
-//   String get category => categories[tag];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text("CATEGORY",
-//               maxLines: 2,
-//               style: TextStyle(
-//                   fontFamily: 'Railway',
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.bold)),
-//           SizedBox(height: 10),
-//           Wrap(
-//             spacing: 5,
-//             children: [
-//               ChoiceChip(
-//                   label: Text(categories[0]),
-//                   selected: tag == 0,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 0 : 1;
-//                     });
-//                     widget.onCategorySelected(categories[0]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[1]),
-//                   selected: tag == 1,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 1 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[1]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[2]),
-//                   selected: tag == 2,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 2 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[2]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[3]),
-//                   selected: tag == 3,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 3 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[3]);
-//                   }),
-//               ChoiceChip(
-//                   label: Text(categories[4]),
-//                   selected: tag == 4,
-//                   onSelected: (bool selected) {
-//                     setState(() {
-//                       tag = selected ? 4 : 0;
-//                     });
-//                     widget.onCategorySelected(categories[4]);
-//                   }),
-//             ],
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// class ChooseEventType extends StatefulWidget {
-//   final void Function(String category) onEventSelected;
-//   const ChooseEventType({Key? key, required this.onEventSelected})
-//       : super(key: key);
-
-//   @override
-//   ChooseEventTypeState createState() => ChooseEventTypeState();
-// }
-
-// class ChooseEventTypeState extends State<ChooseEventType> {
-//   int tag = 1;
-//   List<String> categories = ['Fixed', 'Dynamic'];
-
-//   String get category => categories[tag];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text("EVENT TYPE",
-//               maxLines: 2,
-//               style: TextStyle(
-//                   fontFamily: 'Railway',
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.bold)),
-//           SizedBox(height: 10),
-//           Center(
-//             child: Wrap(
-//               spacing: 5,
-//               children: [
-//                 for (var i = 0; i < categories.length; i++)
-//                   ChoiceChip(
-//                       label: Text(categories[i]),
-//                       selected: tag == i,
-//                       onSelected: (bool selected) {
-//                         setState(() {
-//                           if (selected) tag = i;
-//                         });
-//                         widget.onEventSelected(categories[i]);
-//                       }),
-//               ],
-//             ),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }

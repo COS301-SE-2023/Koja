@@ -33,7 +33,10 @@ class TokenManagerController {
         return if (token == null) {
             ResponseEntity.badRequest().body("ResponseConstant.REQUIRED_PARAMETERS_NOT_SET")
         } else {
-            val jwtToken = getUserJWTTokenData(token)
+            val jwtToken = getUserJWTTokenData(token, false)
+            for (t in jwtToken.userAuthDetails) {
+                t.renewToken()
+            }
             val tokenRequest = TokenRequest(
                 tokens = jwtToken.userAuthDetails,
                 authProvider = AuthProviderEnum.NONE,
@@ -77,7 +80,7 @@ class TokenManagerController {
             return soonestExpireTime
         }
 
-        private fun createJwtToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
+        fun createJwtToken(accessTokens: List<JWTAuthDetailsDTO>, expiryTime: Long, userID: Int): String {
             val algorithm = Algorithm.HMAC512(jwtSecret)
             val tokenExpireDate = Date(System.currentTimeMillis() + getTokenValidTime(expiryTime))
 
@@ -105,11 +108,15 @@ class TokenManagerController {
             return (expireTime - (oneMinuteInSeconds * 5)) * 1000
         }
 
-        fun getUserJWTTokenData(jwtToken: String): UserJWTTokenDataDTO {
+        fun getUserJWTTokenData(jwtToken: String, verifyValidity: Boolean = true): UserJWTTokenDataDTO {
             val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
             val algorithm = Algorithm.HMAC512(jwtSecret)
             val verifier = JWT.require(algorithm).build()
-            val decodedJWT = verifier.verify(jwtToken)
+            val decodedJWT = if (verifyValidity) {
+                verifier.verify(jwtToken)
+            } else {
+                JWT.decode(jwtToken)
+            }
 
             val encryptedClaims = decodedJWT.getClaim("encrypted").asString()
             val decryptedClaims = decrypt(encryptedClaims, generateSecretKey(jwtSecret))
