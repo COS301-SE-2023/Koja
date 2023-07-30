@@ -1,5 +1,5 @@
 import 'package:client/Utils/event_util.dart';
-import 'package:client/providers/event_provider.dart';
+import 'package:client/providers/context_provider.dart';
 import 'package:client/widgets/location_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +9,7 @@ import 'package:client/screens/home_screen.dart';
 void main() {
   testWidgets('Home widget test', (WidgetTester tester) async {
     // Create a mock EventProvider for testing
-    final eventProvider = EventProvider();
+    final eventProvider = ContextProvider();
 
     await tester.pumpWidget(
       MaterialApp(
