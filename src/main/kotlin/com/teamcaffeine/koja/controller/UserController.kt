@@ -48,7 +48,7 @@ class UserController(private val userAccountRepository: UserAccountRepository, p
 
     @PostMapping("/addTimeBoundary")
     fun addTimeBoundary(
-        @RequestHeader(HeaderConstant.AUTHORISATION) token: String,
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestParam("name") name: String?,
         @RequestParam("startTime")startTime: String?,
         @RequestParam("endTime")endTime: String?,
@@ -57,16 +57,16 @@ class UserController(private val userAccountRepository: UserAccountRepository, p
             ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
         } else {
             var boundary = TimeBoundary(name, startTime, endTime)
-            try {
-                return ResponseEntity.ok(userCalendarService.addTimeBoundary(token, boundary))
-            } catch (e: Exception) {
-                return ResponseEntity.badRequest().body(e.message)
+            if (userCalendarService.addTimeBoundary(token, boundary)) {
+                return ResponseEntity.ok("Time boundary successfully added")
+            } else {
+                return ResponseEntity.badRequest().body("Something went wrong")
             }
         }
     }
 
     @PostMapping("/removeTimeBoundary")
-    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("name") name: String?): ResponseEntity<String> {
+    fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("name") name: String?): ResponseEntity<String> {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
@@ -79,7 +79,7 @@ class UserController(private val userAccountRepository: UserAccountRepository, p
     }
 
     @GetMapping("/getAllTimeBoundary")
-    fun getTimeBoundaries(@RequestHeader(HeaderConstant.AUTHORISATION) token: String): ResponseEntity<out Any> {
+    fun getTimeBoundaries(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
@@ -87,13 +87,13 @@ class UserController(private val userAccountRepository: UserAccountRepository, p
                 val gson = GsonBuilder().setLenient().excludeFieldsWithoutExposeAnnotation().create()
                 return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaries(token)))
             } catch (e: Exception) {
-                return ResponseEntity.badRequest().body(e.message)
+                return ResponseEntity.badRequest().body("Something went wrong.")
             }
         }
     }
 
     @GetMapping("/getTimeBoundaryAndLocation")
-    fun getTimeBoundaryAndLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String, @RequestParam("location") location: String): ResponseEntity<out Any> {
+    fun getTimeBoundaryAndLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("location") location: String): ResponseEntity<out Any> {
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
