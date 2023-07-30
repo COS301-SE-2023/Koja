@@ -52,9 +52,9 @@ class UserController(private val userAccountRepository: UserAccountRepository, p
         @RequestParam("name") name: String?,
         @RequestParam("startTime")startTime: String?,
         @RequestParam("endTime")endTime: String?,
-    ): ResponseEntity<out Any> {
+    ): ResponseEntity<String> {
         return if (token == null) {
-            ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             var boundary = TimeBoundary(name, startTime, endTime)
             if (userCalendarService.addTimeBoundary(token, boundary)) {

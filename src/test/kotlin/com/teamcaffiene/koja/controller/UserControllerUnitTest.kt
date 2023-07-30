@@ -180,7 +180,7 @@ class UserControllerUnitTest {
 
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET), response.body)
+        assertEquals(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET, response.body)
     }
 
     @Test
