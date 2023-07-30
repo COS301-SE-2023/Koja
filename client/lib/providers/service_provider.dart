@@ -46,6 +46,45 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  /// This Section deals with all the AI related functions (suggestions, etc.)
+  
+
+  /// This function will attempt to get all the emails which will be used for suggestions
+  Future<List<String>> getEmailsForAI() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-emails');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(response.body);
+      return result.map((e) => e.toString()).toList();
+    } else {
+      return [];
+    }
+  }
+
+  /// This function will attempt to get all the events which will be used for suggestions
+  Future<List<String>> getEventsForAI() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-user-events');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(response.body);
+      return result.map((e) => e.toString()).toList();
+    } else {
+      return [];
+    }
+  }
+
+
+
   /// This Section deals with all the user related functions (emails, login, etc.)
 
   /// This function will attempt to login the user using AuthController

@@ -11,6 +11,8 @@ import '../models/user_time_boundary_model.dart';
 class ContextProvider extends ChangeNotifier {
   String? _accessToken;
   List<String> userEmails = [];
+  List<String> emailsForAI = [];
+  List<String> eventsForAI = [];
 
   void init(String accessToken) {
     _accessToken = accessToken;
@@ -36,6 +38,24 @@ class ContextProvider extends ChangeNotifier {
     "Resting": null,
     "Chore": null,
   };
+
+  /// This is a list of emails that the AI will use to generate suggestions
+  Future<void> getAIEmails() async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getEmailsForAI();
+    emailsForAI.clear();
+    emailsForAI.addAll(response);
+    notifyListeners();
+  }
+
+  /// This is a list of emails that the AI will use to generate suggestions
+  Future<void> getAIEvents() async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getEmailsForAI();
+    eventsForAI.clear();
+    eventsForAI.addAll(response);
+    notifyListeners();
+  }
 
   //This is the list of events
   final List<Event> _events = [];
