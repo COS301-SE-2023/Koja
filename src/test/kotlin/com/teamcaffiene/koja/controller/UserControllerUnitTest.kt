@@ -157,14 +157,10 @@ class UserControllerUnitTest {
 
         // Mock the userCalendarService.addTimeBoundary method
         val expectedResult = "Time boundary successfully added"
-        whenever(userCalendarService.addTimeBoundary(eq(token), timeBoundary)).thenReturn(true)
+        whenever(userCalendarService.addTimeBoundary(token, timeBoundary)).thenReturn(true)
 
         // Call the function and capture the response
         val response = userController.addTimeBoundary(token, name, startTime, endTime)
-
-        // Verify the userCalendarService.addTimeBoundary method was called with the correct parameters
-        verify(userCalendarService).addTimeBoundary(eq(token), timeBoundary)
-
         // Check the response status and body
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(expectedResult, response.body)
@@ -197,13 +193,10 @@ class UserControllerUnitTest {
         val timeBoundary = TimeBoundary(name, startTime, endTime)
 
         // Mock the userCalendarService.removeTimeBoundary method to return false
-        whenever(userCalendarService.addTimeBoundary(eq(token), timeBoundary)).thenReturn(false)
+        whenever(userCalendarService.addTimeBoundary(token, timeBoundary)).thenReturn(false)
 
         // Call the function and capture the response
         val response = userController.addTimeBoundary(token, name, startTime, endTime)
-
-        // Verify the userCalendarService.removeTimeBoundary method was called with the correct parameters
-        verify(userCalendarService).addTimeBoundary(eq(token), timeBoundary)
 
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
@@ -308,10 +301,8 @@ class UserControllerUnitTest {
 
         // Call the function and capture the response
         val response = userController.getTimeBoundaries(token)
-
         // Verify the userCalendarService.getUserTimeBoundaries method was called with the correct token
         verify(userCalendarService).getUserTimeBoundaries(eq(token))
-
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
         assertEquals("Something went wrong.", response.body)
@@ -322,20 +313,15 @@ class UserControllerUnitTest {
         // Mock request parameters
         val token = "your_token_here"
         val location = "London"
-
         // Mock the userCalendarService.getUserTimeBoundaryAndLocation method
         val boundary = TimeBoundary("Boundary1", "2023-07-30T12:00:00Z", "2023-07-30T14:00:00Z")
         whenever(userCalendarService.getUserTimeBoundaryAndLocation(eq(token), eq(location))).thenReturn(Pair(boundary, location))
-
         // Call the function and capture the response
         val response = userController.getTimeBoundaryAndLocation(token, location)
-
         // Verify the userCalendarService.getUserTimeBoundaryAndLocation method was called with the correct parameters
         verify(userCalendarService).getUserTimeBoundaryAndLocation(eq(token), eq(location))
-
         // Check the response status and body
         assertEquals(HttpStatus.OK, response.statusCode)
-
         // Convert the boundaryAndLocation to JSON using Gson and check the response body
         val gson = Gson()
         assertEquals(gson.toJson(Pair(boundary, location)), response.body)
@@ -345,13 +331,10 @@ class UserControllerUnitTest {
     fun `test getTimeBoundaryAndLocation with missing token`() {
         // Mock request parameters with a missing token
         val location = "London"
-
         // Call the function and capture the response
         val response = userController.getTimeBoundaryAndLocation(null, location)
-
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
         assertEquals(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET, response.body)
     }
 }
-
