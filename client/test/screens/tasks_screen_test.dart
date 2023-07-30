@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:client/screens/tasks_screen.dart';
-import 'package:client/providers/event_provider.dart';
+import 'package:client/providers/context_provider.dart';
 
 void main() {
   testWidgets('Tasks Screen Test', (WidgetTester tester) async {
@@ -11,8 +11,8 @@ void main() {
       MaterialApp(
         home: MultiProvider(
           providers: [
-            ChangeNotifierProvider<EventProvider>(
-              create: (_) => EventProvider(),
+            ChangeNotifierProvider<ContextProvider>(
+              create: (_) => ContextProvider(),
             ),
           ],
           child: Tasks(),
