@@ -1,18 +1,18 @@
 import 'package:client/Utils/event_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:client/providers/event_provider.dart';
+import 'package:client/providers/context_provider.dart';
 import 'package:client/providers/service_provider.dart';
 
 // This class uses the Mockito package to create a mock ServiceProvider
 class MockServiceProvider extends Mock implements ServiceProvider {}
 
 void main() {
-  group('EventProvider', () {
-    late EventProvider eventProvider;
+  group('ContextProvider', () {
+    late ContextProvider eventProvider;
 
     setUp(() {
-      eventProvider = EventProvider();
+      eventProvider = ContextProvider();
     });
 
     test('setDate changes selected date and notifies listeners', () {
