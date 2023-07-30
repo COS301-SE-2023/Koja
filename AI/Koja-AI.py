@@ -4,6 +4,7 @@ import pandas as pd
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
 import json
+import os
 
 app = Flask(__name__)
 
@@ -87,4 +88,5 @@ def recommend_categories():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=6000, debug=True)
+    port = int(os.getenv("PORT", 6000))
+    app.run(host='0.0.0.0', port=port, debug=True)
