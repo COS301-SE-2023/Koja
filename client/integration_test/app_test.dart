@@ -26,6 +26,9 @@ void main() {
       // Verify that Login screen appears after the splash screen.
       expect(find.byType(Login), findsOneWidget);
 
+      //check if the text is displayed correctly
+      expect(find.text("Say Goodbye To A \nMessy Schedule"), findsOneWidget);
+
       // Verify that both button appears on the Login screen.
       expect(find.widgetWithText(ElevatedButton,"Learn More"), findsOneWidget);
       expect(find.widgetWithText(ElevatedButton,"Get Started"), findsOneWidget);
@@ -48,6 +51,23 @@ void main() {
       // Tap the Next button and wait for the second page of the Info widget to appear.
       await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle(Duration(seconds: 2));
+
+      // Verify that the second page of the Info widget appears.
+      expect(find.text('Artificial Intelligence\nIntegration'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+
+      // Tap the Next button and wait for the third page of the Info widget to appear.
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle(Duration(seconds: 2));
+
+      // Verify that the third page of the Info widget appears.
+      expect(find.text('Traveling Time\nCalculator'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+
+      // Tap the Next button and wait for the Login widget to appear.
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle(Duration(seconds: 2));
+
     });
   });
 
