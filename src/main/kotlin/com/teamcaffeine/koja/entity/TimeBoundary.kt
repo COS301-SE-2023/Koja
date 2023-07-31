@@ -46,4 +46,19 @@ class TimeBoundary(
     fun setEndTime(endTime: String?) {
         this.endTime = endTime
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TimeBoundary) return false
+
+        return name == other.name &&
+            startTime == other.startTime &&
+            endTime == other.endTime
+    }
+
+    // Implementing the `hashCode` method is also important when overriding `equals`
+    override fun hashCode(): Int {
+        // Use a prime number and combine hash codes of properties
+        return name.hashCode() * 31 + startTime.hashCode() * 31 + endTime.hashCode()
+    }
 }

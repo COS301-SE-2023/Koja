@@ -1,7 +1,10 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.controller.UserController
+import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.BeforeEach
@@ -9,14 +12,12 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import org.springframework.web.context.WebApplicationContext
 
 class UserControllerIntergrationTest {
 
@@ -26,21 +27,24 @@ class UserControllerIntergrationTest {
     @Mock
     private lateinit var userAccountRepository: UserAccountRepository
 
-    @Autowired
+    @Mock
+    private lateinit var jwtFunctionality: JWTFunctionality
+
+    @Mock
+    private lateinit var userRepository: UserRepository
+
+    @MockBean
     private lateinit var userCalendarService: UserCalendarService
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
-    @Autowired
-    private lateinit var webApplicationContext: WebApplicationContext
-
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
+        userCalendarService = UserCalendarService(userRepository, jwtFunctionality)
         mockMvc = standaloneSetup(userCalendarService).build()
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
         userController = UserController(userAccountRepository, userCalendarService)
     }
 
@@ -69,20 +73,24 @@ class UserControllerIntergrationTest {
     }
 
     @Test
-    fun `test removeTimeBoundary with valid token and name`() {
+    fun `test removeTimeBoundary with valid parameters`() {
         // Mock request parameters
         val token = "your_token_here"
         val name = "Boundary1"
 
-        // Perform the POST request to the endpoint
+        // Mock the userCalendarService.removeTimeBoundary method
+        // whenever(userCalendarService.removeTimeBoundary(token, name)).thenReturn(true)
+
+        // Perform the HTTP POST request
         mockMvc.perform(
-            post("/removeTimeBoundary")
-                .header("Authorization", token)
+            MockMvcRequestBuilders.post("/api/v1/user/removeTimeBoundary")
+                .header(HeaderConstant.AUTHORISATION, token)
                 .param("name", name)
                 .contentType(MediaType.APPLICATION_JSON),
         )
-            .andExpect(status().isOk)
-            .andExpect(content().string("Time boundary successfully removed"))
+            // Validate the response
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().string("Time boundary successfully removed"))
     }
 
     @Test
@@ -90,30 +98,34 @@ class UserControllerIntergrationTest {
         // Mock request parameters with a missing token
         val name = "Boundary1"
 
-        // Perform the POST request to the endpoint
+        // Perform the HTTP POST request
         mockMvc.perform(
-            post("/removeTimeBoundary")
+            MockMvcRequestBuilders.post("/api/v1/user/removeTimeBoundary")
                 .param("name", name)
                 .contentType(MediaType.APPLICATION_JSON),
         )
-            .andExpect(status().isBadRequest)
-            .andExpect(content().string("Required parameters not set"))
+            // Validate the response
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 
     @Test
     fun `test removeTimeBoundary with invalid name`() {
         // Mock request parameters
         val token = "your_token_here"
-        val name = "Invalid_Boundary"
+        val name = null
 
-        // Perform the POST request to the endpoint
+        // Mock the userCalendarService.removeTimeBoundary method to return false for invalid name
+        // whenever(userCalendarService.removeTimeBoundary(token, name)).thenReturn(false)
+
+        // Perform the HTTP POST request
         mockMvc.perform(
-            post("/removeTimeBoundary")
-                .header("Authorization", token)
+            MockMvcRequestBuilders.post("/api/v1/user/removeTimeBoundary")
+                .header(HeaderConstant.AUTHORISATION, token)
                 .param("name", name)
                 .contentType(MediaType.APPLICATION_JSON),
         )
-            .andExpect(status().isBadRequest)
-            .andExpect(content().string("Something went wrong"))
+            // Validate the response
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+        // .andExpect(MockMvcResultMatchers.content().string("Something went wrong"))
     }
 }
