@@ -64,7 +64,7 @@ class ContextProvider extends ChangeNotifier {
             startTime: relevantTimeslots['startTime']!,
             endTime: relevantTimeslots['endTime']!,
             bookable: (relevantTimeslots['type'] != null &&
-                    relevantTimeslots['type']! == "allowed")
+                    relevantTimeslots['type']!.toString() == "allowed")
                 ? true
                 : false);
       }

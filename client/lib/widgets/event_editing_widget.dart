@@ -762,16 +762,16 @@ class EventEditingState extends State<EventEditing> {
           }
         }
 
-        // Construct the DateTime object
-        DateTime travelDateTime = DateTime(
-          fromDate.year,
-          fromDate.month,
-          fromDate.day,
-          fromDate.hour - hours,
-          fromDate.minute - minutes,
-          fromDate.second - seconds,
-        );
-        String meetingTitle = titleController.text;
+        // // Construct the DateTime object
+        // DateTime travelDateTime = DateTime(
+        //   fromDate.year,
+        //   fromDate.month,
+        //   fromDate.day,
+        //   fromDate.hour - hours,
+        //   fromDate.minute - minutes,
+        //   fromDate.second - seconds,
+        // );
+        // String meetingTitle = titleController.text;
 
         // travelTimeBlock = Event(
         //   // id: (widget.event != null) ? widget.event!.id : "",

@@ -4,11 +4,10 @@ class TimePickerWidget extends StatefulWidget {
   const TimePickerWidget({super.key});
 
   @override
-  _TimePickerWidgetState createState() => _TimePickerWidgetState();
+  TimePickerWidgetState createState() => TimePickerWidgetState();
 }
 
-class _TimePickerWidgetState extends State<TimePickerWidget> {
-
+class TimePickerWidgetState extends State<TimePickerWidget> {
   TimeOfDay _selectedTime = TimeOfDay.now();
 
   Future<void> _selectTime(BuildContext context) async {
@@ -24,7 +23,6 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -38,7 +36,8 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
               _selectedTime != null
                   ? _selectedTime.format(context)
                   : 'Tap to select time',
-              style: const TextStyle(fontSize: 16,
+              style: const TextStyle(
+                fontSize: 16,
                 color: Colors.white,
               ),
             ),
