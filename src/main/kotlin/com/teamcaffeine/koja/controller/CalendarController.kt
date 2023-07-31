@@ -52,7 +52,9 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
-                userCalendar.updateEvent(token, updatedEvent)
+                deleteEvent(token, updatedEvent)
+                addEvent(token, updatedEvent)
+//                userCalendar.updateEvent(token, updatedEvent)
             } catch (e: Exception) {
                 ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
             }
