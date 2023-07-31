@@ -76,12 +76,11 @@ class UserController(
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            val boundaryType = getTimeBoundaryType(type)
-            val boundary = TimeBoundary(name, startTime, endTime, boundaryType)
-            try {
-                return ResponseEntity.ok(userCalendarService.addTimeBoundary(token, boundary))
-            } catch (e: Exception) {
-                return ResponseEntity.badRequest().body(e.message)
+            val boundary = TimeBoundary(name, startTime, endTime, TimeBoundaryType.ALLOWED)
+            if (userCalendarService.addTimeBoundary(token, boundary)) {
+                return ResponseEntity.ok("Time boundary successfully added")
+            } else {
+                return ResponseEntity.badRequest().body("Something went wrong")
             }
         }
     }

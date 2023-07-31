@@ -64,14 +64,14 @@ class TimeBoundary(
         // Use a prime number and combine hash codes of properties
         return name.hashCode() * 31 + startTime.hashCode() * 31 + endTime.hashCode()
 
-    fun getType(): TimeBoundaryType? {
-        return type
-    }
-
-    fun setType(type: TimeBoundaryType?) {
-        if (type != null) {
-            this.type = type
+        fun getType(): TimeBoundaryType? {
+            return type
         }
 
+        fun setType(type: TimeBoundaryType?) {
+            if (type != null) {
+                this.type = type
+            }
+        }
     }
 }

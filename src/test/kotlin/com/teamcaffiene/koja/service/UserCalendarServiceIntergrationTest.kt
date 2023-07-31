@@ -1,7 +1,9 @@
 package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.controller.UserController
+import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.BeforeEach
@@ -17,6 +19,12 @@ class UserCalendarServiceIntergrationTest {
     private lateinit var dotenv: Dotenv
 
     @Mock
+    private lateinit var timeBoundaryRepository: TimeBoundaryRepository
+
+    @Mock
+    private lateinit var userRepository: UserRepository
+
+    @Mock
     private lateinit var userAccountRepository: UserAccountRepository
 
     @Autowired
@@ -29,7 +37,7 @@ class UserCalendarServiceIntergrationTest {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
         mockMvc = standaloneSetup(userCalendarService).build()
-        userController = UserController(userAccountRepository, userCalendarService)
+        userController = UserController(userAccountRepository, userRepository, userCalendarService, timeBoundaryRepository)
     }
 
     private fun importEnvironmentVariables() {
