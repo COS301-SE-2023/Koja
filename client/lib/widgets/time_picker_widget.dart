@@ -13,7 +13,7 @@ class TimePickerWidgetState extends State<TimePickerWidget> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: _selectedTime,
     );
 
     if (pickedTime != null && pickedTime != _selectedTime) {
@@ -33,9 +33,7 @@ class TimePickerWidgetState extends State<TimePickerWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              _selectedTime != null
-                  ? _selectedTime.format(context)
-                  : 'Tap to select time',
+              _selectedTime.format(context),
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white,
