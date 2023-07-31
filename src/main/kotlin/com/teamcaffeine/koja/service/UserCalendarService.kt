@@ -283,7 +283,7 @@ class UserCalendarService(
 
     @Transactional
     fun addTimeBoundary(token: String, timeBoundary: TimeBoundary?): Boolean {
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token) ?: return false
         val user = userRepository.findById(userJWTTokenData.userID)
         if (timeBoundary != null && !user.isEmpty) {
             val retrievedUser = user.get()
@@ -297,7 +297,7 @@ class UserCalendarService(
 
     @Transactional
     fun removeTimeBoundary(token: String, name: String?): Boolean {
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token) ?: return false
         val user = userRepository.findById(userJWTTokenData.userID)
         if (name != null && !user.isEmpty) {
             val retrievedUser = user.get()
@@ -315,7 +315,7 @@ class UserCalendarService(
     }
 
     fun getUserTimeBoundaries(token: String): MutableList<TimeBoundary> {
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token) ?: return mutableListOf()
         val user = userRepository.findById(userJWTTokenData.userID)
         if (!user.isEmpty) {
             return user.get().getUserTimeBoundaries()
@@ -323,12 +323,12 @@ class UserCalendarService(
         return mutableListOf()
     }
 
-    fun getUserTimeBoundaryAndLocation(token: String, name: String): Pair<TimeBoundary?, String?> {
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+    fun getUserTimeBoundaryAndLocation(token: String, name: String?): Pair<TimeBoundary?, String?> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token) ?: return Pair(null, null)
         val user = userRepository.findById(userJWTTokenData.userID).get()
         var timeBoundary: TimeBoundary ? = null
 
-        if (user != null) {
+        if (user != null && name != null) {
             for (i in 0..(user.getUserTimeBoundaries()?.size ?: 0))
                 if (user.getUserTimeBoundaries()?.get(i)?.getName() == name) {
                     timeBoundary = user.getUserTimeBoundaries()?.get(i)
