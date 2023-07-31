@@ -25,11 +25,12 @@ class ContextProvider extends ChangeNotifier {
         getEventsFromAPI(_accessToken!);
         getUserTimeslots(_accessToken!);
         getAllUserEmails();
+        timer.cancel();
       } else {
         timer.cancel();
       }
     });
-    if(kDebugMode) {
+    if (kDebugMode) {
       print(timer);
     }
   }
