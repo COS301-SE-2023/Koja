@@ -196,10 +196,10 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                if (selectedEventType == 'Dynamic')
-                  ChoosePriority(onPrioritySelected: updatePriority),
+                //if (selectedEventType == 'Dynamic')
+                //ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
-                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                //ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
