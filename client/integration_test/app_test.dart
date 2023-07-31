@@ -74,34 +74,6 @@ void main() {
       expect(find.text('Traveling Time\nCalculator'), findsOneWidget);
       expect(find.byType(ElevatedButton), findsOneWidget);
 
-      // await tester.tap(find.byType(ElevatedButton));
-      // await tester.pumpAndSettle(Duration(seconds: 2));
-      //Tap the Next button and wait for the Login widget to appear.
-      // await tester.pumpWidget(
-      //   MultiProvider(
-      //     providers: [
-      //       ChangeNotifierProvider<ContextProvider>(
-      //         create: (_) => ContextProvider(),
-      //       ),
-      //       ChangeNotifierProvider<ServiceProvider>(
-      //         create: (_) => ServiceProvider(),
-      //       ),
-      //     ],
-      //     child: MaterialApp(
-      //       home: Scaffold(
-      //         body: LoginModal(),
-      //       ),
-      //     ),
-      //   ),
-      // );
-      // //await tester.pumpWidget(MaterialApp(home:LoginModal()));
-      // await tester.pumpAndSettle();
-      // expect(find.byType(LoginModal), findsOneWidget);
-      // expect(find.widgetWithText(ElevatedButton, "Debug Mode Route"), findsOneWidget);
-      //
-      // await tester.tap(find.widgetWithText(ElevatedButton, "Debug Mode Route"));
-      // await tester.pumpAndSettle(Duration(seconds: 2));
-
     });
     testWidgets("Sign-in integration test", (WidgetTester tester) async {
       final serviceProvider = ServiceProvider();
@@ -174,6 +146,12 @@ void main() {
           ),
         ),
       );
+      expect(find.widgetWithText(ElevatedButton, "Debug Mode Route"), findsAtLeastNWidgets(1));
+
+      await tester.tap(find.widgetWithText(ElevatedButton, "Debug Mode Route").at(1), warnIfMissed: false);
+      await tester.pumpAndSettle(Duration(seconds: 2));
+
+
     });
   });
 
