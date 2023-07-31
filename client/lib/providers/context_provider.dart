@@ -29,6 +29,9 @@ class ContextProvider extends ChangeNotifier {
         timer.cancel();
       }
     });
+    if(kDebugMode) {
+      print(timer);
+    }
   }
 
   List<EventWrapper> _eventWrappers = [];
