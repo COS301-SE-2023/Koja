@@ -56,7 +56,7 @@ class EventEditingState extends State<EventEditing> {
   final hoursController = TextEditingController();
   final minutesController = TextEditingController();
 
-  String selectedCategory = '';
+  String selectedCategory = 'None';
   String selectedEventType = 'Fixed';
   String selectedPriority = 'Low';
   Color selectedColor = Colors.blue;
@@ -628,7 +628,7 @@ class EventEditingState extends State<EventEditing> {
       final eventProvider =
           Provider.of<ContextProvider>(context, listen: false);
 
-      var timeSlot = (selectedCategory != '')
+      var timeSlot = (selectedCategory != 'None')
           ? eventProvider.timeSlots[selectedCategory]
           : null;
 

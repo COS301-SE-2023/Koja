@@ -13,8 +13,15 @@ class ChooseCategory extends StatefulWidget {
 }
 
 class ChooseCategoryState extends State<ChooseCategory> {
-  String selectedCategory = 'School';
-  List<String> categories = ['School', 'Work', 'Hobby', 'Resting', 'Chore'];
+  static List<String> categories = [
+    'None',
+    'School',
+    'Work',
+    'Hobby',
+    'Resting',
+    'Chore'
+  ];
+  String selectedCategory = categories[0];
 
   @override
   Widget build(BuildContext context) {
