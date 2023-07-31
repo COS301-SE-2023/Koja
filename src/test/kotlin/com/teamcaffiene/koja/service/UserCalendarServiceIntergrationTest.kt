@@ -1,6 +1,7 @@
 package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.controller.UserController
+import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.enums.TimeBoundaryType
@@ -29,6 +30,9 @@ class UserCalendarServiceIntergrationTest {
     private lateinit var timeBoundaryRepository: TimeBoundaryRepository
 
     @Mock
+    private lateinit var jwtFunctionality: JWTFunctionality
+
+    @Mock
     private lateinit var userRepository: UserRepository
 
     @Mock
@@ -43,6 +47,7 @@ class UserCalendarServiceIntergrationTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
+        userCalendarService = UserCalendarService(userRepository, jwtFunctionality)
         mockMvc = standaloneSetup(userCalendarService).build()
         userController = UserController(userAccountRepository, userRepository, userCalendarService, timeBoundaryRepository)
     }
@@ -96,7 +101,7 @@ class UserCalendarServiceIntergrationTest {
     @Test
     fun `test addTimeBoundary with invalid token`() {
         val token = "invalidToken"
-        val userID = "user789"
+        val userID = "789"
 
         // Perform the function call with an invalid token
         val result = userCalendarService.addTimeBoundary(token, TimeBoundary("Office hours", "09:00", "17:00", TimeBoundaryType.ALLOWED))
