@@ -58,6 +58,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                 if (eventTimeslots.isEmpty()) {
                                     tempTimeSlots.add(
                                         TimeSlot(
+                                            "",
                                             event.getStartTime(),
                                             event.getEndTime(),
                                         ),
@@ -71,10 +72,11 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                         if (timeSlotDuration / eventDuration >= 2) {
                                             var timeSlotOffset = 0L
                                             while (timeSlot.startTime.plusSeconds(timeSlotOffset)
-                                                    .isBefore(timeSlot.endTime)
+                                                .isBefore(timeSlot.endTime)
                                             ) {
                                                 tempTimeSlots.add(
                                                     TimeSlot(
+                                                        "",
                                                         timeSlot.startTime.plusSeconds(timeSlotOffset),
                                                         timeSlot.startTime.plusSeconds(eventDuration),
                                                     ),
@@ -84,6 +86,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                         } else {
                                             tempTimeSlots.add(
                                                 TimeSlot(
+                                                    "",
                                                     event.getStartTime(),
                                                     event.getEndTime(),
                                                 ),

@@ -6,6 +6,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import java.lang.reflect.Type
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -25,7 +26,7 @@ class UserEventDTO(
     private var priority: Int,
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
-    private var userID: String = ""
+    private var userID: String = "",
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
@@ -103,7 +104,7 @@ class UserEventDTO(
     }
 
     fun getDurationInSeconds(): Long {
-        return duration.div(1000)
+        return duration.div(1000L)
     }
 
     fun getTimeSlots(): List<TimeSlot> {
@@ -166,7 +167,12 @@ class UserEventDTO(
     }
 }
 
-data class TimeSlot(val startTime: OffsetDateTime, val endTime: OffsetDateTime)
+data class TimeSlot(
+    val name: String? = null,
+    val startTime: OffsetDateTime,
+    val endTime: OffsetDateTime,
+    val type: TimeBoundaryType = TimeBoundaryType.ALLOWED,
+)
 
 class OffsetDateTimeAdapter : JsonDeserializer<OffsetDateTime> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): OffsetDateTime {

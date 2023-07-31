@@ -56,7 +56,7 @@ class EventEditingState extends State<EventEditing> {
   final hoursController = TextEditingController();
   final minutesController = TextEditingController();
 
-  String selectedCategory = 'Work';
+  String selectedCategory = 'None';
   String selectedEventType = 'Fixed';
   String selectedPriority = 'Low';
   Color selectedColor = Colors.blue;
@@ -196,10 +196,10 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                if (selectedEventType == 'Dynamic')
-                  ChoosePriority(onPrioritySelected: updatePriority),
+                //if (selectedEventType == 'Dynamic')
+                //ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
-                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                //ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -628,7 +628,9 @@ class EventEditingState extends State<EventEditing> {
       final eventProvider =
           Provider.of<ContextProvider>(context, listen: false);
 
-      var timeSlot = eventProvider.timeSlots[selectedCategory];
+      var timeSlot = (selectedCategory != 'None')
+          ? eventProvider.timeSlots[selectedCategory]
+          : null;
 
       if (timeSlot == null) {
         var now = DateTime.now();
@@ -728,7 +730,7 @@ class EventEditingState extends State<EventEditing> {
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
         location: placeId,
-        description: 'description',
+        description: '',
         category: selectedCategory,
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
         from: fromDate,
@@ -744,34 +746,26 @@ class EventEditingState extends State<EventEditing> {
         List<String> timeParts = travelTime.split(' ');
 
         // Initialize variables to store the hours, minutes, and seconds
-        int hours = 0;
-        int minutes = 0;
-        int seconds = 0;
 
         // Iterate through the timeParts and extract the corresponding values
         for (int i = 0; i < timeParts.length; i += 2) {
-          int value = int.parse(timeParts[i]);
           String unit = timeParts[i + 1];
 
           if (unit.contains('hour')) {
-            hours = value;
           } else if (unit.contains('minute')) {
-            minutes = value;
-          } else if (unit.contains('second')) {
-            seconds = value;
-          }
+          } else if (unit.contains('second')) {}
         }
 
-        // Construct the DateTime object
-        DateTime travelDateTime = DateTime(
-          fromDate.year,
-          fromDate.month,
-          fromDate.day,
-          fromDate.hour - hours,
-          fromDate.minute - minutes,
-          fromDate.second - seconds,
-        );
-        String meetingTitle = titleController.text;
+        // // Construct the DateTime object
+        // DateTime travelDateTime = DateTime(
+        //   fromDate.year,
+        //   fromDate.month,
+        //   fromDate.day,
+        //   fromDate.hour - hours,
+        //   fromDate.minute - minutes,
+        //   fromDate.second - seconds,
+        // );
+        // String meetingTitle = titleController.text;
 
         // travelTimeBlock = Event(
         //   // id: (widget.event != null) ? widget.event!.id : "",

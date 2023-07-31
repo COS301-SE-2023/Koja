@@ -1,12 +1,8 @@
 import 'package:client/Utils/event_util.dart';
-import 'package:client/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
-
-import '../providers/context_provider.dart';
 
 class EventViewing extends StatefulWidget {
   late final Event event = Event(
@@ -24,9 +20,6 @@ class EventViewing extends StatefulWidget {
 class EventViewingState extends State<EventViewing> {
   @override
   Widget build(BuildContext context) {
-    final serviceProvider =
-        Provider.of<ServiceProvider>(context, listen: false);
-    final eventProvider = Provider.of<ContextProvider>(context, listen: false);
     return SingleChildScrollView(
       child: Container(
         height: 350,

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:number_selector/number_selector.dart';
-
 import '../Utils/constants_util.dart';
 
 class ChooseCategory extends StatefulWidget {
@@ -13,8 +11,15 @@ class ChooseCategory extends StatefulWidget {
 }
 
 class ChooseCategoryState extends State<ChooseCategory> {
-  String selectedCategory = 'School';
-  List<String> categories = ['School', 'Work', 'Hobby', 'Resting', 'Chore'];
+  static List<String> categories = [
+    'None',
+    'School',
+    'Work',
+    'Hobby',
+    'Resting',
+    'Chore'
+  ];
+  String selectedCategory = categories[0];
 
   @override
   Widget build(BuildContext context) {
@@ -348,21 +353,19 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                       child: Container(
                                         width: 50,
                                         height: 50,
-                                        child: NumberSelector(
-                                          min: 1,
-                                          max: 30,
-                                          width: 10,
-                                          height: 50,
-                                          showSuffix: false,
-                                          onUpdate: (value) {
-                                            interval = value;
-                                          },
-                                          showMinMax: false,
-                                          hasBorder: true,
-                                          textStyle: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'Ubuntu',
+                                        child: TextField(
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.black,
+                                                width: 2
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -404,7 +407,7 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                       },
                     );
                   } else {
-                    // Handle the case when 'None' is selected.
+                    Navigator.of(context).pop();
                   }
                 });
                 widget.onRecurrenceSelected(newValue);
