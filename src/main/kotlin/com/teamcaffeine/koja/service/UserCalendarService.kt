@@ -1,7 +1,6 @@
 package com.teamcaffeine.koja.service
 
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
-import com.teamcaffeine.koja.controller.UserController
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
@@ -19,9 +18,7 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import java.time.Duration
-import java.time.LocalTime
-import java.time.OffsetDateTime
+import java.time.*
 
 @Service
 class UserCalendarService(
@@ -114,21 +111,39 @@ class UserCalendarService(
         val userBedTime = getUserTimeBoundaries(token).firstOrNull {
             it.getName() == "Bed-Time"
         }
-        if(userBedTime != null)
-        {
+
+        if (userBedTime != null) {
             val startTimeString = userBedTime.getStartTime()
             val endTimeString = userBedTime.getEndTime()
 
-            if(startTimeString != null && endTimeString != null)
-            {
-                val localTime = LocalTime.parse(startTimeString)
+            if (startTimeString != null && endTimeString != null) {
+                val startTime = LocalTime.parse(startTimeString)
+                val endTime = LocalTime.parse(endTimeString)
                 val today = LocalDate.now(ZoneOffset.UTC)
-                val offsetDateTime = OffsetDateTime.of(today, localTime, ZoneOffset.UTC)
+
+                val startTimeOffsetDateTime = OffsetDateTime.of(today, startTime, ZoneOffset.UTC)
+                var endTimeOffsetDateTime = OffsetDateTime.of(today, endTime, ZoneOffset.UTC)
+
+                if (endTimeOffsetDateTime.isBefore(startTimeOffsetDateTime)) {
+                    endTimeOffsetDateTime = endTimeOffsetDateTime.plusDays(1)
+                }
+
+                userEvents.add(
+                    UserEventDTO(
+                        id = "${Long.MAX_VALUE}",
+                        summary = "Bed-Time Event",
+                        location = "location1",
+                        startTime = startTimeOffsetDateTime,
+                        endTime = endTimeOffsetDateTime,
+                        duration = 1,
+                        timeSlots = emptyList(),
+                        priority = 1,
+                        dynamic = false,
+                        userID = "1",
+                    ),
+                )
             }
-
-
         }
-
 
         var travelDuration = 0L
 
