@@ -9,6 +9,8 @@ abstract class JWTAuthDetailsDTO(val authProvider: AuthProviderEnum) {
     abstract fun getRefreshToken(): String
 
     abstract fun getAccessToken(): String
+
+    abstract fun renewToken(): JWTAuthDetailsDTO?
     companion object {
         fun parseJWTFormatString(jwtFormatString: String): JWTAuthDetailsDTO? {
             val map = mutableMapOf<String, Any>()

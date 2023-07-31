@@ -251,3 +251,6 @@ LocationController(private val locationService: LocationService) {
        val intervalInMinutes = 60 // Update distance every 60 minutes
        // Start auto-updating the distance every specified interval
        distanceUpdater.startAutoUpdate(intervalInMinutes, distanceUpdater::updateDistance)*/
+fred-icon
+AskFred
+dragger-icon

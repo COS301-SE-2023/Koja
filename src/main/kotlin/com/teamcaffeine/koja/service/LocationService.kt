@@ -137,4 +137,21 @@ class LocationService(
         }
         return JSONObject()
     }
+
+fun getUserSavedLocations(token: String): MutableMap<String, Any> {
+        val userJWTTokenData = TokenManagerController.getUserJWTTokenData(token)
+        val retrievedUser = userRepository.findById(userJWTTokenData.userID).get()
+
+        val currentLocation = retrievedUser.getCurrentLocation() ?: Pair(0.0, 0.0)
+
+        val results = mutableMapOf<String, Any>()
+        results["currentLocation"] = currentLocation
+        results["homeLocation"] = retrievedUser.getHomeLocation() ?: ""
+        results["workLocation"] = retrievedUser.getWorkLocation() ?: ""
+
+        return results
+    }
 }
+fred-icon
+AskFred
+dragger-icon
