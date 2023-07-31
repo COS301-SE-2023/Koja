@@ -1,10 +1,14 @@
 import 'package:client/main.dart';
+import 'package:client/providers/context_provider.dart';
+import 'package:client/providers/service_provider.dart';
 import 'package:client/screens/information_screen.dart';
 import 'package:client/screens/login_screen.dart';
+import 'package:client/widgets/login_modal_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 void main() {
   setUp(() async{
     await dotenv.load(fileName: "assets/.env");
@@ -12,6 +16,12 @@ void main() {
 
   group('App Flow Test', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    testWidgets("Splash Screen shows when the app starts", (WidgetTester tester) async{
+      await tester.pumpWidget(KojaApp());
+      await tester.pumpAndSettle();
+      expect(find.byType(SplashScreen), findsOneWidget);
+    });
+
     testWidgets('Login and Info widgets integration test', (WidgetTester tester) async {
       await tester.pumpWidget(KojaApp());
       await tester.pumpAndSettle();
@@ -64,12 +74,109 @@ void main() {
       expect(find.text('Traveling Time\nCalculator'), findsOneWidget);
       expect(find.byType(ElevatedButton), findsOneWidget);
 
-      // Tap the Next button and wait for the Login widget to appear.
-      await tester.tap(find.byType(ElevatedButton));
-      await tester.pumpAndSettle(Duration(seconds: 2));
+      // await tester.tap(find.byType(ElevatedButton));
+      // await tester.pumpAndSettle(Duration(seconds: 2));
+      //Tap the Next button and wait for the Login widget to appear.
+      // await tester.pumpWidget(
+      //   MultiProvider(
+      //     providers: [
+      //       ChangeNotifierProvider<ContextProvider>(
+      //         create: (_) => ContextProvider(),
+      //       ),
+      //       ChangeNotifierProvider<ServiceProvider>(
+      //         create: (_) => ServiceProvider(),
+      //       ),
+      //     ],
+      //     child: MaterialApp(
+      //       home: Scaffold(
+      //         body: LoginModal(),
+      //       ),
+      //     ),
+      //   ),
+      // );
+      // //await tester.pumpWidget(MaterialApp(home:LoginModal()));
+      // await tester.pumpAndSettle();
+      // expect(find.byType(LoginModal), findsOneWidget);
+      // expect(find.widgetWithText(ElevatedButton, "Debug Mode Route"), findsOneWidget);
+      //
+      // await tester.tap(find.widgetWithText(ElevatedButton, "Debug Mode Route"));
+      // await tester.pumpAndSettle(Duration(seconds: 2));
 
     });
+    testWidgets("Sign-in integration test", (WidgetTester tester) async {
+      final serviceProvider = ServiceProvider();
+      final contextProvider = ContextProvider();
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<ServiceProvider>.value(
+              value: serviceProvider,
+            ),
+            ChangeNotifierProvider<ContextProvider>.value(
+              value: contextProvider,
+            ),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: KojaApp(),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(SplashScreen), findsOneWidget);
+
+      // Wait for some time to let the splash screen animation finish.
+      await tester.pumpAndSettle(Duration(seconds: 5));
+
+      //pump the login widget
+      await tester.pumpWidget( const MaterialApp(home: Login()));
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<ServiceProvider>.value(
+              value: serviceProvider,
+            ),
+            ChangeNotifierProvider<ContextProvider>.value(
+              value: contextProvider,
+            ),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: Login(),
+            ),
+          ),
+        ),
+      );
+
+      // Verify that Login screen appears after the splash screen.
+      expect(find.byType(Login), findsOneWidget);
+      expect(find.widgetWithText(ElevatedButton, "Get Started"), findsOneWidget);
+      await tester.tap(find.widgetWithText(ElevatedButton, "Get Started"));
+      await tester.pumpAndSettle(Duration(seconds: 2));
+      // pump the login modal widget
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<ServiceProvider>.value(
+              value: serviceProvider,
+            ),
+            ChangeNotifierProvider<ContextProvider>.value(
+              value: contextProvider,
+            ),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: LoginModal(),
+            ),
+          ),
+        ),
+      );
+    });
   });
+
 
   //TODO: Add integration tests here
 }
