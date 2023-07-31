@@ -49,38 +49,13 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                         eventCategories!![i]?.let { events[i].setDescription(it) }
                     }
 
-            runBlocking {
-                events.forEach { event: UserEventDTO ->
-                    launch(Dispatchers.IO) {
-                        event.setUserID(userAccount.userID.toString())
-                        val tempTimeSlots = mutableListOf<TimeSlot>()
-                        val eventTimeslots = event.getTimeSlots()
-                        if (eventTimeslots.isEmpty()) {
-                            tempTimeSlots.add(
-                                TimeSlot(
-                                    "",
-                                    event.getStartTime(),
-                                    event.getEndTime(),
-                                ),
-                            )
-                        } else {
-                            val eventDuration = Duration.between(event.getStartTime(), event.getEndTime()).seconds
-                            for (timeSlot in eventTimeslots) {
-                                val timeSlotDuration = Duration.between(timeSlot.startTime, timeSlot.endTime).seconds
-                                if (timeSlotDuration / eventDuration >= 2) {
-                                    var timeSlotOffset = 0L
-                                    while (timeSlot.startTime.plusSeconds(timeSlotOffset).isBefore(timeSlot.endTime)) {
-                                        tempTimeSlots.add(
-                                            TimeSlot(
-                                                "",
-                                                timeSlot.startTime.plusSeconds(timeSlotOffset),
-                                                timeSlot.startTime.plusSeconds(eventDuration),
-                                            ),
-                                        )
-                                        timeSlotOffset += eventDuration
-                                    }
-                                } else {
-
+                    runBlocking {
+                        events.forEach { event: UserEventDTO ->
+                            launch(Dispatchers.IO) {
+                                event.setUserID(userAccount.userID.toString())
+                                val tempTimeSlots = mutableListOf<TimeSlot>()
+                                val eventTimeslots = event.getTimeSlots()
+                                if (eventTimeslots.isEmpty()) {
                                     tempTimeSlots.add(
                                         TimeSlot(
                                             "",
@@ -101,6 +76,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                             ) {
                                                 tempTimeSlots.add(
                                                     TimeSlot(
+                                                        "",
                                                         timeSlot.startTime.plusSeconds(timeSlotOffset),
                                                         timeSlot.startTime.plusSeconds(eventDuration),
                                                     ),
@@ -110,6 +86,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                         } else {
                                             tempTimeSlots.add(
                                                 TimeSlot(
+                                                    "",
                                                     event.getStartTime(),
                                                     event.getEndTime(),
                                                 ),
