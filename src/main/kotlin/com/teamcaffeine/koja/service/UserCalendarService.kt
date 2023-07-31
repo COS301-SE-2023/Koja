@@ -362,7 +362,7 @@ class UserCalendarService(
                                     currentWeekDays.add(weekdayString)
                                 }
                             }
-                            weekDays[category] = currentTimeFrames
+                            weekDays[category] = currentWeekDays
                         }
                     }
                 }
