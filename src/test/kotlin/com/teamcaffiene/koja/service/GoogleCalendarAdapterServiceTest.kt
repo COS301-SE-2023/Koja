@@ -61,8 +61,30 @@ class GoogleCalendarAdapterServiceTest {
         val location1 = "loc1"
         val location2 = "loc2"
 
-        val event1 = UserEventDTO("1", "desc1", location1, OffsetDateTime.now().minusDays(2), OffsetDateTime.now().minusDays(1), 1, emptyList(), 1, false)
-        val event2 = UserEventDTO("2", "desc2", location2, OffsetDateTime.now().plusDays(2), OffsetDateTime.now().plusDays(3), 1, emptyList(), 1, false)
+        val event1 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = location1,
+            startTime = OffsetDateTime.now().plusDays(2),
+            endTime = OffsetDateTime.now().plusDays(2),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val event2 = UserEventDTO(
+            id = "2",
+            summary = "desc2",
+            location = location2,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2)
 
@@ -70,7 +92,7 @@ class GoogleCalendarAdapterServiceTest {
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
-        assertEquals((listOf(location2)), (futureEvents))
+        assertEquals((listOf(location1)), (futureEvents))
     }
 
     /*
@@ -83,9 +105,42 @@ class GoogleCalendarAdapterServiceTest {
         val location1 = "loc1"
         val location2 = "loc2"
 
-        val event1 = UserEventDTO("1", "desc1", location1, OffsetDateTime.now().minusDays(2), OffsetDateTime.now().minusDays(1), 1, emptyList(), 1, false)
-        val event2 = UserEventDTO("2", "desc2", location2, OffsetDateTime.now().plusDays(2), OffsetDateTime.now().plusDays(3), 1, emptyList(), 1, false)
-        val event3 = UserEventDTO("3", "desc3", location1, OffsetDateTime.now().plusDays(2), OffsetDateTime.now().plusDays(3), 1, emptyList(), 1, false)
+        val event1 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = location1,
+            startTime = OffsetDateTime.now().plusDays(5),
+            endTime = OffsetDateTime.now().plusDays(6),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val event2 = UserEventDTO(
+            id = "2",
+            summary = "desc2",
+            location = location2,
+            startTime = OffsetDateTime.now().plusDays(2),
+            endTime = OffsetDateTime.now().plusDays(3),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val event3 = UserEventDTO(
+            id = "3",
+            summary = "desc3",
+            location = location1,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
         // Define your mock response
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
@@ -94,7 +149,7 @@ class GoogleCalendarAdapterServiceTest {
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
-        assertEquals((listOf(location2, location1)), (futureEvents))
+        assertEquals((listOf(location1, location2)), (futureEvents))
     }
 
     /*
@@ -107,9 +162,42 @@ class GoogleCalendarAdapterServiceTest {
         val location1 = "loc1"
         val location2 = "loc2"
 
-        val event1 = UserEventDTO("1", "desc1", location1, OffsetDateTime.now().minusDays(2), OffsetDateTime.now().minusDays(1), 1, emptyList(), 1, false)
-        val event2 = UserEventDTO("2", "desc2", location2, OffsetDateTime.now().minusDays(2), OffsetDateTime.now().minusDays(1), 1, emptyList(), 1, false)
-        val event3 = UserEventDTO("3", "desc3", location1, OffsetDateTime.now().minusDays(2), OffsetDateTime.now().minusDays(1), 1, emptyList(), 1, false)
+        val event1 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = location1,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val event2 = UserEventDTO(
+            id = "2",
+            summary = "desc2",
+            location = location2,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val event3 = UserEventDTO(
+            id = "3",
+            summary = "desc3",
+            location = location1,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
         // Define your mock response
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)

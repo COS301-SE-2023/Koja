@@ -6,17 +6,28 @@ import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
+import '../models/user_time_boundary_model.dart';
 
-class EventProvider extends ChangeNotifier {
+class ContextProvider extends ChangeNotifier {
   String? _accessToken;
+  List<String> userEmails = [];
+
+  void init(String accessToken) {
+    _accessToken = accessToken;
+    getEventsFromAPI(accessToken);
+    getUserTimeslots(accessToken);
+    getAllUserEmails();
+  }
 
   List<EventWrapper> _eventWrappers = [];
 
   Location? locationData;
 
   late GlobalKey<ScaffoldMessengerState> scaffoldKey;
+  late GlobalKey<NavigatorState> navigationKey;
 
   void setScaffoldKey(GlobalKey<ScaffoldMessengerState> s) => scaffoldKey = s;
+  void setNavigationKey(GlobalKey<NavigatorState> s) => navigationKey = s;
 
   final Map<String, TimeSlot?> _timeSlots = {
     "Hobby": null,
@@ -36,7 +47,59 @@ class EventProvider extends ChangeNotifier {
 
   setTimeSlot(String category, TimeSlot? timeSlot) {
     _timeSlots[category] = timeSlot;
+    ServiceProvider().storeTimeFrames(accessToken, timeSlots);
     notifyListeners();
+  }
+
+  void getUserTimeslots(String accessToken) async {
+    final items = await ServiceProvider().getUserTimeBoundaries(accessToken);
+    for (UserTimeBoundaryModel item in items) {
+      final relevantTimeslots = convertTimeStringsToDateTime(
+        item.startTime!,
+        item.endTime!,
+      );
+      if (relevantTimeslots['startTime'] != null &&
+          relevantTimeslots['endTime'] != null) {
+        _timeSlots[item.name!] = TimeSlot(
+            startTime: relevantTimeslots['startTime']!,
+            endTime: relevantTimeslots['endTime']!,
+            bookable: (relevantTimeslots['type'] != null &&
+                    relevantTimeslots['type']!.toString() == "allowed")
+                ? true
+                : false);
+      }
+    }
+    notifyListeners();
+  }
+
+  Map<String, DateTime> convertTimeStringsToDateTime(
+      String startTime, String endTime) {
+    final now = DateTime.now();
+
+    final List<String> startParts = startTime.split(':');
+    final int startHour = int.parse(startParts[0]);
+    final int startMinute = int.parse(startParts[1]);
+
+    final List<String> endParts = endTime.split(':');
+    final int endHour = int.parse(endParts[0]);
+    final int endMinute = int.parse(endParts[1]);
+
+    DateTime startDateTime =
+        DateTime(now.year, now.month, now.day, startHour, startMinute);
+
+    // Assuming end time is always equal to or later than start time
+    int endDay = now.day;
+
+    // If end time is earlier than start time, then it is the next day
+    if (endHour < startHour ||
+        (endHour == startHour && endMinute < startMinute)) {
+      endDay = now.day + 1;
+    }
+
+    DateTime endDateTime =
+        DateTime(now.year, now.month, endDay, endHour, endMinute);
+
+    return {"startTime": startDateTime, "endTime": endDateTime};
   }
 
   //This is the selected date
@@ -49,6 +112,21 @@ class EventProvider extends ChangeNotifier {
   void setDate(DateTime date) {
     _selectedDate = date;
     notifyListeners();
+  }
+
+  Event getEventByDate(DateTime date) {
+    return _events.firstWhere(
+      (event) =>
+          event.from.year == date.year &&
+          event.from.month == date.month &&
+          event.from.day == date.day,
+      orElse: () => Event(
+        title: 'No events',
+        description: '',
+        from: DateTime.now(),
+        to: DateTime.now(),
+      ),
+    );
   }
 
   //This returns the events of the selected date
@@ -69,7 +147,7 @@ class EventProvider extends ChangeNotifier {
 
   //This deletes an event from the list
   void deleteEvent(Event event) {
-    deleteEventAPICall(event.id);
+    deleteEventAPICall(event);
     _events.remove(event);
     notifyListeners();
   }
@@ -111,10 +189,18 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteEventAPICall(String eventId) async {
+  Future<void> getAllUserEmails() async {
+    final serviceProvider = ServiceProvider();
+    final response = await serviceProvider.getAllUserEmails();
+    userEmails.clear();
+    userEmails.addAll(response);
+    notifyListeners();
+  }
+
+  Future<void> deleteEventAPICall(Event event) async {
     try {
       final serviceProvider = ServiceProvider();
-      final deleteSuccess = await serviceProvider.deleteEvent(eventId);
+      final deleteSuccess = await serviceProvider.deleteEvent(event);
 
       if (deleteSuccess) {
         final key = scaffoldKey;
@@ -139,6 +225,12 @@ class EventProvider extends ChangeNotifier {
           content: Text('Failed to delete event.'),
         ),
       );
+    }
+  }
+
+  void retrieveEvents() {
+    if (accessToken != null) {
+      getEventsFromAPI(accessToken!);
     }
   }
 }
