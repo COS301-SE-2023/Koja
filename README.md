@@ -22,13 +22,15 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 * [Team Caffeine-Demo4 - To be updated](https://www.canva.com/design/DAFoTnSsfUc/hItuOgPZA_6FyTs8TRHYRg/edit?utm_content=DAFoTnSsfUc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ## Additional Documentations
-* [Technical Installation Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
+* [Technical Installation Manual](https://docs.google.com/document/d/1pdzUM2YM_lkqxtvTfs2MToCcu3zSB6QwQbP5pfhyjHk/edit#heading=h.1urt4wa753gc)
 
 * [User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
 
 * [Contributions](https://docs.google.com/document/d/1OVnDnd-1888-pUsX0dXAO_8Iy7R1oDDPmhMQqGZD8TI/edit?usp=sharing)
 
 * [Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
+
+* [Architectural Design](https://docs.google.com/document/d/1hVQcrOcnCRzHyd9Y-aXYuAfyRZxVVZTiJyluJbr_0RY/edit)
 
 # Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
