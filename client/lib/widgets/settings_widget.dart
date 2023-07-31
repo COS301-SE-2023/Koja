@@ -1,4 +1,5 @@
 import 'package:client/Utils/constants_util.dart';
+import 'package:client/providers/service_provider.dart';
 import 'package:client/widgets/time_boundaries_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -61,6 +62,8 @@ class SettingsState extends State<Settings> {
   final TextEditingController _workTextController = TextEditingController();
 
   String placeId = "";
+
+  ServiceProvider serviceProvider = ServiceProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -267,6 +270,7 @@ class SettingsState extends State<Settings> {
                         setState(() {
                           home = placePredictions[index].description!;
                           placeId = placePredictions[index].placeId!;
+                          serviceProvider.updateHomeLocation(placeId);
                           updateLocation(home, placeId);
                           placeAutoComplete("");
                         });
@@ -385,6 +389,7 @@ class SettingsState extends State<Settings> {
                         setState(() {
                           work = workplacePredictions[index].description!;
                           placeId = workplacePredictions[index].placeId!;
+                          serviceProvider.updateWorkLocation(placeId);
                           updateLocation(work, placeId);
                           workplaceAutocomplete("");
                         });
