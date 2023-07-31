@@ -30,50 +30,32 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
     fun getUserEventData(authKey: String): MutableList<Map<String, ArrayList<AIUserEventDataDTO>>> {
         val userAccounts = userAccountRepository.findAll()
         val userEvents = ArrayList<UserEventDTO>()
+        val results = mutableListOf<Map<String, ArrayList<AIUserEventDataDTO>>>()
         userAccounts.forEach { userAccount ->
-            val adapter = CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(userAccount.authProvider)
 
-            val accessToken = adapter.refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
-            val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()).values.toList() }
+            if (userAccount.refreshToken.isNotEmpty()) {
+                val adapter =
+                    CalendarAdapterFactoryService(userRepository, userAccountRepository).createCalendarAdapter(
+                        userAccount.authProvider,
+                    )
 
-            val eventCategories = events?.let { descriptionToCategories(events) }
+                val accessToken = adapter.refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
+                val events = accessToken?.let { adapter.getUserEvents(it.getAccessToken()).values.toList() }
+                if (!events.isNullOrEmpty()) {
+                    val eventCategories = events.let { descriptionToCategories(events) }
 
-            for (i in 0 until events!!.size) {
-                val event: UserEventDTO = events[i]
-                eventCategories!![i]?.let { events[i].setDescription(it) }
-            }
+                    for (i in events.indices) {
+                        val event: UserEventDTO = events[i]
+                        eventCategories!![i]?.let { events[i].setDescription(it) }
+                    }
 
-            runBlocking {
-                events.forEach { event: UserEventDTO ->
-                    launch(Dispatchers.IO) {
-                        event.setUserID(userAccount.userID.toString())
-                        val tempTimeSlots = mutableListOf<TimeSlot>()
-                        val eventTimeslots = event.getTimeSlots()
-                        if (eventTimeslots.isEmpty()) {
-                            tempTimeSlots.add(
-                                TimeSlot(
-                                    "",
-                                    event.getStartTime(),
-                                    event.getEndTime(),
-                                ),
-                            )
-                        } else {
-                            val eventDuration = Duration.between(event.getStartTime(), event.getEndTime()).seconds
-                            for (timeSlot in eventTimeslots) {
-                                val timeSlotDuration = Duration.between(timeSlot.startTime, timeSlot.endTime).seconds
-                                if (timeSlotDuration / eventDuration >= 2) {
-                                    var timeSlotOffset = 0L
-                                    while (timeSlot.startTime.plusSeconds(timeSlotOffset).isBefore(timeSlot.endTime)) {
-                                        tempTimeSlots.add(
-                                            TimeSlot(
-                                                "",
-                                                timeSlot.startTime.plusSeconds(timeSlotOffset),
-                                                timeSlot.startTime.plusSeconds(eventDuration),
-                                            ),
-                                        )
-                                        timeSlotOffset += eventDuration
-                                    }
-                                } else {
+                    runBlocking {
+                        events.forEach { event: UserEventDTO ->
+                            launch(Dispatchers.IO) {
+                                event.setUserID(userAccount.userID.toString())
+                                val tempTimeSlots = mutableListOf<TimeSlot>()
+                                val eventTimeslots = event.getTimeSlots()
+                                if (eventTimeslots.isEmpty()) {
                                     tempTimeSlots.add(
                                         TimeSlot(
                                             "",
@@ -81,67 +63,101 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                             event.getEndTime(),
                                         ),
                                     )
+                                } else {
+                                    val eventDuration =
+                                        Duration.between(event.getStartTime(), event.getEndTime()).seconds
+                                    for (timeSlot in eventTimeslots) {
+                                        val timeSlotDuration =
+                                            Duration.between(timeSlot.startTime, timeSlot.endTime).seconds
+                                        if (timeSlotDuration / eventDuration >= 2) {
+                                            var timeSlotOffset = 0L
+                                            while (timeSlot.startTime.plusSeconds(timeSlotOffset)
+                                                .isBefore(timeSlot.endTime)
+                                            ) {
+                                                tempTimeSlots.add(
+                                                    TimeSlot(
+                                                        "",
+                                                        timeSlot.startTime.plusSeconds(timeSlotOffset),
+                                                        timeSlot.startTime.plusSeconds(eventDuration),
+                                                    ),
+                                                )
+                                                timeSlotOffset += eventDuration
+                                            }
+                                        } else {
+                                            tempTimeSlots.add(
+                                                TimeSlot(
+                                                    "",
+                                                    event.getStartTime(),
+                                                    event.getEndTime(),
+                                                ),
+                                            )
+                                        }
+                                    }
                                 }
+                                event.setTimeSlots(tempTimeSlots)
+                                userEvents.add(event)
                             }
                         }
-                        event.setTimeSlots(tempTimeSlots)
-                        userEvents.add(event)
                     }
                 }
-            }
-        }
 
-        userEvents.sortBy { it.getStartTime() }
+                userEvents.sortBy { it.getStartTime() }
 
-        val eventSemesterMap = mutableMapOf<Int, List<UserEventDTO>>()
-        var semesterNum = 1
-        var startTime = userEvents.first().getStartTime()
-        var endTime = startTime.plusMonths(6)
+                val eventSemesterMap = mutableMapOf<Int, List<UserEventDTO>>()
+                var semesterNum = 1
+                if (userEvents.isEmpty()) return@forEach
+                var startTime = userEvents.first().getStartTime()
+                var endTime = startTime.plusMonths(6)
 
-        do {
-            val semesterEvents = userEvents.filter { it.getStartTime().isBefore(endTime) && (it.getStartTime().isAfter(startTime) || it.getStartTime().isEqual(startTime)) }
-
-            if (semesterEvents.isNotEmpty()) eventSemesterMap[semesterNum++] = semesterEvents
-            startTime = endTime
-            endTime = endTime.plusMonths(6)
-        } while (endTime.isBefore(OffsetDateTime.now().plusMonths(6)))
-
-        val results = mutableListOf<Map<String, ArrayList<AIUserEventDataDTO>>>()
-
-        runBlocking {
-            eventSemesterMap.values.forEach { semester ->
-                launch(Dispatchers.IO) {
-                    val semesterTrainingData = ArrayList<AIUserEventDataDTO>()
-                    val semesterTestingData = ArrayList<AIUserEventDataDTO>()
-
-                    val semesterTrainingDataSize = (semester.size * 0.8).toInt()
-                    for (i in 0 until semesterTrainingDataSize) {
-                        val timeSlots = getTimeslotPairList(semester, i)
-                        semesterTrainingData.add(
-                            AIUserEventDataDTO(
-                                timeSlots,
-                                semester[i].getUserID(),
-                                semester[i].getDescription(),
-                                semester[i].getStartTime().dayOfWeek!!.toString(),
-                            ),
-                        )
+                do {
+                    val semesterEvents = userEvents.filter {
+                        it.getStartTime().isBefore(endTime) && (
+                            it.getStartTime().isAfter(startTime) || it.getStartTime()
+                                .isEqual(startTime)
+                            )
                     }
 
-                    for (i in semesterTrainingDataSize until semester.size) {
-                        val timeSlots = getTimeslotPairList(semester, i)
-                        semesterTestingData.add(
-                            AIUserEventDataDTO(
-                                timeSlots,
-                                semester[i].getUserID(),
-                                semester[i].getDescription(),
-                                semester[i].getStartTime().dayOfWeek!!.toString(),
-                            ),
-                        )
+                    if (semesterEvents.isNotEmpty()) eventSemesterMap[semesterNum++] = semesterEvents
+                    startTime = endTime
+                    endTime = endTime.plusMonths(6)
+                } while (endTime.isBefore(OffsetDateTime.now().plusMonths(6)))
+
+                runBlocking {
+                    eventSemesterMap.values.forEach { semester ->
+                        launch(Dispatchers.IO) {
+                            val semesterTrainingData = ArrayList<AIUserEventDataDTO>()
+                            val semesterTestingData = ArrayList<AIUserEventDataDTO>()
+
+                            val semesterTrainingDataSize = (semester.size * 0.8).toInt()
+                            for (i in 0 until semesterTrainingDataSize) {
+                                val timeSlots = getTimeslotPairList(semester, i)
+                                semesterTrainingData.add(
+                                    AIUserEventDataDTO(
+                                        timeSlots,
+                                        semester[i].getUserID(),
+                                        semester[i].getDescription(),
+                                        semester[i].getStartTime().dayOfWeek!!.toString(),
+                                    ),
+                                )
+                            }
+
+                            for (i in semesterTrainingDataSize until semester.size) {
+                                val timeSlots = getTimeslotPairList(semester, i)
+                                semesterTestingData.add(
+                                    AIUserEventDataDTO(
+                                        timeSlots,
+                                        semester[i].getUserID(),
+                                        semester[i].getDescription(),
+                                        semester[i].getStartTime().dayOfWeek!!.toString(),
+                                    ),
+                                )
+                            }
+
+                            val contentMap = mapOf("training" to semesterTrainingData, "testing" to semesterTestingData)
+
+                            results.add(contentMap)
+                        }
                     }
-
-                    val contentMap = mapOf("training" to semesterTrainingData, "testing" to semesterTestingData)
-
-                    results.add(contentMap)
                 }
             }
         }

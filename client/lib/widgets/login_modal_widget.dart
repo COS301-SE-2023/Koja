@@ -52,10 +52,12 @@ class LoginModalState extends State<LoginModal> {
                   width: 200,
                   child: Row(
                     children: [
-                      Icon(
+                      Expanded(
+                      child:Icon(
                         Bootstrap.google,
                         size: 16.0,
                         color: Colors.red,
+                      ),
                       ),
                       SizedBox(width: 10.0),
                       Text('Sign In With Google',
@@ -133,10 +135,12 @@ class LoginModalState extends State<LoginModal> {
                     width: 200,
                     child: Row(
                       children: [
-                        Icon(
+                        Expanded(
+                        child: Icon(
                           Bootstrap.terminal,
                           size: 16.0,
                           color: Colors.white,
+                        ),
                         ),
                         SizedBox(width: 10.0),
                         Text('Debug Mode Route',
