@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:number_selector/number_selector.dart';
-
 import '../Utils/constants_util.dart';
 
 class ChooseCategory extends StatefulWidget {
