@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.controller.LocationController
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.repository.UserRepository
@@ -16,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -203,4 +205,142 @@ class LocationControllerIntegrationTest {
         assertNotNull(travelTimeInSeconds)
         assertTrue(travelTimeInSeconds > 0)
     }*/
+
+    @Test
+    fun testUpdateUserWorkLocationWithInvalidToken() {
+        // Prepare test data
+        val token = null // or any invalid token value
+        val placeId = "your_valid_place_id"
+
+        // Perform the POST request
+        mockMvc.perform(
+            post("/api/v1/location/WorkLocationUpdater")
+                .header("Authorization", "Bearer $token")
+                .param("placeId", placeId)
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun testUpdateUserWorkLocationWithMissingParameters() {
+        // Perform the POST request without providing any parameters
+        mockMvc.perform(
+            post("/api/v1/location/WorkLocationUpdater")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+    }
+
+   /* @Test
+    fun `test updateCurrentUserLocation with valid input`() {
+        // Mock the locationService's updateUserLocation function
+        val token = "validToken"
+        val latitude = "30.0"
+        val longitude = "40.0"
+        val distanceMatrix = DistanceMatrix(/* Distance matrix data */)
+        `when`(locationService.updateUserLocation(token, 30.0, 40.0)).thenReturn(distanceMatrix)
+
+        // Perform the HTTP POST request to the endpoint
+        mockMvc.perform(
+            post("/updateLocation")
+                .header(HeaderConstant.AUTHORISATION, token)
+                .param("latitude", latitude)
+                .param("longitude", longitude)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+    }
+*/
+    @Test
+    fun `test updateCurrentUserLocation with missing token`() {
+        // Perform the HTTP POST request to the endpoint with missing parameters
+        mockMvc.perform(
+            post("/updateLocation")
+                .header(HeaderConstant.AUTHORISATION, "validToken")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+        // .andExpect(/* Assert the response body with expected error message */)
+    }
+
+    @Test
+    fun `test updateCurrentUserLocation with invalid parameters`() {
+        // Perform the HTTP POST request to the endpoint with invalid parameters
+        mockMvc.perform(
+            post("/updateLocation")
+                .header(HeaderConstant.AUTHORISATION, "invalidToken")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    /* @Test
+     fun `test getUserSavedLocations with valid token and non-empty saved locations`() {
+         // Mock the jwtFunctionality's getUserJWTTokenData function
+         val token = "validToken"
+         val userID = "user123"
+         val userJWTTokenData = UserJWTTokenData(userID)
+         `when`(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(userJWTTokenData)
+
+         // Mock the userRepository's findById function
+         val user = User(userID, "John Doe")
+         user.setCurrentLocation(30.0, 40.0)
+         user.setHomeLocation(35.0, 45.0)
+         user.setWorkLocation(50.0, 60.0)
+         `when`(userRepository.findById(userID)).thenReturn(user)
+
+         // Perform the HTTP GET request to the endpoint
+         mockMvc.perform(
+             get("/savedLocations")
+                 .header(HeaderConstant.AUTHORISATION, token)
+                 .contentType(MediaType.APPLICATION_JSON)
+         )
+             .andExpect(status().isOk)
+             .andExpect(/* Assert the response body with expected JSON data */)
+     }
+
+     @Test
+     fun `test getUserSavedLocations with valid token and empty saved locations`() {
+         // Mock the jwtFunctionality's getUserJWTTokenData function
+         val token = "validToken"
+         val userID = "user456"
+         val userJWTTokenData = UserJWTTokenData(userID)
+         `when`(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(userJWTTokenData)
+
+         // Mock the userRepository's findById function
+         val user = User(userID, "Jane Smith")
+         `when`(userRepository.findById(userID)).thenReturn(user)
+
+         // Perform the HTTP GET request to the endpoint
+         mockMvc.perform(
+             get("/savedLocations")
+                 .header(HeaderConstant.AUTHORISATION, token)
+                 .contentType(MediaType.APPLICATION_JSON)
+         )
+             .andExpect(status().isOk)
+             .andExpect(/* Assert the response body with expected empty JSON data */)
+     }
+ */
+    @Test
+    fun `test getUserSavedLocations with invalid token`() {
+        // Perform the HTTP GET request to the endpoint with an invalid token
+        mockMvc.perform(
+            get("/savedLocations")
+                .header(HeaderConstant.AUTHORISATION, "invalidToken")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `test getUserSavedLocations with null token`() {
+        // Perform the HTTP GET request to the endpoint with an invalid token
+        mockMvc.perform(
+            get("/savedLocations")
+                .header(HeaderConstant.AUTHORISATION, null)
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isBadRequest)
+    }
 }
