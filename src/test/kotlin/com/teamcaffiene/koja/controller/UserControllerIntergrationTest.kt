@@ -73,20 +73,11 @@ class UserControllerIntergrationTest {
         dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }
 
+    @Test
     fun `test removeTimeBoundary with valid parameters`() {
         // Mock request parameters
-        val mockUserID = Int.MAX_VALUE
-        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
-        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
-        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
-        val token = TokenManagerController.createToken(
-            TokenRequest(
-                arrayListOf(authDetails),
-                AuthProviderEnum.GOOGLE,
-                mockUserID,
-            ),
-        )
-        val name = "boundary1"
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLRU1Gb1RBTE53ZkJqcktkV3lueWhKWjZqdFI3aUZSZUd0bzN0Y1M5QVh6MkxCUnFpd0Jib084Q3QybWRXdlExdlVHbHVHS3NXd2dObU1qN2x1SUN3ODBkWmtkaDdtWUVPNFQxWmlpUFAzM0E4QzZVN3N2OGlzdEc2TG8vb0VWald2VzIyUTJHWWU4QnBJOENUUFBRTTZQKzZyc3FjOENQUWZWU1dLMGlTZnVvZUNXbE4yNTArUDRCV1REVlZNK09UNDBiVzdha1dKOXV5dU9iczRJelI4T0E4bHA5aGpaMmkwdDJSUjR6SEwyOFFmOTY1dDJvNTFUSjJqV1RwYVVnSHZsdlEyM0xnb3lCWjhpRHZrMlZ5NkhWelRFL1VORW8zeUZYell5bFVEOEhnZW5raUV6cG4xaWxobkpWeEhFYTBPQkJBbmF2ODZUR1hIMWI1YlhCRmF3Qmx5N2ZGM2w0QUZ2LzRhOUxURUlLVVc0eTVPRThTOWFnTEtESGl5WnF2K2hTVGZtbjNCQzRTWk1DUm4wR0pkQ1N2Zzl6VGt2TmlDS1pDMmRkRDRRbi9kSklYZkNiMWY2azlRa09VS2RpNGw1VktvdWJMVnBwQkhYdDM4a2VDcEpSVmpiWGZDYzQ0aFovMDNLR1NFalNMaXJMMGVqdVhQcEwyRDQ3WnZMWDJ1VFE1My9UVjd6YS9XQkZsbjd2eklnPT0iLCJleHAiOjE2OTA4MTkwMzd9.fXJpHPSFWEecqCT40Ds2LaoEygJ_BjUg5qZl_Q_NUq6NB4GmqSbYpNyXRJi3YhbhPfdcokSUPNI5fyeuzW1CiQ"
+        val name = "play"
         // Mock the userCalendarService.removeTimeBoundary method
         // whenever(userCalendarService.removeTimeBoundary(token, name)).thenReturn(true)
 
@@ -107,11 +98,6 @@ class UserControllerIntergrationTest {
         // Mock request parameters with a missing token
         val token = "your_token_here"
         val name = "Boundary1"
-
-        // Mock the userCalendarService.removeTimeBoundary method
-        // whenever(userCalendarService.removeTimeBoundary(token, name)).thenReturn(true)
-
-        // Perform the HTTP POST request
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v1/user/removeTimeBoundary")
                 .header(HeaderConstant.AUTHORISATION, token)
@@ -140,11 +126,7 @@ class UserControllerIntergrationTest {
     @Test
     fun `test removeTimeBoundary with valid token and non-existent user`() {
         // Mock request parameters
-        val mockUserID = Int.MAX_VALUE
-        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
-        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
-        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
-        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLa3pON1UvWDREMjNhY0J0VkxGbG5hM3BiVVVjTjBzVlhrb0F4Ym9VMS9zWDlaMS8rTk1wZVVsUThlNTVSUUNYNnY0WUw0SnR5azFCQUxMS2E3TnAxbDUxTEc0cnZoM0NWdmM4ZGdncXRqcTltRW5LTW1ReGRkNUlwTjN6V1V1aE1XVHF6Y0h1ZkVUUVRCQXJrS0hEZzdLdUg2STRkck51b0U3NDJxSTBtQXRhL3NpZ1IzSXFuRmlJWHpvUFBKejNqc0E2aFBSc1V6WE95YXhSZXIyMDBIT2VDRjJYc1VMUjVCMjJmakpBR21QK282Zkt4NXJuZElRcWx1RWdqTXlhM3VZcHpmUWduMHg2NzhNd0JUZTF5UHl2OE14S05OKzJvaWJqWXFBckxOcDRvTitDK3JJMEhHYWVnQ241SmRlRlh5Yng3S0lGYzR0V0ZyOWx1bEJtWjhocjBFbVV4cXVmSHpFL0pFa2ZzV0ZNUVhDYlFnNHdWQVdPT0FSWWVjeW96NE10TGNtbXFSWUJ3cm9yTkhHTCsrcUx5WUExeUZxNjI4TFNiMHdibVpEc1pXRVNMQys0dDhzWGtPZTdpeXJyV2J0K2IyVWxMM2w1YnRKcGN4bHgwUXVtQXdnSmNYd0RwZ3k3RUd3aDhHQ1hMVjRuZXljMGxBVThjR3VNNU5FdlE0SEs3N3hmSFh6ZnpiYzFsamZjd3VBPT0iLCJleHAiOjE2OTA4MDIyMDZ9.BsvLvXuHfO_em3HDDJau7Fre8Hef-RxFYXoqcMblmNXdfHMsM_KN6X5FcqES0Dkd43skK4nTdHPP8SYpkrKnPw"
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbmNyeXB0ZWQiOiIrT09EZXlqWk1CWjV6b3I1OFRBdVZIT2x3akJvbHY1MGFkTjQ5ajdFMWMweW9TWW9zOTNHMUVWT0ord3Z2dGFLRU1Gb1RBTE53ZkJqcktkV3lueWhKWjZqdFI3aUZSZUd0bzN0Y1M5QVh6MkxCUnFpd0Jib084Q3QybWRXdlExdlVHbHVHS3NXd2dObU1qN2x1SUN3ODBkWmtkaDdtWUVPNFQxWmlpUFAzM0E4QzZVN3N2OGlzdEc2TG8vb0VWald2VzIyUTJHWWU4QnBJOENUUFBRTTZQKzZyc3FjOENQUWZWU1dLMGlTZnVvZUNXbE4yNTArUDRCV1REVlZNK09UNDBiVzdha1dKOXV5dU9iczRJelI4T0E4bHA5aGpaMmkwdDJSUjR6SEwyOFFmOTY1dDJvNTFUSjJqV1RwYVVnSHZsdlEyM0xnb3lCWjhpRHZrMlZ5NkhWelRFL1VORW8zeUZYell5bFVEOEhnZW5raUV6cG4xaWxobkpWeEhFYTBPQkJBbmF2ODZUR1hIMWI1YlhCRmF3Qmx5N2ZGM2w0QUZ2LzRhOUxURUlLVVc0eTVPRThTOWFnTEtESGl5WnF2K2hTVGZtbjNCQzRTWk1DUm4wR0pkQ1N2Zzl6VGt2TmlDS1pDMmRkRDRRbi9kSklYZkNiMWY2azlRa09VS2RpNGw1VktvdWJMVnBwQkhYdDM4a2VDcEpSVmpiWGZDYzQ0aFovMDNLR1NFalNMaXJMMGVqdVhQcEwyRDQ3WnZMWDJ1VFE1My9UVjd6YS9XQkZsbjd2eklnPT0iLCJleHAiOjE2OTA4MTkwMzd9.fXJpHPSFWEecqCT40Ds2LaoEygJ_BjUg5qZl_Q_NUq6NB4GmqSbYpNyXRJi3YhbhPfdcokSUPNI5fyeuzW1CiQ"
         val name = "boundary1"
         // Mock the userCalendarService.removeTimeBoundary method to return false for invalid name
         // whenever(userCalendarService.removeTimeBoundary(token, name)).thenReturn(false)
