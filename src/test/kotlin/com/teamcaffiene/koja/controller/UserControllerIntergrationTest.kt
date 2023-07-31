@@ -1,14 +1,8 @@
 package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.constants.HeaderConstant
-import com.teamcaffeine.koja.controller.TokenManagerController
-import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.controller.UserController
-import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTFunctionality
-import com.teamcaffeine.koja.dto.JWTGoogleDTO
-import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
-import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
@@ -108,7 +102,6 @@ class UserControllerIntergrationTest {
             // Validate the response
             .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
-
 
     @Test
     fun `test removeTimeBoundary with missing token`() {
