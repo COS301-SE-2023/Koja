@@ -744,34 +744,27 @@ class EventEditingState extends State<EventEditing> {
         List<String> timeParts = travelTime.split(' ');
 
         // Initialize variables to store the hours, minutes, and seconds
-        int hours = 0;
-        int minutes = 0;
-        int seconds = 0;
 
         // Iterate through the timeParts and extract the corresponding values
         for (int i = 0; i < timeParts.length; i += 2) {
-          int value = int.parse(timeParts[i]);
           String unit = timeParts[i + 1];
 
           if (unit.contains('hour')) {
-            hours = value;
           } else if (unit.contains('minute')) {
-            minutes = value;
           } else if (unit.contains('second')) {
-            seconds = value;
           }
         }
 
-        // Construct the DateTime object
-        DateTime travelDateTime = DateTime(
-          fromDate.year,
-          fromDate.month,
-          fromDate.day,
-          fromDate.hour - hours,
-          fromDate.minute - minutes,
-          fromDate.second - seconds,
-        );
-        String meetingTitle = titleController.text;
+        // // Construct the DateTime object
+        // DateTime travelDateTime = DateTime(
+        //   fromDate.year,
+        //   fromDate.month,
+        //   fromDate.day,
+        //   fromDate.hour - hours,
+        //   fromDate.minute - minutes,
+        //   fromDate.second - seconds,
+        // );
+        // String meetingTitle = titleController.text;
 
         // travelTimeBlock = Event(
         //   // id: (widget.event != null) ? widget.event!.id : "",
