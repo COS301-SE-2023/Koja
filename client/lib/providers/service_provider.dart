@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:client/models/user_time_boundary_model.dart';
 import 'package:client/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:fl_location/fl_location.dart';
+import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
 
@@ -41,6 +43,42 @@ class ServiceProvider with ChangeNotifier {
     _accessToken = token;
     if (token != null) {
       eventProvider.init(token);
+    }
+  }
+
+  /// This Section deals with all the AI related functions (suggestions, etc.)
+
+  /// This function will attempt to get all the emails which will be used for suggestions
+  Future<Map<String, String>> getEmailsForAI() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-emails');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> result = jsonDecode(response.body);
+      return result.map((key, value) => MapEntry(key, value.toString()));
+    } else {
+      return {};
+    }
+  }
+
+  /// This function will attempt to get all the events which will be used for suggestions
+  Future<List<String>> getEventsForAI() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-user-events');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(response.body);
+      return result.map((e) => e.toString()).toList();
+    } else {
+      return [];
     }
   }
 
@@ -327,5 +365,105 @@ class ServiceProvider with ChangeNotifier {
         locationPermission == LocationPermission.whileInUse) return false;
 
     return true;
+  }
+
+  Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(
+      String accessToken) async {
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/user/getAllTimeBoundary');
+    final response =
+        await http.get(url, headers: {'Authorisation': _accessToken!});
+
+    if (response.statusCode == 200) {
+      final List<dynamic> timeBoundariesJson = jsonDecode(response.body);
+      return timeBoundariesJson
+          .map((json) => UserTimeBoundaryModel.fromJson(json))
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  Future<void> storeTimeFrames(
+      String? accessToken, Map<String, TimeSlot?> timeSlots) async {
+    if (accessToken != null) {
+      final url = Uri.http(
+        '$_serverAddress:$_serverPort',
+        '/api/v1/user/addTimeBoundary',
+      );
+
+      for (String key in timeSlots.keys) {
+        if (timeSlots[key] != null) {
+          await deleteTimeFrame(accessToken, key).then((_) async {
+            Map<String, String> requestBody = {
+              'name': key,
+              'startTime': DateFormat('HH:mm').format(
+                timeSlots[key]!.startTime.toUtc(),
+              ),
+              'endTime': DateFormat('HH:mm').format(
+                timeSlots[key]!.endTime.toUtc(),
+              ),
+              'type': timeSlots[key]!.bookable ? 'allowed' : 'blocked',
+            };
+
+            await http.post(
+              url,
+              headers: {'Authorisation': accessToken},
+              body: requestBody,
+            );
+          });
+        } else {
+          deleteTimeFrame(accessToken, key);
+        }
+      }
+    }
+  }
+
+  Future<bool> deleteTimeFrame(String? accessToken, String name) async {
+    if (accessToken != null) {
+      final url = Uri.http(
+        '$_serverAddress:$_serverPort',
+        '/api/v1/user/removeTimeBoundary',
+      );
+
+      Map<String, String> requestBody = {
+        'name': name,
+      };
+
+      final response = await http.post(
+        url,
+        headers: {'Authorisation': _accessToken!},
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  Future<Map<String, dynamic>> getSuggestionsForUser(String user) async {
+    final url = Uri.http(
+      '$_serverAddress:$_serverPort',
+      '/api/v1/ai/get-user-events',
+      {
+        'userID': user,
+      },
+    );
+
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': 'Bearer $_accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> result = jsonDecode(response.body);
+      return result;
+    } else {
+      return {};
+    }
   }
 }

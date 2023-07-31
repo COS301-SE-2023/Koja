@@ -1,30 +1,4 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-
-class Event{
-
-    final String title;
-    final String description;
-    final String location;
-    final DateTime from;
-    final DateTime to;
-    // final String category;
-    final Color backgroundColor;
-    final bool isAllDay;
-
-    const Event({
-        required this.title,
-        required this.description,
-        this.location = '',
-        required this.from,
-        required this.to,
-        // required this.category, //also add function on data_source_util.dart
-        this.backgroundColor = Colors.blue,
-        this.isAllDay = false,
-
-    });
-}
-=======
 import "dart:core";
 
 class Event {
@@ -91,22 +65,25 @@ class Event {
 class TimeSlot {
   DateTime startTime;
   DateTime endTime;
+  bool bookable = true;
 
   TimeSlot({
     required this.startTime,
     required this.endTime,
+    required this.bookable,
   });
 
   factory TimeSlot.fromJson(Map<String, dynamic> json) {
     return TimeSlot(
       startTime: DateTime.parse(json['startTime']),
       endTime: DateTime.parse(json['endTime']),
+      bookable: json['type'] == 'bookable',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'startTime': startTime.toUtc().toIso8601String(),
         'endTime': endTime.toUtc().toIso8601String(),
+        'bookable': bookable,
       };
 }
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9

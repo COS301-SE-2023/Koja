@@ -27,9 +27,11 @@ import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
+import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
@@ -188,6 +190,15 @@ class GoogleCalendarAdapterService(
             )
         } else {
             val newUser = createNewUser(userEmail, refreshToken)
+            val timeBoundary = TimeBoundary(
+                name = "Bed-Time",
+                startTime = "20:00",
+                endTime = "06:00",
+                type = TimeBoundaryType.BLOCKED,
+            )
+            newUser.addTimeBoundary(timeBoundary)
+            timeBoundary.user = newUser
+            userRepository.save(newUser)
 
             jwtToken = createToken(
                 TokenRequest(

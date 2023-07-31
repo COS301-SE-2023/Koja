@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
 import '../models/event_wrapper_module.dart';
+import '../models/user_time_boundary_model.dart';
 
 class ContextProvider extends ChangeNotifier {
   String? _accessToken;
@@ -14,6 +15,7 @@ class ContextProvider extends ChangeNotifier {
   void init(String accessToken) {
     _accessToken = accessToken;
     getEventsFromAPI(accessToken);
+    getUserTimeslots(accessToken);
     getAllUserEmails();
   }
 
@@ -45,7 +47,59 @@ class ContextProvider extends ChangeNotifier {
 
   setTimeSlot(String category, TimeSlot? timeSlot) {
     _timeSlots[category] = timeSlot;
+    ServiceProvider().storeTimeFrames(accessToken, timeSlots);
     notifyListeners();
+  }
+
+  void getUserTimeslots(String accessToken) async {
+    final items = await ServiceProvider().getUserTimeBoundaries(accessToken);
+    for (UserTimeBoundaryModel item in items) {
+      final relevantTimeslots = convertTimeStringsToDateTime(
+        item.startTime!,
+        item.endTime!,
+      );
+      if (relevantTimeslots['startTime'] != null &&
+          relevantTimeslots['endTime'] != null) {
+        _timeSlots[item.name!] = TimeSlot(
+            startTime: relevantTimeslots['startTime']!,
+            endTime: relevantTimeslots['endTime']!,
+            bookable: (relevantTimeslots['type'] != null &&
+                    relevantTimeslots['type']!.toString() == "allowed")
+                ? true
+                : false);
+      }
+    }
+    notifyListeners();
+  }
+
+  Map<String, DateTime> convertTimeStringsToDateTime(
+      String startTime, String endTime) {
+    final now = DateTime.now();
+
+    final List<String> startParts = startTime.split(':');
+    final int startHour = int.parse(startParts[0]);
+    final int startMinute = int.parse(startParts[1]);
+
+    final List<String> endParts = endTime.split(':');
+    final int endHour = int.parse(endParts[0]);
+    final int endMinute = int.parse(endParts[1]);
+
+    DateTime startDateTime =
+        DateTime(now.year, now.month, now.day, startHour, startMinute);
+
+    // Assuming end time is always equal to or later than start time
+    int endDay = now.day;
+
+    // If end time is earlier than start time, then it is the next day
+    if (endHour < startHour ||
+        (endHour == startHour && endMinute < startMinute)) {
+      endDay = now.day + 1;
+    }
+
+    DateTime endDateTime =
+        DateTime(now.year, now.month, endDay, endHour, endMinute);
+
+    return {"startTime": startDateTime, "endTime": endDateTime};
   }
 
   //This is the selected date
