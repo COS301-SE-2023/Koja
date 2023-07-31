@@ -93,6 +93,9 @@ dependencies:
   duration: ^3.0.12
   flutter_dotenv: ^5.1.0
   fl_location: ^2.0.0+1
+  geocoding: ^2.1.0
+  numberpicker: ^2.1.2
+  number_selector: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -114,7 +117,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/animations/
-    - ../.env
+    - assets/.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
