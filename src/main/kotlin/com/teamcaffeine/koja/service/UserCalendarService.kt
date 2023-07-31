@@ -12,6 +12,11 @@ import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import java.time.Duration
 import java.time.OffsetDateTime
 
@@ -299,5 +304,82 @@ class UserCalendarService(
             "Chore" -> return Pair(timeBoundary, "")
         }
         return Pair(null, null)
+    }
+
+    fun getUserSuggestions(userID: String): Any {
+        val awsCreds = AwsBasicCredentials.create(
+            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
+            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+        )
+
+        val dynamoDBClient = DynamoDbClient.builder()
+            .region(Region.EU_NORTH_1)
+            .credentialsProvider { awsCreds }
+            .build()
+
+        val attrValues = mutableMapOf<String, AttributeValue>()
+        attrValues[":v_user"] = AttributeValue.builder().s(userID).build()
+
+        val attrNames = mutableMapOf<String, String>()
+        attrNames["#n_user"] = "user"
+
+        val request = QueryRequest.builder()
+            .tableName("Koja-AI")
+            .keyConditionExpression("#n_user = :v_user") // Query for items with matching "userID"
+            .expressionAttributeValues(attrValues)
+            .expressionAttributeNames(attrNames)
+            .build()
+
+        val categories = mutableListOf<String>()
+        val timeframes = mutableMapOf<String, List<String>>()
+        val weekDays = mutableMapOf<String, List<String>>()
+
+        val response = dynamoDBClient.query(request)
+        val items = response.items()
+        if (items.isNotEmpty()) {
+            val userItem = items.firstOrNull()
+            if (userItem != null) {
+                val categorySuggestions = userItem["data"]?.l()
+                if (categorySuggestions != null) {
+                    for (suggestion in categorySuggestions) {
+                        val current = suggestion.m()
+                        val category = current["category"]?.s()
+                        if (category != null) {
+                            categories.add(category)
+                            val currentTimeFrames = mutableListOf<String>()
+                            for (timeFrame in current["time_frames"]?.l()!!) {
+                                val timeFrameString = timeFrame.s()
+                                if (timeFrameString != null) {
+                                    currentTimeFrames.add(timeFrameString)
+                                }
+                            }
+                            timeframes[category] = currentTimeFrames
+
+                            val currentWeekDays = mutableListOf<String>()
+                            for (weekday in current["weekdays"]?.l()!!) {
+                                val weekdayString = weekday.s()
+                                if (weekdayString != null) {
+                                    currentWeekDays.add(weekdayString)
+                                }
+                            }
+                            weekDays[category] = currentTimeFrames
+                        }
+                    }
+                }
+            }
+        }
+
+        val toReturn = mutableMapOf<String, Any>()
+        for (category in categories) {
+            val categoryTimeFrames = timeframes[category]
+            val categoryWeekDays = weekDays[category]
+            if (categoryTimeFrames != null && categoryWeekDays != null) {
+                toReturn[category] = mutableMapOf<String, Any>(
+                    "timeFrames" to categoryTimeFrames,
+                    "weekdays" to categoryWeekDays,
+                )
+            }
+        }
+        return toReturn
     }
 }
