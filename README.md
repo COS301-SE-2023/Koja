@@ -35,21 +35,6 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 
 ## Group Members:
 
-## [Marthinus Ettienne van Zyl(u19012366)](https://github.com/u19012366) [LinkedIn](https://www.linkedin.com/in/ettienne-van-zyl-a2a899177)
-
-
-## [Matjere J. Matseba(u21609633)](https://github.com/MatjereJ) [LinkedIn](https://za.linkedin.com/in/matjere-matseba-071412228)
-
-
-## [Unarine L. Netshifhefhe(u20505656)](https://github.com/UnarineLeo) [LinkedIn](https://www.linkedin.com/in/unarine-netshifhefhe-844b0b253)
-
-
-## [Lesiba T.F. Setsiba(u21566382)](https://github.com/LesibaFrans) [LinkedIn](https://www.linkedin.com/in/lesiba-setsiba-a20a0b222)
-
-
-## [Elias S. Makhonjwa(u18034332)](https://github.com/U18034332)
-
-
 |Team Member's Details | Accounts |
 |:-------------------- |:---------|
 | **Marthinus Ettienne van Zyl(u19012366)** <br><br> Ettienne has two years of experience in using and building projects with Flutter. One of these projects was successfully deployed and is still in use by the company it was built for. This project also utilised Firebase's Firestore database.In addition, Ettienne has one and a half years of combined experience in leading and organising projects, all of which have been highly successful. While this project won't necessarily utilise Java, it's worth noting that Ettienne has over a year and a half of experience using it. Kotlin and Java are very suitable for this project. Ettienne has completed courses in both Machine Learning and Deep Learning, provided by MatLab.|<a target="_blank" href="https://www.linkedin.com/in/ettienne-van-zyl-a2a899177"><img src="client/assets/icons/linkedin.png" alt="LinkedIn" height="50" width="50"></a> <a target="_blank" href="https://github.com/u19012366"><img src="client/assets/icons/github.png" alt="GitHub" height="50" width="50"></a> |
