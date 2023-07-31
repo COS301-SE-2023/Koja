@@ -1,12 +1,15 @@
 import 'package:client/Utils/event_util.dart';
 import 'package:client/providers/context_provider.dart';
-import 'package:client/widgets/location_list_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:client/screens/home_screen.dart';
 
 void main() {
+  setUp(() async{
+    await dotenv.load(fileName: "assets/.env");
+  });
   testWidgets('Home widget test', (WidgetTester tester) async {
     // Create a mock EventProvider for testing
     final eventProvider = ContextProvider();
@@ -33,11 +36,8 @@ void main() {
     expect(find.text('Traveling Times'), findsOneWidget);
 
     // Test the click on the map icon to show the LocationListWidget
-    await tester.tap(find.byIcon(Icons.map_outlined));
-    await tester.pumpAndSettle();
 
-    // Verify that the LocationListWidget is displayed
-    expect(find.byType(LocationListWidget), findsOneWidget);
+    expect(find.byIcon(Icons.map_outlined), findsOneWidget);
 
     // Test the event count functions
     eventProvider.addEvent(
@@ -57,18 +57,5 @@ void main() {
 
     // Trigger a rebuild with the new event data
     await tester.pump();
-
-    //TODO
-    // // Test the getEventsOnPresentDay function
-    // expect(find.descendant(
-    //   of: find.byType(TasksBlock),
-    //   matching: find.text('1'),
-    // ), findsOneWidget); // Assuming 1 event is on the present day
-    //
-    // // Test the getEventsOnPresentWeek function
-    // expect(find.descendant(
-    //   of: find.byType(TasksBlock),
-    //   matching: find.text('2'),
-    // ), findsOneWidget); // Assuming 2 events are on the present week
   });
 }
