@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:client/providers/service_provider.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/foundation.dart';
@@ -14,9 +16,22 @@ class ContextProvider extends ChangeNotifier {
 
   void init(String accessToken) {
     _accessToken = accessToken;
-    getEventsFromAPI(accessToken);
-    getUserTimeslots(accessToken);
-    getAllUserEmails();
+    startUpdater();
+  }
+
+  void startUpdater() {
+    final timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (_accessToken != null) {
+        getEventsFromAPI(_accessToken!);
+        getUserTimeslots(_accessToken!);
+        getAllUserEmails();
+      } else {
+        timer.cancel();
+      }
+    });
+    if(kDebugMode) {
+      print(timer);
+    }
   }
 
   List<EventWrapper> _eventWrappers = [];

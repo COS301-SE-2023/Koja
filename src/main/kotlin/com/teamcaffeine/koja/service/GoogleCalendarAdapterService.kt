@@ -93,6 +93,8 @@ class GoogleCalendarAdapterService(
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
                 .setState(request?.session?.id)
+                .setScopes(scopes)
+                .setAccessType("offline")
                 .build()
         } else {
             val flow = GoogleAuthorizationCodeFlow.Builder(

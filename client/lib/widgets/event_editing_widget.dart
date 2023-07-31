@@ -56,7 +56,7 @@ class EventEditingState extends State<EventEditing> {
   final hoursController = TextEditingController();
   final minutesController = TextEditingController();
 
-  String selectedCategory = 'Work';
+  String selectedCategory = 'None';
   String selectedEventType = 'Fixed';
   String selectedPriority = 'Low';
   Color selectedColor = Colors.blue;
@@ -196,10 +196,10 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                if (selectedEventType == 'Dynamic')
-                  ChoosePriority(onPrioritySelected: updatePriority),
+                //if (selectedEventType == 'Dynamic')
+                //ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
-                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                //ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -628,7 +628,9 @@ class EventEditingState extends State<EventEditing> {
       final eventProvider =
           Provider.of<ContextProvider>(context, listen: false);
 
-      var timeSlot = eventProvider.timeSlots[selectedCategory];
+      var timeSlot = (selectedCategory != 'None')
+          ? eventProvider.timeSlots[selectedCategory]
+          : null;
 
       if (timeSlot == null) {
         var now = DateTime.now();
@@ -728,7 +730,7 @@ class EventEditingState extends State<EventEditing> {
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
         location: placeId,
-        description: 'description',
+        description: '',
         category: selectedCategory,
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
         from: fromDate,
@@ -751,8 +753,7 @@ class EventEditingState extends State<EventEditing> {
 
           if (unit.contains('hour')) {
           } else if (unit.contains('minute')) {
-          } else if (unit.contains('second')) {
-          }
+          } else if (unit.contains('second')) {}
         }
 
         // // Construct the DateTime object

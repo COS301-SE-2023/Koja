@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -109,6 +110,7 @@ class UserCalendarService(
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
         val userEvents = ArrayList<UserEventDTO>()
         var travelDuration = 0L
+
         for (adapter in calendarAdapters) {
             val googleCalendarAdapter: GoogleCalendarAdapterService? = try {
                 adapter as GoogleCalendarAdapterService
@@ -122,6 +124,7 @@ class UserCalendarService(
                 locationService = LocationService(userRepository, googleCalendarAdapter)
                 val currentLocation: Pair<Double, Double> =
                     anyToPair(locationService.getUserSavedLocations(token)["currentLocation"])
+
                 val latitude = currentLocation.second
                 val longitude = currentLocation.first
                 val travelTime = locationService.getTravelTime(
@@ -129,15 +132,18 @@ class UserCalendarService(
                     longitude,
                     eventDTO.getLocation(),
                 )
+
                 if (travelTime != null) {
                     travelDuration = travelTime
                     eventDTO.setTravelTime(travelTime)
                 }
             }
+
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
+
             if (accessToken != null) {
                 userEvents.addAll(
                     adapter.getUserEventsInRange(
@@ -150,7 +156,9 @@ class UserCalendarService(
         }
 
         if (eventDTO.isDynamic()) {
-            eventDTO.setDuration(eventDTO.getDurationInSeconds() + travelDuration)
+            val newEventDuration = (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
+            eventDTO.setDuration(newEventDuration)
+
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
@@ -184,14 +192,44 @@ class UserCalendarService(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
-        val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
-
         var currentDateTime = OffsetDateTime.now()
-        val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
+        val eventTimeslots = eventDTO.getTimeSlots()
+
+        val sortedAvailableTimeSlots = eventTimeslots
             .filter {
-                it.endTime.isAfter(currentDateTime) && Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds()
+                it.endTime.isAfter(currentDateTime) &&
+                    Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
+                    it.type == TimeBoundaryType.ALLOWED
             }
             .sortedBy { it.startTime }
+
+        val unavailableTimeSlots = eventTimeslots
+            .filter {
+                it.type == TimeBoundaryType.BLOCKED
+            }
+            .sortedBy { it.startTime }
+
+        // Add unavailable time slots as events
+        val userEventsUpdated = userEvents.toMutableList()
+        val unavailableTimeSlotsAsEvents = ArrayList<UserEventDTO>()
+        for (unavailableSlot in unavailableTimeSlots) {
+            unavailableTimeSlotsAsEvents.add(
+                UserEventDTO(
+                    id = "",
+                    summary = "Unavailable",
+                    location = "",
+                    startTime = unavailableSlot.startTime,
+                    endTime = unavailableSlot.endTime,
+                    duration = 0L,
+                    timeSlots = listOf(),
+                    priority = 0,
+
+                ),
+            )
+        }
+        userEventsUpdated.addAll(unavailableTimeSlotsAsEvents)
+
+        val sortedUserEvents = userEventsUpdated.sortedBy { it.getStartTime() }
 
         if (sortedAvailableTimeSlots.isNotEmpty()) {
             currentDateTime = currentDateTime.withOffsetSameInstant(sortedAvailableTimeSlots.first().startTime.offset)
