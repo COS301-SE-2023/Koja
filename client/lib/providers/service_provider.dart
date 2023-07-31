@@ -46,6 +46,42 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  /// This Section deals with all the AI related functions (suggestions, etc.)
+
+  /// This function will attempt to get all the emails which will be used for suggestions
+  Future<Map<String, String>> getEmailsForAI() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-emails');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> result = jsonDecode(response.body);
+      return result.map((key, value) => MapEntry(key, value.toString()));
+    } else {
+      return {};
+    }
+  }
+
+  /// This function will attempt to get all the events which will be used for suggestions
+  Future<List<String>> getEventsForAI() async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-user-events');
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': _accessToken!},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(response.body);
+      return result.map((e) => e.toString()).toList();
+    } else {
+      return [];
+    }
+  }
+
   /// This Section deals with all the user related functions (emails, login, etc.)
 
   /// This function will attempt to login the user using AuthController
@@ -407,5 +443,27 @@ class ServiceProvider with ChangeNotifier {
       }
     }
     return false;
+  }
+
+  Future<Map<String, dynamic>> getSuggestionsForUser(String user) async {
+    final url = Uri.http(
+      '$_serverAddress:$_serverPort',
+      '/api/v1/ai/get-user-events',
+      {
+        'userID': user,
+      },
+    );
+
+    final response = await http.get(
+      url,
+      headers: {'Authorisation': 'Bearer $_accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> result = jsonDecode(response.body);
+      return result;
+    } else {
+      return {};
+    }
   }
 }

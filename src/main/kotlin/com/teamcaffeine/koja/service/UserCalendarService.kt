@@ -6,12 +6,18 @@ import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import java.time.Duration
 import java.time.OffsetDateTime
 
@@ -104,6 +110,7 @@ class UserCalendarService(
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
         val userEvents = ArrayList<UserEventDTO>()
         var travelDuration = 0L
+
         for (adapter in calendarAdapters) {
             val googleCalendarAdapter: GoogleCalendarAdapterService? = try {
                 adapter as GoogleCalendarAdapterService
@@ -117,6 +124,7 @@ class UserCalendarService(
                 locationService = LocationService(userRepository, googleCalendarAdapter)
                 val currentLocation: Pair<Double, Double> =
                     anyToPair(locationService.getUserSavedLocations(token)["currentLocation"])
+
                 val latitude = currentLocation.second
                 val longitude = currentLocation.first
                 val travelTime = locationService.getTravelTime(
@@ -124,15 +132,18 @@ class UserCalendarService(
                     longitude,
                     eventDTO.getLocation(),
                 )
+
                 if (travelTime != null) {
                     travelDuration = travelTime
                     eventDTO.setTravelTime(travelTime)
                 }
             }
+
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
+
             if (accessToken != null) {
                 userEvents.addAll(
                     adapter.getUserEventsInRange(
@@ -145,7 +156,9 @@ class UserCalendarService(
         }
 
         if (eventDTO.isDynamic()) {
-            eventDTO.setDuration(eventDTO.getDurationInSeconds() + travelDuration)
+            val newEventDuration = (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
+            eventDTO.setDuration(newEventDuration)
+
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
@@ -179,14 +192,44 @@ class UserCalendarService(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
-        val sortedUserEvents = userEvents.sortedBy { it.getStartTime() }
-
         var currentDateTime = OffsetDateTime.now()
-        val sortedAvailableTimeSlots = eventDTO.getTimeSlots()
+        val eventTimeslots = eventDTO.getTimeSlots()
+
+        val sortedAvailableTimeSlots = eventTimeslots
             .filter {
-                it.endTime.isAfter(currentDateTime) && Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds()
+                it.endTime.isAfter(currentDateTime) &&
+                    Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
+                    it.type == TimeBoundaryType.ALLOWED
             }
             .sortedBy { it.startTime }
+
+        val unavailableTimeSlots = eventTimeslots
+            .filter {
+                it.type == TimeBoundaryType.BLOCKED
+            }
+            .sortedBy { it.startTime }
+
+        // Add unavailable time slots as events
+        val userEventsUpdated = userEvents.toMutableList()
+        val unavailableTimeSlotsAsEvents = ArrayList<UserEventDTO>()
+        for (unavailableSlot in unavailableTimeSlots) {
+            unavailableTimeSlotsAsEvents.add(
+                UserEventDTO(
+                    id = "",
+                    summary = "Unavailable",
+                    location = "",
+                    startTime = unavailableSlot.startTime,
+                    endTime = unavailableSlot.endTime,
+                    duration = 0L,
+                    timeSlots = listOf(),
+                    priority = 0,
+
+                ),
+            )
+        }
+        userEventsUpdated.addAll(unavailableTimeSlotsAsEvents)
+
+        val sortedUserEvents = userEventsUpdated.sortedBy { it.getStartTime() }
 
         if (sortedAvailableTimeSlots.isNotEmpty()) {
             currentDateTime = currentDateTime.withOffsetSameInstant(sortedAvailableTimeSlots.first().startTime.offset)
@@ -299,5 +342,82 @@ class UserCalendarService(
             "Chore" -> return Pair(timeBoundary, "")
         }
         return Pair(null, null)
+    }
+
+    fun getUserSuggestions(userID: String): Any {
+        val awsCreds = AwsBasicCredentials.create(
+            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
+            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+        )
+
+        val dynamoDBClient = DynamoDbClient.builder()
+            .region(Region.EU_NORTH_1)
+            .credentialsProvider { awsCreds }
+            .build()
+
+        val attrValues = mutableMapOf<String, AttributeValue>()
+        attrValues[":v_user"] = AttributeValue.builder().s(userID).build()
+
+        val attrNames = mutableMapOf<String, String>()
+        attrNames["#n_user"] = "user"
+
+        val request = QueryRequest.builder()
+            .tableName("Koja-AI")
+            .keyConditionExpression("#n_user = :v_user") // Query for items with matching "userID"
+            .expressionAttributeValues(attrValues)
+            .expressionAttributeNames(attrNames)
+            .build()
+
+        val categories = mutableListOf<String>()
+        val timeframes = mutableMapOf<String, List<String>>()
+        val weekDays = mutableMapOf<String, List<String>>()
+
+        val response = dynamoDBClient.query(request)
+        val items = response.items()
+        if (items.isNotEmpty()) {
+            val userItem = items.firstOrNull()
+            if (userItem != null) {
+                val categorySuggestions = userItem["data"]?.l()
+                if (categorySuggestions != null) {
+                    for (suggestion in categorySuggestions) {
+                        val current = suggestion.m()
+                        val category = current["category"]?.s()
+                        if (category != null) {
+                            categories.add(category)
+                            val currentTimeFrames = mutableListOf<String>()
+                            for (timeFrame in current["time_frames"]?.l()!!) {
+                                val timeFrameString = timeFrame.s()
+                                if (timeFrameString != null) {
+                                    currentTimeFrames.add(timeFrameString)
+                                }
+                            }
+                            timeframes[category] = currentTimeFrames
+
+                            val currentWeekDays = mutableListOf<String>()
+                            for (weekday in current["weekdays"]?.l()!!) {
+                                val weekdayString = weekday.s()
+                                if (weekdayString != null) {
+                                    currentWeekDays.add(weekdayString)
+                                }
+                            }
+                            weekDays[category] = currentWeekDays
+                        }
+                    }
+                }
+            }
+        }
+
+        val toReturn = mutableMapOf<String, Any>()
+        for (category in categories) {
+            val categoryTimeFrames = timeframes[category]
+            val categoryWeekDays = weekDays[category]
+            if (categoryTimeFrames != null && categoryWeekDays != null) {
+                toReturn[category] = mutableMapOf<String, Any>(
+                    "timeFrames" to categoryTimeFrames,
+                    "weekdays" to categoryWeekDays,
+                )
+            }
+        }
+        return toReturn
     }
 }

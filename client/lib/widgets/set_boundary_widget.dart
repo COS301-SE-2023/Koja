@@ -4,11 +4,8 @@ import '../Utils/constants_util.dart';
 class SetBoundary extends StatefulWidget {
   final VoidCallback onSave;
   final String selectedOption;
-  late String? startTime;
-  late String? endTime;
-
-  String initstart = "";
-  String initend = "";
+  final String? startTime;
+  final String? endTime;
 
   SetBoundary(
     this.selectedOption,
@@ -19,19 +16,33 @@ class SetBoundary extends StatefulWidget {
   });
 
   @override
-  State<SetBoundary> createState() => _SetBoundaryState();
+  State<SetBoundary> createState() => _SetBoundaryState(
+        startTime,
+        endTime,
+      );
 }
 
 class _SetBoundaryState extends State<SetBoundary> {
+  late String? startTime;
+  late String? endTime;
+
+  String initstart = "";
+  String initend = "";
+
+  _SetBoundaryState(
+    this.startTime,
+    this.endTime,
+  );
+
   @override
   void initState() {
     super.initState();
     if (isEditing == false) {
-      widget.initstart = start;
-      widget.initend = end;
+      initstart = start;
+      initend = end;
     } else {
-      widget.initstart = start = categories[editedindex][1];
-      widget.initend = end = categories[editedindex][2];
+      initstart = start = categories[editedindex][1];
+      initend = end = categories[editedindex][2];
     }
   }
 
@@ -69,7 +80,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(
                         child: SelectedTimeButton(
                           isStart: true,
-                          time: widget.startTime = widget.initstart,
+                          time: startTime = initstart,
                           onTimeChanged: (time) {
                             setState(() {
                               start = time;
@@ -96,7 +107,7 @@ class _SetBoundaryState extends State<SetBoundary> {
                       SizedBox(
                         child: SelectedTimeButton(
                           isStart: false,
-                          time: widget.endTime = widget.initend,
+                          time: endTime = initend,
                           onTimeChanged: (time) {
                             setState(() {
                               end = time;

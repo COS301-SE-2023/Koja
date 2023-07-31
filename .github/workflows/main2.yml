@@ -17,17 +17,17 @@ jobs:
 
       - name: Create .env
         run: |
-          echo KOJA_AWS_RDS_DATABASE_URL=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> .env
-          echo KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> .env
-          echo KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> .env
-          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> .env
-          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> .env
-          echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> .env
-          echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> .env
-          echo API_KEY=${{ secrets.API_KEY }} >> .env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
-          echo SERVER_ADDRESS=${{ secrets.SERVER_ADDRESS }} >> .env
-          echo SERVER_PORT=${{ secrets.SERVER_PORT }} >> .env
+          echo KOJA_AWS_RDS_DATABASE_URL=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> client/assets/.env
+          echo KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> client/assets/.env
+          echo KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> client/assets/.env
+          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> client/assets/.env
+          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> client/assets/.env
+          echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> client/assets/.env
+          echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> client/assets/.env
+          echo API_KEY=${{ secrets.API_KEY }} >> client/assets/.env
+          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> client/assets/.env
+          echo SERVER_ADDRESS=${{ secrets.SERVER_ADDRESS }} >> client/assets/.env
+          echo SERVER_PORT=${{ secrets.SERVER_PORT }} >> client/assets/.env
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v1
