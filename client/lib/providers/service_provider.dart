@@ -255,6 +255,48 @@ class ServiceProvider with ChangeNotifier {
 
   /// This section deals with all the location related functions (travel time, etc.)
 
+  Future<bool> updateHomeLocation(String placeID) async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/location/HomeLocationUpdater');
+    var response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: {
+        'placeId': placeID,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> updateWorkLocation(String placeID) async {
+    final url =
+        Uri.http('$_serverAddress:$_serverPort', '/api/v1/location/WorkLocationUpdater');
+    var response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: {
+        'placeId': placeID,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// This function will set the current location of the user
   void setLocationData(Location? locationData) {
     _locationData = locationData;
