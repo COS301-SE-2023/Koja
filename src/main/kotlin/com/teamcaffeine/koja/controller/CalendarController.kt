@@ -31,7 +31,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
                     ResponseEntity.badRequest()
                         .body(ResponseConstant.EVENT_CREATION_FAILED_COULD_NOT_FIT)
                 }
-                ResponseEntity.internalServerError().body(ResponseConstant.EVENT_CREATION_FAILED_INTERNAL_ERROR)
+                return ResponseEntity.internalServerError().body(ResponseConstant.EVENT_CREATION_FAILED_INTERNAL_ERROR)
             }
             ResponseEntity.ok(ResponseConstant.EVENT_CREATED)
         }
