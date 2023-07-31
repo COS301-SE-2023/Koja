@@ -3,6 +3,9 @@ package com.teamcaffiene.koja.service
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.controller.UserController
 import com.teamcaffeine.koja.dto.JWTFunctionality
+import com.teamcaffeine.koja.entity.TimeBoundary
+import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
@@ -17,7 +20,10 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(UserController::class)
 @ContextConfiguration(classes = [UserCalendarService::class])
@@ -65,6 +71,62 @@ class UserControllerIntergrationTest {
         dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
 
         dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
+    }
+
+    @Test
+    fun `test addTimeBoundary with valid input`() {
+        val token = "validToken"
+        val userID = "user123"
+
+        // Prepare the user data in the database for the given token
+        val user = User()
+        userRepository.save(user)
+
+        // Perform the HTTP POST request to the endpoint
+        mockMvc.perform(
+            post("/addTimeBoundary")
+                .header(HeaderConstant.AUTHORISATION, token)
+                .param("name", "Office hours")
+                .param("startTime", "09:00")
+                .param("endTime", "17:00")
+                .param("type", "allowed")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `test addTimeBoundary with missing parameters`() {
+        val token = "validToken"
+
+        // Perform the HTTP POST request to the endpoint with missing parameters
+        mockMvc.perform(
+            post("/addTimeBoundary")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `test addTimeBoundary with invalid`() {
+        val token = "invalidToken"
+        val userID = "user456"
+
+        // Prepare the user data in the database for the given token
+        val user = User()
+        userRepository.save(user)
+
+        // Perform the HTTP POST request to the endpoint
+        mockMvc.perform(
+            post("/addTimeBoundary")
+                .header(HeaderConstant.AUTHORISATION, token)
+                .param("name", "Office hours")
+                .param("startTime", "09:00")
+                .param("endTime", "17:00")
+                .param("type", "allowed")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
     }
 
 /*
@@ -167,4 +229,57 @@ class UserControllerIntergrationTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
         // .andExpect(MockMvcResultMatchers.content().string("Something went wrong"))
     }*/
+
+    @Test
+    fun `test getTimeBoundaries with valid token`() {
+        val token = "validToken"
+        val userID = "user123"
+
+        // Prepare the user data in the database for the given token
+        val user = User()
+        user.addTimeBoundary(TimeBoundary("Office hours", "09:00", "17:00", TimeBoundaryType.ALLOWED))
+        userRepository.save(user)
+
+        // Perform the HTTP GET request to the endpoint
+        val result = mockMvc.perform(
+            get("/getAllTimeBoundary")
+                .header(HeaderConstant.AUTHORISATION, token)
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        // Optionally, assert the response body contains the expected time boundaries
+        // For example: assert(result.response.contentAsString.contains("Office hours"))
+        //               assert(result.response.contentAsString.contains("09:00"))
+        //               assert(result.response.contentAsString.contains("17:00"))
+    }
+
+    @Test
+    fun `test getTimeBoundaries with missing token`() {
+        // Perform the HTTP GET request to the endpoint with a missing token
+        mockMvc.perform(
+            get("/getAllTimeBoundary")
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `test getTimeBoundaries with exception handling`() {
+        val token = "validToken"
+        val userID = "user456"
+
+        // Prepare the user data in the database for the given token
+        val user = User()
+        userRepository.save(user)
+
+        // Perform the HTTP GET request to the endpoint
+        mockMvc.perform(
+            get("/getAllTimeBoundary")
+                .header(HeaderConstant.AUTHORISATION, token)
+                .contentType(MediaType.APPLICATION_JSON),
+        )
+            .andExpect(status().isBadRequest)
+    }
 }
