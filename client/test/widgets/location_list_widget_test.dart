@@ -18,11 +18,6 @@ void main() {
     final serviceProvider = ServiceProvider();
 
     // Prepare some dummy location list data
-    final locationList = [
-      ['Location 1', -18.45 , 18.45],
-      ['Location 2', -18.45,  20.45],
-      ['Location 3', -18.45,  22.45],
-    ];
 
     await tester.pumpWidget(
       MultiProvider(
