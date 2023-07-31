@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:mockito/mockito.dart';
 
 // Create a mock for ServiceProvider to simulate its behavior during testing
 
@@ -20,11 +19,11 @@ void main() {
 
     // Prepare some dummy location list data
     final locationList = [
-      ['Location 1', 'lat1', 'lng1'],
-      ['Location 2', 'lat2', 'lng2'],
-      ['Location 3', 'lat3', 'lng3'],
+      ['Location 1', -18.45 , 18.45],
+      ['Location 2', -18.45,  20.45],
+      ['Location 3', -18.45,  22.45],
     ];
-    
+
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -42,6 +41,8 @@ void main() {
 
     // Test if the LocationListWidget is rendered on the screen
     expect(find.byType(LocationListWidget), findsOneWidget);
+
+
 
   });
 }
