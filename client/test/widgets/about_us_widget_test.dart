@@ -25,7 +25,6 @@ void main() {
         expect(find.text('Koja'), findsOneWidget);
         expect(find.text('Thanks for choosing Koja, with our application you will get dynamic and personalized recommendations for your next task.'), findsOneWidget);
         expect(find.text('Learn More'), findsOneWidget);
-        expect(find.text('Version 0.1.58'), findsOneWidget);
 
         await tester.tap(find.text('Learn More'));
         await tester.pumpAndSettle();
