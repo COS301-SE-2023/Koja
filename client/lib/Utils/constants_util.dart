@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final String apiKey = dotenv.env['API_KEY'] ?? "";
+final String serverAddress = dotenv.env['SERVER_ADDRESS'] ?? "";
 const darkBlue = Color(0xFF1976D2);
 
 /// This store the list of locations
