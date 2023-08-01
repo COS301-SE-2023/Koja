@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.jpa") version "1.7.22"
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
     id("jacoco")
+    id("com.adarshr.test-logger") version "3.2.0"
 }
 
 group = "com.team-caffeine"
@@ -49,6 +50,9 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.12.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+    implementation("software.amazon.awssdk:dynamodb:2.20.115")
 }
 
 tasks.withType<KotlinCompile> {
