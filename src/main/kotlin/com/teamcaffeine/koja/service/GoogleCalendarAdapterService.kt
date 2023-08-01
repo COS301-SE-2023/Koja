@@ -61,7 +61,8 @@ class GoogleCalendarAdapterService(
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
-    private val redirectUriBase = "http://localhost:8080/api/v1/auth"
+    private val serverAddress = System.getProperty("SERVER_ADDRESS")
+    private val redirectUriBase = "$serverAddress/api/v1/auth"
     private val scopes = listOf(
         "https://www.googleapis.com/auth/calendar",
         "https://www.googleapis.com/auth/userinfo.profile",
@@ -86,7 +87,7 @@ class GoogleCalendarAdapterService(
         } else if (!addAdditionalAccount) {
             "$redirectUriBase/google/callback"
         } else {
-            "http://localhost:8080/api/v1/user/auth/add-email/callback"
+            "$serverAddress/api/v1/user/auth/add-email/callback"
         }
 
         val url = if (!addAdditionalAccount) {
@@ -136,9 +137,9 @@ class GoogleCalendarAdapterService(
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
         if (!appCallBack) {
-            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/google/callback")
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
         } else {
-            parameters.add("redirect_uri", "http://localhost:8080/api/v1/auth/app/google/callback")
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
         }
 
         val requestEntity = HttpEntity(parameters, headers)
@@ -227,7 +228,7 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        parameters.add("redirect_uri", "http://localhost:8080/api/v1/user/auth/add-email/callback")
+        parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
 
