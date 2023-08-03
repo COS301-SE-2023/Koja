@@ -6,8 +6,8 @@ import 'package:client/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:fl_location/fl_location.dart';
 import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
@@ -17,11 +17,11 @@ class ServiceProvider with ChangeNotifier {
   late String _serverPort;
 
   String? _accessToken;
-  Location? _locationData;
-  StreamSubscription<Location>? _locationSubscription;
+  Position? _locationData;
+  StreamSubscription<Position>? _locationSubscription;
 
   String? get accessToken => _accessToken;
-  Location? get locationData => _locationData;
+  Position? get locationData => _locationData;
 
   factory ServiceProvider() => _instance;
 
@@ -256,8 +256,8 @@ class ServiceProvider with ChangeNotifier {
   /// This section deals with all the location related functions (travel time, etc.)
 
   Future<bool> updateHomeLocation(String placeID) async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/location/HomeLocationUpdater');
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/location/HomeLocationUpdater');
     var response = await http.post(
       url,
       headers: {
@@ -277,8 +277,8 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> updateWorkLocation(String placeID) async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/location/WorkLocationUpdater');
+    final url = Uri.http(
+        '$_serverAddress:$_serverPort', '/api/v1/location/WorkLocationUpdater');
     var response = await http.post(
       url,
       headers: {
@@ -298,7 +298,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will set the current location of the user
-  void setLocationData(Location? locationData) {
+  void setLocationData(Position? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
     storeUserLocation();
@@ -363,50 +363,38 @@ class ServiceProvider with ChangeNotifier {
   /// This function will start listening to the location stream
   Future<void> _listenLocationStream() async {
     if (await _checkAndRequestPermission()) {
-      if (_locationSubscription != null) {
-        await _cancelLocationSubscription();
-      }
-
-      _locationSubscription = FlLocation.getLocationStream().handleError((e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }).listen((event) {
-        if (_locationData == null ||
-            (_locationData != null &&
-                event.latitude != _locationData!.latitude &&
-                event.longitude != _locationData!.longitude)) {
-          setLocationData(event);
+      final LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 100,
+      );
+      StreamSubscription<Position> positionStream =
+          Geolocator.getPositionStream(locationSettings: locationSettings)
+              .listen((Position? position) {
+        if (position != null) {
+          setLocationData(position);
         }
       });
     }
   }
 
-  /// This function will cancel the location subscription
-  Future<void> _cancelLocationSubscription() async {
-    await _locationSubscription?.cancel();
-    _locationSubscription = null;
-  }
-
   /// This function will check if the user has granted location permissions
-  Future<bool> _checkAndRequestPermission({bool? background}) async {
-    if (!await FlLocation.isLocationServicesEnabled) {
-      return false;
+  Future<bool> _checkAndRequestPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (serviceEnabled) {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      return permission != LocationPermission.denied;
     }
 
-    var locationPermission = await FlLocation.checkLocationPermission();
-    if (locationPermission == LocationPermission.deniedForever) {
-      return false;
-    } else if (locationPermission == LocationPermission.denied) {
-      locationPermission = await FlLocation.requestLocationPermission();
-      if (locationPermission == LocationPermission.denied ||
-          locationPermission == LocationPermission.deniedForever) return false;
-    }
-
-    if (background == true &&
-        locationPermission == LocationPermission.whileInUse) return false;
-
-    return true;
+    return false;
   }
 
   Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(

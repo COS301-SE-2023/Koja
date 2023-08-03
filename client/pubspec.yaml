@@ -96,6 +96,7 @@ dependencies:
   geocoding: ^2.1.0
   numberpicker: ^2.1.2
   number_selector: ^1.0.7
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:
