@@ -278,8 +278,6 @@ class ChooseColorState extends State<ChooseColor> {
   }
 }
 
-/// Class which sets recurrence of an event
-
 class ChooseRecurrence extends StatefulWidget {
   final void Function(String category) onRecurrenceSelected;
 
@@ -294,12 +292,11 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
   String selectedCategory = 'None';
   List<String> categories = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
 
-  String selectedEnd = 'None';
-  List<String> endingChoice = ['Occurences(times)', 'EndDate'];
+  String selectedEnd = 'EndDate';
+  List<String> endingChoice = ['Occurrences(times)', 'EndDate'];
+  double intervalValue = 1.0;
 
-  @override
-  Widget build(BuildContext context) {
-    String getIntervalString(String interval) {
+  String getIntervalString(String interval) {
       if (interval == 'Daily') {
         return ' day(s)';
       } else if (interval == 'Weekly') {
@@ -313,6 +310,8 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
       }
     }
 
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Column(
@@ -326,7 +325,9 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
               if (newValue != null) {
                 setState(() {
                   selectedCategory = newValue;
-                  if (newValue != 'None') {
+                });
+                widget.onRecurrenceSelected(newValue);
+                if (newValue != 'None') {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -346,28 +347,21 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                     fontFamily: 'Ubuntu',
                                   ),
                                 ),
-                                if (newValue != 'None') SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: Container(
-                                        width: 50,
-                                        height: 50,
-                                        child: TextField(
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color: Colors.black,
-                                                width: 2
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                      child: Slider(
+                                        value: intervalValue,
+                                        min: 1,
+                                        max: 30,
+                                        divisions: 29,
+                                        // label: intervalValue.round().toString(),
+                                        onChanged: (double value) {
+                                          setState(() {
+                                            intervalValue = value;
+                                          });
+                                          print(intervalValue);
+                                        },
                                       ),
                                     ),
                                     SizedBox(width: 8),
@@ -384,8 +378,10 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                 SizedBox(height: 10),
                                 ChooseEndChoice(),
                                 SizedBox(height: 10),
-                                if (isEndDate == true) Text("data0"),
-                                if (isEndDate == false) Text("data1")
+                                if(selectedEnd == 'Occurrences(times)')
+                                  chooseOccurrences(),
+                                if(selectedEnd == 'EndDate')
+                                  showCalendar(),
                               ],
                             ),
                           ),
@@ -406,11 +402,7 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                         );
                       },
                     );
-                  } else {
-                    Navigator.of(context).pop();
-                  }
-                });
-                widget.onRecurrenceSelected(newValue);
+                  } 
               }
             },
             items: categories.map<DropdownMenuItem<String>>((String value) {
@@ -439,6 +431,96 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
       ),
     );
   }
+
+  Widget showCalendar() {
+  return Row(
+    children: [
+      Text(
+        'Ends on',
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 16,
+          fontFamily: 'Ubuntu',
+        ),
+      ),
+      SizedBox(width: 10),
+      ElevatedButton(
+        onPressed: () async {
+          final DateTime? picked = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2015, 8),
+            lastDate: DateTime(2101),
+          );
+          if (picked != null) {
+            setState(() {
+              recurrenceEndDate = picked;
+            });
+          }
+          else{
+            setState(() {
+              recurrenceEndDate = DateTime.now();
+            });
+          }
+        },
+        child: Text(
+          '${recurrenceEndDate?.day}/${recurrenceEndDate?.month}/${recurrenceEndDate?.year}',
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+            fontFamily: 'Ubuntu',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+
+  Widget chooseOccurrences()
+  {
+    return Column(
+      children: [
+        Text(
+          'Ends after',
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+            fontFamily: 'Ubuntu',
+          ),
+        ),
+        SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: intervalValue,
+                min: 1,
+                max: 30,
+                divisions: 29,
+                // label: intervalValue.round().toString(),
+                onChanged: (double value) {
+                  setState(() {
+                    intervalValue = value;
+                  });
+                  print(intervalValue);
+                },
+              ),
+            ),
+            SizedBox(width: 8),
+            Text(
+              ' ${intervalValue.round()} times',
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+                fontFamily: 'Ubuntu',
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class ChooseEndChoice extends StatefulWidget {
@@ -449,8 +531,7 @@ class ChooseEndChoice extends StatefulWidget {
 }
 
 class ChooseEndChoiceState extends State<ChooseEndChoice> {
-  String selectedEnd = 'EndDate';
-  List<String> endChoices = ['EndDate', 'Occurences(times)'];
+  List<String> endChoices = ['EndDate', 'Occurrences(times)'];
 
   @override
   Widget build(BuildContext context) {
@@ -461,42 +542,39 @@ class ChooseEndChoiceState extends State<ChooseEndChoice> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           DropdownButtonFormField<String>(
-              value: selectedEnd,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    selectedEnd = newValue;
-                  });
-                  if (selectedEnd == 'EndDate') {
-                    isEndDate = true;
-                  } else {
-                    isEndDate = false;
-                  }
-                }
-              },
-              items: endChoices.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                label: Text(
-                  'ENDS',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 17),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
-                ),
-              )),
+            value: selectedEnd,
+            onChanged: (String? end) {
+              if (end != null) {
+                setState(() {
+                  selectedEnd = end;
+                });
+              }
+            },
+            items: endChoices.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              label: Text(
+                'ENDS',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 17),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2.0),
+              ),
+            )
+          ),
         ],
       ),
     );
   }
 }
+

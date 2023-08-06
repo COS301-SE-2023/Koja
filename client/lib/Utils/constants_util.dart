@@ -43,9 +43,11 @@ bool isRecurrence = false;
 bool isEndDate = false;
 
 DateTime? recurrenceEndDate;
-int interval = 1;
+double interval = 1.0;
 String recurrenceString = "";
 String recurrenceType = "Daily";
+String selectedEnd = 'EndDate';
+
 
 /// Helper variable to when you add a Dynamic event
 bool needsReschedule = false;
