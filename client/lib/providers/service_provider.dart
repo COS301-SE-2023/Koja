@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:client/models/user_time_boundary_model.dart';
 import 'package:client/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -89,9 +90,11 @@ class ServiceProvider with ChangeNotifier {
     final String authUrl =
         'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
 
-    final String callbackUrlScheme = 'koja-login-callback';
+    String callbackUrlScheme = (Platform.isAndroid)
+        ? 'koja-login-callback'
+        : 'http://$_serverAddress:$_serverPort';
 
-    String? response = await FlutterWebAuth.authenticate(
+    String? response = await FlutterWebAuth2.authenticate(
       url: authUrl,
       callbackUrlScheme: callbackUrlScheme,
     );
@@ -111,7 +114,7 @@ class ServiceProvider with ChangeNotifier {
 
     final String callbackUrlScheme = 'koja-login-callback';
 
-    String? response = await FlutterWebAuth.authenticate(
+    String? response = await FlutterWebAuth2.authenticate(
       url: authUrl,
       callbackUrlScheme: callbackUrlScheme,
     );
@@ -381,7 +384,8 @@ class ServiceProvider with ChangeNotifier {
   Future<bool> _checkAndRequestPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
-
+    final locatorPlatform = GeolocatorPlatform.instance;
+    final val = await locatorPlatform.openLocationSettings();
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (serviceEnabled) {

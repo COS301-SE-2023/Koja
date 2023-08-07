@@ -85,7 +85,6 @@ dependencies:
   jwt_decoder: ^2.0.1
 
   
-  flutter_web_auth: ^0.5.0
 
   # for cors-origin errors
   flutter_cors: ^1.4.0
@@ -97,6 +96,7 @@ dependencies:
   numberpicker: ^2.1.2
   number_selector: ^1.0.7
   geolocator: ^9.0.2
+  flutter_web_auth_2: ^2.1.5
 
 dev_dependencies:
   flutter_test:
