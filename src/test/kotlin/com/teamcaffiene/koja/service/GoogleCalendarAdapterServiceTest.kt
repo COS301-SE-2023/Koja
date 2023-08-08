@@ -72,6 +72,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         val event2 = UserEventDTO(
             id = "2",
@@ -84,6 +85,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2)
@@ -116,6 +118,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         val event2 = UserEventDTO(
             id = "2",
@@ -128,6 +131,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         val event3 = UserEventDTO(
             id = "3",
@@ -140,6 +144,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         // Define your mock response
 
@@ -173,6 +178,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         val event2 = UserEventDTO(
             id = "2",
@@ -185,6 +191,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         val event3 = UserEventDTO(
             id = "3",
@@ -197,6 +204,7 @@ class GoogleCalendarAdapterServiceTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
         // Define your mock response
 

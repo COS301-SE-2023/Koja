@@ -58,6 +58,7 @@ class UserEventDTOTest {
             priority = 1,
             dynamic = false,
             userID = "1",
+            recurrence = mutableListOf()
         )
 
         // Then
