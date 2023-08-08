@@ -10,6 +10,8 @@ import '../models/place_auto_response_model.dart';
 import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
+import './choose_recurrence_widget.dart';
+
 
 class EventEditing extends StatefulWidget {
   final Event? event;
