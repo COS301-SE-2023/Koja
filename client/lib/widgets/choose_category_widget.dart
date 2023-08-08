@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../Utils/constants_util.dart';
 
 class ChooseCategory extends StatefulWidget {
   final void Function(String category) onCategorySelected;
