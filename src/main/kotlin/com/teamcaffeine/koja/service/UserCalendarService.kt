@@ -144,6 +144,7 @@ class UserCalendarService(
                         priority = 1,
                         dynamic = false,
                         userID = "1",
+                        recurrence = mutableListOf("")
                     ),
                 )
             }
@@ -263,6 +264,7 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
+                    recurrence = mutableListOf("")
 
                 ),
             )

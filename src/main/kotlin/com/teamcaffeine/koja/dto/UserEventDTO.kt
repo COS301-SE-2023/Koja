@@ -23,7 +23,7 @@ class UserEventDTO(
     private var endTime: OffsetDateTime,
     private var duration: Long,
     private var timeSlots: List<TimeSlot>,
-    private var priority: String,
+    private var priority: Int,
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
     private var userID: String = "",
@@ -39,7 +39,7 @@ class UserEventDTO(
         endTime = toKotlinDate(googleEvent.end) ?: OffsetDateTime.now(ZoneOffset.UTC),
         duration = googleEvent.extendedProperties?.shared?.get("duration")?.toLong() ?: 0L,
         timeSlots = googleEvent.extendedProperties?.shared?.get("timeSlots")?.let { parseTimeSlots(it) } ?: listOf(),
-        priority = googleEvent.extendedProperties?.shared?.get("priority")?.toString() ?: "",
+        priority = googleEvent.extendedProperties?.shared?.get("priority")?.toInt() ?: 0,
         dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true",
         travelTime = googleEvent.extendedProperties?.shared?.get("travelTime")?.toLong() ?: 0L,
         recurrence = googleEvent.recurrence ?: null
@@ -116,7 +116,7 @@ class UserEventDTO(
         return timeSlots
     }
 
-    fun getPriority(): String {
+    fun getPriority(): Int {
         return priority
     }
 
@@ -136,7 +136,7 @@ class UserEventDTO(
         this.timeSlots = timeSlots
     }
 
-    fun setPriority(priority: String) {
+    fun setPriority(priority: Int) {
         this.priority = priority
     }
 
