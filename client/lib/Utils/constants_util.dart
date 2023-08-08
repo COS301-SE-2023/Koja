@@ -42,8 +42,8 @@ String travelTime = "";
 bool isRecurrence = false;
 bool isEndDate = false;
 
-DateTime? recurrenceEndDate;
-double interval = 1.0;
+DateTime? recurrenceEndDate = DateTime.now();
+// double interval = 20.0;
 String recurrenceString = "";
 String recurrenceType = "Daily";
 String selectedEnd = 'EndDate';
