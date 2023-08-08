@@ -23,10 +23,11 @@ class UserEventDTO(
     private var endTime: OffsetDateTime,
     private var duration: Long,
     private var timeSlots: List<TimeSlot>,
-    private var priority: Int,
+    private var priority: String,
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
     private var userID: String = "",
+    private var recurrence: MutableList<String>?
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
@@ -38,9 +39,10 @@ class UserEventDTO(
         endTime = toKotlinDate(googleEvent.end) ?: OffsetDateTime.now(ZoneOffset.UTC),
         duration = googleEvent.extendedProperties?.shared?.get("duration")?.toLong() ?: 0L,
         timeSlots = googleEvent.extendedProperties?.shared?.get("timeSlots")?.let { parseTimeSlots(it) } ?: listOf(),
-        priority = googleEvent.extendedProperties?.shared?.get("priority")?.toInt() ?: 0,
+        priority = googleEvent.extendedProperties?.shared?.get("priority")?.toString() ?: "",
         dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true",
         travelTime = googleEvent.extendedProperties?.shared?.get("travelTime")?.toLong() ?: 0L,
+        recurrence = googleEvent.recurrence ?: null
     )
 
     fun getId(): String {
@@ -91,6 +93,9 @@ class UserEventDTO(
         this.endTime = endTime
     }
 
+    fun setRecurrence(recurrence: MutableList<String>?) {
+        this.recurrence = recurrence
+    }
     fun isDynamic(): Boolean {
         return dynamic
     }
@@ -111,7 +116,7 @@ class UserEventDTO(
         return timeSlots
     }
 
-    fun getPriority(): Int {
+    fun getPriority(): String {
         return priority
     }
 
@@ -131,7 +136,7 @@ class UserEventDTO(
         this.timeSlots = timeSlots
     }
 
-    fun setPriority(priority: Int) {
+    fun setPriority(priority: String) {
         this.priority = priority
     }
 
@@ -141,6 +146,10 @@ class UserEventDTO(
 
     fun setUserID(userID: String) {
         this.userID = userID
+    }
+
+    fun getRecurrence(): MutableList<String>? {
+        return recurrence
     }
 
     companion object {
