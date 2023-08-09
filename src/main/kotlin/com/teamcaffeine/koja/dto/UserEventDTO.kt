@@ -28,6 +28,7 @@ class UserEventDTO(
     private var travelTime: Long = 0L,
     private var userID: String = "",
     private var recurrence: MutableList<String>?
+
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
