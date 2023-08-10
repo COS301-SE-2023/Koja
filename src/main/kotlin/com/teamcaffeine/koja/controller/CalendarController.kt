@@ -4,7 +4,9 @@ import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.UserEventDTO
+import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserCalendarService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,13 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 @RestController
 @RequestMapping("/api/v1/user/calendar")
 class CalendarController(private val userCalendar: UserCalendarService) {
-
     @PostMapping("/createEvent")
-    fun addEvent(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestBody event: UserEventDTO?): ResponseEntity<String> {
+    fun addEvent(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestBody event: UserEventDTO?,
+    ): ResponseEntity<String> {
         return if (token == null || event == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
@@ -47,7 +53,10 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     }
 
     @PutMapping("/updateEvent")
-    fun updateEvent(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestBody updatedEvent: UserEventDTO?): ResponseEntity<String> {
+    fun updateEvent(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestBody updatedEvent: UserEventDTO?,
+    ): ResponseEntity<String> {
         return if (token == null || updatedEvent == null) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
@@ -63,7 +72,10 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     }
 
     @DeleteMapping("/deleteEvent")
-    fun deleteEvent(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestBody event: UserEventDTO?): ResponseEntity<String> {
+    fun deleteEvent(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestBody event: UserEventDTO?,
+    ): ResponseEntity<String> {
         if (event == null || token == null) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
@@ -75,5 +87,29 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         }
 
         return ResponseEntity.ok(ResponseConstant.EVENT_DELETED)
+    }
+
+    @PostMapping("/rescheduleEvent")
+    fun rescheduleEvent(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestBody event: UserEventDTO?,
+    ): ResponseEntity<String> {
+        if (event == null || token == null) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
+        try {
+            val timeZoneId = ZoneId.of(GoogleCalendarAdapterService.TimezoneUtility().getTimeOfTimeZone(token))
+            val currentTime = OffsetDateTime.now(timeZoneId)
+            event.setStartTime(currentTime)
+            event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
+            val updated = userCalendar.updateEvent(token, event)
+            if (updated) {
+                return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+            } else {
+                return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+            }
+        } catch (e: Exception) {
+            return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+        }
     }
 }

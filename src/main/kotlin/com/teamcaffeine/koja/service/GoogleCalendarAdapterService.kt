@@ -36,6 +36,7 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -48,7 +49,7 @@ import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Base64
+import java.util.*
 import kotlin.collections.ArrayList
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
@@ -344,7 +345,8 @@ class GoogleCalendarAdapterService(
                 val eventSummary = it.summary ?: ""
                 val eventStartTime = it.start.dateTime ?: it.start.date
                 val eventEndTime = it.end.dateTime ?: it.end.date
-                val key = Base64.getEncoder().encodeToString("${eventSummary.trim()}${eventStartTime}$eventEndTime".trim().toByteArray())
+                val key = Base64.getEncoder()
+                    .encodeToString("${eventSummary.trim()}${eventStartTime}$eventEndTime".trim().toByteArray())
                 userEvents[key] = UserEventDTO(it)
             }
 
@@ -436,7 +438,9 @@ class GoogleCalendarAdapterService(
             .setDescription(description)
             .setLocation(eventDTO.getLocation())
             .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
-            .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
+            .setEnd(
+                EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
+            )
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
         // TODO: Shift extended properties to values in the description
@@ -516,7 +520,8 @@ class GoogleCalendarAdapterService(
     override fun getFutureEventsLocations(accessToken: String?): List<String> {
         if (accessToken == null) throw IllegalArgumentException(ExceptionMessageConstant.REQUIRED_PARAMETERS_MISSING)
         val toReturn = mutableListOf<String>()
-        val eventsInRange = getUserEventsInRange(accessToken, OffsetDateTime.now().minusDays(1), OffsetDateTime.now().plusYears(1))
+        val eventsInRange =
+            getUserEventsInRange(accessToken, OffsetDateTime.now().minusDays(1), OffsetDateTime.now().plusYears(1))
         eventsInRange.forEach {
             if (it.getEndTime().isAfter(OffsetDateTime.now().minusDays(1))) {
                 if (!toReturn.contains(it.getLocation())) {
@@ -553,7 +558,11 @@ class GoogleCalendarAdapterService(
             .build()
     }
 
-    override fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO> {
+    override fun getUserEventsInRange(
+        accessToken: String?,
+        startDate: OffsetDateTime?,
+        endDate: OffsetDateTime?,
+    ): List<UserEventDTO> {
         if (accessToken == null || startDate == null || endDate == null) {
             return emptyList()
         }
@@ -592,8 +601,26 @@ class GoogleCalendarAdapterService(
             ?.let { ZoneId.ofOffset("UTC", it) }
             ?: ZoneId.of("UTC")
     }
-}
 
+    class TimezoneUtility() {
+
+        @Autowired
+        private lateinit var userRepository: UserRepository
+
+        @Autowired
+        private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+        fun getTimeOfTimeZone(jwtToken: String): String? {
+            val context = GeoApiContext.Builder()
+                .apiKey(System.getProperty("API_KEY"))
+                .build()
+            val userLocations = LocationService(userRepository, googleCalendarAdapterService)
+            val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
+            val lat = userLocation.second.toString().toDouble()
+            val lng = userLocation.first.toString().toDouble()
+            return TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await().toString()
+        }
+    }
+}
 class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
     override fun serialize(src: OffsetDateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return JsonPrimitive(src.toString())

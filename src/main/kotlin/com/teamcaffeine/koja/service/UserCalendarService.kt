@@ -74,7 +74,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun updateEvent(token: String, eventDTO: UserEventDTO) : Boolean {
+    fun updateEvent(token: String, eventDTO: UserEventDTO): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -384,9 +384,6 @@ class UserCalendarService(
             "Chore" -> return Pair(timeBoundary, "")
         }
         return Pair(null, null)
-    }
-
-    fun getSuggestedCategoryWithSuggestedWeekdayAndTimeFrame() {
     }
 
     fun getUserSuggestions(userID: String): Any {
