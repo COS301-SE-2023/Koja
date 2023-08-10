@@ -384,6 +384,9 @@ class UserCalendarService(
         return Pair(null, null)
     }
 
+    fun getSuggestedCategoryWithSuggestedWeekdayAndTimeFrame() {
+    }
+
     fun getUserSuggestions(userID: String): Any {
         val awsCreds = AwsBasicCredentials.create(
             System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
