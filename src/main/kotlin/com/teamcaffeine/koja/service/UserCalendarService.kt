@@ -74,7 +74,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun updateEvent(token: String, eventDTO: UserEventDTO) {
+    fun updateEvent(token: String, eventDTO: UserEventDTO) : Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -86,8 +86,10 @@ class UserCalendarService(
 
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
+                return true
             }
         }
+        return false
     }
 
     fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
