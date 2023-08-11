@@ -22,6 +22,7 @@ import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
 import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
+import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -461,15 +462,28 @@ class GoogleCalendarAdapterService(
             "\n" +
             "Event Start Time: ${formattedTime}\n" +
             "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
-
+        if (eventDTO.getRecurrence()?.get(0) == "Daily") {
+            eventDTO.setRecurrence(mutableListOf(Frequency.DAILY))
+        } else if (eventDTO.getRecurrence()?.get(0) == "Weekly") {
+            eventDTO.setRecurrence(mutableListOf(Frequency.WEEKLY))
+        } else if (eventDTO.getRecurrence()?.get(0) == "Monthly") {
+            eventDTO.setRecurrence(mutableListOf(Frequency.MONTHLY))
+        } else if (eventDTO.getRecurrence()?.get(0) == "Yearly") {
+            eventDTO.setRecurrence(mutableListOf(Frequency.YEARLY))
+        }
         val event = Event()
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
             .setLocation(eventDTO.getLocation())
             .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
+<<<<<<< HEAD
             .setEnd(
                 EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
             )
+=======
+            .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
+            .setRecurrence(eventDTO.getRecurrence())
+>>>>>>> b32ba45 (Created frequency object for recurrence support)
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
         // TODO: Shift extended properties to values in the description
