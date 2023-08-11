@@ -4,9 +4,8 @@ import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.UserEventDTO
-import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
+import com.teamcaffeine.koja.service.TimezoneUtility
 import com.teamcaffeine.koja.service.UserCalendarService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -98,7 +97,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
         try {
-            val timeZoneId = ZoneId.of(GoogleCalendarAdapterService.TimezoneUtility().getTimeOfTimeZone(token))
+            val timeZoneId = ZoneId.of(TimezoneUtility().getTimeOfTimeZone(token))
             val currentTime = OffsetDateTime.now(timeZoneId)
             event.setStartTime(currentTime)
             event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
