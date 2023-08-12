@@ -3,8 +3,10 @@ package com.teamcaffiene.koja.dto
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
+import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.dto.UserEventDTO
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 
@@ -13,10 +15,12 @@ class UserEventDTOTest {
     @Test
     fun createGoogleEventDTO_SUCCESS() {
         // Given
+
         val event = Event()
             .setId("1")
             .setSummary("desc1")
             .setLocation("800 Howard St., San Francisco, CA 94103")
+            .setRecurrence(mutableListOf(Frequency.WEEKLY))
         val startDateTime = DateTime("2015-05-28T09:00:00-07:00")
         val start = EventDateTime()
             .setDateTime(startDateTime)
@@ -36,6 +40,7 @@ class UserEventDTOTest {
         assertEquals("desc1", userEventDTO.getSummary())
         assertEquals("1", userEventDTO.getId())
         assertEquals("800 Howard St., San Francisco, CA 94103", userEventDTO.getLocation())
+        assertNotNull(userEventDTO.getRecurrence())
     }
 
     @Test
