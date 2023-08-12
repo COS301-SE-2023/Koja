@@ -134,7 +134,6 @@ class EventEditingState extends State<EventEditing> {
               : 'High';
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      // event.location;
     }
   }
 
@@ -153,28 +152,35 @@ class EventEditingState extends State<EventEditing> {
           textDirection: TextDirection.rtl,
           children: [
             TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: const ButtonStyle(
-                  foregroundColor: MaterialStatePropertyAll(Colors.black),
-                ),
-                child: Text('Cancel')),
-            if (selectedEventType == 'Dynamic' && needsReschedule == true)
+              onPressed: () => Navigator.of(context).pop(),
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Cancel'
+              )
+            ),
+            if (selectedEventType == 'Dynamic' && widget.event != null && fromDate.isAfter(DateTime.now()))
               TextButton(
-                  onPressed: saveForm,
-                  style: const ButtonStyle(
-                    foregroundColor: MaterialStatePropertyAll(Colors.black),
-                  ),
-                  child: Text('Reschedule',
-                      style: TextStyle(
-                          fontFamily: 'Railway', color: Colors.black))),
-            TextButton(
                 onPressed: saveForm,
                 style: const ButtonStyle(
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
-                child: Text('Save',
-                    style:
-                        TextStyle(fontFamily: 'Railway', color: Colors.black))),
+                child: Text('Reschedule',
+                    style: TextStyle(
+                        fontFamily: 'Railway', color: Colors.black
+                    )
+                )
+            ),
+            TextButton(
+              onPressed: saveForm,
+              style: const ButtonStyle(
+                foregroundColor: MaterialStatePropertyAll(Colors.black),
+              ),
+              child: Text('Save',
+                style:
+                    TextStyle(fontFamily: 'Railway', color: Colors.black)
+              )
+            ),
           ],
         )
       ],
@@ -845,6 +851,7 @@ class EventEditingState extends State<EventEditing> {
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
+          needsReschedule = false; 
         } else {
           var snackBar = SnackBar(
             content: Center(
