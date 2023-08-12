@@ -97,6 +97,7 @@ dependencies:
   numberpicker: ^2.1.2
   number_selector: ^1.0.7
   geolocator: ^9.0.2
+  direct_select_flutter: ^1.1.1
 
 dev_dependencies:
   flutter_test:
