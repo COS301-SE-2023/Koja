@@ -111,4 +111,21 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
         }
     }
+
+    @PostMapping("/setSuggestedCalendar")
+    fun setSuggestedCalendar(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestBody eventList: List<UserEventDTO>,
+    ): ResponseEntity<String> {
+        if (eventList == null || token == null) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                userCalendar.createNewCalendar(token, eventList)
+            } catch (e: Exception) {
+                return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+            }
+            return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+        }
+    }
 }
