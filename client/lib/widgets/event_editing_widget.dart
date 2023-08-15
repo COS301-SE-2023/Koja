@@ -152,35 +152,33 @@ class EventEditingState extends State<EventEditing> {
           textDirection: TextDirection.rtl,
           children: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text('Cancel'
-              )
-            ),
-            if (selectedEventType == 'Dynamic' && widget.event != null && fromDate.isAfter(DateTime.now()))
+                onPressed: () => Navigator.of(context).pop(),
+                style: const ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.black),
+                ),
+                child: Text('Cancel')),
+            if (selectedEventType == 'Dynamic' &&
+                widget.event != null &&
+                fromDate.isAfter(DateTime.now()))
               TextButton(
+                  onPressed: () {
+                    needsReschedule = true;
+                    saveForm;  
+                  },
+                  style: const ButtonStyle(
+                    foregroundColor: MaterialStatePropertyAll(Colors.black),
+                  ),
+                  child: Text('Reschedule',
+                      style: TextStyle(
+                          fontFamily: 'Railway', color: Colors.black))),
+            TextButton(
                 onPressed: saveForm,
                 style: const ButtonStyle(
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
-                child: Text('Reschedule',
-                    style: TextStyle(
-                        fontFamily: 'Railway', color: Colors.black
-                    )
-                )
-            ),
-            TextButton(
-              onPressed: saveForm,
-              style: const ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text('Save',
-                style:
-                    TextStyle(fontFamily: 'Railway', color: Colors.black)
-              )
-            ),
+                child: Text('Save',
+                    style:
+                        TextStyle(fontFamily: 'Railway', color: Colors.black))),
           ],
         )
       ],
@@ -840,7 +838,16 @@ class EventEditingState extends State<EventEditing> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
-        var response = await serviceProvider.updateEvent(event);
+        // if(needsReschedule) {
+        //   var response =  await serviceProvider.rescheduleEvent(event);
+        // }
+        // else {
+        //   var response = await serviceProvider.updateEvent(event);
+        // }
+
+        
+        var response = await getUpdateResponse();
+
         if (response) {
           eventProvider.updateEvent(event);
           var snackBar = SnackBar(
@@ -851,7 +858,7 @@ class EventEditingState extends State<EventEditing> {
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
-          needsReschedule = false; 
+          needsReschedule = false;
         } else {
           var snackBar = SnackBar(
             content: Center(
@@ -860,8 +867,21 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          needsReschedule = false;
         }
       }
+    }
+  }
+
+  Future<bool> getUpdateResponse() async
+  {
+    if(needsReschedule)
+    {
+      return await Provider.of<ServiceProvider>(context, listen: false).rescheduleEvent(widget.event!);
+    }
+    else
+    {
+      return await Provider.of<ServiceProvider>(context, listen: false).updateEvent(widget.event!);
     }
   }
 
