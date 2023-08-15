@@ -86,18 +86,23 @@ class ServiceProvider with ChangeNotifier {
   /// This Section deals with all the user related functions (emails, login, etc.)
 
   /// This function will attempt to login the user using AuthController
+
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
-    final String authUrl =
-        'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
+    final String authUrl = '$serverAddress:$serverPort/api/v1/auth/app/google';
+    final String callbackUrlScheme = kIsWeb ? serverAddress : 'koja-login-callback';
 
-    String callbackUrlScheme = (Platform.isAndroid)
-        ? 'koja-login-callback'
-        : 'http://$_serverAddress:$_serverPort';
-
-    String? response = await FlutterWebAuth2.authenticate(
-      url: authUrl,
-      callbackUrlScheme: callbackUrlScheme,
-    );
+    String? response;
+    if (kIsWeb) {
+      response = await FlutterWebAuth.authenticate(
+        url: authUrl,
+        callbackUrlScheme: callbackUrlScheme,
+      );
+    } else {
+      response = await FlutterWebAuth.authenticate(
+        url: authUrl,
+        callbackUrlScheme: callbackUrlScheme,
+      );
+    }
 
     response = Uri.parse(response).queryParameters['token'];
 
