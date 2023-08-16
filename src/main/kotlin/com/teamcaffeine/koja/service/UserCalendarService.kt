@@ -499,7 +499,7 @@ class UserCalendarService(
 
         for (event in userEvents) {
             if (event.value.isDynamic()) {
-                userDynamicEvents.put(event.key, event.value)
+
             }
         }
 
