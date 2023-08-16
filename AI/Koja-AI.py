@@ -90,17 +90,19 @@ def recommend_categories():
     else:
         return "Request was not JSON", 400
 
-@app.route('/training-data'):
-def get_training_data:
+
+@app.route('/training-data')
+def get_training_data():
     api_url = "koja api endpoint"
     headers = {'Authorization': 'Bearer YOUR_ACCESS_TOKEN'}
-    response = requests.get(api_url,headers=headers)
+    response = requests.get(api_url, headers=headers)
 
     if response.status_code == 200:
         data = response.json()
         return jsonify(data)
     else:
         return jsonify({'error': 'Failed to fetch data'}), 500
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 6000))
