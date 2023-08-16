@@ -504,6 +504,6 @@ class UserCalendarService(
             }
         }
 
-        return userDynamicEvents.values.toList()
+        return dynamicEvents.values.toList()
     }
 }
