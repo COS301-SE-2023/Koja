@@ -492,7 +492,7 @@ class UserCalendarService(
             }
         }
 
-        return userEvents.values.toList()
+        return dynamicEvents.values.toList()
     }
 
 }
