@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, request, jsonify
 import numpy as np
 import pandas as pd
@@ -88,6 +89,15 @@ def recommend_categories():
         return jsonify(recommendations)
     else:
         return "Request was not JSON", 400
+
+@app.route('/training-data'):
+def get_training_data:
+    api_url = "koja api endpoint"
+    headers = {'Authorization': 'Bearer YOUR_ACCESS_TOKEN'}
+    response = requests.get(api_url,headers=headers)
+
+    if response.status_code == 200:
+
 
 
 if __name__ == "__main__":
