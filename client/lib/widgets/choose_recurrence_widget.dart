@@ -116,13 +116,15 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                             ],
                           ),
                           content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 'Repeats Every',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 17,
+                                  fontSize: 14,
                                 ),
                               ),
                               Row(
@@ -134,43 +136,13 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                       items: intervalString.map<DropdownMenuItem<String>>((String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                      borderRadius: BorderRadius.circular(10),
-                                      decoration: InputDecoration(
-                                        label: Text(
-                                          'End',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 17
+                                          child: Text(value,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 11
+                                            ),
                                           ),
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 2.0),
-                                        ),
-                                      ),  
-                                      onChanged: (String? newValue) {
-                                        if (newValue != null) {
-                                          setState(() {
-                                            selectedEnd = newValue;
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                  // Spacer(),
-                                  Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      value: selectedInterval,
-                                      items: recurrenceString.map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
                                         );
                                       }).toList(),
                                       borderRadius: BorderRadius.circular(10),
@@ -183,23 +155,70 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                             fontSize: 17
                                           ),
                                         ),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 2.0),
-                                        ),
+                                        
                                       ),  
                                       onChanged: (String? newValue) {
                                         if (newValue != null) {
                                           setState(() {
-                                            selectedInterval = newValue;
+                                            selectedEnd = newValue;
                                           });
                                         }
                                       },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: DropdownButtonFormField<String>(
+                                        value: selectedInterval,
+                                        items: recurrenceString.map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 13
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        borderRadius: BorderRadius.circular(10),
+                                        decoration: InputDecoration(
+                                          label: Text(
+                                            'For',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 17
+                                            ),
+                                          ),
+                                          
+                                        ),  
+                                        onChanged: (String? newValue) {
+                                          if (newValue != null) {
+                                            setState(() {
+                                              selectedInterval = newValue;
+                                            });
+                                          }
+                                        },
+                                      ),
                                     ), 
                                   )
                                 ],
+                              ),
+                              Divider(
+                                height: 10,
+                                thickness: 0,
+                                color: Colors.transparent,
+                              ),
+                              Text(
+                                'Ends',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
                               ),
                             ],
                           )
