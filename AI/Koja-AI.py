@@ -98,6 +98,9 @@ def get_training_data:
 
     if response.status_code == 200:
         data = response.json()
+        return jsonify(data)
+    else:
+        return jsonify({'error': 'Failed to fetch data'}), 500
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 6000))
