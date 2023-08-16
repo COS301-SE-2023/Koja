@@ -486,7 +486,9 @@ class UserCalendarService(
         }
 
         for (event in userEvents) {
+            if (event.value.isDynamic()) {
 
+            }
         }
 
         return userEvents.values.toList()
