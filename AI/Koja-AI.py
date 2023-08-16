@@ -97,8 +97,7 @@ def get_training_data:
     response = requests.get(api_url,headers=headers)
 
     if response.status_code == 200:
-
-
+        data = response.json()
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 6000))
