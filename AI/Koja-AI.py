@@ -8,6 +8,7 @@ import os
 
 app = Flask(__name__)
 
+
 def load_data_and_models():
     f = open('test.json')
     data = json.load(f)
@@ -58,7 +59,9 @@ def load_data_and_models():
 
     return user_model_index, weekday_model_index, time_frame_model_index
 
+
 user_model_index, weekday_model_index, time_frame_model_index = load_data_and_models()
+
 
 @app.route('/recommendations', methods=['POST'])
 def recommend_categories():
