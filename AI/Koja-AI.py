@@ -70,14 +70,14 @@ def recommend_categories():
         data = request.get_json()
         user_id = data['userID']
 
-        maxOutput = 7
+        max_output = 7
         _, titles = user_model_index(np.array([user_id]))
 
         recommendations = []
         for category_id in titles[0][:10]:
             # Convert TensorFlow EagerTensor to numpy array
             category_id_np = category_id.numpy().decode("utf-8")
-            _, weekdays = weekday_model_index(np.array([category_id_np]), k=maxOutput)
+            _, weekdays = weekday_model_index(np.array([category_id_np]), k=max_output)
             _, time_frames = time_frame_model_index(np.array([category_id_np]))
 
             recommendations.append({
