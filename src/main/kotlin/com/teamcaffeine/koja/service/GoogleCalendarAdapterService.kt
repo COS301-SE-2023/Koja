@@ -36,7 +36,6 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -418,8 +417,7 @@ class GoogleCalendarAdapterService(
         val lat = userLocation.second.toString().toDouble()
         val lng = userLocation.first.toString().toDouble()
         val travelTime = eventDTO.getTravelTime()
-
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
+        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(40.7128, 74.0060)).await()
         val eventLocaltime = eventStartTime.toZonedDateTime()
             .withZoneSameInstant(timezone.toZoneId())
             .plusSeconds(travelTime)
@@ -602,13 +600,10 @@ class GoogleCalendarAdapterService(
             ?: ZoneId.of("UTC")
     }
 }
-class TimezoneUtility() {
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+class TimezoneUtility(
+    private val userRepository: UserRepository,
+    private val googleCalendarAdapterService: GoogleCalendarAdapterService,
+) {
     fun getTimeOfTimeZone(jwtToken: String): String? {
         val context = GeoApiContext.Builder()
             .apiKey(System.getProperty("API_KEY"))
@@ -617,7 +612,7 @@ class TimezoneUtility() {
         val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
         val lat = userLocation.second.toString().toDouble()
         val lng = userLocation.first.toString().toDouble()
-        return TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await().toString()
+        return TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(40.7128, -74.0060)).await().toString()
     }
 }
 

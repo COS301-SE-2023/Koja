@@ -4,8 +4,10 @@ import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.UserEventDTO
-import com.teamcaffeine.koja.service.TimezoneUtility
+import com.teamcaffeine.koja.repository.UserRepository
+import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserCalendarService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,6 +23,13 @@ import java.time.ZoneId
 @RestController
 @RequestMapping("/api/v1/user/calendar")
 class CalendarController(private val userCalendar: UserCalendarService) {
+
+    @Autowired
+    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
     @PostMapping("/createEvent")
     fun addEvent(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
@@ -97,18 +106,18 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
         try {
-            val timeZoneId = ZoneId.of(TimezoneUtility().getTimeOfTimeZone(token))
+            // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
+            val timeZoneId = ZoneId.of("America/New_York")
             val currentTime = OffsetDateTime.now(timeZoneId)
             event.setStartTime(currentTime)
             event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
-            val updated = userCalendar.updateEvent(token, event)
-            if (updated) {
+            val response = updateEvent(token, event)
+            if (response.statusCode.is2xxSuccessful) {
                 return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
-            } else {
-                return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
             }
         } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+            return ResponseEntity.badRequest().body(e.stackTraceToString())
         }
+        return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
     }
 }

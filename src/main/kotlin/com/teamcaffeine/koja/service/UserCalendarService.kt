@@ -63,7 +63,6 @@ class UserCalendarService(
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
         val calendarAdapters = ArrayList<CalendarAdapterService>()
         val adapterFactory = CalendarAdapterFactoryService(userRepository, userAccountRepository)
-
         for (ua in userAccounts) {
             calendarAdapters.add(adapterFactory.createCalendarAdapter(ua.authProvider))
         }
@@ -77,13 +76,11 @@ class UserCalendarService(
     fun updateEvent(token: String, eventDTO: UserEventDTO): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
-
         for (adapter in calendarAdapters) {
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
-
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
                 return true
