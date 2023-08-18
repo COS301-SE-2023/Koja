@@ -116,16 +116,25 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     fun setSuggestedCalendar(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody eventList: List<UserEventDTO>,
-    ): ResponseEntity<String> {
+    ): ResponseEntity<out Any> {
         if (eventList == null || token == null) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
                 userCalendar.createNewCalendar(token, eventList)
             } catch (e: Exception) {
-                return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+                return ResponseEntity.badRequest().body(e.printStackTrace())
             }
-            return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+            return ResponseEntity.ok("New calendar successfully created.")
+        }
+    }
+
+    @GetMapping("/userEventsKojaSuggestions")
+    fun getAllUserEventsKojaSuggestions(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
+        return if (token == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            ResponseEntity.ok(userCalendar.getAllUserEventsKojaSuggestions(token))
         }
     }
 }

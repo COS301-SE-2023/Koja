@@ -357,6 +357,34 @@ class GoogleCalendarAdapterService(
         }
     }
 
+    override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
+        try {
+            val calendar = buildCalendarService(accessToken)
+
+            val request = calendar.events().list("Koja-Suggestions")
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .setMaxResults(1000)
+
+            val events: Events? = request.execute()
+
+            val userEvents = mutableMapOf<String, UserEventDTO>()
+
+            events?.items?.map {
+                val eventSummary = it.summary ?: ""
+                val eventStartTime = it.start.dateTime ?: it.start.date
+                val eventEndTime = it.end.dateTime ?: it.end.date
+                val key = Base64.getEncoder()
+                    .encodeToString("${eventSummary.trim()}${eventStartTime}$eventEndTime".trim().toByteArray())
+                userEvents[key] = UserEventDTO(it)
+            }
+
+            return userEvents
+        } catch (e: ExpiredJwtException) {
+            return emptyMap()
+        }
+    }
+
     override fun getUserEmail(accessToken: String): String? {
         val credential = GoogleCredential().setAccessToken(accessToken)
         val peopleService = PeopleService.Builder(
@@ -674,6 +702,7 @@ class GoogleCalendarAdapterService(
     override fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
         val calendar = buildCalendarService(accessToken)
         val newCalendar = com.google.api.services.calendar.model.Calendar()
+        newCalendar.summary = "This calendar serves as Koja's generated calendar to optimize your schedule with suggestions."
         newCalendar.id = "Koja-Suggestions"
         calendar.calendars().insert(newCalendar).execute()
         for (event in eventList) {

@@ -18,6 +18,7 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?, appCallBack: Boolean): String
     abstract fun getUserEvents(accessToken: String): Map<String, UserEventDTO>
+    abstract fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO>
 
     abstract fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO>
 
