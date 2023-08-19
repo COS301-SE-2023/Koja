@@ -1,3 +1,4 @@
+import 'package:client/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import '../Utils/date_and_time_util.dart';
 
@@ -83,18 +84,14 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
   String selectedCategory = 'None';
   List<String> recurOptions = ['None', 'Custom'];
 
-  String selectedEnd = 'EndDate';
-  
-  double intervalValue = 1.0;
-
-  static List<String> recurrenceString = [
+  static List<String> recurrenceFor = [
     'day(s)',
     'week(s)',
     'month(s)',
     'year(s)'
   ];
   
-  String selectedFor = recurrenceString[0];
+  String selectedFor = recurrenceFor[0];
   String selectedInterval = intervalString[0];
   String selectedOccurrence = occurrences[0];
   String selectedEnding = endingChoice[0];
@@ -251,7 +248,7 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
                                               child: DropdownButtonFormField<
                                                   String>(
                                                 value: selectedFor,
-                                                items: recurrenceString.map<
+                                                items: recurrenceFor.map<
                                                         DropdownMenuItem<
                                                             String>>(
                                                     (String value) {
@@ -432,8 +429,68 @@ class ChooseRecurrenceState extends State<ChooseRecurrence> {
     );
   }
 
+// FREQ=DAILY;INTERVAL=1;COUNT=10
+// FREQ=DAILY;INTERVAL=1;UNTIL=20200630T183000Z
+
   Future saveRecurrence() async 
   {
+    recurrenceString = '';
+    String selInterval = removeWords(selectedInterval);
+    String selOccurrence = removeWords(selectedOccurrence);
+
+    if(selectedFor == 'day(s)')
+    {
+      recurrenceString = 'FREQ=DAILY;INTERVAL=$selInterval';
+      if(selectedEnding == 'Occurrences')
+      {
+        recurrenceString += ';COUNT=$selOccurrence';
+      }
+      else if(selectedEnding == 'EndDate')
+      {
+        recurrenceString += ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+      }
+    }
+    else if(selectedFor == 'week(s)')
+    {
+      recurrenceString = 'FREQ=WEEKLY;INTERVAL=$selInterval';
+      if(selectedEnding == 'Occurrences')
+      {
+        recurrenceString += ';COUNT=$selOccurrence';
+      }
+      else if(selectedEnding == 'EndDate')
+      {
+        recurrenceString += ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+      }
+    }
+    else if(selectedFor == 'month(s)')
+    {
+      recurrenceString = 'FREQ=MONTHLY;INTERVAL=$selInterval';
+      if(selectedEnding == 'Occurrences')
+      {
+        recurrenceString += ';COUNT=$selOccurrence';
+      }
+      else if(selectedEnding == 'EndDate')
+      {
+        recurrenceString += ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+      }
+    }
+    else if(selectedFor == 'year(s)')
+    {
+      recurrenceString = 'FREQ=YEARLY;INTERVAL=$selInterval';
+      if(selectedEnding == 'Occurrences')
+      {
+        recurrenceString += ';COUNT=$selOccurrence';
+      }
+      else if(selectedEnding == 'EndDate')
+      {
+        recurrenceString += ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+      }
+    }
     
   }
+
+  String removeWords(String input) {
+    return input.replaceAll(RegExp(r'\(.*'), '');
+  }
+
 }

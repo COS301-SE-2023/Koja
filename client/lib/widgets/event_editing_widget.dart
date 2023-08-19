@@ -723,6 +723,11 @@ class EventEditingState extends State<EventEditing> {
         priorityValue = 3;
       }
 
+      // use recurrenceRule to store the recurrence string     
+      if(selectedRecurrence == 'None'){
+        recurrenceString = '';
+      } 
+
       var durationInSeconds = 0;
 
       durationInSeconds =
@@ -742,6 +747,7 @@ class EventEditingState extends State<EventEditing> {
         timeSlots: [timeSlot],
         priority: priorityValue,
         // backgroundColor: selectedColor,
+        recurrenceRule: recurrenceString,  
       );
 
       if (event.location != "") {
