@@ -89,7 +89,7 @@ class ServiceProvider with ChangeNotifier {
 
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
     final String authUrl = '$_serverAddress:$_serverPort/api/v1/auth/app/google';
-    final String callbackUrlScheme = kIsWeb ? _serverAddress : 'koja-login-callback';
+    final String callbackUrlScheme = kIsWeb ? _serverAddress : 'http://localhost:56000';
 
     String? response;
     if (kIsWeb) {

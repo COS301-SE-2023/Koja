@@ -61,7 +61,8 @@ class GoogleCalendarAdapterService(
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
-    private val serverAddress = System.getProperty("SERVER_ADDRESS")
+    private val serverPort = System.getProperty("SERVER_PORT")
+    private val serverAddress = "${System.getProperty("SERVER_ADDRESS")}:$serverPort"
     private val redirectUriBase = "$serverAddress/api/v1/auth"
     private val scopes = listOf(
         "https://www.googleapis.com/auth/calendar",
