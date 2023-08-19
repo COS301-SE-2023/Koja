@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:client/models/user_time_boundary_model.dart';
-import 'package:client/providers/context_provider.dart';
+import 'package:koja/models/user_time_boundary_model.dart';
+import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -88,17 +88,17 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to login the user using AuthController
 
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
-    final String authUrl = '$serverAddress:$serverPort/api/v1/auth/app/google';
-    final String callbackUrlScheme = kIsWeb ? serverAddress : 'koja-login-callback';
+    final String authUrl = '$_serverAddress:$_serverPort/api/v1/auth/app/google';
+    final String callbackUrlScheme = kIsWeb ? _serverAddress : 'koja-login-callback';
 
     String? response;
     if (kIsWeb) {
-      response = await FlutterWebAuth.authenticate(
+      response = await FlutterWebAuth2.authenticate(
         url: authUrl,
         callbackUrlScheme: callbackUrlScheme,
       );
     } else {
-      response = await FlutterWebAuth.authenticate(
+      response = await FlutterWebAuth2.authenticate(
         url: authUrl,
         callbackUrlScheme: callbackUrlScheme,
       );

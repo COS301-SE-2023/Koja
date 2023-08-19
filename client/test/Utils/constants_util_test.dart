@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:client/Utils/constants_util.dart';
+import 'package:koja/Utils/constants_util.dart';
 
 void main(){
   group('Constants Util test', (){

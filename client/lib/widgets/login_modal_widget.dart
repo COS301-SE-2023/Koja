@@ -1,4 +1,4 @@
-import 'package:client/providers/service_provider.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';

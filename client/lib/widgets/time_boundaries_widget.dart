@@ -1,4 +1,4 @@
-import 'package:client/widgets/time_category_list.dart';
+import 'package:koja/widgets/time_category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
