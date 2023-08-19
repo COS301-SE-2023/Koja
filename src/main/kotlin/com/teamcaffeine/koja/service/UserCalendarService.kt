@@ -78,6 +78,7 @@ class UserCalendarService(
 
         return userEvents.values.toList()
     }
+
     @Transactional
     fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
@@ -486,7 +487,6 @@ class UserCalendarService(
     fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>) {
         val userJWTTokenData = getUserJWTTokenData(accessToken)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
-
         for (adapter in calendarAdapters) {
             adapter.createNewCalendar(accessToken, eventList)
             for (event in eventList) {
