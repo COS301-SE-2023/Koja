@@ -208,6 +208,8 @@ class EventEditingState extends State<EventEditing> {
                 ),
                 const SizedBox(height: 12),
                 if (widget.event != null) deleteEventButton(),
+                if (widget.event != null && widget.event?.recurrenceRule != '')
+                  deleteRecurringEventsButton(),
               ],
             )),
       ),
@@ -279,6 +281,22 @@ class EventEditingState extends State<EventEditing> {
           }
         },
         child: const Text('Delete Event'),
+      ),
+    );
+  }
+
+  Widget deleteRecurringEventsButton() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          if (widget.event != null) {
+            // loop around all events and delete events with same name and recurrence rule using deleteEvent
+            Provider.of<ContextProvider>(context, listen: false)
+                .deleteEvent(widget.event!);
+            Navigator.of(context).pop();
+          }
+        },
+        child: const Text('Delete Recurring Events'),
       ),
     );
   }
