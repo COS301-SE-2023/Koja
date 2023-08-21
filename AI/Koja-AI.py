@@ -95,16 +95,17 @@ def retrain_for_new_users(training_data):
     events_data = clean_training_data(training_data)
 
 
-now = datetime.datetime.now()
-next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0)
-if now > next_retrain_time:
-    next_retrain_time += datetime.timedelta(days=1)
+def auto_scheduler(training_data):
+    now = datetime.datetime.now()
+    next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0)
+    if now > next_retrain_time:
+        next_retrain_time += datetime.timedelta(days=1)
 
-schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users(training_data))
+    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users(training_data))
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 @app.route('/recommendations', methods=['POST'])
@@ -148,5 +149,6 @@ def get_training_data():
 
 
 if __name__ == "__main__":
+    auto_scheduler(get_training_data())
     port = int(os.getenv("PORT", 6000))
     app.run(host='0.0.0.0', port=port, debug=True)
