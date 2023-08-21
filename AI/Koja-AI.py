@@ -63,6 +63,7 @@ def load_data_and_models():
 
 user_model_index, weekday_model_index, time_frame_model_index = load_data_and_models()
 
+
 def clean_training_data(training_data):
     data = json.load(training_data)
     all_events = []
@@ -85,8 +86,8 @@ def clean_training_data(training_data):
         return all_events
 
 
-
 def retrain_for_new_users(training_data):
+    events_data = clean_training_data(training_data)
 
 
 @app.route('/recommendations', methods=['POST'])
