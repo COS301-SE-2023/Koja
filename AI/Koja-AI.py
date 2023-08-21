@@ -107,11 +107,6 @@ while True:
     time.sleep(1)
 
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-
-
 @app.route('/recommendations', methods=['POST'])
 def recommend_categories():
     if request.is_json:
