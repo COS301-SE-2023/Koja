@@ -1,3 +1,4 @@
+import datetime
 import json
 from abc import ABC
 from typing import Dict, Text
@@ -202,7 +203,11 @@ category_model.save("category_model")
 weekday_model.save("weekday_model")
 time_frame_model.save("time_frame_model")
 
-schedule.every(24).hours.do(retrain_for_new_users(training_data))
+now = datetime.datetime.now()
+next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0)
+if now > next_retrain_time:
+    next_retrain_time += datetime.timedelta(days=1)
+
 
 while True:
     schedule.run_pending()
