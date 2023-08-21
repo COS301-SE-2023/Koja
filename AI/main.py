@@ -208,6 +208,9 @@ next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0)
 if now > next_retrain_time:
     next_retrain_time += datetime.timedelta(days=1)
 
+schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users(training_data))
+
+
 
 while True:
     schedule.run_pending()
