@@ -476,7 +476,7 @@ class UserCalendarService(
         return toReturn
     }
 
-    fun getAllUserDynamicEvents(token: String): List<UserEventDTO> {
+    fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
@@ -493,9 +493,6 @@ class UserCalendarService(
                 }
             }
         }
-        userEvents.values.toList()
-
-        val userDynamicEvents = mutableMapOf<String, UserEventDTO>()
 
         val dynamicEvents = mutableMapOf<String, UserEventDTO>()
         for (event in userEvents) {
@@ -506,4 +503,5 @@ class UserCalendarService(
 
         return dynamicEvents.values.toList()
     }
+
 }

@@ -483,7 +483,6 @@ class GoogleCalendarAdapterService(
 =======
             .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
             .setRecurrence(eventDTO.getRecurrence())
->>>>>>> b32ba45 (Created frequency object for recurrence support)
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
         // TODO: Shift extended properties to values in the description
