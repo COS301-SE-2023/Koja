@@ -3,8 +3,6 @@ import json
 from abc import ABC
 from typing import Dict, Text
 import requests
-import time
-import schedule
 import pandas as pd
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
