@@ -2,6 +2,8 @@ import json
 from abc import ABC
 from typing import Dict, Text
 import requests
+import time
+import schedule
 import pandas as pd
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
@@ -199,3 +201,9 @@ user_model.save("user_model")
 category_model.save("category_model")
 weekday_model.save("weekday_model")
 time_frame_model.save("time_frame_model")
+
+schedule.every(24).hours.do(retrain_for_new_users(training_data))
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
