@@ -63,6 +63,32 @@ def load_data_and_models():
 
 user_model_index, weekday_model_index, time_frame_model_index = load_data_and_models()
 
+def clean_training_data(training_data):
+    data = json.load(training_data)
+    all_events = []
+
+    for block in data:
+        expanded_events = []
+        for event in block['training'] + block['testing']:
+            for time_frame in event['timeFrame']:
+                new_event = event.copy()
+                new_event['startTime'] = time_frame['first'].strip()
+                new_event['endTime'] = time_frame['second'].strip()
+                new_event['category'] = event['category'].strip()
+                new_event['weekday'] = event['weekday'].strip()
+                new_event['userID'] = event['userID'].strip()
+                new_event['timeFrame'] = f"{new_event['startTime']}-{new_event['endTime']}"
+                expanded_events.append(new_event)
+
+        all_events += expanded_events
+
+        return all_events
+
+
+
+def retrain_for_new_users(training_data):
+
+
 @app.route('/recommendations', methods=['POST'])
 def recommend_categories():
     if request.is_json:
