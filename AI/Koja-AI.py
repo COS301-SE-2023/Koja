@@ -63,6 +63,11 @@ def load_data_and_models():
 
 user_model_index, weekday_model_index, time_frame_model_index = load_data_and_models()
 
+def load_model():
+    user_model = tf.keras.models.load_model("user_model")
+    category_model = tf.keras.models.load_model("category_model")
+    weekday_model = tf.keras.models.load_model("weekday_model")
+    time_frame_model = tf.keras.models.load_model("time_frame_model")
 
 @app.route('/recommendations', methods=['POST'])
 def recommend_categories():
