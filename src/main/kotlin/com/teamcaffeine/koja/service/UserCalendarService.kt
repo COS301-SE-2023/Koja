@@ -487,11 +487,15 @@ class UserCalendarService(
                 }
             }
         }
-        userEvents.
+        userEvents.values.toList()
 
         val userDynamicEvents = mutableMapOf<String, UserEventDTO>()
 
-        for ()
+        for (event in userEvents) {
+            if (event.value.isDynamic()) {
+                userDynamicEvents.put(event.key, event.value)
+            }
+        }
 
         return userDynamicEvents.values.toList()
     }
