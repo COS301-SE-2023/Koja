@@ -503,66 +503,20 @@ class UserCalendarService(
         return todayEvents.values.toList()
     }
 
-    fun sortEventsAccordingToPriority(token: String): List<UserEventDTO>{
-        return getAllUserDynamicEvents(token)
-            .filter { it.isDynamic() }
-            .sortedBy { it.getPriority() }
-    }
-
-    Sure, to reassign the earliest time to events with higher priority while maintaining their order, you'll need to adjust the start times of the events based on their priority levels. Here's how you can modify your code to achieve this:
-
-    kotlin
-    Copy code
-    import java.time.LocalDate
-    import java.time.LocalDateTime
-    import java.time.ZoneId
-
-    fun getAllUserDynamicEvents(token: String): List<UserEventDTO> {
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
-
-        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
-
-        val userEvents = mutableListOf<UserEventDTO>()
-
-        for (adapter in calendarAdapters) {
-            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val userAuthDetails = userJWTTokenData.userAuthDetails
-            for (authDetails in userAuthDetails) {
-                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
-                    val accessToken = authDetails.getAccessToken()
-                    userEvents.addAll(adapter.getUserEvents(accessToken).values)
-                }
-            }
-        }
-
-        val todayEvents = mutableListOf<UserEventDTO>()
-
-        val currentDate = LocalDate.now()
-        val currentDateTime = LocalDateTime.now(ZoneId.systemDefault())
-
-        for (event in userEvents) {
-            val eventDateTime = event.getEventDateTime() // Modify this to get the event's LocalDateTime
-
-            if (event.isDynamic() && eventDateTime.toLocalDate() == currentDate && eventDateTime.isAfter(currentDateTime)) {
-                todayEvents.add(event)
-            }
-        }
-
-        return reassignEarliestTimes(todayEvents.value.toList())
-    }
-
     fun reassignEarliestTimes(events: List<UserEventDTO>): List<UserEventDTO> {
         val sortedEvents = events
+            .filter { it.isDynamic() }
+            .sortedBy { it.getPriority() }
 
         val assignedEvents = mutableListOf<UserEventDTO>()
-        var currentDateTime = LocalDateTime.now(ZoneId.systemDefault())
+        var currentDateTime = OffsetDateTime.now()
 
         for (event in sortedEvents) {
-            val eventDateTime = event.getEventDateTime()
+            val eventDateTime = event.getStartTime()
             if (eventDateTime.isAfter(currentDateTime)) {
                 currentDateTime = eventDateTime
             }
-            assignedEvents.add(event.copy(eventDateTime = currentDateTime))
+            assignedEvents.add(event.getStartTime(currentDateTime))
         }
 
         return assignedEvents
