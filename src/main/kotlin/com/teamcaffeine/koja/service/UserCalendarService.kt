@@ -503,4 +503,10 @@ class UserCalendarService(
         return todayEvents.values.toList()
     }
 
+    fun sortEventsAccordingToPriority(token: String): List<UserEventDTO>{
+        return getAllUserDynamicEvents(token)
+            .filter { it.isDynamic() }
+            .sortedBy { it.getPriority() }
+    }
+
 }
