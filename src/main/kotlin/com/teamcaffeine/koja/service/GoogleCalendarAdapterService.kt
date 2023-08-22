@@ -358,7 +358,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
+    fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -476,11 +476,6 @@ class GoogleCalendarAdapterService(
             .setDescription(description)
             .setLocation(eventDTO.getLocation())
             .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
-<<<<<<< HEAD
-            .setEnd(
-                EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
-            )
-=======
             .setEnd(EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()))
             .setRecurrence(eventDTO.getRecurrence())
 
@@ -510,7 +505,7 @@ class GoogleCalendarAdapterService(
         return createdEvent
     }
 
-    override fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
+    fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val eventStartTime = eventDTO.getStartTime()
@@ -712,7 +707,7 @@ class GoogleCalendarAdapterService(
             ?: ZoneId.of("UTC")
     }
 
-    override fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
+    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
         val calendar = buildCalendarService(accessToken)
         val newCalendar = Calendar()
         newCalendar.summary = "This calendar serves as Koja's generated calendar to optimize your schedule with suggestions."
