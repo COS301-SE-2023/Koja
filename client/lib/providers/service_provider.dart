@@ -54,7 +54,7 @@ class ServiceProvider with ChangeNotifier {
         Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-emails');
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
@@ -71,7 +71,7 @@ class ServiceProvider with ChangeNotifier {
         Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-user-events');
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
@@ -133,7 +133,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: email,
     );
@@ -150,7 +150,7 @@ class ServiceProvider with ChangeNotifier {
         Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/linked-emails');
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
@@ -170,7 +170,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
     );
 
@@ -191,7 +191,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );
@@ -206,7 +206,7 @@ class ServiceProvider with ChangeNotifier {
         '$_serverAddress:$_serverPort', '/api/v1/user/calendar/userEvents');
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
@@ -225,7 +225,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );
@@ -241,7 +241,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );
@@ -262,7 +262,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: {
         'placeId': placeID,
@@ -283,7 +283,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: {
         'placeId': placeID,
@@ -323,7 +323,7 @@ class ServiceProvider with ChangeNotifier {
       'destLng': destLng.toString(),
     });
     final response =
-        await http.get(url, headers: {'Authorisation': _accessToken!});
+        await http.get(url, headers: {'Authorization': _accessToken!});
 
     if (response.statusCode == 200) {
       String travelTime = response.body;
@@ -347,7 +347,7 @@ class ServiceProvider with ChangeNotifier {
 
       await http.post(
         url,
-        headers: {'Authorisation': _accessToken!},
+        headers: {'Authorization': _accessToken!},
         body: requestBody,
       );
     }
@@ -402,7 +402,7 @@ class ServiceProvider with ChangeNotifier {
     final url = Uri.http(
         '$_serverAddress:$_serverPort', '/api/v1/user/getAllTimeBoundary');
     final response =
-        await http.get(url, headers: {'Authorisation': _accessToken!});
+        await http.get(url, headers: {'Authorization': _accessToken!});
 
     if (response.statusCode == 200) {
       final List<dynamic> timeBoundariesJson = jsonDecode(response.body);
@@ -438,7 +438,7 @@ class ServiceProvider with ChangeNotifier {
 
             await http.post(
               url,
-              headers: {'Authorisation': accessToken},
+              headers: {'Authorization': accessToken},
               body: requestBody,
             );
           });
@@ -462,7 +462,7 @@ class ServiceProvider with ChangeNotifier {
 
       final response = await http.post(
         url,
-        headers: {'Authorisation': _accessToken!},
+        headers: {'Authorization': _accessToken!},
         body: requestBody,
       );
 
@@ -486,7 +486,7 @@ class ServiceProvider with ChangeNotifier {
 
     final response = await http.get(
       url,
-      headers: {'Authorisation': 'Bearer $_accessToken'},
+      headers: {'Authorization': 'Bearer $_accessToken'},
     );
 
     if (response.statusCode == 200) {

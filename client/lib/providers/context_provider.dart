@@ -20,12 +20,11 @@ class ContextProvider extends ChangeNotifier {
   }
 
   void startUpdater() {
+    getData();
     final timer = Timer.periodic(Duration(seconds: 5), (timer) {
       if (_accessToken != null) {
-        getEventsFromAPI(_accessToken!);
-        getUserTimeslots(_accessToken!);
-        getAllUserEmails();
-        timer.cancel();
+        getData();
+        if(kDebugMode) timer.cancel();
       } else {
         timer.cancel();
       }
@@ -33,6 +32,12 @@ class ContextProvider extends ChangeNotifier {
     if (kDebugMode) {
       print(timer);
     }
+  }
+
+  void getData() {
+    getEventsFromAPI(_accessToken!);
+    getUserTimeslots(_accessToken!);
+    getAllUserEmails();
   }
 
   List<EventWrapper> _eventWrappers = [];
