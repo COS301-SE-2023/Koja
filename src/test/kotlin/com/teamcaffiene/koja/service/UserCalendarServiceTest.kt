@@ -260,7 +260,7 @@ class UserCalendarServiceTest {
         // Assert
         Assertions.assertTrue(result)
         Assertions.assertNull(timeBoundary1.user)
-        Assertions.assertEquals(1, mockUser.getUserTimeBoundaries()?.size)
+        Assertions.assertEquals(1, mockUser.getUserTimeBoundaries().size)
         Mockito.verify(userRepository).save(mockUser)
     }
 
@@ -391,7 +391,6 @@ class UserCalendarServiceTest {
         val mockUser = User()
         mockUser.addTimeBoundary(timeBoundary1)
         mockUser.addTimeBoundary(timeBoundary2)
-        val optionalUserValue = Optional.of(mockUser)
 
         // mock
         whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)

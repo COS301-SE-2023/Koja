@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import '../Utils/constants_util.dart';
-import '../providers/event_provider.dart';
+import '../providers/context_provider.dart';
 
 class UpcomingEvents extends StatelessWidget {
-  final EventProvider eventProvider;
+  final ContextProvider eventProvider;
 
   const UpcomingEvents({required this.eventProvider});
 
@@ -13,7 +13,11 @@ class UpcomingEvents extends StatelessWidget {
   Widget build(BuildContext context) {
     final events = eventProvider.events;
     final currentTime = DateTime.now();
-    final upcomingEvents = events.where((event) => event.from.isAfter(currentTime) || (event.from.isBefore(currentTime) && event.to.isAfter(currentTime))).toList();
+    final upcomingEvents = events
+        .where((event) =>
+            event.from.isAfter(currentTime) ||
+            (event.from.isBefore(currentTime) && event.to.isAfter(currentTime)))
+        .toList();
 
     final eventList = upcomingEvents.take(6).toList();
 
@@ -29,13 +33,14 @@ class UpcomingEvents extends StatelessWidget {
       child: ListView.builder(
         itemCount: itemCount,
         itemBuilder: (context, index) {
-
           final event = eventList[index];
           final fromformattedTime = DateFormat('HH:mm').format(event.from);
           final toformattedTime = DateFormat('HH:mm').format(event.to);
           final formattedDate = DateFormat('EEEE').format(event.from);
 
-          if (index == 0 && eventList[index].from.isBefore(currentTime) && eventList[index].to.isAfter(currentTime)) {
+          if (index == 0 &&
+              eventList[index].from.isBefore(currentTime) &&
+              eventList[index].to.isAfter(currentTime)) {
             return ListTile(
               leading: Container(
                 height: 70,

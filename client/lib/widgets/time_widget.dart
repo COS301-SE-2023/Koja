@@ -30,6 +30,14 @@ class _TimePickerOptionsState extends State<TimePickerOptions> {
   MaterialTapTargetSize tapTargetSize = MaterialTapTargetSize.padded;
   bool use24HourTime = true;
 
+  // void _use24HourTimeChanged(bool? value) {
+  //   if (value != use24HourTime) {
+  //     setState(() {
+  //       use24HourTime = value!;
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Material(

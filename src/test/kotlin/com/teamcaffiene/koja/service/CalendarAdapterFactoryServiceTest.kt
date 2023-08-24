@@ -1,10 +1,13 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.CalendarAdapterFactoryService
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class CalendarAdapterFactoryServiceTest {
     private lateinit var userRepository: UserRepository
@@ -27,12 +30,12 @@ internal class CalendarAdapterFactoryServiceTest {
 //        assertEquals(GoogleCalendarAdapterService::class.java, result::class.java)
 //    }
 
-//    @Test
-//    fun `createCalendarAdapter should throw IllegalArgumentException for invalid AuthProviderEnum value`() {
-//        val authProvider = AuthProviderEnum.NONE
-//
-//        assertThrows(IllegalArgumentException::class.java) {
-//            calendarAdapterFactoryService.createCalendarAdapter(authProvider)
-//        }
-//    }
+    @Test
+    fun `createCalendarAdapter should throw IllegalArgumentException for invalid AuthProvider`() {
+        val authProvider = AuthProviderEnum.NONE
+
+        assertThrows(IllegalArgumentException::class.java) {
+            calendarAdapterFactoryService.createCalendarAdapter(authProvider)
+        }
+    }
 }
