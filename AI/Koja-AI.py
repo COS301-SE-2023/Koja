@@ -111,7 +111,17 @@ def auto_train_new(training_data):
         time.sleep(1)
 
 
+def auto_train_all(training_data):
+    now = datetime.datetime.now()
+    next_retrain_time = now + datetime.timedelta(days=7)
 
+    # Schedule the retraining to occur every 7 days
+    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users(training_data))
+
+    # Start the scheduling loop
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 @app.route('/recommendations', methods=['POST'])
 def recommend_categories():
