@@ -7,7 +7,6 @@ import tensorflow as tf
 import tensorflow_recommenders as tfrs
 import json
 import time
-import schedule
 import datetime
 
 import os
@@ -94,6 +93,7 @@ def clean_training_data(training_data):
 def retrain_for_new_users(training_data):
     events_data = clean_training_data(training_data)
 
+
 def retrain_for_all_users(training_data):
     events_data = clean_training_data(training_data)
 
@@ -122,6 +122,7 @@ def auto_train_all(training_data):
     while True:
         schedule.run_pending()
         time.sleep(1)
+
 
 @app.route('/recommendations', methods=['POST'])
 def recommend_categories():
