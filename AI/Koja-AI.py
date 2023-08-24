@@ -166,5 +166,6 @@ def get_training_data():
 
 if __name__ == "__main__":
     auto_train_new(get_training_data())
+    auto_train_new(get_training_data())
     port = int(os.getenv("PORT", 6000))
     app.run(host='0.0.0.0', port=port, debug=True)
