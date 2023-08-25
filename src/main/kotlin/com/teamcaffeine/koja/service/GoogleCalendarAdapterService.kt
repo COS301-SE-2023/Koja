@@ -129,7 +129,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?, deviceType: AuthProviderEnum): String {
+    override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -142,10 +142,23 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
+
+        if (deviceType == CallbackConfigEnum.WEB) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/desktop/google/callback")
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL){
+            parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
+        }
+
         if (!appCallBack) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
         } else {
-            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
+
         }
 
         val requestEntity = HttpEntity(parameters, headers)
