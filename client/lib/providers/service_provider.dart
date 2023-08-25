@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:koja/models/user_time_boundary_model.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -89,27 +90,52 @@ class ServiceProvider with ChangeNotifier {
 
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
     final String authUrl = '$_serverAddress:$_serverPort/api/v1/auth/app/google';
-    final String callbackUrlScheme = kIsWeb ? _serverAddress : 'http://localhost:56000';
 
-    String? response;
-    if (kIsWeb) {
-      response = await FlutterWebAuth2.authenticate(
-        url: authUrl,
-        callbackUrlScheme: callbackUrlScheme,
-      );
-    } else {
-      response = await FlutterWebAuth2.authenticate(
-        url: authUrl,
-        callbackUrlScheme: callbackUrlScheme,
-      );
+    // Determine the callback URL scheme based on the platform
+    final String callbackUrlScheme = kIsWeb
+        ? _serverAddress
+        : (Platform.isWindows || Platform.isLinux)
+            ? 'http://localhost:43824'
+            : 'koja-login-callback';
+
+    HttpServer? server;
+
+    // Start the local server for Windows or Linux platforms
+    if (Platform.isWindows || Platform.isLinux) {
+      server = await HttpServer.bind('127.0.0.1', 43823);
+      server.listen((req) async {
+        req.response.headers.add('Content-Type', 'text/html');
+        req.response.write(
+          html.replaceFirst(
+            'CALLBACK_URL_HERE',
+            'http://localhost:43824/success?code=1337',
+          ),
+        );
+        await req.response.close();
+      });
     }
 
-    response = Uri.parse(response).queryParameters['token'];
+    try {
+      final result = await FlutterWebAuth2.authenticate(
+        url: authUrl,
+        callbackUrlScheme: callbackUrlScheme,
+      );
 
-    setAccessToken(response, eventProvider);
-    storeUserLocation();
+      final response = Uri.parse(result).queryParameters['token'];
 
-    return accessToken != null;
+      setAccessToken(response, eventProvider);
+      storeUserLocation();
+
+      return accessToken != null;
+    } on PlatformException catch (e) {
+      if (kDebugMode) print('Authentication error: $e');
+      return false;
+    } finally {
+      // Close the server after authentication is done
+      if (server != null) {
+        await server.close(force: true);
+      }
+    }
   }
 
   /// This function will attempt to add another email using UserAccountController
