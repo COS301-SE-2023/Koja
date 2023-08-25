@@ -48,11 +48,8 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
 
     @Transactional
     @GetMapping("/desktop/google/callback")
-    fun handleGoogleOAuth2CallbackDesktop(@RequestParam("code") authCode: String?): ResponseEntity<String> {
+    fun handleGoogleOAuth2CallbackDesktop(@RequestParam("code") authCode: String?): RedirectView {
         val jwt = googleCalendarAdapter.oauth2Callback(authCode, CallbackConfigEnum.DESKTOP)
-        return ResponseEntity.ok()
-            .header("Authorization", "Bearer $jwt")
-            .body("Authentication successful")
+        return RedirectView("http://localhost:43823?token=$jwt")
     }
-
 }

@@ -155,12 +155,6 @@ class GoogleCalendarAdapterService(
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
-        if (!appCallBack) {
-            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
-        } else {
-
-        }
-
         val requestEntity = HttpEntity(parameters, headers)
 
         val builder = UriComponentsBuilder

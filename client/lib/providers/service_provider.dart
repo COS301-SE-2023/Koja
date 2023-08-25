@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:koja/Utils/constants_util.dart';
 import 'package:koja/models/user_time_boundary_model.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -24,17 +25,40 @@ class ServiceProvider with ChangeNotifier {
 
   String? get accessToken => _accessToken;
   Position? get locationData => _locationData;
+  final int localServerPort = 43823;
 
   factory ServiceProvider() => _instance;
 
   static final ServiceProvider _instance = ServiceProvider._internal();
 
   ServiceProvider._internal() {
+    // startServer();
     init();
+  }
+  
+  Future<void> startServer() async {
+    final server = await HttpServer.bind('127.0.0.1', localServerPort);
+
+    server.listen((req) async {
+      req.response.headers.add('Content-Type', 'text/html');
+      req.response.write(
+        (Platform.isWindows || Platform.isLinux)
+            ? html.replaceFirst(
+                'CALLBACK_URL_HERE',
+                "http://localhost:$localServerPort/success?code=1337",
+              )
+            : html.replaceFirst(
+                'CALLBACK_URL_HERE',
+                'foobar://success?code=1337',
+              ),
+      );
+
+      await req.response.close();
+    });
   }
 
   Future<ServiceProvider> init() async {
-    startLocationListner();
+    // startLocationListner(); TODO : FIX THIS
     _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
     _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
     return this;
@@ -89,36 +113,23 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to login the user using AuthController
 
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
-    final String authUrl = '$_serverAddress:$_serverPort/api/v1/auth/app/google';
+    final String authUrl = kIsWeb
+        ? 'http://$_serverAddress:$_serverPort/api/v1/auth/google'
+        : (Platform.isWindows || Platform.isLinux)
+            ? 'http://$_serverAddress:$_serverPort/api/v1/auth/desktop/google'
+            : 'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
 
-    // Determine the callback URL scheme based on the platform
-    final String callbackUrlScheme = kIsWeb
+    final String callBackScheme = kIsWeb
         ? _serverAddress
         : (Platform.isWindows || Platform.isLinux)
-            ? 'http://localhost:43824'
+            ? "http://localhost:$localServerPort"
             : 'koja-login-callback';
-
-    HttpServer? server;
-
-    // Start the local server for Windows or Linux platforms
-    if (Platform.isWindows || Platform.isLinux) {
-      server = await HttpServer.bind('127.0.0.1', 43823);
-      server.listen((req) async {
-        req.response.headers.add('Content-Type', 'text/html');
-        req.response.write(
-          html.replaceFirst(
-            'CALLBACK_URL_HERE',
-            'http://localhost:43824/success?code=1337',
-          ),
-        );
-        await req.response.close();
-      });
-    }
 
     try {
       final result = await FlutterWebAuth2.authenticate(
         url: authUrl,
-        callbackUrlScheme: callbackUrlScheme,
+        callbackUrlScheme: callBackScheme,
+        preferEphemeral: true,
       );
 
       final response = Uri.parse(result).queryParameters['token'];
@@ -130,11 +141,6 @@ class ServiceProvider with ChangeNotifier {
     } on PlatformException catch (e) {
       if (kDebugMode) print('Authentication error: $e');
       return false;
-    } finally {
-      // Close the server after authentication is done
-      if (server != null) {
-        await server.close(force: true);
-      }
     }
   }
 
