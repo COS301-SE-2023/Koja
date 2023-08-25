@@ -271,7 +271,7 @@ class UserCalendarService(
                     priority = 0,
                     recurrence = mutableListOf("")
 
-                    ),
+                ),
             )
         }
         userEventsUpdated.addAll(unavailableTimeSlotsAsEvents)
