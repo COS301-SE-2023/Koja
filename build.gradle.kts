@@ -53,6 +53,7 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     implementation("software.amazon.awssdk:dynamodb:2.20.115")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.withType<KotlinCompile> {
@@ -68,4 +69,9 @@ tasks.withType<Test> {
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+}
+
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "17"
 }
