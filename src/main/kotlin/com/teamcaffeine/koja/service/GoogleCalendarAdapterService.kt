@@ -31,8 +31,8 @@ import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
-import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -91,7 +91,7 @@ class GoogleCalendarAdapterService(
             "$redirectUriBase/app/google/callback"
         } else if (deviceType == CallbackConfigEnum.DESKTOP) {
             "$redirectUriBase/desktop/google/callback"
-        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL){
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
             "$serverAddress/api/v1/user/auth/add-email/callback"
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
@@ -150,7 +150,7 @@ class GoogleCalendarAdapterService(
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
         } else if (deviceType == CallbackConfigEnum.DESKTOP) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/desktop/google/callback")
-        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL){
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)

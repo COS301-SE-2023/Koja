@@ -3,8 +3,8 @@ package com.teamcaffeine.koja.service
 import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
-import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.view.RedirectView
