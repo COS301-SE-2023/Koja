@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:koja/Utils/constants_util.dart';
 import 'package:koja/models/user_time_boundary_model.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +20,6 @@ class ServiceProvider with ChangeNotifier {
 
   String? _accessToken;
   Position? _locationData;
-  StreamSubscription<Position>? _locationSubscription;
 
   String? get accessToken => _accessToken;
   Position? get locationData => _locationData;
@@ -454,17 +452,17 @@ class ServiceProvider with ChangeNotifier {
   /// This function will start listening to the location stream
   Future<void> _listenLocationStream() async {
     if (await _checkAndRequestPermission()) {
-      final LocationSettings locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 100,
-      );
-      StreamSubscription<Position> positionStream =
-          Geolocator.getPositionStream(locationSettings: locationSettings)
-              .listen((Position? position) {
-        if (position != null) {
-          setLocationData(position);
-        }
-      });
+      // final LocationSettings locationSettings = LocationSettings(
+      //   accuracy: LocationAccuracy.high,
+      //   distanceFilter: 100,
+      // );
+      // StreamSubscription<Position> positionStream =
+      //     Geolocator.getPositionStream(locationSettings: locationSettings)
+      //         .listen((Position? position) {
+      //   if (position != null) {
+      //     setLocationData(position);
+      //   }
+      // });
     }
   }
 
@@ -472,8 +470,8 @@ class ServiceProvider with ChangeNotifier {
   Future<bool> _checkAndRequestPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
-    final locatorPlatform = GeolocatorPlatform.instance;
-    final val = await locatorPlatform.openLocationSettings();
+    // final locatorPlatform = GeolocatorPlatform.instance;
+    // final val = await locatorPlatform.openLocationSettings();
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (serviceEnabled) {

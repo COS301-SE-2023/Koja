@@ -4,5 +4,5 @@ enum class CallbackConfigEnum {
     WEB,
     MOBILE,
     DESKTOP,
-    ADD_EMAIL
+    ADD_EMAIL,
 }
