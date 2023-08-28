@@ -239,8 +239,8 @@ class UserCalendarService(
         val sortedAvailableTimeSlots = eventTimeslots
             .filter {
                 it.endTime.isAfter(currentDateTime) &&
-                        Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
-                        it.type == TimeBoundaryType.ALLOWED
+                    Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
+                    it.type == TimeBoundaryType.ALLOWED
             }
             .sortedBy { it.startTime }
 
@@ -289,22 +289,14 @@ class UserCalendarService(
                     val userEventEndTime = it.getEndTime()
 
                     (userEventEndTime.isAfter(potentialStartTime) && userEventStartTime.isBefore(potentialStartTime)) ||
-                            (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
-                            (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(
-                                potentialEndTime
-                            )) ||
-                            (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(
-                                potentialEndTime
-                            )) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(
-                                potentialEndTime
-                            )) ||
-                            (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
-                            (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(
-                                potentialStartTime
-                            )) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
+                        (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                        (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
                 }
 
                 if (conflictingEvent == null) {
