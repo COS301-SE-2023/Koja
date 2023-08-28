@@ -2,6 +2,7 @@ package com.teamcaffeine.koja.controller
 
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserAccountManagerService
 import jakarta.servlet.http.HttpServletRequest
@@ -27,7 +28,7 @@ class UserAccountManagerController(
         return if (token == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
-            return googleCalendarAdapter.setupConnection(request, false, addAdditionalAccount = true, token = token)
+            return googleCalendarAdapter.setupConnection(request, CallbackConfigEnum.ADD_EMAIL, addAdditionalAccount = true, token = token)
         }
     }
 

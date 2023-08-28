@@ -198,7 +198,8 @@ class UserCalendarService(
         }
 
         if (eventDTO.isDynamic()) {
-            val newEventDuration = (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
+            val newEventDuration =
+                (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
             eventDTO.setDuration(newEventDuration)
 
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
@@ -265,7 +266,6 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
-
                 ),
             )
         }
@@ -368,7 +368,7 @@ class UserCalendarService(
     fun getUserTimeBoundaryAndLocation(token: String, name: String?): Pair<TimeBoundary?, String?> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token) ?: return Pair(null, null)
         val user = userRepository.findById(userJWTTokenData.userID).get()
-        var timeBoundary: TimeBoundary ? = null
+        var timeBoundary: TimeBoundary? = null
 
         if (user != null && name != null) {
             for (i in 0..(user.getUserTimeBoundaries()?.size ?: 0))
@@ -461,5 +461,35 @@ class UserCalendarService(
             }
         }
         return toReturn
+    }
+
+    fun getAllUserDynamicEvents(token: String): List<UserEventDTO> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+
+        val userEvents = mutableMapOf<String, UserEventDTO>()
+
+        for (adapter in calendarAdapters) {
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEvents(accessToken))
+                }
+            }
+        }
+        userEvents.values.toList()
+
+        val userDynamicEvents = mutableMapOf<String, UserEventDTO>()
+
+        for (event in userEvents) {
+            if (event.value.isDynamic()) {
+                userDynamicEvents.put(event.key, event.value)
+            }
+        }
+
+        return userDynamicEvents.values.toList()
     }
 }

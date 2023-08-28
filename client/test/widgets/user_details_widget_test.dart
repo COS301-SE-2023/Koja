@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/widgets/user_details_widget.dart';
+import 'package:koja/widgets/user_details_widget.dart';
 
 void main() {
   testWidgets('UserDetails Widget Test', (WidgetTester tester) async {

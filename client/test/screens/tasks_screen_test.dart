@@ -1,9 +1,9 @@
-import 'package:client/screens/suggestions_screens.dart';
+import 'package:koja/screens/suggestions_screens.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/screens/tasks_screen.dart';
-import 'package:client/providers/context_provider.dart';
+import 'package:koja/screens/tasks_screen.dart';
+import 'package:koja/providers/context_provider.dart';
 
 void main() {
   testWidgets('Tasks Screen Test', (WidgetTester tester) async {

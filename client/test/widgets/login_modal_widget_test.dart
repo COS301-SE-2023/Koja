@@ -1,9 +1,9 @@
-import 'package:client/providers/context_provider.dart';
-import 'package:client/providers/service_provider.dart';
+import 'package:koja/providers/context_provider.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/widgets/login_modal_widget.dart';
+import 'package:koja/widgets/login_modal_widget.dart';
 import 'package:provider/provider.dart';
 
 void main(){
