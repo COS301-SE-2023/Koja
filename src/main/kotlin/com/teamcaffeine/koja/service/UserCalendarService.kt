@@ -263,7 +263,6 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
-
                 ),
             )
         }
