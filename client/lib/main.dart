@@ -1,5 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:client/providers/service_provider.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

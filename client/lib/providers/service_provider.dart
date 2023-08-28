@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:client/models/user_time_boundary_model.dart';
-import 'package:client/providers/context_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:koja/models/user_time_boundary_model.dart';
+import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:fl_location/fl_location.dart';
 import 'package:intl/intl.dart';
 
 import '../Utils/event_util.dart';
@@ -17,22 +19,44 @@ class ServiceProvider with ChangeNotifier {
   late String _serverPort;
 
   String? _accessToken;
-  Location? _locationData;
-  StreamSubscription<Location>? _locationSubscription;
+  Position? _locationData;
 
   String? get accessToken => _accessToken;
-  Location? get locationData => _locationData;
+  Position? get locationData => _locationData;
+  final int localServerPort = 43823;
 
   factory ServiceProvider() => _instance;
 
   static final ServiceProvider _instance = ServiceProvider._internal();
 
   ServiceProvider._internal() {
+    // startServer();
     init();
+  }
+  
+  Future<void> startServer() async {
+    final server = await HttpServer.bind('127.0.0.1', localServerPort);
+
+    server.listen((req) async {
+      req.response.headers.add('Content-Type', 'text/html');
+      req.response.write(
+        (Platform.isWindows || Platform.isLinux)
+            ? html.replaceFirst(
+                'CALLBACK_URL_HERE',
+                "http://localhost:$localServerPort/success?code=1337",
+              )
+            : html.replaceFirst(
+                'CALLBACK_URL_HERE',
+                'foobar://success?code=1337',
+              ),
+      );
+
+      await req.response.close();
+    });
   }
 
   Future<ServiceProvider> init() async {
-    startLocationListner();
+    // startLocationListner(); TODO : FIX THIS
     _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
     _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
     return this;
@@ -94,23 +118,37 @@ class ServiceProvider with ChangeNotifier {
   /// This Section deals with all the user related functions (emails, login, etc.)
 
   /// This function will attempt to login the user using AuthController
+
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
-    final String authUrl =
-        '$_serverAddress:$_serverPort/api/v1/auth/app/google';
+    final String authUrl = kIsWeb
+        ? '$_serverAddress:$_serverPort/api/v1/auth/google'
+        : (Platform.isWindows || Platform.isLinux)
+            ? '$_serverAddress:$_serverPort/api/v1/auth/desktop/google'
+            : '$_serverAddress:$_serverPort/api/v1/auth/app/google';
 
-    final String callbackUrlScheme = 'koja-login-callback';
+    final String callBackScheme = kIsWeb
+        ? _serverAddress
+        : (Platform.isWindows || Platform.isLinux)
+            ? "http://localhost:$localServerPort"
+            : 'koja-login-callback';
 
-    String? response = await FlutterWebAuth.authenticate(
-      url: authUrl,
-      callbackUrlScheme: callbackUrlScheme,
-    );
+    try {
+      final result = await FlutterWebAuth2.authenticate(
+        url: authUrl,
+        callbackUrlScheme: callBackScheme,
+        preferEphemeral: true,
+      );
 
-    response = Uri.parse(response).queryParameters['token'];
+      final response = Uri.parse(result).queryParameters['token'];
 
-    setAccessToken(response, eventProvider);
-    storeUserLocation();
+      setAccessToken(response, eventProvider);
+      storeUserLocation();
 
-    return accessToken != null;
+      return accessToken != null;
+    } on PlatformException catch (e) {
+      if (kDebugMode) print('Authentication error: $e');
+      return false;
+    }
   }
 
   /// This function will attempt to add another email using UserAccountController
@@ -120,7 +158,7 @@ class ServiceProvider with ChangeNotifier {
 
     final String callbackUrlScheme = 'koja-login-callback';
 
-    String? response = await FlutterWebAuth.authenticate(
+    String? response = await FlutterWebAuth2.authenticate(
       url: authUrl,
       callbackUrlScheme: callbackUrlScheme,
     );
@@ -344,7 +382,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will set the current location of the user
-  void setLocationData(Location? locationData) {
+  void setLocationData(Position? locationData) {
     _locationData = locationData;
     if (kDebugMode) print("User Location Set: $_locationData");
     storeUserLocation();
@@ -414,50 +452,39 @@ class ServiceProvider with ChangeNotifier {
   /// This function will start listening to the location stream
   Future<void> _listenLocationStream() async {
     if (await _checkAndRequestPermission()) {
-      if (_locationSubscription != null) {
-        await _cancelLocationSubscription();
-      }
-
-      _locationSubscription = FlLocation.getLocationStream().handleError((e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }).listen((event) {
-        if (_locationData == null ||
-            (_locationData != null &&
-                event.latitude != _locationData!.latitude &&
-                event.longitude != _locationData!.longitude)) {
-          setLocationData(event);
-        }
-      });
+      // final LocationSettings locationSettings = LocationSettings(
+      //   accuracy: LocationAccuracy.high,
+      //   distanceFilter: 100,
+      // );
+      // StreamSubscription<Position> positionStream =
+      //     Geolocator.getPositionStream(locationSettings: locationSettings)
+      //         .listen((Position? position) {
+      //   if (position != null) {
+      //     setLocationData(position);
+      //   }
+      // });
     }
-  }
-
-  /// This function will cancel the location subscription
-  Future<void> _cancelLocationSubscription() async {
-    await _locationSubscription?.cancel();
-    _locationSubscription = null;
   }
 
   /// This function will check if the user has granted location permissions
-  Future<bool> _checkAndRequestPermission({bool? background}) async {
-    if (!await FlLocation.isLocationServicesEnabled) {
-      return false;
+  Future<bool> _checkAndRequestPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    // final locatorPlatform = GeolocatorPlatform.instance;
+    // final val = await locatorPlatform.openLocationSettings();
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (serviceEnabled) {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      return permission != LocationPermission.denied;
     }
 
-    var locationPermission = await FlLocation.checkLocationPermission();
-    if (locationPermission == LocationPermission.deniedForever) {
-      return false;
-    } else if (locationPermission == LocationPermission.denied) {
-      locationPermission = await FlLocation.requestLocationPermission();
-      if (locationPermission == LocationPermission.denied ||
-          locationPermission == LocationPermission.deniedForever) return false;
-    }
-
-    if (background == true &&
-        locationPermission == LocationPermission.whileInUse) return false;
-
-    return true;
+    return false;
   }
 
   Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(

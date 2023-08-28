@@ -1,9 +1,9 @@
-import 'package:client/providers/context_provider.dart';
-import 'package:client/widgets/time_boundaries_widget.dart';
+import 'package:koja/providers/context_provider.dart';
+import 'package:koja/widgets/time_boundaries_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:client/Utils/event_util.dart';
+import 'package:koja/Utils/event_util.dart';
 
 
 void main() {

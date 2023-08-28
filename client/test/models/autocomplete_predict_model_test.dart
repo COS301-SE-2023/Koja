@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/models/autocomplete_predict_model.dart';
+import 'package:koja/models/autocomplete_predict_model.dart';
 
 void main() {
   group('AutocompletePrediction', () {
