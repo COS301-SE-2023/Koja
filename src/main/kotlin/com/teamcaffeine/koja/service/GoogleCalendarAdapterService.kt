@@ -32,6 +32,7 @@ import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -50,7 +51,7 @@ import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 import kotlin.collections.ArrayList
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
@@ -63,7 +64,7 @@ class GoogleCalendarAdapterService(
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
-    private val serverAddress = System.getProperty("SERVER_ADDRESS")
+    private val serverAddress = "${System.getProperty("SERVER_ADDRESS")}:${System.getProperty("SERVER_PORT")}"
     private val redirectUriBase = "$serverAddress/api/v1/auth"
     private val scopes = listOf(
         "https://www.googleapis.com/auth/calendar",
@@ -80,16 +81,20 @@ class GoogleCalendarAdapterService(
 
     override fun setupConnection(
         request: HttpServletRequest?,
-        appCallBack: Boolean,
+        deviceType: CallbackConfigEnum,
         addAdditionalAccount: Boolean,
         token: String,
     ): RedirectView {
-        val redirectURI = if (appCallBack && !addAdditionalAccount) {
-            "$redirectUriBase/app/google/callback"
-        } else if (!addAdditionalAccount) {
+        val redirectURI = if (deviceType == CallbackConfigEnum.WEB) {
             "$redirectUriBase/google/callback"
-        } else {
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
+            "$redirectUriBase/app/google/callback"
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            "$redirectUriBase/desktop/google/callback"
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
             "$serverAddress/api/v1/user/auth/add-email/callback"
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
         val url = if (!addAdditionalAccount) {
@@ -125,7 +130,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?, appCallBack: Boolean): String {
+    override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -138,10 +143,17 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        if (!appCallBack) {
+
+        if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
-        } else {
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/desktop/google/callback")
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
         val requestEntity = HttpEntity(parameters, headers)
@@ -357,7 +369,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
+    fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -497,7 +509,7 @@ class GoogleCalendarAdapterService(
         return createdEvent
     }
 
-    override fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
+    fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val eventStartTime = eventDTO.getStartTime()
@@ -645,7 +657,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    private fun buildCalendarService(accessToken: String): GoogleCalendar {
+    fun buildCalendarService(accessToken: String): GoogleCalendar {
         val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
         val jsonFactory = JacksonFactory.getDefaultInstance()
         val credential = GoogleCredential().setAccessToken(accessToken)
@@ -699,11 +711,12 @@ class GoogleCalendarAdapterService(
             ?: ZoneId.of("UTC")
     }
 
-    override fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
+    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
         val calendar = buildCalendarService(accessToken)
-        val newCalendar = com.google.api.services.calendar.model.Calendar()
+        val newCalendar = Calendar()
         newCalendar.summary = "This calendar serves as Koja's generated calendar to optimize your schedule with suggestions."
         newCalendar.id = "Koja-Suggestions"
+        calendar.calendars().delete(newCalendar.id).execute()
         calendar.calendars().insert(newCalendar).execute()
         for (event in eventList) {
             createEventInSuggestions(accessToken, event, accessToken)

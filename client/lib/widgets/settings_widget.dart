@@ -1,6 +1,6 @@
-import 'package:client/Utils/constants_util.dart';
-import 'package:client/providers/service_provider.dart';
-import 'package:client/widgets/time_boundaries_widget.dart';
+import 'package:koja/Utils/constants_util.dart';
+import 'package:koja/providers/service_provider.dart';
+import 'package:koja/widgets/time_boundaries_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 

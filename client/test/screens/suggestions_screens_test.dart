@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lottie/lottie.dart';
-import 'package:client/screens/suggestions_screens.dart';
+import 'package:koja/screens/suggestions_screens.dart';
 
 void main() {
   testWidgets('SuggestionsTasksScreen widget test', (WidgetTester tester) async {

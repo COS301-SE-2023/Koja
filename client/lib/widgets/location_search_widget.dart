@@ -9,6 +9,7 @@ import 'location_tile.dart';
 
 class LocationSearch extends StatefulWidget {
   const LocationSearch({super.key});
+  
 
   @override
   State<LocationSearch> createState() => _LocationSearchState();

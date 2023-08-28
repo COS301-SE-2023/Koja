@@ -3,6 +3,11 @@
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
     <windowsSettings>
       <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2</dpiAwareness>
+      <!-- <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="koja-login-callback">
+            <uap:DisplayName>Koja Login Callback URI Scheme</uap:DisplayName>
+          </uap:Protocol>
+      </uap:Extension> -->
     </windowsSettings>
   </application>
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
