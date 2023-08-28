@@ -76,8 +76,12 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to get all the emails which will be used for suggestions
   Future<Map<String, String>> getEmailsForAI() async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-emails');
+    final path = '/api/v1/ai/get-emails';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.get(
       url,
       headers: {'Authorisation': _accessToken!},
@@ -93,8 +97,13 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to get all the events which will be used for suggestions
   Future<List<String>> getEventsForAI() async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/ai/get-user-events');
+
+    final path = '/api/v1/ai/get-user-events';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.get(
       url,
       headers: {'Authorisation': _accessToken!},
@@ -114,10 +123,10 @@ class ServiceProvider with ChangeNotifier {
 
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
     final String authUrl = kIsWeb
-        ? 'http://$_serverAddress:$_serverPort/api/v1/auth/google'
+        ? '$_serverAddress:$_serverPort/api/v1/auth/google'
         : (Platform.isWindows || Platform.isLinux)
-            ? 'http://$_serverAddress:$_serverPort/api/v1/auth/desktop/google'
-            : 'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
+            ? '$_serverAddress:$_serverPort/api/v1/auth/desktop/google'
+            : '$_serverAddress:$_serverPort/api/v1/auth/app/google';
 
     final String callBackScheme = kIsWeb
         ? _serverAddress
@@ -147,7 +156,7 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to add another email using UserAccountController
   Future<bool> addEmail({required ContextProvider eventProvider}) async {
     final String authUrl =
-        'http://$_serverAddress:$_serverPort/api/v1/user/auth/add-email/google?token=$_accessToken';
+        '$_serverAddress:$_serverPort/api/v1/user/auth/add-email/google?token=$_accessToken';
 
     final String callbackUrlScheme = 'koja-login-callback';
 
@@ -167,8 +176,13 @@ class ServiceProvider with ChangeNotifier {
   /// From UserAccountController
   Future<void> deleteUserEmail(
       {required String email, required ContextProvider eventProvider}) async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/remove-email');
+
+    final path = '/api/v1/user/remove-email';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.post(
       url,
       headers: {
@@ -186,8 +200,12 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to get all the emails entered by the user
   /// From UserController
   Future<List<String>> getAllUserEmails() async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/linked-emails');
+    final path = '/api/v1/user/linked-emails';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.get(
       url,
       headers: {'Authorisation': _accessToken!},
@@ -204,8 +222,12 @@ class ServiceProvider with ChangeNotifier {
   /// This function will delete the user's account from Koja
   /// From UserController
   Future<bool> deleteUserAccount() async {
-    final url =
-        Uri.http('$_serverAddress:$_serverPort', '/api/v1/user/delete-account');
+    final path = '/api/v1/user/delete-account';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.post(
       url,
       headers: {
@@ -225,8 +247,12 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to create an event using CalendarController
   Future<bool> createEvent(Event event) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/createEvent');
+    final path = '/api/v1/user/calendar/createEvent';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.post(
       url,
       headers: {
@@ -242,8 +268,12 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to get all the events created by the user
   /// From CalendarController
   Future<List<Event>> getAllUserEvents() async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/userEvents');
+    final path = '/api/v1/user/calendar/userEvents';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.get(
       url,
       headers: {'Authorisation': _accessToken!},
@@ -259,8 +289,12 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to update an event using CalendarController
   Future<bool> updateEvent(Event event) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/updateEvent');
+    final path = '/api/v1/user/calendar/updateEvent';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+    
     final response = await http.put(
       url,
       headers: {
@@ -275,8 +309,12 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to delete an event using CalendarController
   Future<bool> deleteEvent(Event event) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/deleteEvent');
+    final path = '/api/v1/user/calendar/deleteEvent';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.delete(
       url,
       headers: {
@@ -296,8 +334,12 @@ class ServiceProvider with ChangeNotifier {
   /// This section deals with all the location related functions (travel time, etc.)
 
   Future<bool> updateHomeLocation(String placeID) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/location/HomeLocationUpdater');
+    final path = '/api/v1/location/HomeLocationUpdater';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     var response = await http.post(
       url,
       headers: {
@@ -317,8 +359,12 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool> updateWorkLocation(String placeID) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/location/WorkLocationUpdater');
+    final path = '/api/v1/location/WorkLocationUpdater';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     var response = await http.post(
       url,
       headers: {
@@ -356,12 +402,17 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to get the travel time from the user's current location
   Future<int> getLocationsTravelTime(
       String placeID, double destLat, double destLng) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/location/travel-time', {
+    final path = '/api/v1/location/travel-time';
+    final body = {
       'placeId': placeID,
       'destLat': destLat.toString(),
       'destLng': destLng.toString(),
-    });
+    };
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path, body)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path, body);
+
     final response =
         await http.get(url, headers: {'Authorisation': _accessToken!});
 
@@ -375,20 +426,20 @@ class ServiceProvider with ChangeNotifier {
 
   Future<void> storeUserLocation() async {
     if (_locationData != null && _accessToken != null) {
-      final url = Uri.http(
-        '$_serverAddress:$_serverPort',
-        '/api/v1/location/updateLocation',
-      );
-
-      Map<String, String> requestBody = {
+      final path = '/api/v1/location/updateLocation';
+      final body = {
         'latitude': _locationData!.latitude.toString(),
         'longitude': _locationData!.longitude.toString(),
       };
+      final List<String> serverAddressComponents = _serverAddress.split("//");
+      final url = !serverAddressComponents[0].contains("https")
+          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
 
       await http.post(
         url,
         headers: {'Authorisation': _accessToken!},
-        body: requestBody,
+        body: body,
       );
     }
   }
@@ -440,8 +491,13 @@ class ServiceProvider with ChangeNotifier {
 
   Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(
       String accessToken) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/getAllTimeBoundary');
+      final path = '/api/v1/user/getAllTimeBoundary';
+
+      final List<String> serverAddressComponents = _serverAddress.split("//");
+      final url = !serverAddressComponents[0].contains("https")
+          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
     final response =
         await http.get(url, headers: {'Authorisation': _accessToken!});
 
@@ -457,12 +513,14 @@ class ServiceProvider with ChangeNotifier {
 
   Future<void> storeTimeFrames(
       String? accessToken, Map<String, TimeSlot?> timeSlots) async {
-    if (accessToken != null) {
-      final url = Uri.http(
-        '$_serverAddress:$_serverPort',
-        '/api/v1/user/addTimeBoundary',
-      );
+      final path = '/api/v1/user/addTimeBoundary';
 
+      final List<String> serverAddressComponents = _serverAddress.split("//");
+      final url = !serverAddressComponents[0].contains("https")
+          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
+    if (accessToken != null) {
       for (String key in timeSlots.keys) {
         if (timeSlots[key] != null) {
           await deleteTimeFrame(accessToken, key).then((_) async {
@@ -492,10 +550,12 @@ class ServiceProvider with ChangeNotifier {
 
   Future<bool> deleteTimeFrame(String? accessToken, String name) async {
     if (accessToken != null) {
-      final url = Uri.http(
-        '$_serverAddress:$_serverPort',
-        '/api/v1/user/removeTimeBoundary',
-      );
+      final path = '/api/v1/user/removeTimeBoundary';
+
+      final List<String> serverAddressComponents = _serverAddress.split("//");
+      final url = !serverAddressComponents[0].contains("https")
+          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
 
       Map<String, String> requestBody = {
         'name': name,
@@ -517,13 +577,15 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> getSuggestionsForUser(String user) async {
-    final url = Uri.http(
-      '$_serverAddress:$_serverPort',
-      '/api/v1/ai/get-user-events',
-      {
+
+    final path = '/api/v1/location/travel-time';
+    final body = {
         'userID': user,
-      },
-    );
+      };
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path, body)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path, body);
 
     final response = await http.get(
       url,
