@@ -724,24 +724,7 @@ class GoogleCalendarAdapterService(
         return newCalendar
     }
 }
-class TimezoneUtility() {
 
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
-    fun getTimeOfTimeZone(jwtToken: String): String? {
-        val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
-            .build()
-        val userLocations = LocationService(userRepository, googleCalendarAdapterService)
-        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        val lat = userLocation.second.toString().toDouble()
-        val lng = userLocation.first.toString().toDouble()
-        return TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await().toString()
-    }
-}
 class TimezoneUtility() {
 
     @Autowired
