@@ -5,6 +5,7 @@ import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.view.RedirectView
@@ -13,10 +14,14 @@ import java.time.OffsetDateTime
 @Service
 abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     private val authProviderEnum: AuthProviderEnum = authProvider
-
-    abstract fun setupConnection(request: HttpServletRequest?, appCallBack: Boolean, addAdditionalAccount: Boolean = false, token: String = ""): RedirectView
+    abstract fun setupConnection(
+        request: HttpServletRequest?,
+        deviceType: CallbackConfigEnum,
+        addAdditionalAccount: Boolean = false,
+        token: String = "",
+    ): RedirectView
     abstract fun authorize(): String?
-    abstract fun oauth2Callback(authCode: String?, appCallBack: Boolean): String
+    abstract fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String
     abstract fun getUserEvents(accessToken: String): Map<String, UserEventDTO>
     abstract fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO>
 

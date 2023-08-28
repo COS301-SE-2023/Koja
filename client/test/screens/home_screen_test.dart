@@ -1,10 +1,10 @@
-import 'package:client/Utils/event_util.dart';
-import 'package:client/providers/context_provider.dart';
+import 'package:koja/Utils/event_util.dart';
+import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:client/screens/home_screen.dart';
+import 'package:koja/screens/home_screen.dart';
 
 void main() {
   setUp(() async{
