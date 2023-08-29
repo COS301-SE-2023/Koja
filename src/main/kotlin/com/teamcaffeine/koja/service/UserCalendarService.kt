@@ -524,7 +524,6 @@ class UserCalendarService(
         endTimes.sorted()
 
         val assignedEvents = mutableListOf<UserEventDTO>()
-        val currentDateTime = OffsetDateTime.now()
         for ((i, event) in (sortedEvents.withIndex())) {
             event.setStartTime(startTimes[i])
             assignedEvents.add(event)
