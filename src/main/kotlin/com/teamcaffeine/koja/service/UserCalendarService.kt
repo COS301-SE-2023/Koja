@@ -18,11 +18,7 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import java.time.*
 
 @Service
 class UserCalendarService(
@@ -480,16 +476,44 @@ class UserCalendarService(
                 }
             }
         }
-        userEvents.values.toList()
 
-        val userDynamicEvents = mutableMapOf<String, UserEventDTO>()
+        val todayEvents = mutableMapOf<String, UserEventDTO>()
+
+        val currentDate = LocalDate.now()
+        val currentDateTime = OffsetDateTime.now()
 
         for (event in userEvents) {
-            if (event.value.isDynamic()) {
-                userDynamicEvents.put(event.key, event.value)
+            val eventDateTime = event.value.getStartTime()
+
+            if (event.value.isDynamic() && eventDateTime.toLocalDate() == currentDate && eventDateTime.isAfter(
+                    currentDateTime
+                )
+            ) {
+                todayEvents[event.key] = event.value
             }
         }
 
-        return userDynamicEvents.values.toList()
+        return todayEvents.values.toList()
     }
+
+    fun reassignEarliestTimes(events: List<UserEventDTO>): List<UserEventDTO> {
+        val sortedEvents = events
+            .filter { it.isDynamic() }
+            .sortedBy { it.getPriority() }
+
+        val assignedEvents = mutableListOf<UserEventDTO>()
+        var currentDateTime = OffsetDateTime.now()
+
+        for (event in sortedEvents) {
+            val eventDateTime = event.getStartTime()
+            if (eventDateTime.isAfter(currentDateTime)) {
+                currentDateTime = eventDateTime
+            }
+            assignedEvents.add(event.getStartTime(currentDateTime))
+        }
+
+        return assignedEvents
+    }
+
+
 }
