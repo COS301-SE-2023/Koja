@@ -44,4 +44,4 @@ RUN echo "KOJA_AWS_RDS_DATABASE_URL=$KOJA_AWS_RDS_DATABASE_URL" >> .env && \
 EXPOSE 8080
 
 # Start the built spring boot project when the Docker container is started
-ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/Koja-0.0.1-SNAPSHOT.jar"]
