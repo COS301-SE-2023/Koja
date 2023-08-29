@@ -27,39 +27,21 @@ WORKDIR /app
 # Copy only the built jar file from the first stage
 COPY --from=builder /home/gradle/project/build/libs/ /app/
 
-# Copy the .env file into the Docker image
-COPY .env .env
+# Create .env file based on the environment variables of the environment where the Dockerfile is being built
+RUN echo "KOJA_AWS_RDS_DATABASE_URL=$KOJA_AWS_RDS_DATABASE_URL" >> .env && \
+    echo "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=$KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME" >> .env && \
+    echo "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=$KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD" >> .env && \
+    echo "KOJA_AWS_DYNAMODB_ACCESS_KEY_ID=$KOJA_AWS_DYNAMODB_ACCESS_KEY_ID" >> .env && \
+    echo "KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET=$KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET" >> .env && \
+    echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env && \
+    echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env && \
+    echo "KOJA_JWT_SECRET=$KOJA_JWT_SECRET" >> .env && \
+    echo "KOJA_ID_SECRET=$KOJA_AI_SECRET" >> .env && \
+    echo "API_KEY=$API_KEY" >> .env && \
+    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env && \
 
 # Document that the service listens on port 8080
 EXPOSE 8080
 
 # Start the built spring boot project when the Docker container is started
-# You need to replace app.jar with your actual jar name.
-# For example, if your jar file is named myapp.jar, the line should look like this: ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
 ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
-
-# To run the Docker container, use the following command:
-# docker build -t koja-image .
-# advanced options > container name > koja-container
-# advanced options > port mapping > 8080
-# advanced options > path name > localhost
-# run container
-
-# run the container on docker
-# http://localhost:8080/api/v1/auth/app/google on your browser
-# 10.0.2.2
-
-# F12, go to network tab, click on the link, copy the token
-
-#######################################################
-
-### How to sign in - run this on cmd terminal  ###
-# gradlew build -x test -x check
-# gradlew bootRun
-# if it says KoaApplication is starting, go to Chrome
-# http://localhost:8080/api/v1/auth/google
-# choose your google account
-# f12 > network > callbackstate > Headers > copy the token (between Authorization and cache-ctrl)
-# click debug > add token > paste the token > click login
-
-############################################################
