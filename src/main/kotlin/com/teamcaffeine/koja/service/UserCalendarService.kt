@@ -516,16 +516,17 @@ class UserCalendarService(
         }
         startTimes.sorted()
 
+        val endTimes = mutableListOf<OffsetDateTime>()
+
+        for (start in sortedEvents) {
+            endTimes.add(start.getStartTime())
+        }
+        endTimes.sorted()
+
         val assignedEvents = mutableListOf<UserEventDTO>()
         val currentDateTime = OffsetDateTime.now()
-
-        for (event in sortedEvents) {
-            val eventDateTime = event.getStartTime()
-            if (eventDateTime.isAfter(currentDateTime)) {
-                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(sortedEvents, event)
-                event.setStartTime(earliestSlotStartTime)
-                event.setEndTime(earliestSlotEndTime)
-            }
+        for ((i, event) in (sortedEvents.withIndex())) {
+            event.setStartTime(startTimes[i])
             assignedEvents.add(event)
         }
         return assignedEvents
