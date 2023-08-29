@@ -38,10 +38,10 @@ RUN echo "KOJA_AWS_RDS_DATABASE_URL=$KOJA_AWS_RDS_DATABASE_URL" >> .env && \
     echo "KOJA_JWT_SECRET=$KOJA_JWT_SECRET" >> .env && \
     echo "KOJA_ID_SECRET=$KOJA_AI_SECRET" >> .env && \
     echo "API_KEY=$API_KEY" >> .env && \
-    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env && \
+    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
 
 # Document that the service listens on port 8080
 EXPOSE 8080
 
 # Start the built spring boot project when the Docker container is started
-ENTRYPOINT ["java", "-jar", "/app/koja-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/Koja-0.0.1-SNAPSHOT.jar"]
