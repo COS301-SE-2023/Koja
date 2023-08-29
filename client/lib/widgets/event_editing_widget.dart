@@ -159,11 +159,11 @@ class EventEditingState extends State<EventEditing> {
                 child: Text('Cancel')),
             if (selectedEventType == 'Dynamic' &&
                 widget.event != null &&
-                fromDate.isAfter(DateTime.now()))
+                DateTime.now().isAfter(fromDate))
               TextButton(
                   onPressed: () {
                     needsReschedule = true;
-                    saveForm;  
+                    saveForm;
                   },
                   style: const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll(Colors.black),
@@ -200,8 +200,8 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                //if (selectedEventType == 'Dynamic')
-                ChoosePriority(onPrioritySelected: updatePriority),
+                if (selectedEventType == 'Dynamic')
+                  ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
                 //ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
@@ -614,7 +614,8 @@ class EventEditingState extends State<EventEditing> {
                   : selectedPriority == "Medium"
                       ? 2
                       : 3) &&
-          existingEvent.backgroundColor == selectedColor;
+          existingEvent.backgroundColor == selectedColor
+          && needsReschedule == false;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -623,6 +624,7 @@ class EventEditingState extends State<EventEditing> {
           content: Text('Event already exists!'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.of(context).pop();
       } else {
         isValid = true;
       }
@@ -836,6 +838,7 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
         }
       } else {
         // if(needsReschedule) {
@@ -845,11 +848,10 @@ class EventEditingState extends State<EventEditing> {
         //   var response = await serviceProvider.updateEvent(event);
         // }
 
-        
         var response = await getUpdateResponse();
 
         if (response) {
-          eventProvider.updateEvent(event);
+          // eventProvider.updateEvent(event);
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
@@ -867,21 +869,20 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
           needsReschedule = false;
         }
       }
     }
   }
 
-  Future<bool> getUpdateResponse() async
-  {
-    if(needsReschedule)
-    {
-      return await Provider.of<ServiceProvider>(context, listen: false).rescheduleEvent(widget.event!);
-    }
-    else
-    {
-      return await Provider.of<ServiceProvider>(context, listen: false).updateEvent(widget.event!);
+  Future<bool> getUpdateResponse() async {
+    if (needsReschedule) {
+      return await Provider.of<ServiceProvider>(context, listen: false)
+          .rescheduleEvent(widget.event!);
+    } else {
+      return await Provider.of<ServiceProvider>(context, listen: false)
+          .updateEvent(widget.event!);
     }
   }
 
