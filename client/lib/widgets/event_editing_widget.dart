@@ -201,7 +201,7 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
                 //if (selectedEventType == 'Dynamic')
-                //ChoosePriority(onPrioritySelected: updatePriority),
+                ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
                 //ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
