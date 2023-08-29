@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:koja/screens/suggestions_screens.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +8,27 @@ import 'package:koja/screens/tasks_screen.dart';
 import 'package:koja/providers/context_provider.dart';
 
 void main() {
+  setUp(() async{
+    await dotenv.load(fileName: "assets/.env");
+  });
+
   testWidgets('Tasks Screen Test', (WidgetTester tester) async {
+    final contextProvider = ContextProvider();
+    final serviceProvider = ServiceProvider();
     await tester.pumpWidget(
-      MaterialApp(
-        home: MultiProvider(
-          providers: [
-            ChangeNotifierProvider<ContextProvider>(
-              create: (_) => ContextProvider(),
-            ),
-          ],
-          child: Tasks(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ServiceProvider>.value(
+            value: serviceProvider,
+          ),
+          ChangeNotifierProvider<ContextProvider>.value(
+            value: contextProvider,
+          ),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: Tasks(),
+          ),
         ),
       ),
     );
