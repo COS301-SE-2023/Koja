@@ -38,7 +38,10 @@ RUN echo "KOJA_AWS_RDS_DATABASE_URL=$KOJA_AWS_RDS_DATABASE_URL" >> .env && \
     echo "KOJA_JWT_SECRET=$KOJA_JWT_SECRET" >> .env && \
     echo "KOJA_ID_SECRET=$KOJA_AI_SECRET" >> .env && \
     echo "API_KEY=$API_KEY" >> .env && \
-    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
+    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env && \
+    echo "COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN" >> .env && \
+    echo "SERVER_ADDRESS=$SERVER_ADDRESS" >> .env && \
+    echo "SERVER_PORT=$SERVER_PORT" >> .env
 
 # Document that the service listens on port 8080
 EXPOSE 8080
