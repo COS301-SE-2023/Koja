@@ -4,6 +4,7 @@ import com.google.api.services.calendar.model.Calendar
 import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
+import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import jakarta.servlet.http.HttpServletRequest
@@ -39,9 +40,9 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
 
     abstract fun getFutureEventsLocations(accessToken: String?): List<String>
 
-    abstract fun createNewCalendar(accessToken: String, eventDTO: List<UserEventDTO>): Calendar
+    abstract fun createNewCalendar(userAccounts: List<UserAccount>, userEvents: List<UserEventDTO>, jwtToken: String)
 
-    abstract fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event
+    abstract fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String, calendarID: String): Event
 
     fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
