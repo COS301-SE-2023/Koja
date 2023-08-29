@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.google.api.client.util.DateTime
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -508,15 +509,22 @@ class UserCalendarService(
         val sortedEvents = events
             .filter { it.isDynamic() }
             .sortedBy { it.getPriority() }
+        val startTimes = mutableListOf<OffsetDateTime>()
+
+        for (start in sortedEvents) {
+            startTimes.add(start.getStartTime())
+        }
+        startTimes.sorted()
 
         val assignedEvents = mutableListOf<UserEventDTO>()
-        var currentDateTime = OffsetDateTime.now()
+        val currentDateTime = OffsetDateTime.now()
 
         for (event in sortedEvents) {
             val eventDateTime = event.getStartTime()
             if (eventDateTime.isAfter(currentDateTime)) {
-                currentDateTime = eventDateTime
-                event.setStartTime(currentDateTime)
+                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(sortedEvents, event)
+                event.setStartTime(earliestSlotStartTime)
+                event.setEndTime(earliestSlotEndTime)
             }
             assignedEvents.add(event)
         }
