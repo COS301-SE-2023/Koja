@@ -529,6 +529,11 @@ class UserCalendarService(
             event.setStartTime(startTimes[i])
             assignedEvents.add(event)
         }
+
+        for ((i, event) in (sortedEvents.withIndex())) {
+            event.setEndTime(endTimes[i])
+            assignedEvents.add(event)
+        }
         return assignedEvents
     }
 }
