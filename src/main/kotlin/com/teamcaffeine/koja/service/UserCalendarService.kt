@@ -503,7 +503,8 @@ class UserCalendarService(
         return todayEvents.values.toList()
     }
 
-    fun reassignEarliestTimes(events: List<UserEventDTO>): List<UserEventDTO> {
+    fun reassignEarliestTimes(token: String): List<UserEventDTO> {
+        val events = getAllUserDynamicEvents(token)
         val sortedEvents = events
             .filter { it.isDynamic() }
             .sortedBy { it.getPriority() }
@@ -515,12 +516,10 @@ class UserCalendarService(
             val eventDateTime = event.getStartTime()
             if (eventDateTime.isAfter(currentDateTime)) {
                 currentDateTime = eventDateTime
+                event.setStartTime(currentDateTime)
             }
-            assignedEvents.add(event.getStartTime(currentDateTime))
+            assignedEvents.add(event)
         }
-
         return assignedEvents
     }
-
-
 }
