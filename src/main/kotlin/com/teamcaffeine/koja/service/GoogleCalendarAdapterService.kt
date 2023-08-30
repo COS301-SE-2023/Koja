@@ -445,7 +445,7 @@ class GoogleCalendarAdapterService(
         val lng = userLocation.first.toString().toDouble()
         val travelTime = eventDTO.getTravelTime()
 
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(-25.755648,28.2361856)).await()
+        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(-25.755648, 28.2361856)).await()
         val eventLocaltime = eventStartTime.toZonedDateTime()
             .withZoneSameInstant(timezone.toZoneId())
             .plusSeconds(travelTime)
