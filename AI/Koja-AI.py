@@ -11,6 +11,8 @@ import datetime
 
 import os
 
+from AI.main import CategoryRecommender, task
+
 app = Flask(__name__)
 
 
@@ -92,10 +94,25 @@ def clean_training_data(training_data):
 
 def retrain_for_new_users(training_data):
     events_data = clean_training_data(training_data)
+    loaded_user_model = tf.keras.models.load_model("user_model")
+    loaded_category_model = tf.keras.models.load_model("category_model")
+    loaded_weekday_model = tf.keras.models.load_model("weekday_model")
+    loaded_time_frame_model = tf.keras.models.load_model("time_frame_model")
+    model = CategoryRecommender(loaded_user_model, loaded_category_model, loaded_weekday_model, loaded_time_frame_model, task)
+    model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
+    model.fit(events_data.batch(128), epochs=50)
 
 
 def retrain_for_all_users(training_data):
     events_data = clean_training_data(training_data)
+    loaded_user_model = tf.keras.models.load_model("user_model")
+    loaded_category_model = tf.keras.models.load_model("category_model")
+    loaded_weekday_model = tf.keras.models.load_model("weekday_model")
+    loaded_time_frame_model = tf.keras.models.load_model("time_frame_model")
+    model = CategoryRecommender(loaded_user_model, loaded_category_model, loaded_weekday_model, loaded_time_frame_model, task)
+    model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
+    model.fit(events_data.batch(128), epochs=50)
+
 
 
 def auto_train_new(training_data):
