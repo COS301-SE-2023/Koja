@@ -163,7 +163,7 @@ class EventEditingState extends State<EventEditing> {
               TextButton(
                   onPressed: () {
                     needsReschedule = true;
-                    saveForm;
+                    saveForm();
                   },
                   style: const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll(Colors.black),
@@ -761,61 +761,10 @@ class EventEditingState extends State<EventEditing> {
           } else if (unit.contains('minute')) {
           } else if (unit.contains('second')) {}
         }
-
-        // // Construct the DateTime object
-        // DateTime travelDateTime = DateTime(
-        //   fromDate.year,
-        //   fromDate.month,
-        //   fromDate.day,
-        //   fromDate.hour - hours,
-        //   fromDate.minute - minutes,
-        //   fromDate.second - seconds,
-        // );
-        // String meetingTitle = titleController.text;
-
-        // travelTimeBlock = Event(
-        //   // id: (widget.event != null) ? widget.event!.id : "",
-        //   title: "Travel To $meetingTitle",
-        //   location: "",
-        //   description: '',
-        //   category: '',
-        //   isDynamic: (selectedEventType == "Dynamic") ? true : false,
-        //   from: travelDateTime,
-        //   to: fromDate,
-        //   duration: await getDurationInMilliseconds(durationInSeconds),
-        //   isAllDay: false,
-        //   timeSlots: [timeSlot],
-        //   priority: priorityValue,
-        //   backgroundColor: selectedColor,
-        // );
       }
 
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
-
-      // if (travelTimeBlock != null) {
-      //   var response = await serviceProvider.createEvent(travelTimeBlock);
-
-      // if (response) {
-      //   eventProvider.addEvent(travelTimeBlock);
-      //   var snackBar = SnackBar(
-      //     content: Center(
-      //       child: Text('Event Created!',
-      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-      //     ),
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      //   Navigator.of(context).pop();
-      // } else {
-      //   var snackBar = SnackBar(
-      //     content: Center(
-      //       child: Text('Event Creation failed!',
-      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-      //     ),
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      // }
-      // }
 
       if (widget.event == null) {
         var response = await serviceProvider.createEvent(event);
@@ -841,17 +790,9 @@ class EventEditingState extends State<EventEditing> {
           Navigator.of(context).pop();
         }
       } else {
-        // if(needsReschedule) {
-        //   var response =  await serviceProvider.rescheduleEvent(event);
-        // }
-        // else {
-        //   var response = await serviceProvider.updateEvent(event);
-        // }
-
         var response = await getUpdateResponse();
 
         if (response) {
-          // eventProvider.updateEvent(event);
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
