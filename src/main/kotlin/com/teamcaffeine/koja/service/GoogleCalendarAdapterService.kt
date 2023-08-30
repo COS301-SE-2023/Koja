@@ -33,6 +33,7 @@ import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -81,16 +82,20 @@ class GoogleCalendarAdapterService(
 
     override fun setupConnection(
         request: HttpServletRequest?,
-        appCallBack: Boolean,
+        deviceType: CallbackConfigEnum,
         addAdditionalAccount: Boolean,
         token: String,
     ): RedirectView {
-        val redirectURI = if (appCallBack && !addAdditionalAccount) {
-            "$redirectUriBase/app/google/callback"
-        } else if (!addAdditionalAccount) {
+        val redirectURI = if (deviceType == CallbackConfigEnum.WEB) {
             "$redirectUriBase/google/callback"
-        } else {
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
+            "$redirectUriBase/app/google/callback"
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            "$redirectUriBase/desktop/google/callback"
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
             "$serverAddress/api/v1/user/auth/add-email/callback"
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
         val url = if (!addAdditionalAccount) {
@@ -126,7 +131,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?, appCallBack: Boolean): String {
+    override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -139,10 +144,17 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        if (!appCallBack) {
+
+        if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
-        } else {
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/desktop/google/callback")
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
         val requestEntity = HttpEntity(parameters, headers)

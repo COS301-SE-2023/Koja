@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/models/place_auto_response_model.dart';
+import 'package:koja/models/place_auto_response_model.dart';
 
 void main() {
   group('PlaceAutocompleteResponse', () {
