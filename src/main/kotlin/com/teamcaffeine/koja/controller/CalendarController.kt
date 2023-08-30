@@ -97,18 +97,18 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
         try {
-            val timeZoneId = ZoneId.of(TimezoneUtility().getTimeOfTimeZone(token))
+            // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
+            val timeZoneId = ZoneId.of("Africa/Johannesburg")
             val currentTime = OffsetDateTime.now(timeZoneId)
             event.setStartTime(currentTime)
             event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
-            val updated = userCalendar.updateEvent(token, event)
-            if (updated) {
+            val response = updateEvent(token, event)
+            if (response.statusCode.is2xxSuccessful) {
                 return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
-            } else {
-                return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
             }
         } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+            return ResponseEntity.badRequest().body(e.stackTraceToString())
         }
+        return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
     }
 }
