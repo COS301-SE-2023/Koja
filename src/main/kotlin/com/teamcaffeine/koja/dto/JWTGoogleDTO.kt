@@ -29,6 +29,7 @@ class JWTGoogleDTO(private var accessToken: String, private val refreshToken: St
 
     override fun renewToken(): JWTAuthDetailsDTO? {
         val tokenResponse = GoogleTokenResponse().setRefreshToken(refreshToken)
+
         val jsonFactory = com.google.api.client.json.jackson2.JacksonFactory.getDefaultInstance()
         val httpTransport = com.google.api.client.http.javanet.NetHttpTransport.Builder().build()
         val clientId = System.getProperty("GOOGLE_CLIENT_ID")
@@ -46,16 +47,18 @@ class JWTGoogleDTO(private var accessToken: String, private val refreshToken: St
         } catch (exception: Exception) {
             return null
         }
+
         if (credential.accessToken != null) {
             return JWTGoogleDTO(
                 accessToken = credential.accessToken,
                 expireTimeInSeconds = credential.expiresInSeconds,
-                refreshToken = credential.refreshToken,
+                refreshToken = refreshToken,
             )
         }
+
         this.accessToken = credential.accessToken
         this.expireTimeInSeconds = credential.expiresInSeconds
 
-        return JWTGoogleDTO(accessToken, credential.refreshToken, expireTimeInSeconds)
+        return JWTGoogleDTO(accessToken, refreshToken, expireTimeInSeconds)
     }
 }
