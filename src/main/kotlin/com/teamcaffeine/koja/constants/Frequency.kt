@@ -6,4 +6,5 @@ object Frequency {
     const val MONTHLY = "RRULE:FREQ=MONTHLY"
     const val YEARLY = "RRULE:FREQ=YEARLY"
     const val COUNT = ";COUNT="
+    const val UNTIL = ";UNTIL="
 }
