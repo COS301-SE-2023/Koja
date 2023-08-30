@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/screens/about_us_screen.dart';
+import 'package:koja/screens/about_us_screen.dart';
 
 void main() {
   testWidgets('AboutUsPage widget test', (WidgetTester tester) async {
