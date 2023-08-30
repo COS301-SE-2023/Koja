@@ -38,7 +38,6 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
-import jdk.javadoc.internal.doclets.toolkit.util.Utils.toLowerCase
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -463,13 +462,13 @@ class GoogleCalendarAdapterService(
             "\n" +
             "Event Start Time: ${formattedTime}\n" +
             "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
-        if (toLowerCase(eventDTO.getRecurrence()?.get(0)) == "daily") {
+        if (eventDTO.getRecurrence()?.get(0) == "Daily") {
             eventDTO.setRecurrence(mutableListOf(Frequency.DAILY))
-        } else if (toLowerCase(eventDTO.getRecurrence()?.get(0)) == "weekly") {
+        } else if (eventDTO.getRecurrence()?.get(0) == "Weekly") {
             eventDTO.setRecurrence(mutableListOf(Frequency.WEEKLY))
-        } else if (toLowerCase(eventDTO.getRecurrence()?.get(0)) == "monthly") {
+        } else if (eventDTO.getRecurrence()?.get(0) == "Monthly") {
             eventDTO.setRecurrence(mutableListOf(Frequency.MONTHLY))
-        } else if (toLowerCase(eventDTO.getRecurrence()?.get(0)) == "yearly") {
+        } else if (eventDTO.getRecurrence()?.get(0) == "Yearly") {
             eventDTO.setRecurrence(mutableListOf(Frequency.YEARLY))
         }
         val event = Event()
