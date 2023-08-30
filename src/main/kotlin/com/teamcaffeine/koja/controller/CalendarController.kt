@@ -107,7 +107,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         }
         try {
             // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
-            val timeZoneId = ZoneId.of("America/New_York")
+            val timeZoneId = ZoneId.of("Africa/Johannesburg")
             val currentTime = OffsetDateTime.now(timeZoneId)
             event.setStartTime(currentTime)
             event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
