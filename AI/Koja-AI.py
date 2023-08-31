@@ -98,7 +98,8 @@ def retrain_for_new_users(training_data):
     loaded_category_model = tf.keras.models.load_model("category_model")
     loaded_weekday_model = tf.keras.models.load_model("weekday_model")
     loaded_time_frame_model = tf.keras.models.load_model("time_frame_model")
-    model = CategoryRecommender(loaded_user_model, loaded_category_model, loaded_weekday_model, loaded_time_frame_model, task)
+    model = CategoryRecommender(loaded_user_model, loaded_category_model, loaded_weekday_model, loaded_time_frame_model,
+                                task)
     model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
     model.fit(events_data.batch(128), epochs=50)
 
@@ -109,10 +110,10 @@ def retrain_for_all_users(training_data):
     loaded_category_model = tf.keras.models.load_model("category_model")
     loaded_weekday_model = tf.keras.models.load_model("weekday_model")
     loaded_time_frame_model = tf.keras.models.load_model("time_frame_model")
-    model = CategoryRecommender(loaded_user_model, loaded_category_model, loaded_weekday_model, loaded_time_frame_model, task)
+    model = CategoryRecommender(loaded_user_model, loaded_category_model, loaded_weekday_model, loaded_time_frame_model,
+                                task)
     model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
     model.fit(events_data.batch(128), epochs=50)
-
 
 
 def auto_train_new(training_data):
@@ -121,7 +122,7 @@ def auto_train_new(training_data):
     if now > next_retrain_time:
         next_retrain_time += datetime.timedelta(days=1)
 
-    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users(training_data))
+    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users,training_data)
 
     while True:
         schedule.run_pending()
@@ -133,7 +134,7 @@ def auto_train_all(training_data):
     next_retrain_time = now + datetime.timedelta(days=7)
 
     # Schedule the retraining to occur every 7 days
-    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users(training_data))
+    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users,training_data)
 
     # Start the scheduling loop
     while True:
