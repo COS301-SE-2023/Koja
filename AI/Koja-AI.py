@@ -8,16 +8,19 @@ import tensorflow_recommenders as tfrs
 import json
 import time
 import datetime
+from dotenv import load_dotenv
 
 import os
 
-from AI.main import CategoryRecommender, task
+from main import CategoryRecommender, task
 
 app = Flask(__name__)
 
 
 def load_data_and_models():
-    f = open('test.json')
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(dir_path, 'test.json')
+    f = open(file_path)
     data = json.load(f)
     all_events = []
 
@@ -181,9 +184,24 @@ def get_training_data():
     else:
         return jsonify({'error': 'Failed to fetch data'}), 500
 
+def get_koja_public_key():
+    api_url = f"{koja_server_address}:{koja_server_port}/api/v1/auth/koja/public-key"
+    response = requests.get(api_url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        return ""
+
 
 if __name__ == "__main__":
-    auto_train_new(get_training_data())
-    auto_train_new(get_training_data())
+    # auto_train_new(get_training_data())
+    # auto_train_new(get_training_data())
+    load_dotenv()
     port = int(os.getenv("PORT", 6000))
+    koja_id_secret = os.getenv("KOJA_ID_SECRET")
+    koja_server_address = os.getenv("SERVER_ADDRESS")
+    koja_server_port = os.getenv("SERVER_PORT")
+    get_koja_public_key()
     app.run(host='0.0.0.0', port=port, debug=True)

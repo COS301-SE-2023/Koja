@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.controller
 
+import com.google.gson.Gson
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.transaction.Transactional
@@ -53,7 +54,7 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
     fun getPublicKey(): ResponseEntity<String> {
         val publicKeyBytes = publicKeyResource.inputStream.readAllBytes()
         val publicKeyBase64 = String(publicKeyBytes, StandardCharsets.UTF_8)
-
-        return ResponseEntity.ok(publicKeyBase64)
+        val gson = Gson()
+        return ResponseEntity.ok(gson.toJson(publicKeyBase64))
     }
 }

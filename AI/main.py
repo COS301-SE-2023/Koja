@@ -1,13 +1,17 @@
 import json
 from abc import ABC
+import os
 from typing import Dict, Text
 import requests
-import pandas as pd
+import pandas as pd 
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
 import numpy as np
 
-f = open('./test.json')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+file_path = os.path.join(dir_path, 'test.json')
+f = open(file_path)
+
 
 # returns JSON object as
 # a dictionary
