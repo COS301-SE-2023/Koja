@@ -122,7 +122,7 @@ def auto_train_new(training_data):
     if now > next_retrain_time:
         next_retrain_time += datetime.timedelta(days=1)
 
-    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users(training_data))
+    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users,training_data)
 
     while True:
         schedule.run_pending()
@@ -134,7 +134,7 @@ def auto_train_all(training_data):
     next_retrain_time = now + datetime.timedelta(days=7)
 
     # Schedule the retraining to occur every 7 days
-    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users(training_data))
+    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users,training_data)
 
     # Start the scheduling loop
     while True:
