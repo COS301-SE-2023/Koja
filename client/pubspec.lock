@@ -209,14 +209,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
-  direct_select_flutter:
-    dependency: "direct main"
-    description:
-      name: direct_select_flutter
-      sha256: "747f32aa0c5c85d633e7006a82f9d4ca8c4b0415709f842892893b44b288cda9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
   duration:
     dependency: "direct main"
     description:
@@ -919,14 +911,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
-  rect_getter:
-    dependency: transitive
-    description:
-      name: rect_getter
-      sha256: "1c71e4ab5fb7d83d2b14a8338f979bc9ae57eefba786e7fbc91f6746dac2193d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   shelf:
     dependency: transitive
     description:
