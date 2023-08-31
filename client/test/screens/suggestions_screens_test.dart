@@ -3,9 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:koja/providers/service_provider.dart';
-import 'package:lottie/lottie.dart';
 import 'package:koja/screens/suggestions_screens.dart';
-import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
 void main() {
