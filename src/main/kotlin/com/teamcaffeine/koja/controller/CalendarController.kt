@@ -4,7 +4,6 @@ import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.UserEventDTO
-import com.teamcaffeine.koja.service.TimezoneUtility
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

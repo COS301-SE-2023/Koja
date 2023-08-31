@@ -1,6 +1,8 @@
 package com.teamcaffiene.koja.controller
 
+import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.CalendarController
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -14,7 +16,9 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 class CalendarControllerUnitTest {
     @Mock
@@ -66,9 +70,17 @@ class CalendarControllerUnitTest {
     @Test
     fun `rescheduleEvent should update event and return OK`() {
         val token = "valid_token"
-        val event = UserEventDTO(Event())
+        val event = UserEventDTO(Event().setId("minimanimo").setStart(EventDateTime().setDate(DateTime("2022-03-15"))).setEnd(EventDateTime().setDate(DateTime("2022-03-16"))))
+        event.setDuration(60)
+        var dateTime = LocalDateTime.of(2023, 8, 30, 12, 0) // Create a LocalDateTime object with the desired date and time
+        val offset = ZoneOffset.ofHours(2) // Create a ZoneOffset object with the desired offset in hours
+        val startTime = OffsetDateTime.of(dateTime, offset)
+        event.setStartTime(startTime)
+        dateTime = LocalDateTime.of(2023, 8, 30, 13, 0) // Create a LocalDateTime object with the desired date and time
+        val endTime = OffsetDateTime.of(dateTime, offset)
+        event.setEndTime(endTime)
         val currentTime = OffsetDateTime.now()
-
+        val endTimeUpdated = currentTime.plusMinutes(60)
         `when`(userCalendarService.updateEvent(token, event)).thenReturn(true)
 
         val response = calendarController.rescheduleEvent(token, event)
@@ -77,18 +89,17 @@ class CalendarControllerUnitTest {
         assert(response.body == ResponseConstant.EVENT_UPDATED)
         assert(event.getStartTime() != null) // Verify startTime is set
         assert(event.getEndTime() != null) // Verify endTime is set
-        // You might want to verify that startTime and endTime are correctly calculated
+        assert(event.getStartTime() == currentTime) // Verify startTime is set
+        assert(event.getEndTime() != endTimeUpdated)
     }
 
     @Test
     fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
         val token = "valid_token"
-        val event = UserEventDTO(Event())
-
+        val event = UserEventDTO(Event().setId("minimanimo"))
         `when`(userCalendarService.updateEvent(token, event)).thenReturn(false)
 
         val response = calendarController.rescheduleEvent(token, event)
-
         assert(response.statusCode == HttpStatus.BAD_REQUEST)
         assert(response.body == ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
     }

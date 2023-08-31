@@ -51,7 +51,7 @@ import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 import kotlin.collections.ArrayList
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 
