@@ -307,18 +307,6 @@ class ServiceProvider with ChangeNotifier {
 
   ///This function will reschedule the dynamic events
   Future<bool> rescheduleEvent(Event event) async {
-    // final url = Uri.http(
-    //     '$_serverAddress:$_serverPort', '/api/v1/user/calendar/rescheduleEvent');
-    // final response = await http.post(
-    //   url,
-    //   headers: {
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //     'Authorisation': _accessToken!,
-    //   },
-    //   body: jsonEncode(event.toJson()),
-    // );
-
-    // return response.statusCode == 200;
     final path = '/api/v1/user/calendar/rescheduleEvent';
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
