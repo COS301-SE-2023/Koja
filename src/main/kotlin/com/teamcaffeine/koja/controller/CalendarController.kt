@@ -99,12 +99,11 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
             val timeZoneId = ZoneId.of("Africa/Johannesburg")
             val currentTime = OffsetDateTime.now(timeZoneId)
+            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
             event.setStartTime(currentTime)
-            event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
-            val response = updateEvent(token, event)
-            if (response.statusCode.is2xxSuccessful) {
-                return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
-            }
+            event.setEndTime(currentTime.plusSeconds(event.getDurationInSeconds()))
+            userCalendar.createEvent(token, event)
+            return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
         } catch (e: Exception) {
             return ResponseEntity.badRequest().body(e.stackTraceToString())
         }
