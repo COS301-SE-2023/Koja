@@ -44,10 +44,9 @@ bool isEndDate = false;
 
 DateTime? recurrenceEndDate = DateTime.now();
 // double interval = 20.0;
-String recurrenceString = "";
+List<String> recurrenceString = [];
 String recurrenceType = "Daily";
 String selectedEnd = 'EndDate';
-
 
 bool needsReschedule = false;
 

@@ -374,41 +374,47 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
 // FREQ=DAILY;INTERVAL=1;UNTIL=20200630T183000Z
 
   Future saveRecurrence() async {
-    recurrenceString = '';
-    String selInterval = removeWords(selectedInterval);
+    recurrenceString = [];
+    String selInterval = removeWords(selectedEnd);
     String selOccurrence = removeWords(selectedOccurrence);
 
     if (selectedFor == 'day(s)') {
-      recurrenceString = 'FREQ=DAILY;INTERVAL=$selInterval';
+      // recurrenceString = 'FREQ=DAILY;INTERVAL=$selInterval';
+      recurrenceString[0] = 'DAILY';
+      recurrenceString[1] = selInterval;
       if (selectedEnding == 'Occurrences') {
-        recurrenceString += ';COUNT=$selOccurrence';
+        // recurrenceString += ';COUNT=$selOccurrence';
+        recurrenceString[2] = selOccurrence;
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString +=
-            ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+        // recurrenceString +=
+            // ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+        recurrenceString[2] = DateAndTimeUtil.toDate(endDate);
       }
     } else if (selectedFor == 'week(s)') {
-      recurrenceString = 'FREQ=WEEKLY;INTERVAL=$selInterval';
+      recurrenceString.add('WEEKLY');
+      recurrenceString.add(selInterval);
       if (selectedEnding == 'Occurrences') {
-        recurrenceString += ';COUNT=$selOccurrence';
+        recurrenceString.add(selOccurrence);
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString +=
-            ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+        recurrenceString.add(DateAndTimeUtil.toDate(endDate));
       }
     } else if (selectedFor == 'month(s)') {
-      recurrenceString = 'FREQ=MONTHLY;INTERVAL=$selInterval';
+      recurrenceString.add('MONTHLY');
+      recurrenceString.add(selInterval);
       if (selectedEnding == 'Occurrences') {
-        recurrenceString += ';COUNT=$selOccurrence';
+        recurrenceString.add(selOccurrence);
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString +=
-            ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+        recurrenceString.add(DateAndTimeUtil.toDate(endDate));
       }
     } else if (selectedFor == 'year(s)') {
-      recurrenceString = 'FREQ=YEARLY;INTERVAL=$selInterval';
+      recurrenceString.add('YEARLY');
+      recurrenceString.add(selInterval);
+      recurrenceString[0] = 'YEARLY';
+      recurrenceString[1] = selInterval;
       if (selectedEnding == 'Occurrences') {
-        recurrenceString += ';COUNT=$selOccurrence';
+        recurrenceString.add(selOccurrence); 
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString +=
-            ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
+        recurrenceString.add(DateAndTimeUtil.toDate(endDate));
       }
     }
   }

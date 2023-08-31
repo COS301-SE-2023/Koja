@@ -208,7 +208,7 @@ class EventEditingState extends State<EventEditing> {
                 ),
                 const SizedBox(height: 12),
                 if (widget.event != null) deleteEventButton(),
-                if (widget.event != null && widget.event?.recurrenceRule != '')
+                if (widget.event != null && widget.event?.recurrenceRule != [])
                   deleteRecurringEventsButton(),
               ],
             )),
@@ -743,7 +743,7 @@ class EventEditingState extends State<EventEditing> {
 
       // use recurrenceRule to store the recurrence string     
       if(selectedRecurrence == 'None'){
-        recurrenceString = '';
+        recurrenceString = [];
       } 
 
       var durationInSeconds = 0;

@@ -15,7 +15,7 @@ class Event {
   final bool isAllDay;
   final int priority;
   final bool isDynamic;
-  final String recurrenceRule;
+  final List<String> recurrenceRule;
 
   const Event({
     this.id = '',
@@ -31,7 +31,7 @@ class Event {
     this.isAllDay = false,
     this.priority = 1,
     this.isDynamic = false,
-    this.recurrenceRule = '',
+    this.recurrenceRule = const [],
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -48,7 +48,6 @@ class Event {
             .toList(),
         priority: json['priority'] ?? 0,
         isDynamic: json['dynamic']);
-        
   }
 
   Map<String, dynamic> toJson() => {
