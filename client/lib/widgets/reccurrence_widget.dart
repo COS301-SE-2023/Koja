@@ -182,7 +182,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() {
-                        selectedEnd = newValue;
+                        selectedInterval = newValue;
                       });
                     }
                   },
@@ -375,7 +375,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
 
   Future saveRecurrence() async {
     recurrenceString = [];
-    String selInterval = removeWords(selectedEnd);
+    String selInterval = removeWords(selectedInterval);
     String selOccurrence = removeWords(selectedOccurrence);
 
     if (selectedFor == 'day(s)') {
