@@ -478,6 +478,9 @@ class GoogleCalendarAdapterService(
         var eventRecurrence = mutableListOf("")
 
         if (recurrence != null) {
+            if (recurrence.size <= 1) {
+                eventRecurrence = recurrence
+            }
             if(recurrence[0] == "DAILY") {
                 eventRecurrence[0] = Frequency.DAILY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
             }
