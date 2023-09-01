@@ -62,7 +62,7 @@ class Event {
         'category': category,
         'priority': priority,
         'dynamic': isDynamic,
-        'recurrenceRule': recurrenceRule,
+        'recurrence': recurrenceRule,
       };
 }
 

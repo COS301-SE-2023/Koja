@@ -379,16 +379,12 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
     String selOccurrence = removeWords(selectedOccurrence);
 
     if (selectedFor == 'day(s)') {
-      // recurrenceString = 'FREQ=DAILY;INTERVAL=$selInterval';
-      recurrenceString[0] = 'DAILY';
-      recurrenceString[1] = selInterval;
+      recurrenceString.add('DAILY');
+      recurrenceString.add(selInterval);
       if (selectedEnding == 'Occurrences') {
-        // recurrenceString += ';COUNT=$selOccurrence';
-        recurrenceString[2] = selOccurrence;
+        recurrenceString.add(selOccurrence);
       } else if (selectedEnding == 'EndDate') {
-        // recurrenceString +=
-            // ';UNTIL=${DateAndTimeUtil.toDate(endDate)}T${DateAndTimeUtil.toTime(endDate)}Z';
-        recurrenceString[2] = DateAndTimeUtil.toDate(endDate);
+        recurrenceString.add(endDate.toUtc().toString());
       }
     } else if (selectedFor == 'week(s)') {
       recurrenceString.add('WEEKLY');
