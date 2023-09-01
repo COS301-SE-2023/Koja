@@ -375,7 +375,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
 
   Future saveRecurrence() async {
     recurrenceString = [];
-    String selInterval = removeWords(selectedEnd);
+    String selInterval = removeWords(selectedInterval);
     String selOccurrence = removeWords(selectedOccurrence);
 
     if (selectedFor == 'day(s)') {
@@ -384,7 +384,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
       if (selectedEnding == 'Occurrences') {
         recurrenceString.add(selOccurrence);
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString.add(endDate.toUtc().toString());
+        recurrenceString.add(DateAndTimeUtil.toUTCFormat(endDate));
       }
     } else if (selectedFor == 'week(s)') {
       recurrenceString.add('WEEKLY');
@@ -392,7 +392,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
       if (selectedEnding == 'Occurrences') {
         recurrenceString.add(selOccurrence);
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString.add(DateAndTimeUtil.toDate(endDate));
+        recurrenceString.add(DateAndTimeUtil.toUTCFormat(endDate));
       }
     } else if (selectedFor == 'month(s)') {
       recurrenceString.add('MONTHLY');
@@ -400,7 +400,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
       if (selectedEnding == 'Occurrences') {
         recurrenceString.add(selOccurrence);
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString.add(DateAndTimeUtil.toDate(endDate));
+        recurrenceString.add(DateAndTimeUtil.toUTCFormat(endDate));
       }
     } else if (selectedFor == 'year(s)') {
       recurrenceString.add('YEARLY');
@@ -410,7 +410,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
       if (selectedEnding == 'Occurrences') {
         recurrenceString.add(selOccurrence); 
       } else if (selectedEnding == 'EndDate') {
-        recurrenceString.add(DateAndTimeUtil.toDate(endDate));
+        recurrenceString.add(DateAndTimeUtil.toUTCFormat(endDate));
       }
     }
   }
