@@ -1,6 +1,5 @@
 package com.teamcaffeine.koja.service
 
-import com.google.api.client.util.DateTime
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -19,7 +18,11 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import java.time.*
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Service
 class UserCalendarService(
@@ -71,7 +74,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun updateEvent(token: String, eventDTO: UserEventDTO) {
+    fun updateEvent(token: String, eventDTO: UserEventDTO): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -83,8 +86,10 @@ class UserCalendarService(
 
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
+                return true
             }
         }
+        return false
     }
 
     fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
@@ -141,6 +146,7 @@ class UserCalendarService(
                         priority = 1,
                         dynamic = false,
                         userID = "1",
+                        recurrence = mutableListOf("")
                     ),
                 )
             }
@@ -196,7 +202,11 @@ class UserCalendarService(
             val newEventDuration =
                 (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
             eventDTO.setDuration(newEventDuration)
-
+            if (eventDTO.getPriority() == 3) {
+                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
+                eventDTO.setStartTime(earliestSlotStartTime)
+                eventDTO.setEndTime(earliestSlotEndTime)
+            }
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
@@ -236,8 +246,8 @@ class UserCalendarService(
         val sortedAvailableTimeSlots = eventTimeslots
             .filter {
                 it.endTime.isAfter(currentDateTime) &&
-                        Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
-                        it.type == TimeBoundaryType.ALLOWED
+                    Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
+                    it.type == TimeBoundaryType.ALLOWED
             }
             .sortedBy { it.startTime }
 
@@ -261,8 +271,9 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
+                    recurrence = mutableListOf("")
 
-                    ),
+                ),
             )
         }
         userEventsUpdated.addAll(unavailableTimeSlotsAsEvents)
@@ -287,22 +298,14 @@ class UserCalendarService(
                     val userEventEndTime = it.getEndTime()
 
                     (userEventEndTime.isAfter(potentialStartTime) && userEventStartTime.isBefore(potentialStartTime)) ||
-                            (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
-                            (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(
-                                potentialEndTime
-                            )) ||
-                            (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(
-                                potentialEndTime
-                            )) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(
-                                potentialEndTime
-                            )) ||
-                            (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
-                            (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(
-                                potentialStartTime
-                            )) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
+                        (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                        (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
                 }
 
                 if (conflictingEvent == null) {
@@ -467,7 +470,7 @@ class UserCalendarService(
         return toReturn
     }
 
-    fun getAllUserDynamicEvents(token: String): List<UserEventDTO> {
+    fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
@@ -485,54 +488,14 @@ class UserCalendarService(
             }
         }
 
-        val todayEvents = mutableMapOf<String, UserEventDTO>()
-
-        val currentDate = LocalDate.now()
-        val currentDateTime = OffsetDateTime.now()
-
+        val dynamicEvents = mutableMapOf<String, UserEventDTO>()
         for (event in userEvents) {
-            val eventDateTime = event.value.getStartTime()
-
-            if (event.value.isDynamic() && eventDateTime.toLocalDate() == currentDate && eventDateTime.isAfter(
-                    currentDateTime
-                )
-            ) {
-                todayEvents[event.key] = event.value
+            if (event.value.isDynamic()) {
+                dynamicEvents[event.key] = event.value
             }
         }
 
-        return todayEvents.values.toList()
+        return dynamicEvents.values.toList()
     }
 
-    fun reassignEarliestTimes(token: String): List<UserEventDTO> {
-        val events = getAllUserDynamicEvents(token)
-        val sortedEvents = events
-            .filter { it.isDynamic() }
-            .sortedBy { it.getPriority() }
-        val startTimes = mutableListOf<OffsetDateTime>()
-
-        for (start in sortedEvents) {
-            startTimes.add(start.getStartTime())
-        }
-        startTimes.sorted()
-
-        val endTimes = mutableListOf<OffsetDateTime>()
-
-        for (start in sortedEvents) {
-            endTimes.add(start.getStartTime())
-        }
-        endTimes.sorted()
-
-        val assignedEvents = mutableListOf<UserEventDTO>()
-        for ((i, event) in (sortedEvents.withIndex())) {
-            event.setStartTime(startTimes[i])
-            assignedEvents.add(event)
-        }
-
-        for ((i, event) in (sortedEvents.withIndex())) {
-            event.setEndTime(endTimes[i])
-            assignedEvents.add(event)
-        }
-        return assignedEvents
-    }
 }
