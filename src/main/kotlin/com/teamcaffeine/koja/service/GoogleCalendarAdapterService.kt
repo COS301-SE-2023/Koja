@@ -479,17 +479,17 @@ class GoogleCalendarAdapterService(
 
         if (recurrence != null) {
             if(recurrence.get(0) == "DAILY") {
-                eventRecurrence[0] = Frequency.DAILY + Frequency.COUNT + recurrence.get(1)
+                eventRecurrence[0] = Frequency.DAILY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace("-","")
             }
             if(recurrence.get(0) == "WEEKLY") {
-                eventRecurrence[0] = Frequency.WEEKLY + Frequency.COUNT + recurrence.get(1)
+                eventRecurrence[0] = Frequency.WEEKLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace("-","")
             }
             if(recurrence.get(0) == "MONTHLY") {
-                eventRecurrence[0] = Frequency.MONTHLY + Frequency.COUNT + recurrence.get(1)
+                eventRecurrence[0] = Frequency.MONTHLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace("-","")
             }
 
             if(recurrence.get(0) == "YEARLY") {
-                eventRecurrence[0] = Frequency.YEARLY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence.get(2)
+                eventRecurrence[0] = Frequency.YEARLY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence[2] + Frequency.UNTIL + recurrence[2].replace("-","")
             }
 
 
