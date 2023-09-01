@@ -375,7 +375,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
 
   Future saveRecurrence() async {
     recurrenceString = [];
-    String selInterval = removeWords(selectedInterval);
+    String selInterval = removeWords(selectedEnd);
     String selOccurrence = removeWords(selectedOccurrence);
 
     if (selectedFor == 'day(s)') {

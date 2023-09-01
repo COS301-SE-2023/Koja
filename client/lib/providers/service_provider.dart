@@ -33,7 +33,7 @@ class ServiceProvider with ChangeNotifier {
     // startServer();
     init();
   }
-  
+
   Future<void> startServer() async {
     final server = await HttpServer.bind('127.0.0.1', localServerPort);
 
@@ -95,7 +95,6 @@ class ServiceProvider with ChangeNotifier {
 
   /// This function will attempt to get all the events which will be used for suggestions
   Future<List<String>> getEventsForAI() async {
-
     final path = '/api/v1/ai/get-user-events';
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
@@ -174,7 +173,6 @@ class ServiceProvider with ChangeNotifier {
   /// From UserAccountController
   Future<void> deleteUserEmail(
       {required String email, required ContextProvider eventProvider}) async {
-
     final path = '/api/v1/user/remove-email';
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
@@ -259,7 +257,7 @@ class ServiceProvider with ChangeNotifier {
       },
       body: jsonEncode(event.toJson()),
     );
-
+    print(jsonEncode(event.toJson()));
     return response.statusCode == 200;
   }
 
@@ -292,7 +290,7 @@ class ServiceProvider with ChangeNotifier {
     final url = !serverAddressComponents[0].contains("https")
         ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
         : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
-    
+
     final response = await http.put(
       url,
       headers: {
@@ -307,8 +305,8 @@ class ServiceProvider with ChangeNotifier {
 
   ///This function will reschedule the dynamic events
   Future<bool> rescheduleEvent(Event event) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort', '/api/v1/user/calendar/rescheduleEvent');
+    final url = Uri.http('$_serverAddress:$_serverPort',
+        '/api/v1/user/calendar/rescheduleEvent');
     final response = await http.post(
       url,
       headers: {
@@ -505,12 +503,12 @@ class ServiceProvider with ChangeNotifier {
 
   Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(
       String accessToken) async {
-      final path = '/api/v1/user/getAllTimeBoundary';
+    final path = '/api/v1/user/getAllTimeBoundary';
 
-      final List<String> serverAddressComponents = _serverAddress.split("//");
-      final url = !serverAddressComponents[0].contains("https")
-          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
-          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
 
     final response =
         await http.get(url, headers: {'Authorization': _accessToken!});
@@ -527,12 +525,12 @@ class ServiceProvider with ChangeNotifier {
 
   Future<void> storeTimeFrames(
       String? accessToken, Map<String, TimeSlot?> timeSlots) async {
-      final path = '/api/v1/user/addTimeBoundary';
+    final path = '/api/v1/user/addTimeBoundary';
 
-      final List<String> serverAddressComponents = _serverAddress.split("//");
-      final url = !serverAddressComponents[0].contains("https")
-          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
-          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
 
     if (accessToken != null) {
       for (String key in timeSlots.keys) {
@@ -591,11 +589,10 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> getSuggestionsForUser(String user) async {
-
     final path = '/api/v1/location/travel-time';
     final body = {
-        'userID': user,
-      };
+      'userID': user,
+    };
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
         ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path, body)
