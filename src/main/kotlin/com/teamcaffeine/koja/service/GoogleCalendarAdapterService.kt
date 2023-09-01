@@ -22,6 +22,7 @@ import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
 import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
+import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -473,7 +474,26 @@ class GoogleCalendarAdapterService(
             "\n" +
             "Event Start Time: ${formattedTime}\n" +
             "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
+        val recurrence = eventDTO.getRecurrence()
+        val eventRecurrence = mutableListOf("")
 
+        if (recurrence != null) {
+            if(recurrence.get(0) == "DAILY") {
+                eventRecurrence.add(Frequency.DAILY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence.get(2))
+            }
+            if(recurrence.get(0) == "WEEKLY") {
+                eventRecurrence.add(Frequency.WEEKLY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence.get(2))
+            }
+            if(recurrence.get(0) == "MONTHLY") {
+                eventRecurrence.add(Frequency.MONTHLY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence.get(2))
+            }
+
+            if(recurrence.get(0) == "YEARLY") {
+                eventRecurrence.add(Frequency.YEARLY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence.get(2))
+            }
+
+
+        }
         val event = Event()
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
@@ -482,6 +502,7 @@ class GoogleCalendarAdapterService(
             .setEnd(
                 EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
             )
+            .setRecurrence(eventRecurrence)
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
         // TODO: Shift extended properties to values in the description
