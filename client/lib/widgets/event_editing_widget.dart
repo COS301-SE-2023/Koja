@@ -136,7 +136,7 @@ class EventEditingState extends State<EventEditing> {
               : 'High';
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      // event.location;
+      selectedRecurrence = event.recurrenceRule.isNotEmpty ? 'Custom' : 'None';
     }
   }
 
@@ -208,6 +208,7 @@ class EventEditingState extends State<EventEditing> {
                 ),
                 const SizedBox(height: 12),
                 if (widget.event != null) deleteEventButton(),
+                SizedBox(height: 12),
                 if (widget.event != null && widget.event?.recurrenceRule != [])
                   deleteRecurringEventsButton(),
               ],

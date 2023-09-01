@@ -21,4 +21,9 @@ class DateAndTimeUtil {
   static String toTime(DateTime dateTime){
     return DateFormat.Hm().format(dateTime);
   }
+
+  // 23:59 is manually coded for the recurring events 
+  static String toUTCFormat(DateTime dateTime) {
+    return DateFormat("yyyy-MM-dd'T'23:59:ss.000'Z'").format(dateTime);
+  }
 }
