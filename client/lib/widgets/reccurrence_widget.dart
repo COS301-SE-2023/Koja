@@ -370,9 +370,6 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
     );
   }
 
-// FREQ=DAILY;INTERVAL=1;COUNT=10
-// FREQ=DAILY;INTERVAL=1;UNTIL=20200630T183000Z
-
   Future saveRecurrence() async {
     recurrenceString = [];
     String selInterval = removeWords(selectedInterval);

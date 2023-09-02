@@ -51,3 +51,6 @@ String selectedEnd = 'EndDate';
 bool needsReschedule = false;
 
 const int localServerPort = 43823;
+
+// loading icon on calendar
+bool isLoading = false;
