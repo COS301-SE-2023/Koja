@@ -89,7 +89,8 @@ class AIDataController( private val aiUserDataService: AIUserDataService, privat
         } else {
             try {
                 val request = AIRequestBodyDTO(encryptedBody).encryptedData
-                ResponseEntity.ok("Works as expected, AI public key: ${request.publicKey}")
+                val emails = aiUserDataService.getNewUserEmails(request)
+                ResponseEntity.ok(Gson().toJson(emails))
             } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
             } catch (e: Exception) {

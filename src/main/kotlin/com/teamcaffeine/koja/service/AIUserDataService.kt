@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.dto.AIUserEventDataDTO
+import com.teamcaffeine.koja.dto.EncryptedData
 import com.teamcaffeine.koja.dto.TimeSlot
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.repository.UserAccountRepository
@@ -17,6 +18,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.security.KeyFactory
@@ -291,5 +296,38 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
 
     private fun getSystemPrivateKey(): PrivateKey {
         return loadPrivateKeyFromFile("./private_key.pem")
+    }
+
+    fun getNewUserEmails(request: EncryptedData): ArrayList<String> {
+        val userEmails = ArrayList<String>()
+
+        val awsCreds = AwsBasicCredentials.create(
+            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
+            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+        )
+
+        val dynamoDBClient = DynamoDbClient.builder()
+            .region(Region.EU_NORTH_1)
+            .credentialsProvider { awsCreds }
+            .build()
+
+        // TODO: Update so that it removes the user from the table after the email has been added
+        val scanRequest = ScanRequest.builder()
+            .tableName("NewUsers")
+            .build()
+
+        val response = dynamoDBClient.scan(scanRequest)
+
+        for (item in response.items()) {
+            val userID = item["UserID"]?.s()
+            if (userID != null) {
+                userAccountRepository.findByUserID(userID.toInt()).forEach {
+                    userEmails.add(it.email)
+                }
+            }
+            return userEmails
+        }
+
+        return userEmails
     }
 }
