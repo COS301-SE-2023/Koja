@@ -475,24 +475,26 @@ class GoogleCalendarAdapterService(
             "Event Start Time: ${formattedTime}\n" +
             "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
         val recurrence = eventDTO.getRecurrence()
-        val eventRecurrence = mutableListOf("")
+        var eventRecurrence = mutableListOf("")
 
         if (recurrence != null) {
-            if(recurrence.get(0) == "DAILY") {
-                eventRecurrence[0] = Frequency.DAILY + Frequency.COUNT + recurrence.get(1)
+            if (recurrence.size <= 1) {
+                eventRecurrence = recurrence
             }
-            if(recurrence.get(0) == "WEEKLY") {
-                eventRecurrence[0] = Frequency.WEEKLY + Frequency.COUNT + recurrence.get(1)
+            if(recurrence[0] == "DAILY") {
+                eventRecurrence[0] = Frequency.DAILY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
             }
-            if(recurrence.get(0) == "MONTHLY") {
-                eventRecurrence[0] = Frequency.MONTHLY + Frequency.COUNT + recurrence.get(1)
+            if(recurrence[0] == "WEEKLY") {
+                eventRecurrence[0] = Frequency.WEEKLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
+            }
+            if(recurrence[0] == "MONTHLY") {
+                eventRecurrence[0] = Frequency.MONTHLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
             }
 
-            if(recurrence.get(0) == "YEARLY") {
-                eventRecurrence[0] = Frequency.YEARLY + Frequency.COUNT + recurrence.get(1) + Frequency.UNTIL + recurrence.get(2)
+            if(recurrence[0] == "YEARLY") {
+                eventRecurrence[0] = Frequency.YEARLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
             }
-
-
+            eventRecurrence = mutableListOf()
         }
         val event = Event()
             .setSummary(eventDTO.getSummary())
