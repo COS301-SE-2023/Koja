@@ -10,6 +10,7 @@ object ResponseConstant {
     const val EVENT_DELETION_FAILED_INTERNAL_ERROR = "Internal Server Error - Event could not be deleted."
     const val INVALID_PARAMETERS = "Provided parameters invalid."
     const val GENERIC_INTERNAL_ERROR = "Internal Server Error - Something went wrong."
+    const val UNAUTHORIZED = "Unauthorized request."
 
     // Response messages where system succeeded
     const val EVENT_CREATED = "Event successfully created."

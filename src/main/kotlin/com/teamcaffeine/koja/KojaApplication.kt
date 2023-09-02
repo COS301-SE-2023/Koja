@@ -28,6 +28,7 @@ fun main(args: Array<String>) {
 
     // Set JWT secret key property
     setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+    setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
 
     runApplication<KojaApplication>(*args)
 }

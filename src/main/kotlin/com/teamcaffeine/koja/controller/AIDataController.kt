@@ -8,6 +8,7 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
+import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.service.AIUserDataService
 import com.teamcaffeine.koja.service.UserCalendarService
@@ -77,6 +78,22 @@ class AIDataController(private val userAccountRepository: UserAccountRepository,
             val userEvents = userCalendarService.getUserSuggestions(userID)
             val jsonObject = gson.toJson(userEvents)
             ResponseEntity.ok(jsonObject)
+        }
+    }
+
+    @GetMapping("/get-new-user-emails")
+    fun getNewUserEmails(@RequestParam(HeaderConstant.ENCRYPTED_BODY) encryptedBody: String?): ResponseEntity<String> {
+        return if (encryptedBody == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                val request = AIRequestBodyDTO(encryptedBody).parsedData
+                ResponseEntity.ok("Works as expected, AI public key: ${request?.publicKey}")
+            } catch (e: IllegalArgumentException) {
+                ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
         }
     }
 
