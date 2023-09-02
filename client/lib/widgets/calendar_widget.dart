@@ -50,22 +50,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
           showModalBottomSheet(
               context: context, builder: (context) => const TasksWidget());
 
-          // Event event = provider.getEventByDate(details.date!);
-
-          // showModalBottomSheet(
-          //   showDragHandle: true,
-          //   isDismissible: true,
-          //   isScrollControlled: true,
-          //   clipBehavior: Clip.antiAliasWithSaveLayer,
-          //   shape: const RoundedRectangleBorder(
-          //     borderRadius: BorderRadius.only(
-          //       topLeft: Radius.circular(20.0),
-          //       topRight: Radius.circular(20.0),
-          //     ),
-          //   ),
-          //   context: context,
-          //   builder: (context) => EventViewing(event: event),
-          // );
         });
   }
 }

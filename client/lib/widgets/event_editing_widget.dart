@@ -12,7 +12,6 @@ import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
 import './choose_recurrence_widget.dart';
 
-
 class EventEditing extends StatefulWidget {
   final Event? event;
 
@@ -127,16 +126,16 @@ class EventEditingState extends State<EventEditing> {
       titleController.text = event.title;
       fromDate = event.from;
       toDate = event.to;
-      selectedCategory = event.category;
-      selectedEventType = event.isDynamic ? 'Dynamic' : 'Fixed';
-      selectedPriority = event.priority == 1
-          ? 'Low'
+      updateCategory(event.category);
+      event.isDynamic ? updateEventType('Dynamic') : updateEventType('Fixed');
+      event.priority == 1
+          ? updatePriority('Low')
           : event.priority == 2
-              ? 'Medium'
-              : 'High';
+              ? updatePriority('Medium')
+              : updatePriority('High');
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      selectedRecurrence = event.recurrenceRule.isNotEmpty ? 'Custom' : 'None';
+      event.recurrenceRule.isNotEmpty ? updateRecurrence('Custom') : updateRecurrence('None');
     }
   }
 
@@ -201,7 +200,8 @@ class EventEditingState extends State<EventEditing> {
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
                 // ChooseColor(onColorSelected: updateColor),
-                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                if (selectedEventType == 'Fixed')
+                  ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
@@ -631,7 +631,8 @@ class EventEditingState extends State<EventEditing> {
                   : selectedPriority == "Medium"
                       ? 2
                       : 3) &&
-          existingEvent.backgroundColor == selectedColor;
+          existingEvent.backgroundColor == selectedColor &&
+          existingEvent.recurrenceRule == recurrenceString;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -742,10 +743,10 @@ class EventEditingState extends State<EventEditing> {
         priorityValue = 3;
       }
 
-      // use recurrenceRule to store the recurrence string     
-      if(selectedRecurrence == 'None'){
+      // use recurrenceRule to store the recurrence string
+      if (selectedRecurrence == 'None') {
         recurrenceString = [];
-      } 
+      }
 
       var durationInSeconds = 0;
 
@@ -766,7 +767,7 @@ class EventEditingState extends State<EventEditing> {
         timeSlots: [timeSlot],
         priority: priorityValue,
         // backgroundColor: selectedColor,
-        recurrenceRule: recurrenceString,  
+        recurrenceRule: recurrenceString,
       );
 
       if (event.location != "") {
@@ -782,7 +783,6 @@ class EventEditingState extends State<EventEditing> {
           } else if (unit.contains('minute')) {
           } else if (unit.contains('second')) {}
         }
-
       }
 
       final serviceProvider =
