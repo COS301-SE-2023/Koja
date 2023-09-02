@@ -9,6 +9,7 @@ import com.google.gson.JsonSerializer
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.AIRequestBodyDTO
+import com.teamcaffeine.koja.dto.EncryptedData
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.service.AIUserDataService
 import com.teamcaffeine.koja.service.UserCalendarService
@@ -23,7 +24,7 @@ import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping("/api/v1/ai")
-class AIDataController(private val userAccountRepository: UserAccountRepository, private val aiUserDataService: AIUserDataService, private val userCalendarService: UserCalendarService) {
+class AIDataController( private val aiUserDataService: AIUserDataService, private val userCalendarService: UserCalendarService) {
     @GetMapping("/all-users-events")
     fun getUserEventData(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
         return if (token == null) {
@@ -87,8 +88,8 @@ class AIDataController(private val userAccountRepository: UserAccountRepository,
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
-                val request = AIRequestBodyDTO(encryptedBody).parsedData
-                ResponseEntity.ok("Works as expected, AI public key: ${request?.publicKey}")
+                val request = AIRequestBodyDTO(encryptedBody).encryptedData
+                ResponseEntity.ok("Works as expected, AI public key: ${request.publicKey}")
             } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
             } catch (e: Exception) {

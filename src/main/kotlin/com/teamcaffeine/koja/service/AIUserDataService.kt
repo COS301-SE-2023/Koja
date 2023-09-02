@@ -1,6 +1,8 @@
 package com.teamcaffeine.koja.service
 
 import com.google.gson.Gson
+import com.teamcaffeine.koja.constants.ExceptionMessageConstant
+import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.dto.AIUserEventDataDTO
 import com.teamcaffeine.koja.dto.TimeSlot
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -15,11 +17,19 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.springframework.stereotype.Service
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.security.KeyFactory
+import java.security.PrivateKey
+import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
+import kotlin.collections.ArrayList
 
 @Service
 @Transactional
@@ -72,7 +82,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                         if (timeSlotDuration / eventDuration >= 2) {
                                             var timeSlotOffset = 0L
                                             while (timeSlot.startTime.plusSeconds(timeSlotOffset)
-                                                .isBefore(timeSlot.endTime)
+                                                    .isBefore(timeSlot.endTime)
                                             ) {
                                                 tempTimeSlots.add(
                                                     TimeSlot(
@@ -248,5 +258,38 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
         }
 
         return mapOfItems
+    }
+
+    fun getDecryptedAIServerRequest(cypher: String): AIRequestBodyDTO {
+        val privateKey = getSystemPrivateKey()
+        val decrypted = decrypt(cypher, privateKey)
+        val gson = Gson()
+        val toReturn = gson.fromJson(decrypted, AIRequestBodyDTO::class.java)
+        if (toReturn.encryptedData.kojaIDSecret != System.getProperty("KOJA_ID_SECRET")) {
+            throw IllegalArgumentException(ExceptionMessageConstant.INVALID_STRUCTURE)
+        }
+        return toReturn
+    }
+
+    private fun decrypt(encryptedText: String, privateKey: PrivateKey): String {
+        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC")
+        cipher.init(Cipher.DECRYPT_MODE, privateKey)
+        return String(cipher.doFinal(Base64.getDecoder().decode(encryptedText)))
+    }
+
+    private fun loadPrivateKeyFromFile(filePath: String): PrivateKey {
+        val pemContent = Files.readString(Paths.get(filePath))
+        val content = pemContent.replace("-----BEGIN RSA PRIVATE KEY-----", "")
+            .replace("-----END RSA PRIVATE KEY-----", "")
+            .trim()
+
+        val keyBytes = Base64.getDecoder().decode(content)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val keySpec = PKCS8EncodedKeySpec(keyBytes)
+        return keyFactory.generatePrivate(keySpec)
+    }
+
+    private fun getSystemPrivateKey(): PrivateKey {
+        return loadPrivateKeyFromFile("./private_key.pem")
     }
 }
