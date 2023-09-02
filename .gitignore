@@ -102,6 +102,7 @@ env
 !gradle-wrapper.jar
 !gradle-wrapper.jar
 config.json
-*/private_key.pem
+# */private_key.pem
+*private_key.pem
 /src/main/resources/private_key.pem
 */Models
