@@ -199,8 +199,8 @@ for category_id in titles[0][:10]:
     print(f"Weekday recommendations for category {category_id_np}: {weekdays[0]}")
     print(f"Time frame recommendations for category {category_id_np}: {time_frames[0]}")
 
-user_model.save("user_model")
-category_model.save("category_model")
-weekday_model.save("weekday_model")
-time_frame_model.save("time_frame_model")
+user_model.save("AI/Models/user_model")
+category_model.save("AI/Models/category_model")
+weekday_model.save("AI/Models/weekday_model")
+time_frame_model.save("AI/Models/time_frame_model")
 

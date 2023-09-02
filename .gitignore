@@ -104,3 +104,4 @@ env
 config.json
 */private_key.pem
 /src/main/resources/private_key.pem
+*/Models

@@ -47,10 +47,10 @@ def load_data_and_models():
     weekday_dataset = tf.data.Dataset.from_tensor_slices(np.unique(all_df['weekday'].values))
     time_frame_dataset = tf.data.Dataset.from_tensor_slices(np.unique(time_frames))
 
-    user_model = tf.keras.models.load_model("user_model")
-    category_model = tf.keras.models.load_model("category_model")
-    weekday_model = tf.keras.models.load_model("weekday_model")
-    time_frame_model = tf.keras.models.load_model("time_frame_model")
+    user_model = tf.keras.models.load_model("AI/Models/user_model")
+    category_model = tf.keras.models.load_model("AI/Models/category_model")
+    weekday_model = tf.keras.models.load_model("AI/Models/weekday_model")
+    time_frame_model = tf.keras.models.load_model("AI/Models/time_frame_model")
 
     user_model_index = tfrs.layers.factorized_top_k.BruteForce(user_model)
     user_model_index.index_from_dataset(
