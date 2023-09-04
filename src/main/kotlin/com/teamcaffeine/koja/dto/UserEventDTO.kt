@@ -27,7 +27,7 @@ class UserEventDTO(
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
     private var userID: String = "",
-    private var recurrence: MutableList<String>?  = null
+    private var recurrence: MutableList<String>? = null
 
 ) {
 
