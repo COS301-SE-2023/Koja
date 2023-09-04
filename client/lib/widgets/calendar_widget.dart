@@ -19,37 +19,39 @@ class CalendarWidgetState extends State<CalendarWidget> {
     final eventProvider = Provider.of<ContextProvider>(context);
 
     return SfCalendar(
-        //This sets the view of the calendar to month view
+      //This sets the view of the calendar to month view
 
-        view: CalendarView.week,
-        allowedViews: const [
-          CalendarView.day,
-          CalendarView.week,
-          CalendarView.month,
-        ],
-        initialDisplayDate: DateTime.now(),
-        showNavigationArrow: true,
-        allowDragAndDrop: true,
-        firstDayOfWeek: 1,
+      view: CalendarView.week,
+      allowedViews: const [
+        CalendarView.day,
+        CalendarView.week,
+        CalendarView.month,
+      ],
+      initialDisplayDate: DateTime.now(),
+      showNavigationArrow: true,
+      allowDragAndDrop: true,
+      firstDayOfWeek: 1,
 
-        //Ths displays the events on the calendar
-        dataSource: EventDataSource(eventProvider.events),
+      //Ths displays the events on the calendar
+      dataSource: EventDataSource(eventProvider.events),
 
-        //This initialises the calendar to the current date
-        initialSelectedDate: DateTime.now(),
-        timeSlotViewSettings: const TimeSlotViewSettings(
-          timeIntervalHeight: 50,
-          timeInterval: Duration(minutes: 30),
-          timeFormat: 'HH:mm',
-        ),
+      //This initialises the calendar to the current date
+      initialSelectedDate: DateTime.now(),
+      timeSlotViewSettings: const TimeSlotViewSettings(
+        timeIntervalHeight: 50,
+        timeInterval: Duration(minutes: 30),
+        timeFormat: 'HH:mm',
+      ),
 
-        //Save the date of the event when the user taps on the calendar
-        onTap: (details) {
-          final provider = Provider.of<ContextProvider>(context, listen: false);
-          provider.setDate(details.date!);
-          showModalBottomSheet(
-              context: context, builder: (context) => const TasksWidget());
-
-        });
+      //Save the date of the event when the user taps on the calendar
+      onTap: (details) {
+        final provider = Provider.of<ContextProvider>(context, listen: false);
+        provider.setDate(details.date!);
+        showModalBottomSheet(
+            context: context, 
+            builder: (context) => const TasksWidget()
+        );
+      }
+    );
   }
 }
