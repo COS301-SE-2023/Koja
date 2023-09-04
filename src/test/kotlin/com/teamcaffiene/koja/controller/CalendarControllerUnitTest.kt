@@ -14,10 +14,12 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doNothing
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 class CalendarControllerUnitTest {
@@ -72,16 +74,17 @@ class CalendarControllerUnitTest {
         val token = "valid_token"
         val event = UserEventDTO(Event().setId("minimanimo").setStart(EventDateTime().setDate(DateTime("2022-03-15"))).setEnd(EventDateTime().setDate(DateTime("2022-03-16"))))
         event.setDuration(60)
-        var dateTime = LocalDateTime.of(2023, 8, 30, 12, 0) // Create a LocalDateTime object with the desired date and time
-        val offset = ZoneOffset.ofHours(2) // Create a ZoneOffset object with the desired offset in hours
-        val startTime = OffsetDateTime.of(dateTime, offset)
+        val timeZoneId = ZoneId.of("Africa/Johannesburg")
+        val startTime = OffsetDateTime.of(2023, 9, 4, 12, 0, 0, 0, ZoneOffset.ofHours(2))
         event.setStartTime(startTime)
-        dateTime = LocalDateTime.of(2023, 8, 30, 13, 0) // Create a LocalDateTime object with the desired date and time
-        val endTime = OffsetDateTime.of(dateTime, offset)
+        val dateTime = LocalDateTime.of(2023, 8, 30, 13, 0) // Create a LocalDateTime object with the desired date and time
+        val endTime = OffsetDateTime.of(dateTime, ZoneOffset.ofHours(2))
         event.setEndTime(endTime)
-        val currentTime = OffsetDateTime.now()
+        val currentTime = OffsetDateTime.now(timeZoneId)
         val endTimeUpdated = currentTime.plusMinutes(60)
-        `when`(userCalendarService.updateEvent(token, event)).thenReturn(true)
+        doNothing().`when`(userCalendarService.deleteEvent(token, "", startTime, endTime))
+        doNothing().`when`(userCalendarService.createEvent(token, event))
+        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(listOf(event))
 
         val response = calendarController.rescheduleEvent(token, event)
 
@@ -96,8 +99,9 @@ class CalendarControllerUnitTest {
     @Test
     fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
         val token = "valid_token"
-        val event = UserEventDTO(Event().setId("minimanimo"))
-        `when`(userCalendarService.updateEvent(token, event)).thenReturn(false)
+        val event = UserEventDTO(Event().setId("minimanimo").setStart(EventDateTime().setDate(DateTime("2022-03-15"))).setEnd(EventDateTime().setDate(DateTime("2022-03-16"))))
+        doNothing().`when`(userCalendarService.deleteEvent(token, "", OffsetDateTime.now(), OffsetDateTime.now()))
+        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(listOf(event))
 
         val response = calendarController.rescheduleEvent(token, event)
         assert(response.statusCode == HttpStatus.BAD_REQUEST)
