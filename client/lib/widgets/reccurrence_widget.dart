@@ -216,7 +216,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
                         BorderRadius.circular(10),
                     decoration: InputDecoration(
                       label: Text(
-                        'For',
+                        '',
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight:

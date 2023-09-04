@@ -50,7 +50,7 @@ class TasksWidgetState extends State<TasksWidget> {
                 'No Tasks Found',
                 style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     fontFamily: 'Raleway'),
               ),
             ),
