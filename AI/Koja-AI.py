@@ -9,10 +9,17 @@ import json
 import time
 import datetime
 from dotenv import load_dotenv
+from OpenSSL import crypto
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes
+import base64
 
 import os
 
-from main import CategoryRecommender, task
+# from main import CategoryRecommender, task
 
 app = Flask(__name__)
 
@@ -183,6 +190,19 @@ def get_training_data():
         return jsonify(data)
     else:
         return jsonify({'error': 'Failed to fetch data'}), 500
+    
+def load_public_key(file_path):
+        with open(file_path, "r") as key_file:
+            public_key = crypto.load_publickey(crypto.FILETYPE_PEM, key_file.read())
+        return public_key
+    
+def load_private_key(file_path, passphrase):
+    with open(file_path, "r") as key_file:
+        private_key = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file.read(), passphrase.encode())
+    return private_key
+
+def encrypt_with_private_key(private_key, data):
+    return crypto.sign(private_key, data, 'sha256')
 
 def get_koja_public_key():
     api_url = f"{koja_server_address}:{koja_server_port}/api/v1/auth/koja/public-key"
@@ -193,15 +213,52 @@ def get_koja_public_key():
         return data
     else:
         return ""
+    
+def convert_public_key_to_string(public_key):
+    public_key_string = crypto.dump_publickey(crypto.FILETYPE_PEM, public_key)
+    return public_key_string.decode()
+    
+def encrypt_with_public_key(public_key_pem, data):
+    public_key = serialization.load_pem_public_key(public_key_pem.encode('utf-8'))
+    encrypted_data = public_key.encrypt(
+        data.encode('utf-8'),
+        padding=padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA512()),
+            algorithm=hashes.SHA512(),
+            label=None
+        )
+    )
+    return base64.b64encode(encrypted_data).decode('ascii')
+
+def get_new_users_emails():
+    kojaPublicKey = get_koja_public_key()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    localPublicKeyFile = os.path.join(dir_path, 'public_key.pem')
+    encryptedKojaSecretID = encrypt_with_public_key(kojaPublicKey, os.getenv("KOJA_ID_SECRET"))
+    
+    # Ensure the values are strings before forming the JSON
+    request_payload = {
+        "publicKey": convert_public_key_to_string(load_public_key(localPublicKeyFile)),
+        "kojaIDSecret": encryptedKojaSecretID
+    }
+
+    request_json_str = json.dumps(request_payload)
+    
+    api_url = f"{koja_server_address}:{koja_server_port}/api/v1/ai/get-new-user-emails"
+    response = requests.get(api_url, params={"request": request_json_str})
+    
+    return response.json()
+
 
 
 if __name__ == "__main__":
-    # auto_train_new(get_training_data())
+    # auto_train_new(get_training_data())   
     # auto_train_new(get_training_data())
     load_dotenv()
     port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
     koja_server_address = os.getenv("SERVER_ADDRESS")
     koja_server_port = os.getenv("SERVER_PORT")
+    get_new_users_emails()
     get_koja_public_key()
     app.run(host='0.0.0.0', port=port, debug=True)

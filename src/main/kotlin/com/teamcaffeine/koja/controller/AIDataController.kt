@@ -83,13 +83,13 @@ class AIDataController( private val aiUserDataService: AIUserDataService, privat
     }
 
     @GetMapping("/get-new-user-emails")
-    fun getNewUserEmails(@RequestParam(HeaderConstant.ENCRYPTED_BODY) encryptedBody: String?): ResponseEntity<String> {
-        return if (encryptedBody == null) {
+    fun getNewUserEmails(@RequestParam("request") request: String?): ResponseEntity<String> {
+        return if (request == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
             try {
-                val request = AIRequestBodyDTO(encryptedBody).encryptedData
-                val emails = aiUserDataService.getNewUserEmails(request)
+                val req = AIRequestBodyDTO(request).encryptedData
+                val emails = aiUserDataService.getNewUserEmails(req)
                 ResponseEntity.ok(Gson().toJson(emails))
             } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
