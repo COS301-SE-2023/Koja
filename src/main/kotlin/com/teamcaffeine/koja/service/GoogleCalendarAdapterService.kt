@@ -475,12 +475,9 @@ class GoogleCalendarAdapterService(
             "Event Start Time: ${formattedTime}\n" +
             "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
         val recurrence = eventDTO.getRecurrence()
-        var eventRecurrence = mutableListOf("")
+        val eventRecurrence = mutableListOf("")
 
         if (recurrence != null) {
-            if (recurrence.size <= 1) {
-                eventRecurrence = recurrence
-            }
             if(recurrence[0] == "DAILY") {
                 eventRecurrence[0] = Frequency.DAILY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
             }
@@ -494,7 +491,6 @@ class GoogleCalendarAdapterService(
             if(recurrence[0] == "YEARLY") {
                 eventRecurrence[0] = Frequency.YEARLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + recurrence[2].replace(Regex("[^a-zA-Z0-9]"), "")
             }
-            eventRecurrence = mutableListOf()
         }
         val event = Event()
             .setSummary(eventDTO.getSummary())
