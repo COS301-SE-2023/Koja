@@ -21,12 +21,13 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest
+import software.amazon.awssdk.services.dynamodb.model.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -300,6 +301,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
 
     fun getNewUserEmails(request: EncryptedData): ArrayList<String> {
         val userEmails = ArrayList<String>()
+        val userIdsToDelete = ArrayList<Map<String, AttributeValue>>()
 
         val awsCreds = AwsBasicCredentials.create(
             System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
@@ -311,23 +313,64 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
             .credentialsProvider { awsCreds }
             .build()
 
-        // TODO: Update so that it removes the user from the table after the email has been added
         val scanRequest = ScanRequest.builder()
             .tableName("NewUsers")
             .build()
 
         val response = dynamoDBClient.scan(scanRequest)
 
-        for (item in response.items()) {
-            val userID = item["UserID"]?.s()
-            if (userID != null) {
-                userAccountRepository.findByUserID(userID.toInt()).forEach {
-                    userEmails.add(it.email)
+        try {
+            for (item in response.items()) {
+                val userID = item["UserID"]?.s()
+                if (userID != null) {
+                    userAccountRepository.findByUserID(userID.toInt()).forEach {
+                        userEmails.add(encrypt(it.email, request.publicKey))
+                    }
+
+                    userIdsToDelete.add(mapOf("UserID" to AttributeValue.builder().s(userID).build()))
                 }
             }
             return userEmails
+        } catch (e: Exception) {
+            throw e
+        } finally {
+            removeOldEntries(userIdsToDelete, dynamoDBClient)
+            dynamoDBClient.close()
         }
+    }
 
-        return userEmails
+    private fun encrypt(plainText: String, publicKeyString: String): String {
+        val publicKeyPEM = publicKeyString.replace("-----BEGIN PUBLIC KEY-----", "")
+            .replace("-----END PUBLIC KEY-----", "")
+            .replace("\n", "")
+            .replace("\r", "")
+
+        val decodedKey = Base64.getDecoder().decode(publicKeyPEM)
+        val keySpec = X509EncodedKeySpec(decodedKey)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val publicKey = keyFactory.generatePublic(keySpec)
+
+        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey)
+
+        val encryptedBytes = cipher.doFinal(plainText.toByteArray())
+        return Base64.getEncoder().encodeToString(encryptedBytes)
+    }
+
+    private fun removeOldEntries(
+        userIdsToDelete: ArrayList<Map<String, AttributeValue>>,
+        dynamoDBClient: DynamoDbClient,
+    ) {
+        if (userIdsToDelete.isNotEmpty()) {
+            val writeRequests = userIdsToDelete.map {
+                WriteRequest.builder().deleteRequest(DeleteRequest.builder().key(it).build()).build()
+            }
+
+            val batchWriteItemRequest = BatchWriteItemRequest.builder()
+                .requestItems(mapOf("NewUsers" to writeRequests))
+                .build()
+
+            dynamoDBClient.batchWriteItem(batchWriteItemRequest)
+        }
     }
 }
