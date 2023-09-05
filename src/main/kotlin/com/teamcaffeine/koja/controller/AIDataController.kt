@@ -87,10 +87,11 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
         } else {
             try {
                 val req = AIRequestBodyDTO(request).encryptedData
-                val emails = aiUserDataService.getNewUserEmails(req)
-                for (email in emails) {
-                    println(email)
+                if(aiUserDataService.validateKojaSecretID(req.kojaIDSecret))
+                {
+
                 }
+                val emails = aiUserDataService.getNewUserEmails(req)
                 ResponseEntity.ok(Gson().toJson(emails))
             } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)

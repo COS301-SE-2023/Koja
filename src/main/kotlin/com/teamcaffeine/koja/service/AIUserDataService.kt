@@ -1,8 +1,6 @@
 package com.teamcaffeine.koja.service
 
 import com.google.gson.Gson
-import com.teamcaffeine.koja.constants.ExceptionMessageConstant
-import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.dto.AIUserEventDataDTO
 import com.teamcaffeine.koja.dto.EncryptedData
 import com.teamcaffeine.koja.dto.TimeSlot
@@ -17,12 +15,15 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 import java.nio.file.Files
+
 import java.nio.file.Paths
 import java.security.KeyFactory
 import java.security.PrivateKey
@@ -39,9 +40,10 @@ import kotlin.collections.ArrayList
 
 @Service
 @Transactional
-class AIUserDataService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository) {
+class AIUserDataService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository, private val cryptoService: CryptoService) {
     private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
     private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
+    private val privateKeyResource: Resource = ClassPathResource("private_key.pem")
 
     fun getUserEventData(authKey: String): MutableList<Map<String, ArrayList<AIUserEventDataDTO>>> {
         val userAccounts = userAccountRepository.findAll()
@@ -266,21 +268,20 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
         return mapOfItems
     }
 
-    fun getDecryptedAIServerRequest(cypher: String): AIRequestBodyDTO {
-        val privateKey = getSystemPrivateKey()
-        val decrypted = decrypt(cypher, privateKey)
-        val gson = Gson()
-        val toReturn = gson.fromJson(decrypted, AIRequestBodyDTO::class.java)
-        if (toReturn.encryptedData.kojaIDSecret != System.getProperty("KOJA_ID_SECRET")) {
-            throw IllegalArgumentException(ExceptionMessageConstant.INVALID_STRUCTURE)
-        }
-        return toReturn
-    }
+//    fun getDecryptedAIServerRequest(cypher: String): AIRequestBodyDTO {
+// //        val privateKey = getSystemPrivateKey()
+// //        val decrypted = decrypt(cypher, privateKey)
+// //        val gson = Gson()
+// //        val toReturn = gson.fromJson(decrypted, AIRequestBodyDTO::class.java)
+// //        if (toReturn.encryptedData.kojaIDSecret != System.getProperty("KOJA_ID_SECRET")) {
+// //            throw IllegalArgumentException(ExceptionMessageConstant.INVALID_STRUCTURE)
+// //        }
+// //        return toReturn
+//    }
 
-    private fun decrypt(encryptedText: String, privateKey: PrivateKey): String {
-        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC")
-        cipher.init(Cipher.DECRYPT_MODE, privateKey)
-        return String(cipher.doFinal(Base64.getDecoder().decode(encryptedText)))
+    private fun decrypt(encryptedText: String): String {
+        val decryptedByteArray = cryptoService.decryptData(encryptedText)
+        return String(decryptedByteArray)
     }
 
     private fun loadPrivateKeyFromFile(filePath: String): PrivateKey {
@@ -337,6 +338,11 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
             removeOldEntries(userIdsToDelete, dynamoDBClient)
             dynamoDBClient.close()
         }
+    }
+
+    fun validateKojaSecretID(id: String): Boolean {
+        val decrypted = decrypt(id)
+        return decrypted == System.getProperty("KOJA_ID_SECRET")
     }
 
     private fun encrypt(plainText: String, publicKeyString: String): String {

@@ -210,7 +210,9 @@ def get_koja_public_key():
     
     if response.status_code == 200:
         data = response.json()
-        return data
+        public_key_bytes = base64.b64decode(data)
+        public_key = serialization.load_der_public_key(public_key_bytes, backend=default_backend())
+        return public_key
     else:
         return ""
     
@@ -218,8 +220,7 @@ def convert_public_key_to_string(public_key):
     public_key_string = crypto.dump_publickey(crypto.FILETYPE_PEM, public_key)
     return public_key_string.decode()
     
-def encrypt_with_public_key(public_key_pem, data):
-    public_key = serialization.load_pem_public_key(public_key_pem.encode('utf-8'))
+def encrypt_with_public_key(public_key, data):
     encrypted_data = public_key.encrypt(
         data.encode('utf-8'),
         padding=padding.OAEP(
@@ -228,7 +229,7 @@ def encrypt_with_public_key(public_key_pem, data):
             label=None
         )
     )
-    return base64.b64encode(encrypted_data).decode('ascii')
+    return base64.b64encode(encrypted_data)
 
 def get_new_users_emails():
     kojaPublicKey = get_koja_public_key()
@@ -247,7 +248,7 @@ def get_new_users_emails():
     api_url = f"{koja_server_address}:{koja_server_port}/api/v1/ai/get-new-user-emails"
     response = requests.get(api_url, params={"request": request_json_str})
     
-    return response.json()
+    return response.json()  
 
 
 

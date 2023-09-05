@@ -1,6 +1,7 @@
 package com.teamcaffeine.koja.controller
 
 import com.google.gson.Gson
+import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.transaction.Transactional
@@ -20,7 +21,7 @@ import org.springframework.core.io.ClassPathResource
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthenticationController(private val googleCalendarAdapter: GoogleCalendarAdapterService) {
+class AuthenticationController(private val googleCalendarAdapter: GoogleCalendarAdapterService, private val cryptoService: CryptoService) {
 
     private val publicKeyResource: Resource = ClassPathResource("public_key.pem")
 
@@ -52,9 +53,6 @@ class AuthenticationController(private val googleCalendarAdapter: GoogleCalendar
 
     @GetMapping("/koja/public-key")
     fun getPublicKey(): ResponseEntity<String> {
-        val publicKeyBytes = publicKeyResource.inputStream.readAllBytes()
-        val publicKeyBase64 = String(publicKeyBytes, StandardCharsets.UTF_8)
-        val gson = Gson()
-        return ResponseEntity.ok(gson.toJson(publicKeyBase64))
+        return ResponseEntity.ok(Gson().toJson(cryptoService.getPublicKey()))
     }
 }
