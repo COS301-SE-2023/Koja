@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:koja/widgets/tasks_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -135,7 +139,9 @@ class EventEditingState extends State<EventEditing> {
               : updatePriority('High');
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      event.recurrenceRule.isNotEmpty ? updateRecurrence('Custom') : updateRecurrence('None');
+      event.recurrenceRule.isNotEmpty
+          ? updateRecurrence('Custom')
+          : updateRecurrence('None');
     }
   }
 
@@ -276,9 +282,32 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
+            Navigator.of(context).pop();
             Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
-            Navigator.of(context).pop();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Lottie.asset(
+                      'assets/animations/del.json',
+                      height: 150,
+                      width: 150,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                    ),
+                  ),  
+                );
+              },
+            );
+            Timer timer = Timer(Duration(seconds: 2), () {
+              Navigator.of(context).pop();
+            });
+           
           }
         },
         child: const Text('Delete Event'),
@@ -791,8 +820,50 @@ class EventEditingState extends State<EventEditing> {
       if (widget.event == null) {
         var response = await serviceProvider.createEvent(event);
 
-        if (response) {
+        if (response) {      
           eventProvider.retrieveEvents();
+          Navigator.of(context).pop();
+
+          Timer timer = Timer(Duration(seconds: 2), () {
+            Navigator.of(context).pop();
+          });
+
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Container(
+                  alignment: Alignment.center,
+                  child: Lottie.asset(
+                    'assets/animations/loading.json',
+                    height: 150,
+                    width: 150,
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.transparent,
+                  ),
+                ),
+                // content: const Text('Are you sure you want to delete?'),
+                // actions: <Widget>[
+                //   TextButton(
+                //     onPressed: () {
+                //       Navigator.of(context).pop();
+                //     },
+                //     child: const Text('Cancel'),
+                //   ),
+                //   TextButton(
+                //     onPressed: () {
+                //       Navigator.of(context).pop();
+                //       Navigator.of(context).pop();
+                //     },
+                //     child: const Text('Delete'),
+                //   ),
+                // ],
+                
+              );
+            },
+          );
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Created!',
@@ -800,7 +871,6 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
         } else {
           var snackBar = SnackBar(
             content: Center(
