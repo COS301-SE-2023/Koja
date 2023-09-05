@@ -100,6 +100,26 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
         }
     }
 
+    @GetMapping("/get-all-user-emails")
+    fun getAllUserEmails(@RequestParam("request") request: String?): ResponseEntity<String> {
+        return if (request == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                val req = AIRequestBodyDTO(request).encryptedData
+                if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getNewUserEmails(req)))
+                } else {
+                    ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
+                }
+            } catch (e: IllegalArgumentException) {
+                ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
+        }
+    }
+
     class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
         override fun serialize(src: OffsetDateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonPrimitive(src.toString())

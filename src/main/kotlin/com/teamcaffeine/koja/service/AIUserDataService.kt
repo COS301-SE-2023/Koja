@@ -23,7 +23,6 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 import java.nio.file.Files
-
 import java.nio.file.Paths
 import java.security.KeyFactory
 import java.security.PrivateKey
@@ -296,10 +295,6 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
         return keyFactory.generatePrivate(keySpec)
     }
 
-    private fun getSystemPrivateKey(): PrivateKey {
-        return loadPrivateKeyFromFile("./private_key.pem")
-    }
-
     fun getNewUserEmails(request: EncryptedData): ArrayList<String> {
         val userEmails = ArrayList<String>()
         val userIdsToDelete = ArrayList<Map<String, AttributeValue>>()
@@ -338,6 +333,17 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
             removeOldEntries(userIdsToDelete, dynamoDBClient)
             dynamoDBClient.close()
         }
+    }
+
+    fun getAllUserEmails(request: EncryptedData): ArrayList<String> {
+        val userEmails = ArrayList<String>()
+        userAccountRepository.findAll().forEach {
+            val encryptedEmail = cryptoService.encryptData(it.email.toByteArray(), request.publicKey)
+            userEmails.add(
+                Base64.getEncoder().encodeToString(encryptedEmail),
+            )
+        }
+        return userEmails
     }
 
     fun validateKojaSecretID(id: String): Boolean {

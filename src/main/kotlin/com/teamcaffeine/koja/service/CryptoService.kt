@@ -14,6 +14,7 @@ import java.security.PublicKey
 import java.security.spec.MGF1ParameterSpec
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.RSAPublicKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
@@ -77,13 +78,6 @@ class CryptoService {
         return SecretKeySpec(tmp.encoded, "AES")
     }
 
-    private fun encryptPrivateKey(privateKeyBytes: ByteArray, passphrase: String): ByteArray {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-        val secretKey = getSecretKey(passphrase)
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        return cipher.doFinal(privateKeyBytes)
-    }
-
     private fun decryptPrivateKey(encryptedPrivateKeyBytes: ByteArray, passphrase: String, iv: ByteArray): ByteArray {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
         val secretKey = getSecretKey(passphrase)
@@ -97,7 +91,11 @@ class CryptoService {
         return generatePublic(rsaPublicKeySpec)
     }
 
-    fun encryptData(data: ByteArray, publicKey: PublicKey): ByteArray {
+    fun encryptData(data: ByteArray, publicKeyStr: String): ByteArray {
+        val publicKeyBytes = Base64.getDecoder().decode(publicKeyStr)
+        val keySpec = X509EncodedKeySpec(publicKeyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val publicKey = keyFactory.generatePublic(keySpec)
         val cipher = Cipher.getInstance("RSA")
         cipher.init(Cipher.ENCRYPT_MODE, publicKey)
         return cipher.doFinal(data)
