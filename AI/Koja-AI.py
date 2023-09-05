@@ -229,7 +229,7 @@ def encrypt_with_public_key(public_key, data):
             label=None
         )
     )
-    return base64.b64encode(encrypted_data)
+    return base64.b64encode(encrypted_data).decode('ascii')
 
 def get_new_users_emails():
     kojaPublicKey = get_koja_public_key()

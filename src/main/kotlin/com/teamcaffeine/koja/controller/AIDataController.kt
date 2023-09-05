@@ -87,12 +87,11 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
         } else {
             try {
                 val req = AIRequestBodyDTO(request).encryptedData
-                if(aiUserDataService.validateKojaSecretID(req.kojaIDSecret))
-                {
-
+                if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getNewUserEmails(req)))
+                } else {
+                    ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
                 }
-                val emails = aiUserDataService.getNewUserEmails(req)
-                ResponseEntity.ok(Gson().toJson(emails))
             } catch (e: IllegalArgumentException) {
                 ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
             } catch (e: Exception) {

@@ -87,7 +87,7 @@ class ServiceProvider with ChangeNotifier {
   /// This function will attempt to login the user using AuthController
   Future<bool> loginUser({required ContextProvider eventProvider}) async {
     final String authUrl =
-        'http://$_serverAddress:$_serverPort/api/v1/auth/app/google';
+        '$_serverAddress:$_serverPort/api/v1/auth/app/google';
 
     final String callbackUrlScheme = 'koja-login-callback';
 
