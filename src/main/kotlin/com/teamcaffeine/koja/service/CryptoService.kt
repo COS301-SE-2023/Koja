@@ -101,6 +101,11 @@ class CryptoService {
         return cipher.doFinal(data)
     }
 
+    fun encryptPlainText(plainText: String, publicKeyStr: String): String {
+        val encryptedBytes = encryptData(plainText.toByteArray(), publicKeyStr)
+        return Base64.getEncoder().encodeToString(encryptedBytes)
+    }
+
     fun decryptData(encodedString: String): ByteArray {
         val encryptedData = Base64.getDecoder().decode(encodedString)
         val spec = OAEPParameterSpec(

@@ -10,6 +10,7 @@ import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.service.AIUserDataService
+import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,26 +23,7 @@ import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping("/api/v1/ai")
-class AIDataController(private val aiUserDataService: AIUserDataService, private val userCalendarService: UserCalendarService) {
-    @GetMapping("/all-users-events")
-    fun getUserEventData(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-//        } else if (token != System.getProperty("KOJA_JWT_SECRET")) {
-//            ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED)
-        } else {
-            val gsonBuilder = GsonBuilder()
-            gsonBuilder.registerTypeAdapter(
-                OffsetDateTime::class.java,
-                OffsetDateTimeAdapter(),
-            )
-            gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
-            val gson: Gson = gsonBuilder.setPrettyPrinting().create()
-            val userEvents = aiUserDataService.getUserEventData(token)
-            val jsonObject = gson.toJson(userEvents)
-            ResponseEntity.ok(jsonObject)
-        }
-    }
+class AIDataController(private val aiUserDataService: AIUserDataService, private val userCalendarService: UserCalendarService, private val cryptoService: CryptoService) {
 
     @GetMapping("/get-emails")
     fun getUserEmail(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
@@ -109,6 +91,27 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
                 val req = AIRequestBodyDTO(request).encryptedData
                 if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
                     ResponseEntity.ok(Gson().toJson(aiUserDataService.getAllUserEmails(req)))
+                } else {
+                    ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
+                }
+            } catch (e: IllegalArgumentException) {
+                ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
+        }
+    }
+
+    @GetMapping("/get-account-events")
+    fun getUserEvents(@RequestParam("request") request: String?, @RequestParam("userEmail") userEmail: String?): ResponseEntity<String> {
+        return if (request == null || userEmail == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                val req = AIRequestBodyDTO(request).encryptedData
+                if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
+                    val decryptedEmail = cryptoService.decryptData(userEmail).decodeToString()
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getUserEvents(decryptedEmail, req)))
                 } else {
                     ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
                 }
