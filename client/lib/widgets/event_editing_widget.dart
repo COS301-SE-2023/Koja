@@ -205,7 +205,7 @@ class EventEditingState extends State<EventEditing> {
                 ChooseCategory(onCategorySelected: updateCategory),
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
-                // ChooseColor(onColorSelected: updateColor),
+                ChooseColor(onColorSelected: updateColor),
                 if (selectedEventType == 'Fixed')
                   ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
