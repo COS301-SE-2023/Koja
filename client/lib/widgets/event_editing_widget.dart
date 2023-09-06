@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -135,7 +138,9 @@ class EventEditingState extends State<EventEditing> {
               : updatePriority('High');
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      event.recurrenceRule.isNotEmpty ? updateRecurrence('Custom') : updateRecurrence('None');
+      event.recurrenceRule.isNotEmpty
+          ? updateRecurrence('Custom')
+          : updateRecurrence('None');
     }
   }
 
@@ -199,7 +204,7 @@ class EventEditingState extends State<EventEditing> {
                 ChooseCategory(onCategorySelected: updateCategory),
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
-                // ChooseColor(onColorSelected: updateColor),
+                ChooseColor(onColorSelected: updateColor),
                 if (selectedEventType == 'Fixed')
                   ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
@@ -276,9 +281,31 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
+            // Navigator.of(context).pop();
             Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
-            Navigator.of(context).pop();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Lottie.asset(
+                      'assets/animations/del.json',
+                      height: 150,
+                      width: 150,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                );
+              },
+            );
+            Timer timer = Timer(Duration(seconds: 2), () {
+              Navigator.of(context).pop();
+            });
           }
         },
         child: const Text('Delete Event'),
@@ -753,6 +780,34 @@ class EventEditingState extends State<EventEditing> {
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
 
+      if (selectedEventType == 'Fixed') {       
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+              ),
+              child: AlertDialog(
+                title: Container(
+                  alignment: Alignment.center,
+                  child: Lottie.asset(
+                    'assets/animations/loading.json',
+                    height: 150,
+                    width: 150,
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.transparent,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }
+
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
@@ -766,7 +821,7 @@ class EventEditingState extends State<EventEditing> {
         isAllDay: false,
         timeSlots: [timeSlot],
         priority: priorityValue,
-        // backgroundColor: selectedColor,
+        backgroundColor: selectedColor,
         recurrenceRule: recurrenceString,
       );
 
@@ -793,22 +848,30 @@ class EventEditingState extends State<EventEditing> {
 
         if (response) {
           eventProvider.retrieveEvents();
+          if (selectedEventType == 'Fixed') {
+            BuildContext context = this.context;
+            Navigator.of(context).pop();
+          }
+          // Navigator.of(context).pop();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Created!',
                   style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
+            duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
+          mounted ? Navigator.of(context).pop() : null;
         } else {
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Creation failed!',
                   style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
+            duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          mounted ? Navigator.of(context).pop() : null;
         }
       } else {
         var response = await serviceProvider.updateEvent(event);

@@ -1,7 +1,4 @@
-import 'package:icons_plus/icons_plus.dart';
-import 'package:provider/provider.dart';
 import '../Utils/constants_util.dart';
-import '../providers/context_provider.dart';
 import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
@@ -50,31 +47,31 @@ class _TasksState extends State<Tasks> {
                       'Current',
                       style: TextStyle(color: Colors.white),
                     ),
-                    if(isLoading)
-                      SizedBox(width: 10),
-                      SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                        ),
-                      ),
-                    if(!isLoading)
-                      IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const EventEditing();
-                            },
-                          );
-                        },  
-                        icon: Icon(
-                          Bootstrap.arrow_clockwise,
-                          size: 20.0,
-                          color: Colors.white,
-                        ),
-                      ),  
+                    // if(isLoading)
+                    //   SizedBox(width: 10),
+                    //   SizedBox(
+                    //     height: 15,
+                    //     width: 15,
+                    //     child: CircularProgressIndicator(
+                    //       strokeWidth: 2.0,
+                    //     ),
+                    //   ),
+                    // if(!isLoading)
+                    //   IconButton(
+                    //     onPressed: () {
+                    //       showDialog(
+                    //         context: context,
+                    //         builder: (BuildContext context) {
+                    //           return const EventEditing();
+                    //         },
+                    //       );
+                    //     },  
+                    //     icon: Icon(
+                    //       Bootstrap.arrow_clockwise,
+                    //       size: 20.0,
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),  
                   ],
                 ),
               ),
