@@ -485,7 +485,7 @@ class GoogleCalendarAdapterService(
                 val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
-                    Frequency.DAILY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                    Frequency.DAILY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
                         instant.atOffset(ZoneOffset.UTC)
                     )
                 )
@@ -494,20 +494,29 @@ class GoogleCalendarAdapterService(
                 val inputFormatter = DateTimeFormatter.ISO_INSTANT
                 val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
-                eventRecurrence.add(Frequency.WEEKLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + outputFormatter.format(instant))
+                eventRecurrence.add(
+                    Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant)
+                )
             }
             if (recurrence[0] == "MONTHLY") {
                 val inputFormatter = DateTimeFormatter.ISO_INSTANT
                 val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
-                eventRecurrence.add(Frequency.MONTHLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + outputFormatter.format(instant))
+                eventRecurrence.add(
+                    Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant)
+                )
             }
 
             if (recurrence[0] == "YEARLY") {
                 val inputFormatter = DateTimeFormatter.ISO_INSTANT
                 val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
-                eventRecurrence.add(Frequency.YEARLY + Frequency.COUNT + recurrence[1] + Frequency.UNTIL + outputFormatter.format(instant))
+                eventRecurrence.add(
+                    Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant)
+                )
             }
         }
         val event = Event()
