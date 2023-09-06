@@ -1,4 +1,9 @@
+import 'package:icons_plus/icons_plus.dart';
+import 'package:koja/providers/context_provider.dart';
+import 'package:provider/provider.dart';
+
 import '../Utils/constants_util.dart';
+import '../providers/service_provider.dart';
 import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
@@ -15,16 +20,18 @@ class Tasks extends StatefulWidget {
 }
 
 class _TasksState extends State<Tasks> {
-
   @override
   void initState() {
     super.initState();
-    //isLoading is on service provider
-    
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    // final serviceProvider =
+    //     Provider.of<ServiceProvider>(context, listen: false);
+    // final contextProvider =
+    //     Provider.of<ContextProvider>(context, listen: false);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -56,22 +63,17 @@ class _TasksState extends State<Tasks> {
                     //       strokeWidth: 2.0,
                     //     ),
                     //   ),
-                    // if(!isLoading)
-                    //   IconButton(
-                    //     onPressed: () {
-                    //       showDialog(
-                    //         context: context,
-                    //         builder: (BuildContext context) {
-                    //           return const EventEditing();
-                    //         },
-                    //       );
-                    //     },  
-                    //     icon: Icon(
-                    //       Bootstrap.arrow_clockwise,
-                    //       size: 20.0,
-                    //       color: Colors.white,
-                    //     ),
-                    //   ),  
+                    // IconButton(
+                    //   onPressed: () async {
+                    //     String? accessToken = serviceProvider.accessToken;
+                    //     await contextProvider.getEventsFromAPI(accessToken!);
+                    //   },
+                    //   icon: Icon(
+                    //     Bootstrap.arrow_clockwise,
+                    //     size: 20.0,
+                    //     color: Colors.white,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -107,7 +109,7 @@ class CurrentTasksScreen extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const EventEditing();
+              return EventEditing();
             },
           );
         },

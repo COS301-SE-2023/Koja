@@ -779,8 +779,9 @@ class EventEditingState extends State<EventEditing> {
 
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
-
-      if (selectedEventType == 'Fixed') {       
+      if (selectedEventType == 'Fixed') {    
+        mounted ? Navigator.of(context).pop() : null;
+         
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -849,8 +850,8 @@ class EventEditingState extends State<EventEditing> {
         if (response) {
           eventProvider.retrieveEvents();
           if (selectedEventType == 'Fixed') {
-            BuildContext context = this.context;
-            Navigator.of(context).pop();
+            // BuildContext context = this.context;
+            // Navigator.of(context).pop();
           }
           // Navigator.of(context).pop();
           var snackBar = SnackBar(
@@ -861,8 +862,9 @@ class EventEditingState extends State<EventEditing> {
             duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          mounted ? Navigator.of(context).pop() : null;
+          // mounted ? Navigator.of(context).pop() : null;
         } else {
+          Navigator.of(context).pop();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Creation failed!',
