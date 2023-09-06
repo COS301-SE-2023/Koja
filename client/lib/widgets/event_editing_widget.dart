@@ -854,7 +854,7 @@ class EventEditingState extends State<EventEditing> {
           eventProvider.retrieveEvents();
           if (selectedEventType == 'Fixed') {
             // BuildContext context = this.context;
-            // Navigator.of(context).pop();
+            Navigator.of(context).pop();
           }
           // Navigator.of(context).pop();
           var snackBar = SnackBar(
