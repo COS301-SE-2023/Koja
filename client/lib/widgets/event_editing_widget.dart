@@ -780,27 +780,30 @@ class EventEditingState extends State<EventEditing> {
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
       if (selectedEventType == 'Fixed') {    
-        mounted ? Navigator.of(context).pop() : null;
-         
+        // mounted ? Navigator.of(context).pop() : null;  
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.transparent,
-              ),
-              child: AlertDialog(
-                title: Container(
-                  alignment: Alignment.center,
-                  child: Lottie.asset(
-                    'assets/animations/loading.json',
-                    height: 150,
-                    width: 150,
-                  ),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.transparent,
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                ),
+                child: AlertDialog(
+                  backgroundColor: Colors.transparent,
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Lottie.asset(
+                      'assets/animations/loading.json',
+                      height: 150,
+                      width: 150,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                    ),
                   ),
                 ),
               ),
