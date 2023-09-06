@@ -167,7 +167,7 @@ model = CategoryRecommender(user_model, category_model, weekday_model, time_fram
 model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
 # # Train the model
-model.fit(all_data.batch(128), epochs=50)
+model.fit(all_data.batch(128), epochs=3)
 
 user_model_index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
 user_model_index.index_from_dataset(

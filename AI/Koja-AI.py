@@ -210,7 +210,6 @@ def get_koja_public_key():
 
 def get_new_users_emails():
     koja_public_key = get_koja_public_key()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
     public_key = crypto_service.get_public_key()
     encrypted_koja_secret_id = crypto_service.encrypt_data(
         data=os.getenv("KOJA_ID_SECRET"),
@@ -230,6 +229,33 @@ def get_new_users_emails():
     return response.json()
 
 
+def get_all_users_emails():
+    koja_public_key = get_koja_public_key()
+    public_key = crypto_service.get_public_key()
+    encrypted_koja_secret_id = crypto_service.encrypt_data(
+        data=os.getenv("KOJA_ID_SECRET"),
+        public_key=koja_public_key
+    )
+
+    request_payload = {
+        "publicKey": public_key,
+        "kojaIDSecret": base64.b64encode(encrypted_koja_secret_id).decode('ascii')
+    }
+
+    request_json_str = json.dumps(request_payload)
+
+    api_url = f"{koja_server_address}:{koja_server_port}/api/v1/ai/get-all-user-emails"
+    response = requests.get(api_url, params={"request": request_json_str})
+    
+    encrypted_emails = response.json()
+    emails = []
+
+    for email in encrypted_emails:
+        emails.append(crypto_service.decrypt_data(encoded_string=email))
+
+    return emails
+
+
 if __name__ == "__main__":
     # auto_train_new(get_training_data())   
     # auto_train_new(get_training_data())
@@ -238,5 +264,5 @@ if __name__ == "__main__":
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
     koja_server_address = os.getenv("SERVER_ADDRESS")
     koja_server_port = os.getenv("SERVER_PORT")
-    get_new_users_emails()
+    get_all_users_emails()
     app.run(host='0.0.0.0', port=port, debug=True)

@@ -96,7 +96,7 @@ class CryptoService {
         val keySpec = X509EncodedKeySpec(publicKeyBytes)
         val keyFactory = KeyFactory.getInstance("RSA")
         val publicKey = keyFactory.generatePublic(keySpec)
-        val cipher = Cipher.getInstance("RSA")
+        val cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-512AndMGF1Padding")
         cipher.init(Cipher.ENCRYPT_MODE, publicKey)
         return cipher.doFinal(data)
     }

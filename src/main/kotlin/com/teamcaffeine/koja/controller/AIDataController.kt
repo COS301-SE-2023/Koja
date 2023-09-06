@@ -108,7 +108,7 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
             try {
                 val req = AIRequestBodyDTO(request).encryptedData
                 if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
-                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getNewUserEmails(req)))
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getAllUserEmails(req)))
                 } else {
                     ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
                 }
