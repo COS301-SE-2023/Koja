@@ -1,7 +1,4 @@
-import 'package:icons_plus/icons_plus.dart';
-import 'package:provider/provider.dart';
 import '../Utils/constants_util.dart';
-import '../providers/context_provider.dart';
 import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
