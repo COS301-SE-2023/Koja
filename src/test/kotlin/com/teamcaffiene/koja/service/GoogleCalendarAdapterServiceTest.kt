@@ -37,6 +37,9 @@ class GoogleCalendarAdapterServiceTest {
     lateinit var userRepository: UserRepository
 
     @Mock
+    lateinit var calendarService: Calendar
+
+    @Mock
     lateinit var userAccountRepository: UserAccountRepository
 
     private lateinit var service: GoogleCalendarAdapterService
@@ -261,11 +264,12 @@ class GoogleCalendarAdapterServiceTest {
         val event = Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime())
         val userEvents = listOf(eventDTO)
         `when`(service.refreshAccessToken(eq("clientId"), eq("clientSecret"), anyString())).thenReturn(jwtToken)
-        val calendarService = Calendar(NetHttpTransport(), JacksonFactory(), null)
+        // val calendarService = Calendar(NetHttpTransport(), JacksonFactory(), null)
         `when`(service.buildCalendarService(jwtToken.getAccessToken())).thenReturn(Calendar(NetHttpTransport(), JacksonFactory(), null))
         `when`(calendarService.calendars().get(anyString()).execute()).thenReturn(null)
         `when`(calendarService.events().list(anyString()).execute()).thenReturn(Events())
-        // `when`(calendarService.events().list(anyString()).execute()).thenReturn(Events())
+        `when`(calendarService.events().delete(anyString(), anyString()).execute()).thenReturn(null)
+        // `when`(service.createCalendar().thenReturn(Calendar(NetHttpTransport(), JacksonFactory(), null))
 
         // Call the function under test
         service.createNewCalendar(userAccounts, userEvents, "jwtToken")
