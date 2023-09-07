@@ -2,6 +2,7 @@ package com.teamcaffiene.koja.service
 
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
@@ -256,14 +257,15 @@ class GoogleCalendarAdapterServiceTest {
         // Create mock dependencies
         val jwtToken = JWTGoogleDTO("accessToken", "refreshToken", 3600)
         val userAccounts = listOf(UserAccount())
-        val eventDTO = UserEventDTO(Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime()))
+        val eventDTO = UserEventDTO(Event().setId("minima").setStart(EventDateTime().setDate(DateTime("2022-03-15"))).setEnd(EventDateTime().setDate(DateTime("2022-03-16"))))
         val event = Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime())
         val userEvents = listOf(eventDTO)
-        `when`(service.refreshAccessToken("clientId", "clientSecret", anyString())).thenReturn(jwtToken)
+        `when`(service.refreshAccessToken(eq("clientId"), eq("clientSecret"), anyString())).thenReturn(jwtToken)
         val calendarService = Calendar(NetHttpTransport(), JacksonFactory(), null)
         `when`(service.buildCalendarService(jwtToken.getAccessToken())).thenReturn(Calendar(NetHttpTransport(), JacksonFactory(), null))
-        // `when`(calendarService.calendars().get(anyString())).thenReturn(Calendar())
+        `when`(calendarService.calendars().get(anyString()).execute()).thenReturn(null)
         `when`(calendarService.events().list(anyString()).execute()).thenReturn(Events())
+        // `when`(calendarService.events().list(anyString()).execute()).thenReturn(Events())
 
         // Call the function under test
         service.createNewCalendar(userAccounts, userEvents, "jwtToken")
