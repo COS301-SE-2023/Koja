@@ -751,7 +751,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    private fun createCalendar(
+    fun createCalendar(
         calendar: com.google.api.services.calendar.Calendar,
         calendarId: String?,
         userAccount: UserAccount,

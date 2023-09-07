@@ -1,19 +1,32 @@
 package com.teamcaffiene.koja.service
 
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.calendar.Calendar
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
+import com.google.api.services.calendar.model.Events
+import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
+import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import io.github.cdimascio.dotenv.Dotenv
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
+import org.mockito.Mockito.times
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.lang.System.setProperty
 import java.time.OffsetDateTime
@@ -215,5 +228,51 @@ class GoogleCalendarAdapterServiceTest {
     @Test
     fun testGetFutureEventsLocationsScenario4() {
         assertThrows<IllegalArgumentException> { service.getFutureEventsLocations(null) }
+    }
+
+    @Test
+    @Transactional
+    fun testCreateNewCalendar() {
+        // Set up test data
+        val userAccounts = listOf(UserAccount())
+        val eventDTO = UserEventDTO(Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime()))
+        val event = Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime())
+        val userEvents = listOf(eventDTO)
+        val jwtToken = "jwtToken"
+        val accessToken = "accessToken"
+        // Mock the dependencies
+        `when`(service.buildCalendarService(accessToken)).thenReturn(Calendar.Builder(NetHttpTransport(), JacksonFactory(), null).setApplicationName("Koja").build())
+        `when`(service.createEventInSuggestions(accessToken, eventDTO, jwtToken, "Koja-Suggestions")).thenReturn(event)
+
+        // Call the function under test
+        service.createNewCalendar(userAccounts, userEvents, jwtToken)
+
+        // Assert the expected behavior
+        // ...
+    }
+
+    @Test
+    fun testCreateNewCalendar2() {
+        // Create mock dependencies
+        val jwtToken = JWTGoogleDTO("accessToken", "refreshToken", 3600)
+        val userAccounts = listOf(UserAccount())
+        val eventDTO = UserEventDTO(Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime()))
+        val event = Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime())
+        val userEvents = listOf(eventDTO)
+        `when`(service.refreshAccessToken("clientId", "clientSecret", anyString())).thenReturn(jwtToken)
+        val calendarService = Calendar(NetHttpTransport(), JacksonFactory(), null)
+        `when`(service.buildCalendarService(jwtToken.getAccessToken())).thenReturn(Calendar(NetHttpTransport(), JacksonFactory(), null))
+        // `when`(calendarService.calendars().get(anyString())).thenReturn(Calendar())
+        `when`(calendarService.events().list(anyString()).execute()).thenReturn(Events())
+
+        // Call the function under test
+        service.createNewCalendar(userAccounts, userEvents, "jwtToken")
+
+        // Verify interactions with the mocked dependencies
+        verify(calendarService.calendars(), times(1)).get(anyString())
+        verify(calendarService.events(), times(userEvents.size)).delete(anyString(), anyString())
+        verify(calendarService.calendars(), times(1)).delete(anyString())
+        // verify(service, times(1)).createCalendar(Calendar(), anyString(), any(UserAccount::class.java))
+        verify(service, times(userEvents.size)).createEventInSuggestions(anyString(), eventDTO, anyString(), anyString())
     }
 }

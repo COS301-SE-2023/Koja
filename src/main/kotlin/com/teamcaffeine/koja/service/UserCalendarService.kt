@@ -485,7 +485,7 @@ class UserCalendarService(
     }
 
     fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>) {
-            val userJWTTokenData = getUserJWTTokenData(accessToken)
+        val userJWTTokenData = getUserJWTTokenData(accessToken)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
         for (adapter in calendarAdapters) {
             adapter.createNewCalendar(userAccounts, eventList, accessToken)
