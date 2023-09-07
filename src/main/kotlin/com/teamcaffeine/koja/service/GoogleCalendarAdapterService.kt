@@ -619,9 +619,6 @@ class GoogleCalendarAdapterService(
 
         val calendarId = "Koja-Suggestions"
         val createdEvent = calendarService.events().insert(calendarId, event).execute()
-        if (eventDTO.isDynamic()) {
-            addPriorityEvents(accessToken, eventDTO, jwtToken)
-        }
         println("Event created: ${createdEvent.htmlLink}")
         return createdEvent
     }
