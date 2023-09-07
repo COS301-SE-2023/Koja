@@ -1,4 +1,4 @@
-package com.teamcaffeine.koja.controllers
+package com.teamcaffiene.koja.controller
 
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.BeforeEach

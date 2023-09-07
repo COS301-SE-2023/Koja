@@ -1,5 +1,8 @@
-import 'package:client/Utils/constants_util.dart';
+import 'dart:async';
+
+import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -10,6 +13,7 @@ import '../models/place_auto_response_model.dart';
 import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
 import './choose_category_widget.dart';
+import './choose_recurrence_widget.dart';
 
 class EventEditing extends StatefulWidget {
   final Event? event;
@@ -125,16 +129,18 @@ class EventEditingState extends State<EventEditing> {
       titleController.text = event.title;
       fromDate = event.from;
       toDate = event.to;
-      selectedCategory = event.category;
-      selectedEventType = event.isDynamic ? 'Dynamic' : 'Fixed';
-      selectedPriority = event.priority == 1
-          ? 'Low'
+      updateCategory(event.category);
+      event.isDynamic ? updateEventType('Dynamic') : updateEventType('Fixed');
+      event.priority == 1
+          ? updatePriority('Low')
           : event.priority == 2
-              ? 'Medium'
-              : 'High';
+              ? updatePriority('Medium')
+              : updatePriority('High');
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      // event.location;
+      event.recurrenceRule.isNotEmpty
+          ? updateRecurrence('Custom')
+          : updateRecurrence('None');
     }
   }
 
@@ -196,16 +202,20 @@ class EventEditingState extends State<EventEditing> {
                     : buildDateTimePickers(),
                 const SizedBox(height: 8),
                 ChooseCategory(onCategorySelected: updateCategory),
-                //if (selectedEventType == 'Dynamic')
-                //ChoosePriority(onPrioritySelected: updatePriority),
-                // ChooseColor(onColorSelected: updateColor),
-                //ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                if (selectedEventType == 'Dynamic')
+                  ChoosePriority(onPrioritySelected: updatePriority),
+                ChooseColor(onColorSelected: updateColor),
+                if (selectedEventType == 'Fixed')
+                  ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
                 ),
                 const SizedBox(height: 12),
                 if (widget.event != null) deleteEventButton(),
+                SizedBox(height: 12),
+                if (widget.event != null && widget.event?.recurrenceRule != [])
+                  deleteRecurringEventsButton(),
               ],
             )),
       ),
@@ -271,12 +281,50 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
+            // Navigator.of(context).pop();
+            Provider.of<ContextProvider>(context, listen: false)
+                .deleteEvent(widget.event!);
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Lottie.asset(
+                      'assets/animations/del.json',
+                      height: 150,
+                      width: 150,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                );
+              },
+            );
+            Timer timer = Timer(Duration(seconds: 2), () {
+              Navigator.of(context).pop();
+            });
+          }
+        },
+        child: const Text('Delete Event'),
+      ),
+    );
+  }
+
+  Widget deleteRecurringEventsButton() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          if (widget.event != null) {
+            // loop around all events and delete events with same name and recurrence rule using deleteEvent
             Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
             Navigator.of(context).pop();
           }
         },
-        child: const Text('Delete Event'),
+        child: const Text('Delete Recurring Events'),
       ),
     );
   }
@@ -610,7 +658,8 @@ class EventEditingState extends State<EventEditing> {
                   : selectedPriority == "Medium"
                       ? 2
                       : 3) &&
-          existingEvent.backgroundColor == selectedColor;
+          existingEvent.backgroundColor == selectedColor &&
+          existingEvent.recurrenceRule == recurrenceString;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -721,10 +770,47 @@ class EventEditingState extends State<EventEditing> {
         priorityValue = 3;
       }
 
+      // use recurrenceRule to store the recurrence string
+      if (selectedRecurrence == 'None') {
+        recurrenceString = [];
+      }
+
       var durationInSeconds = 0;
 
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
+      if (selectedEventType == 'Fixed') {    
+        // mounted ? Navigator.of(context).pop() : null;  
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                ),
+                child: AlertDialog(
+                  backgroundColor: Colors.transparent,
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Lottie.asset(
+                      'assets/animations/loading.json',
+                      height: 150,
+                      width: 150,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }
 
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
@@ -739,7 +825,8 @@ class EventEditingState extends State<EventEditing> {
         isAllDay: false,
         timeSlots: [timeSlot],
         priority: priorityValue,
-        // backgroundColor: selectedColor,
+        backgroundColor: selectedColor,
+        recurrenceRule: recurrenceString,
       );
 
       if (event.location != "") {
@@ -755,83 +842,41 @@ class EventEditingState extends State<EventEditing> {
           } else if (unit.contains('minute')) {
           } else if (unit.contains('second')) {}
         }
-
-        // // Construct the DateTime object
-        // DateTime travelDateTime = DateTime(
-        //   fromDate.year,
-        //   fromDate.month,
-        //   fromDate.day,
-        //   fromDate.hour - hours,
-        //   fromDate.minute - minutes,
-        //   fromDate.second - seconds,
-        // );
-        // String meetingTitle = titleController.text;
-
-        // travelTimeBlock = Event(
-        //   // id: (widget.event != null) ? widget.event!.id : "",
-        //   title: "Travel To $meetingTitle",
-        //   location: "",
-        //   description: '',
-        //   category: '',
-        //   isDynamic: (selectedEventType == "Dynamic") ? true : false,
-        //   from: travelDateTime,
-        //   to: fromDate,
-        //   duration: await getDurationInMilliseconds(durationInSeconds),
-        //   isAllDay: false,
-        //   timeSlots: [timeSlot],
-        //   priority: priorityValue,
-        //   backgroundColor: selectedColor,
-        // );
       }
 
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
-
-      // if (travelTimeBlock != null) {
-      //   var response = await serviceProvider.createEvent(travelTimeBlock);
-
-      // if (response) {
-      //   eventProvider.addEvent(travelTimeBlock);
-      //   var snackBar = SnackBar(
-      //     content: Center(
-      //       child: Text('Event Created!',
-      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-      //     ),
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      //   Navigator.of(context).pop();
-      // } else {
-      //   var snackBar = SnackBar(
-      //     content: Center(
-      //       child: Text('Event Creation failed!',
-      //           style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-      //     ),
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      // }
-      // }
 
       if (widget.event == null) {
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
           eventProvider.retrieveEvents();
+          if (selectedEventType == 'Fixed') {
+            // BuildContext context = this.context;
+            Navigator.of(context).pop();
+          }
+          // Navigator.of(context).pop();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Created!',
                   style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
+            duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
+          // mounted ? Navigator.of(context).pop() : null;
         } else {
+          Navigator.of(context).pop();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Creation failed!',
                   style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
+            duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          mounted ? Navigator.of(context).pop() : null;
         }
       } else {
         var response = await serviceProvider.updateEvent(event);

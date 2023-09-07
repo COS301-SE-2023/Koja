@@ -15,6 +15,7 @@ class Event {
   final bool isAllDay;
   final int priority;
   final bool isDynamic;
+  final List<String> recurrenceRule;
 
   const Event({
     this.id = '',
@@ -30,6 +31,7 @@ class Event {
     this.isAllDay = false,
     this.priority = 1,
     this.isDynamic = false,
+    this.recurrenceRule = const [],
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -57,8 +59,10 @@ class Event {
         'endTime': to.toUtc().toIso8601String(),
         'duration': duration,
         'timeSlots': timeSlots,
+        'category': category,
         'priority': priority,
         'dynamic': isDynamic,
+        'recurrence': recurrenceRule,
       };
 }
 

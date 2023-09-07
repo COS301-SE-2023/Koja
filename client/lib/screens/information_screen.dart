@@ -25,7 +25,7 @@ class InfoState extends State<Info> {
     [
       'assets/animations/puzzle.json',
       "Integration With Existing \nCalendar Apps",
-      "Koja can be integrated with existing calendar apps. This allows you to easily import your existing events into Koja, and vice versa."
+      "Koja can be integrated with existing calendar apps. This allows you to easily import your existing events into Koja, vice versa."
       // , such as Google Calendar, Apple Calendar, and Microsoft Outlook
     ],
     [

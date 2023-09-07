@@ -1,11 +1,5 @@
 package com.teamcaffeine.koja.service
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.DateTime
-import com.google.api.services.calendar.Calendar
-import com.google.api.services.calendar.model.Events
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -16,7 +10,6 @@ import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.TimeBoundaryRepository
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
-import io.jsonwebtoken.ExpiredJwtException
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -25,8 +18,11 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import java.time.*
-import java.time.format.DateTimeFormatter
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Service
 class UserCalendarService(
@@ -78,7 +74,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun updateEvent(token: String, eventDTO: UserEventDTO) {
+    fun updateEvent(token: String, eventDTO: UserEventDTO): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -90,8 +86,10 @@ class UserCalendarService(
 
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
+                return true
             }
         }
+        return false
     }
 
     fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
@@ -148,6 +146,7 @@ class UserCalendarService(
                         priority = 1,
                         dynamic = false,
                         userID = "1",
+                        recurrence = mutableListOf("")
                     ),
                 )
             }
@@ -203,7 +202,11 @@ class UserCalendarService(
             val newEventDuration =
                 (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
             eventDTO.setDuration(newEventDuration)
-
+            if (eventDTO.getPriority() == 3) {
+                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
+                eventDTO.setStartTime(earliestSlotStartTime)
+                eventDTO.setEndTime(earliestSlotEndTime)
+            }
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
@@ -243,8 +246,8 @@ class UserCalendarService(
         val sortedAvailableTimeSlots = eventTimeslots
             .filter {
                 it.endTime.isAfter(currentDateTime) &&
-                        Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
-                        it.type == TimeBoundaryType.ALLOWED
+                    Duration.between(currentDateTime, it.endTime).seconds >= eventDTO.getDurationInSeconds() &&
+                    it.type == TimeBoundaryType.ALLOWED
             }
             .sortedBy { it.startTime }
 
@@ -268,8 +271,9 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
+                    recurrence = mutableListOf("")
 
-                    ),
+                ),
             )
         }
         userEventsUpdated.addAll(unavailableTimeSlotsAsEvents)
@@ -294,22 +298,14 @@ class UserCalendarService(
                     val userEventEndTime = it.getEndTime()
 
                     (userEventEndTime.isAfter(potentialStartTime) && userEventStartTime.isBefore(potentialStartTime)) ||
-                            (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
-                            (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(
-                                potentialEndTime
-                            )) ||
-                            (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(
-                                potentialEndTime
-                            )) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(
-                                potentialEndTime
-                            )) ||
-                            (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
-                            (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(
-                                potentialStartTime
-                            )) ||
-                            (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
+                        (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                        (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
+                        (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                        (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
                 }
 
                 if (conflictingEvent == null) {
@@ -474,7 +470,7 @@ class UserCalendarService(
         return toReturn
     }
 
-    fun getAllUserDynamicEventsInRange(token: String, event: UserEventDTO): List<UserEventDTO> {
+    fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
@@ -491,79 +487,15 @@ class UserCalendarService(
                 }
             }
         }
-        userEvents.values.toList()
 
         val dynamicEvents = mutableMapOf<String, UserEventDTO>()
-
-        val currentDateTime = OffsetDateTime.now()
-        val dynamicEventsInRange = getUserEventsInRange(token, currentDateTime, event.getEndTime())
-
-        for (events in dynamicEventsInRange) {
-
-            if (events.isDynamic()) {
-                dynamicEvents.values.add(events)
+        for (event in userEvents) {
+            if (event.value.isDynamic()) {
+                dynamicEvents[event.key] = event.value
             }
         }
 
         return dynamicEvents.values.toList()
     }
 
-    fun getSortedDynamicEvents(token: String, event: UserEventDTO): List<UserEventDTO> {
-        val events = getAllUserDynamicEventsInRange(token, event)
-
-        return events
-            .filter { it.isDynamic() }
-            .sortedBy { it.getPriority() }
-    }
-
-    fun addPriorityEvents(token: String, event: UserEventDTO) {
-        val events = getSortedDynamicEvents(token, event)
-
-
-    }
-    fun buildCalendarService(accessToken: String): Calendar {
-        val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
-        val jsonFactory = JacksonFactory.getDefaultInstance()
-        val credential = GoogleCredential().setAccessToken(accessToken)
-
-        return Calendar.Builder(httpTransport, jsonFactory, credential)
-            .setApplicationName("Koja")
-            .build()
-    }
-
-    fun getUserEventsInRange(
-        accessToken: String?,
-        startDate: OffsetDateTime?,
-        endDate: OffsetDateTime?,
-    ): List<UserEventDTO> {
-        if (accessToken == null || startDate == null || endDate == null) {
-            return emptyList()
-        }
-
-        try {
-            val calendar = buildCalendarService(accessToken)
-
-            val startDateTime = DateTime(startDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-            val endDateTime = DateTime(endDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-
-            val request = calendar.events().list("primary")
-                .setTimeMin(startDateTime)
-                .setTimeMax(endDateTime)
-                .setOrderBy("startTime")
-                .setSingleEvents(true)
-                .setMaxResults(1000)
-
-            val events: Events? = request.execute()
-
-            val userEvents = ArrayList<UserEventDTO>()
-
-            events?.items?.map {
-                userEvents.add(UserEventDTO(it))
-            }
-
-            return userEvents
-        } catch (e: ExpiredJwtException) {
-            return emptyList()
-        }
-    }
 }

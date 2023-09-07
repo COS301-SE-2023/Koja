@@ -22,6 +22,7 @@ import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
 import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
+import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -32,6 +33,7 @@ import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
@@ -47,8 +49,10 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
 import java.lang.reflect.Type
+import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Base64
 import kotlin.collections.ArrayList
@@ -80,16 +84,20 @@ class GoogleCalendarAdapterService(
 
     override fun setupConnection(
         request: HttpServletRequest?,
-        appCallBack: Boolean,
+        deviceType: CallbackConfigEnum,
         addAdditionalAccount: Boolean,
         token: String,
     ): RedirectView {
-        val redirectURI = if (appCallBack && !addAdditionalAccount) {
-            "$redirectUriBase/app/google/callback"
-        } else if (!addAdditionalAccount) {
+        val redirectURI = if (deviceType == CallbackConfigEnum.WEB) {
             "$redirectUriBase/google/callback"
-        } else {
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
+            "$redirectUriBase/app/google/callback"
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            "$redirectUriBase/desktop/google/callback"
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
             "$serverAddress/api/v1/user/auth/add-email/callback"
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
         val url = if (!addAdditionalAccount) {
@@ -125,7 +133,7 @@ class GoogleCalendarAdapterService(
         return null
     }
 
-    override fun oauth2Callback(authCode: String?, appCallBack: Boolean): String {
+    override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
 
@@ -138,10 +146,17 @@ class GoogleCalendarAdapterService(
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-        if (!appCallBack) {
+
+        if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
-        } else {
+        } else if (deviceType == CallbackConfigEnum.MOBILE) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/app/google/callback")
+        } else if (deviceType == CallbackConfigEnum.DESKTOP) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/auth/desktop/google/callback")
+        } else if (deviceType == CallbackConfigEnum.ADD_EMAIL) {
+            parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
+        } else {
+            throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
 
         val requestEntity = HttpEntity(parameters, headers)
@@ -448,7 +463,7 @@ class GoogleCalendarAdapterService(
         val lng = userLocation.first.toString().toDouble()
         val travelTime = eventDTO.getTravelTime()
 
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
+        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(-25.755648, 28.2361856)).await()
         val eventLocaltime = eventStartTime.toZonedDateTime()
             .withZoneSameInstant(timezone.toZoneId())
             .plusSeconds(travelTime)
@@ -461,7 +476,49 @@ class GoogleCalendarAdapterService(
             "\n" +
             "Event Start Time: ${formattedTime}\n" +
             "Travel Time: ${secondsToHumanFormat(travelTime)}\n"
+        val recurrence = eventDTO.getRecurrence()
+        val eventRecurrence: MutableList<String> = mutableListOf()
 
+        if (!recurrence.isNullOrEmpty()) {
+            if (recurrence[0] == "DAILY") {
+                val inputFormatter = DateTimeFormatter.ISO_INSTANT
+                val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
+                val instant = Instant.from(inputFormatter.parse(recurrence[2]))
+                eventRecurrence.add(
+                    Frequency.DAILY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant.atOffset(ZoneOffset.UTC)
+                    )
+                )
+            }
+            if (recurrence[0] == "WEEKLY") {
+                val inputFormatter = DateTimeFormatter.ISO_INSTANT
+                val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
+                val instant = Instant.from(inputFormatter.parse(recurrence[2]))
+                eventRecurrence.add(
+                    Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant)
+                )
+            }
+            if (recurrence[0] == "MONTHLY") {
+                val inputFormatter = DateTimeFormatter.ISO_INSTANT
+                val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
+                val instant = Instant.from(inputFormatter.parse(recurrence[2]))
+                eventRecurrence.add(
+                    Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant)
+                )
+            }
+
+            if (recurrence[0] == "YEARLY") {
+                val inputFormatter = DateTimeFormatter.ISO_INSTANT
+                val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
+                val instant = Instant.from(inputFormatter.parse(recurrence[2]))
+                eventRecurrence.add(
+                    Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
+                        instant)
+                )
+            }
+        }
         val event = Event()
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
@@ -470,6 +527,7 @@ class GoogleCalendarAdapterService(
             .setEnd(
                 EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
             )
+            .setRecurrence(eventRecurrence)
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
         // TODO: Shift extended properties to values in the description
@@ -759,6 +817,7 @@ class GoogleCalendarAdapterService(
         return newCalendar
     }
 }
+
 class TimezoneUtility() {
 
     @Autowired

@@ -1,17 +1,37 @@
-import 'package:client/Utils/constants_util.dart';
-import 'package:client/screens/suggestions_screens.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:koja/providers/context_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../Utils/constants_util.dart';
+import '../providers/service_provider.dart';
+import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/calendar_widget.dart';
 import '../widgets/event_editing_widget.dart';
 
-class Tasks extends StatelessWidget {
+class Tasks extends StatefulWidget {
   static const routeName = '/Tasks';
 
   const Tasks({Key? key}) : super(key: key);
 
   @override
+  State<Tasks> createState() => _TasksState();
+}
+
+class _TasksState extends State<Tasks> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // final serviceProvider =
+    //     Provider.of<ServiceProvider>(context, listen: false);
+    // final contextProvider =
+    //     Provider.of<ContextProvider>(context, listen: false);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -22,17 +42,39 @@ class Tasks extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          actions: [
-            // ChangeTheme()   
-          ],
           centerTitle: true,
           backgroundColor: darkBlue,
-          bottom: const TabBar(
+          bottom: TabBar(
             tabs: [
               Tab(
-                child: Text(
-                  'Current',
-                  style: TextStyle(color: Colors.white),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Current',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    // if(isLoading)
+                    //   SizedBox(width: 10),
+                    //   SizedBox(
+                    //     height: 15,
+                    //     width: 15,
+                    //     child: CircularProgressIndicator(
+                    //       strokeWidth: 2.0,
+                    //     ),
+                    //   ),
+                    // IconButton(
+                    //   onPressed: () async {
+                    //     String? accessToken = serviceProvider.accessToken;
+                    //     await contextProvider.getEventsFromAPI(accessToken!);
+                    //   },
+                    //   icon: Icon(
+                    //     Bootstrap.arrow_clockwise,
+                    //     size: 20.0,
+                    //     color: Colors.white,
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
               Tab(
@@ -67,7 +109,7 @@ class CurrentTasksScreen extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const EventEditing();
+              return EventEditing();
             },
           );
         },

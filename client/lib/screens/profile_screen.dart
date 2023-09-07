@@ -1,4 +1,4 @@
-import 'package:client/providers/service_provider.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,14 +29,38 @@ class Profile extends StatelessWidget {
             color: Colors.white,
             icon: const Icon(Icons.logout),
             onPressed: () {
-              serviceProvider.setAccessToken(
-                null,
-                eventProvider,
-              );
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const Login()),
-                (Route<dynamic> route) => false,
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirmation'),
+                    content: Text(
+                        'Are you sure you want to exit the app?'
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          serviceProvider.setAccessToken(
+                            null,
+                            eventProvider,
+                          );
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Login()),
+                            (Route<dynamic> route) => false,
+                          );
+                        },
+                        child: Text('Exit'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),

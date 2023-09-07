@@ -22,8 +22,24 @@ class TasksWidgetState extends State<TasksWidget> {
     final provider = Provider.of<ContextProvider>(context);
     final selectedEvents = provider.eventsOfSelectedDate;
 
-    //This checks if the selected date has any events
-    if (selectedEvents.isEmpty) {
+    DateTime selectedDate = DateTime(
+      provider.selectedDate.year,
+      provider.selectedDate.month,
+      provider.selectedDate.day,
+    );
+
+    var count = 0;
+
+    for (var event in selectedEvents) {
+        DateTime eventDate = event.from;
+        DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+
+        if (eventDay == selectedDate) {
+          count++;
+        }
+    }
+
+    if (count == 0) {
       return Column(
         children: [
           const SizedBox(height: 10),
@@ -34,7 +50,7 @@ class TasksWidgetState extends State<TasksWidget> {
                 'No Tasks Found',
                 style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     fontFamily: 'Raleway'),
               ),
             ),
