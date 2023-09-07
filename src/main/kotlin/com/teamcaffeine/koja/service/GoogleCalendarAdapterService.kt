@@ -493,6 +493,9 @@ class GoogleCalendarAdapterService(
 
         val calendarId = "primary"
         val createdEvent = calendarService.events().insert(calendarId, event).execute()
+        if (eventDTO.isDynamic()) {
+            addPriorityEvents(accessToken, eventDTO, jwtToken)
+        }
         println("Event created: ${createdEvent.htmlLink}")
         return createdEvent
     }
@@ -716,7 +719,7 @@ class GoogleCalendarAdapterService(
             .sortedBy { it.getPriority() }
     }
 
-    fun addPriorityEvents(token: String, event: UserEventDTO): Boolean {
+    fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean {
         return try {
             val temp: MutableList<UserEventDTO> = mutableListOf()
             val priorityEvents = getSortedDynamicEvents(token, event)
@@ -726,7 +729,7 @@ class GoogleCalendarAdapterService(
             }
 
             for (events in temp) {
-                createEvent(token, events, token)
+                createEvent(token, events, jwtToken)
             }
             true
 
