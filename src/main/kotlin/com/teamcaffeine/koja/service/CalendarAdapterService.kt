@@ -1,6 +1,5 @@
 package com.teamcaffeine.koja.service
 
-import com.google.api.services.calendar.model.Calendar
 import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
