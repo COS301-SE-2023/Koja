@@ -4,7 +4,6 @@ import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.UserEventDTO
-import com.teamcaffeine.koja.service.TimezoneUtility
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -97,18 +96,54 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         }
         try {
-            val timeZoneId = ZoneId.of(TimezoneUtility().getTimeOfTimeZone(token))
+            // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
+            val timeZoneId = ZoneId.of("Africa/Johannesburg")
             val currentTime = OffsetDateTime.now(timeZoneId)
+            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
             event.setStartTime(currentTime)
-            event.setEndTime(currentTime.plusHours(event.getDurationInSeconds() / 60 / 60))
-            val updated = userCalendar.updateEvent(token, event)
-            if (updated) {
+            event.setEndTime(currentTime.plusSeconds(event.getDurationInSeconds()))
+            val events = userCalendar.getAllUserEvents(token)
+            if (checkAvailability(events)) {
+                userCalendar.createEvent(token, event)
                 return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
-            } else {
-                return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
             }
         } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+            return ResponseEntity.badRequest().body(e.stackTraceToString())
         }
+        return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+    }
+
+    @PostMapping("/rescheduleTimeSlot")
+    fun rescheduleEventSlot(
+        @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
+        @RequestBody event: UserEventDTO?,
+    ): ResponseEntity<String> {
+        if (event == null || token == null) {
+            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        }
+        try {
+            // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
+            val timeZoneId = ZoneId.of("Africa/Johannesburg")
+            val currentTime = OffsetDateTime.now(timeZoneId)
+            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
+            val events = userCalendar.getAllUserEvents(token)
+            val timeslot = userCalendar.findEarliestTimeSlot(events, event)
+            event.setStartTime(timeslot.first)
+            event.setEndTime(timeslot.second)
+            userCalendar.createEvent(token, event)
+            return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+        } catch (e: Exception) {
+            return ResponseEntity.badRequest().body(e.stackTraceToString())
+        }
+        return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+    }
+
+    fun checkAvailability(events: List<UserEventDTO>): Boolean {
+        for (e in events) {
+            if (e.getStartTime() <= OffsetDateTime.now() && e.getEndTime() >= OffsetDateTime.now()) {
+                return false
+            }
+        }
+        return true
     }
 }

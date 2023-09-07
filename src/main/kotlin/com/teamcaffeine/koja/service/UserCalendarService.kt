@@ -236,7 +236,7 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(
+    fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
@@ -490,8 +490,13 @@ class UserCalendarService(
 
         val dynamicEvents = mutableMapOf<String, UserEventDTO>()
         for (event in userEvents) {
-            if (event.value.isDynamic()) {
-                dynamicEvents[event.key] = event.value
+            val eventDateTime = event.value.getStartTime()
+
+            if (event.value.isDynamic() && eventDateTime.toLocalDate() == currentDate && eventDateTime.isAfter(
+                    currentDateTime,
+                )
+            ) {
+                todayEvents[event.key] = event.value
             }
         }
 

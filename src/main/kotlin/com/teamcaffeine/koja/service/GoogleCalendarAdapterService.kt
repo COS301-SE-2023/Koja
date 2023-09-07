@@ -99,7 +99,6 @@ class GoogleCalendarAdapterService(
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
-
         val url = if (!addAdditionalAccount) {
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
@@ -118,13 +117,11 @@ class GoogleCalendarAdapterService(
                 .setAccessType("offline")
                 .setApprovalPrompt("force")
                 .build()
-
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
                 .setState(token) // Set state parameter here
                 .build()
         }
-
         return RedirectView(url)
     }
 
@@ -136,17 +133,14 @@ class GoogleCalendarAdapterService(
     override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
-
         val headers = org.springframework.http.HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE)
-
         val parameters = LinkedMultiValueMap<String, String>()
         parameters.add("grant_type", "authorization_code")
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-
         if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
         } else if (deviceType == CallbackConfigEnum.MOBILE) {
@@ -158,28 +152,22 @@ class GoogleCalendarAdapterService(
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
-
         val requestEntity = HttpEntity(parameters, headers)
-
         val builder = UriComponentsBuilder
             .fromHttpUrl(tokenEndpointUrl)
             .queryParams(parameters)
         val requestUrl = builder.build().encode().toUri()
         val responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java)
-
         val responseJson = ObjectMapper().readTree(responseEntity.body)
         val accessToken = responseJson.get("access_token").asText()
         val refreshToken = responseJson.get("refresh_token")?.asText()
         val expiresIn = responseJson.get("expires_in").asLong()
-
         val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
         val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
-
         val jwtToken: String
         if (existingUser != null) {
             val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
             val existingUserAccounts = userAccountRepository.findByUserID(existingUser.userID)
-
             for (userAccount in existingUserAccounts) {
                 val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
                 if (updatedCredentials != null) {
@@ -200,7 +188,6 @@ class GoogleCalendarAdapterService(
                     )
                 }
             }
-
             jwtToken = createToken(
                 TokenRequest(
                     userTokens,
@@ -219,7 +206,6 @@ class GoogleCalendarAdapterService(
             newUser.addTimeBoundary(timeBoundary)
             timeBoundary.user = newUser
             userRepository.save(newUser)
-
             jwtToken = createToken(
                 TokenRequest(
                     arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
@@ -228,7 +214,6 @@ class GoogleCalendarAdapterService(
                 ),
             )
         }
-
         return jwtToken
     }
 
