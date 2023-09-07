@@ -754,7 +754,7 @@ class GoogleCalendarAdapterService(
 
     fun getAllUserDynamicEventsInRange(token: String, event: UserEventDTO): List<UserEventDTO> {
 
-        val dynamicEvents = mutableMapOf<String, UserEventDTO>()
+        val dynamicEvents: MutableList<UserEventDTO> = mutableListOf()
 
         val currentDateTime = OffsetDateTime.now()
         val dynamicEventsInRange = getUserEventsInRange(token, currentDateTime, event.getEndTime())
@@ -762,11 +762,11 @@ class GoogleCalendarAdapterService(
         for (events in dynamicEventsInRange) {
 
             if (events.isDynamic()) {
-                dynamicEvents.values.add(events)
+                dynamicEvents.add(events)
             }
         }
 
-        return dynamicEvents.values.toList()
+        return dynamicEvents
     }
 
     fun getSortedDynamicEvents(token: String, event: UserEventDTO): List<UserEventDTO> {
