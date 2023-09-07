@@ -25,6 +25,7 @@ class EventEditingState extends State<EventEditing> {
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
   String placeName = "";
+  late Event? updatedEvent;
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -790,6 +791,7 @@ class EventEditingState extends State<EventEditing> {
           Navigator.of(context).pop();
         }
       } else {
+        updatedEvent = event;
         var response = await getUpdateResponse();
 
         if (response) {
@@ -802,7 +804,8 @@ class EventEditingState extends State<EventEditing> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
           needsReschedule = false;
-        } else {
+        } 
+        else {
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Update Failed.',
@@ -820,10 +823,10 @@ class EventEditingState extends State<EventEditing> {
   Future<bool> getUpdateResponse() async {
     if (needsReschedule) {
       return await Provider.of<ServiceProvider>(context, listen: false)
-          .rescheduleEvent(widget.event!);
+          .rescheduleEvent(updatedEvent!);
     } else {
       return await Provider.of<ServiceProvider>(context, listen: false)
-          .updateEvent(widget.event!);
+          .updateEvent(updatedEvent!);
     }
   }
 
