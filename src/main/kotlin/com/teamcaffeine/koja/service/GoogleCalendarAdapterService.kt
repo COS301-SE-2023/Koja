@@ -357,7 +357,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
+    fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -497,7 +497,7 @@ class GoogleCalendarAdapterService(
         return createdEvent
     }
 
-    override fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
+    fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val eventStartTime = eventDTO.getStartTime()
@@ -691,6 +691,50 @@ class GoogleCalendarAdapterService(
         }
     }
 
+    fun getAllUserDynamicEventsInRange(token: String, event: UserEventDTO): List<UserEventDTO> {
+
+        val dynamicEvents = mutableMapOf<String, UserEventDTO>()
+
+        val currentDateTime = OffsetDateTime.now()
+        val dynamicEventsInRange = getUserEventsInRange(token, currentDateTime, event.getEndTime())
+
+        for (events in dynamicEventsInRange) {
+
+            if (events.isDynamic()) {
+                dynamicEvents.values.add(events)
+            }
+        }
+
+        return dynamicEvents.values.toList()
+    }
+
+    fun getSortedDynamicEvents(token: String, event: UserEventDTO): List<UserEventDTO> {
+        val events = getAllUserDynamicEventsInRange(token, event)
+
+        return events
+            .filter { it.isDynamic() }
+            .sortedBy { it.getPriority() }
+    }
+
+    fun addPriorityEvents(token: String, event: UserEventDTO): Boolean {
+        return try {
+            val temp: MutableList<UserEventDTO> = mutableListOf()
+            val priorityEvents = getSortedDynamicEvents(token, event)
+            for (events in priorityEvents) {
+                temp.add(events)
+                deleteEvent(token, events.getId())
+            }
+
+            for (events in temp) {
+                createEvent(token, events, token)
+            }
+            true
+
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     private fun findTimeZoneIdForOffset(offsetDateTime: OffsetDateTime): ZoneId {
         val offset = offsetDateTime.offset
         return ZoneId.systemDefault().rules.getValidOffsets(offsetDateTime.toLocalDateTime())
@@ -699,7 +743,7 @@ class GoogleCalendarAdapterService(
             ?: ZoneId.of("UTC")
     }
 
-    override fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
+    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
         val calendar = buildCalendarService(accessToken)
         val newCalendar = Calendar()
         newCalendar.summary = "This calendar serves as Koja's generated calendar to optimize your schedule with suggestions."
