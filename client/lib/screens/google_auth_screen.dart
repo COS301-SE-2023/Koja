@@ -1,9 +1,9 @@
 // import 'dart:async';
 // import 'dart:convert';
 
-// import 'package:client/models/event_wrapper_module.dart';
-// import 'package:client/screens/navigation_management_screen.dart';
-// import 'package:client/widgets/event_provider.dart';
+// import 'package:koja/models/event_wrapper_module.dart';
+// import 'package:koja/screens/navigation_management_screen.dart';
+// import 'package:koja/widgets/event_provider.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 // import 'package:provider/provider.dart';
