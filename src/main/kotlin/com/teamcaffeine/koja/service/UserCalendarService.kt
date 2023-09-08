@@ -236,7 +236,7 @@ class UserCalendarService(
         }
     }
 
-    fun findEarliestTimeSlot(
+    private fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
@@ -469,38 +469,4 @@ class UserCalendarService(
         }
         return toReturn
     }
-
-    fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
-        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
-
-        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
-
-        val userEvents = mutableMapOf<String, UserEventDTO>()
-
-        for (adapter in calendarAdapters) {
-            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val userAuthDetails = userJWTTokenData.userAuthDetails
-            for (authDetails in userAuthDetails) {
-                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
-                    val accessToken = authDetails.getAccessToken()
-                    userEvents.putAll(adapter.getUserEvents(accessToken))
-                }
-            }
-        }
-
-        val dynamicEvents = mutableMapOf<String, UserEventDTO>()
-        for (event in userEvents) {
-            val eventDateTime = event.value.getStartTime()
-
-            if (event.value.isDynamic() && eventDateTime.toLocalDate() == currentDate && eventDateTime.isAfter(
-                    currentDateTime,
-                )
-            ) {
-                todayEvents[event.key] = event.value
-            }
-        }
-
-        return dynamicEvents.values.toList()
-    }
-
 }
