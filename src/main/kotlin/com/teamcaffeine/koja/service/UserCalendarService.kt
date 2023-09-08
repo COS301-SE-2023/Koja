@@ -217,7 +217,7 @@ class UserCalendarService(
             }?.getAccessToken()
             if (accessToken != null) {
                 adapter.createEvent(accessToken, eventDTO, token)
-               // adapter.addPriorityEvents(accessToken, eventDTO, token)
+                adapter.addPriorityEvents(accessToken, eventDTO, token)
             }
         }
     }
