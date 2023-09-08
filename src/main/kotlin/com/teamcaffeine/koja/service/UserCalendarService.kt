@@ -219,8 +219,9 @@ class UserCalendarService(
                 if (eventDTO.isDynamic()) {
                     adapter.createEvent(accessToken, eventDTO, token)
                     adapter.addPriorityEvents(accessToken, eventDTO, token)
+                } else{
+                    adapter.createEvent(accessToken, eventDTO, token)
                 }
-                adapter.createEvent(accessToken, eventDTO, token)
             }
         }
     }

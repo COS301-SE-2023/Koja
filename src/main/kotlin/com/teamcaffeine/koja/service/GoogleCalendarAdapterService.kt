@@ -790,11 +790,9 @@ class GoogleCalendarAdapterService(
             val timeSorted = getSortedByTimeDynamicEvents(token, event)
             val priorityEvents = getSortedDynamicEvents(token, event)
             val combinedList = priorityEvents.zip(timeSorted)
-            for (events in priorityEvents) {
-                deleteEvent(token, events.getId())
-            }
 
             for ((events, time) in combinedList) {
+                deleteEvent(token, events.getId())
                 events.setStartTime(time.getStartTime())
                 events.setEndTime(time.getEndTime())
                 createEvent(token, events, jwtToken)
