@@ -216,8 +216,11 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
             if (accessToken != null) {
+                if (eventDTO.isDynamic()) {
+                    adapter.createEvent(accessToken, eventDTO, token)
+                    adapter.addPriorityEvents(accessToken, eventDTO, token)
+                }
                 adapter.createEvent(accessToken, eventDTO, token)
-                adapter.addPriorityEvents(accessToken, eventDTO, token)
             }
         }
     }
