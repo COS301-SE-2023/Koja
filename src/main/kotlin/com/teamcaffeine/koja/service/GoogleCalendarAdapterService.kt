@@ -774,16 +774,27 @@ class GoogleCalendarAdapterService(
             .sortedBy { it.getPriority() }
     }
 
+    fun getSortedByTimeDynamicEvents(token: String, event: UserEventDTO): List<UserEventDTO> {
+        val events = getAllUserDynamicEventsInRange(token, event)
+
+        return events
+            .filter { it.isDynamic() }
+            .sortedBy { it.getStartTime() }
+    }
+
+
     override fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean {
         return try {
-            val temp: MutableList<UserEventDTO> = mutableListOf()
+            val timeSorted = getSortedByTimeDynamicEvents(token, event)
             val priorityEvents = getSortedDynamicEvents(token, event)
+            val combinedList = priorityEvents.zip(timeSorted)
             for (events in priorityEvents) {
-                temp.add(events)
                 deleteEvent(token, events.getId())
             }
 
-            for (events in temp) {
+            for ((events, time) in combinedList) {
+                events.setStartTime(time.getStartTime())
+                events.setEndTime(time.getEndTime())
                 createEvent(token, events, jwtToken)
             }
             true
