@@ -29,7 +29,7 @@ class Event {
     this.category = '',
     this.backgroundColor = Colors.blue,
     this.isAllDay = false,
-    this.priority = 1,
+    this.priority = 3,
     this.isDynamic = false,
     this.recurrenceRule = const [],
   });
