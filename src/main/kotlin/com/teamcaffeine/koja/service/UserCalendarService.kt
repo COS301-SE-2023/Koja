@@ -202,11 +202,7 @@ class UserCalendarService(
             val newEventDuration =
                 (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
             eventDTO.setDuration(newEventDuration)
-            if (eventDTO.getPriority() == 3) {
-                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
-                eventDTO.setStartTime(earliestSlotStartTime)
-                eventDTO.setEndTime(earliestSlotEndTime)
-            }
+
             val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
             eventDTO.setStartTime(earliestSlotStartTime)
             eventDTO.setEndTime(earliestSlotEndTime)
@@ -220,7 +216,12 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
             if (accessToken != null) {
-                adapter.createEvent(accessToken, eventDTO, token)
+                if (eventDTO.isDynamic()) {
+                    adapter.createEvent(accessToken, eventDTO, token)
+                    adapter.addPriorityEvents(accessToken, eventDTO, token)
+                } else{
+                    adapter.createEvent(accessToken, eventDTO, token)
+                }
             }
         }
     }

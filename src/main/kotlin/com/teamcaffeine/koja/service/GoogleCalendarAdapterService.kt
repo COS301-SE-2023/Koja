@@ -481,7 +481,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant)
+                        instant
+                    )
                 )
             }
             if (recurrence[0] == "MONTHLY") {
@@ -490,7 +491,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant)
+                        instant
+                    )
                 )
             }
 
@@ -500,7 +502,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant)
+                        instant
+                    )
                 )
             }
         }
@@ -731,6 +734,57 @@ class GoogleCalendarAdapterService(
             return userEvents
         } catch (e: ExpiredJwtException) {
             return emptyList()
+        }
+    }
+
+    fun getAllUserDynamicEventsInRange(token: String, event: UserEventDTO): List<UserEventDTO> {
+
+        val dynamicEvents: MutableList<UserEventDTO> = mutableListOf()
+
+        val currentDateTime = OffsetDateTime.now()
+        val dynamicEventsInRange = getUserEventsInRange(token, currentDateTime, event.getEndTime())
+
+        for (events in dynamicEventsInRange) {
+
+            if (events.isDynamic()) {
+                dynamicEvents.add(events)
+            }
+        }
+
+        return dynamicEvents
+    }
+
+    fun getSortedDynamicEvents(token: String, event: UserEventDTO): List<UserEventDTO> {
+        val events = getAllUserDynamicEventsInRange(token, event)
+
+        return events
+            .filter { it.isDynamic() }
+            .sortedBy { it.getPriority() }
+    }
+
+    fun getSortedByTimeDynamicEvents(token: String, event: UserEventDTO): List<UserEventDTO> {
+        val events = getAllUserDynamicEventsInRange(token, event)
+
+        return events
+            .filter { it.isDynamic() }
+            .sortedBy { it.getStartTime() }
+    }
+
+    override fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean {
+        return try {
+            val timeSorted = getSortedByTimeDynamicEvents(token, event)
+            val priorityEvents = getSortedDynamicEvents(token, event)
+            val combinedList = priorityEvents.zip(timeSorted)
+
+            for ((events, time) in combinedList) {
+                deleteEvent(token, events.getId())
+                events.setStartTime(time.getStartTime())
+                events.setEndTime(time.getEndTime())
+                createEvent(token, events, jwtToken)
+            }
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 

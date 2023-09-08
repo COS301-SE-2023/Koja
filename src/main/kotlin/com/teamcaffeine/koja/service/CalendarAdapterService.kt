@@ -38,6 +38,8 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
 
     abstract fun getFutureEventsLocations(accessToken: String?): List<String>
 
+    abstract fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean
+
     fun getAuthProvider(): AuthProviderEnum {
         return authProviderEnum
     }

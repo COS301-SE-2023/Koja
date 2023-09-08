@@ -768,13 +768,13 @@ class EventEditingState extends State<EventEditing> {
       final durationHours = int.tryParse(hoursController.text);
       final durationMinutes = int.tryParse(minutesController.text);
 
-      var priorityValue = 1;
+      var priorityValue = 3;
       if (selectedPriority == 'Low') {
-        priorityValue = 1;
+        priorityValue = 3;
       } else if (selectedPriority == 'Medium') {
         priorityValue = 2;
       } else if (selectedPriority == 'High') {
-        priorityValue = 3;
+        priorityValue = 1;
       }
 
       // use recurrenceRule to store the recurrence string
