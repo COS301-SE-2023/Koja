@@ -496,7 +496,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant)
+                        instant
+                    )
                 )
             }
             if (recurrence[0] == "MONTHLY") {
@@ -505,7 +506,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant)
+                        instant
+                    )
                 )
             }
 
@@ -515,7 +517,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant)
+                        instant
+                    )
                 )
             }
         }
@@ -782,7 +785,6 @@ class GoogleCalendarAdapterService(
             .sortedBy { it.getStartTime() }
     }
 
-
     override fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean {
         return try {
             val timeSorted = getSortedByTimeDynamicEvents(token, event)
@@ -798,7 +800,6 @@ class GoogleCalendarAdapterService(
                 createEvent(token, events, jwtToken)
             }
             true
-
         } catch (e: Exception) {
             false
         }
