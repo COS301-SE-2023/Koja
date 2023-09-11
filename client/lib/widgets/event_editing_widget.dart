@@ -29,6 +29,7 @@ class EventEditingState extends State<EventEditing> {
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
   String placeName = "";
+  late Event? updatedEvent;
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -164,9 +165,14 @@ class EventEditingState extends State<EventEditing> {
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
                 child: Text('Cancel')),
-            if (selectedEventType == 'Dynamic' && needsReschedule == true)
+            if (selectedEventType == 'Dynamic' &&
+                widget.event != null &&
+                DateTime.now().isAfter(fromDate))
               TextButton(
-                  onPressed: saveForm,
+                  onPressed: () {
+                    needsReschedule = true;
+                    saveForm();
+                  },
                   style: const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll(Colors.black),
                   ),
@@ -303,9 +309,6 @@ class EventEditingState extends State<EventEditing> {
                 );
               },
             );
-            Timer timer = Timer(Duration(seconds: 2), () {
-              Navigator.of(context).pop();
-            });
           }
         },
         child: const Text('Delete Event'),
@@ -658,8 +661,8 @@ class EventEditingState extends State<EventEditing> {
                   : selectedPriority == "Medium"
                       ? 2
                       : 3) &&
-          existingEvent.backgroundColor == selectedColor &&
-          existingEvent.recurrenceRule == recurrenceString;
+          existingEvent.backgroundColor == selectedColor
+          && needsReschedule == false;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
@@ -668,6 +671,7 @@ class EventEditingState extends State<EventEditing> {
           content: Text('Event already exists!'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.of(context).pop();
       } else {
         isValid = true;
       }
@@ -876,12 +880,13 @@ class EventEditingState extends State<EventEditing> {
             duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          mounted ? Navigator.of(context).pop() : null;
+          Navigator.of(context).pop();
         }
       } else {
-        var response = await serviceProvider.updateEvent(event);
+        updatedEvent = event;
+        var response = await getUpdateResponse();
+
         if (response) {
-          eventProvider.updateEvent(event);
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
@@ -890,7 +895,9 @@ class EventEditingState extends State<EventEditing> {
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
-        } else {
+          needsReschedule = false;
+        } 
+        else {
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Update Failed.',
@@ -898,8 +905,20 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
+          needsReschedule = false;
         }
       }
+    }
+  }
+
+  Future<bool> getUpdateResponse() async {
+    if (needsReschedule) {
+      return await Provider.of<ServiceProvider>(context, listen: false)
+          .rescheduleEvent(updatedEvent!);
+    } else {
+      return await Provider.of<ServiceProvider>(context, listen: false)
+          .updateEvent(updatedEvent!);
     }
   }
 

@@ -237,7 +237,7 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(
+    fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {

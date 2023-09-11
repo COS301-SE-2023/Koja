@@ -19,6 +19,7 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
         addAdditionalAccount: Boolean = false,
         token: String = "",
     ): RedirectView
+
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String
     abstract fun getUserEvents(accessToken: String): Map<String, UserEventDTO>
