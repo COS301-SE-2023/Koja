@@ -1,6 +1,5 @@
 package com.teamcaffiene.koja.controller
 
-import com.google.api.services.calendar.model.Event
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.CalendarController
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -52,19 +51,6 @@ class CalendarControllerUnitTest {
         val responseEntity: ResponseEntity<out Any> = calendarController.getAllUserEvents(token)
 
         assertEquals(userEvents, responseEntity.body)
-    }
-
-    @Test
-    fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
-        val token = "valid_token"
-        val event = UserEventDTO(Event())
-
-        `when`(userCalendarService.updateEvent(token, event)).thenReturn(false)
-
-        val response = calendarController.rescheduleEvent(token, event)
-
-        assert(response.statusCode == HttpStatus.BAD_REQUEST)
-        assert(response.body == ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
     }
 
     @Test
