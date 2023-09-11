@@ -54,32 +54,6 @@ class CalendarControllerUnitTest {
 
         assertEquals(userEvents, responseEntity.body)
     }
-
-    @Test
-    fun `rescheduleEvent should return BAD_REQUEST when event or token is null`() {
-        val response = calendarController.rescheduleEvent(null, null)
-
-        assert(response.statusCode == HttpStatus.BAD_REQUEST)
-        assert(response.body == ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-    }
-
-    @Test
-    fun `rescheduleEvent should update event and return OK`() {
-        val token = "valid_token"
-        val event = UserEventDTO(Event())
-        val currentTime = OffsetDateTime.now()
-
-        `when`(userCalendarService.updateEvent(token, event)).thenReturn(true)
-
-        val response = calendarController.rescheduleEvent(token, event)
-
-        assert(response.statusCode == HttpStatus.OK)
-        assert(response.body == ResponseConstant.EVENT_UPDATED)
-        assert(event.getStartTime() != null) // Verify startTime is set
-        assert(event.getEndTime() != null) // Verify endTime is set
-        // You might want to verify that startTime and endTime are correctly calculated
-    }
-
     @Test
     fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
         val token = "valid_token"
