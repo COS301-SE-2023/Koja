@@ -121,7 +121,6 @@ class CalendarControllerUnitTest {
         assert(response.body == ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
     }
 
-
     @Test
     fun `test getAllUserEventsKojaSuggestions with valid token`() {
         // Arrange
