@@ -72,7 +72,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                         if (timeSlotDuration / eventDuration >= 2) {
                                             var timeSlotOffset = 0L
                                             while (timeSlot.startTime.plusSeconds(timeSlotOffset)
-                                                .isBefore(timeSlot.endTime)
+                                                    .isBefore(timeSlot.endTime)
                                             ) {
                                                 tempTimeSlots.add(
                                                     TimeSlot(
