@@ -14,7 +14,6 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.time.OffsetDateTime
 
 class CalendarControllerUnitTest {
     @Mock
@@ -54,6 +53,7 @@ class CalendarControllerUnitTest {
 
         assertEquals(userEvents, responseEntity.body)
     }
+
     @Test
     fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
         val token = "valid_token"
