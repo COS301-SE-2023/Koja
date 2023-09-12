@@ -329,6 +329,33 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 
+  Future<bool>setSuggestedCalendar(List<Event> events) async {
+
+    final path = '/api/v1/user/calendar/setSuggestedCalendar';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http(
+            '${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https(
+            '${serverAddressComponents[1]}:$_serverPort', path);
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': _accessToken!,
+      },
+      body: jsonEncode(events),
+    );
+
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// This section deals with all the location related functions (travel time, etc.)
 
   Future<bool> updateHomeLocation(String placeID) async {

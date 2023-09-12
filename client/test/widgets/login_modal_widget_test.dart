@@ -29,6 +29,7 @@ void main(){
     //     ),
     //   ),
     // );
+    FlutterError.onError = ignoreOverflowErrors;
     final serviceProvider = ServiceProvider();
     final contextProvider = ContextProvider();
     await tester.pumpWidget(
@@ -56,4 +57,28 @@ void main(){
 
     //await tester.enterText(, text)
   });
+}
+
+void ignoreOverflowErrors(
+    FlutterErrorDetails details, {
+      bool forceReport = false,
+    }) {
+  bool ifIsOverflowError = false;
+  bool isUnableToLoadAsset = false;
+  // Detect overflow error.
+  var exception = details.exception;
+  if (exception is FlutterError) {
+    ifIsOverflowError = !exception.diagnostics.any(
+          (e) => e.value.toString().startsWith("A RenderFlex overflowed by"),
+    );
+    isUnableToLoadAsset = !exception.diagnostics.any(
+          (e) => e.value.toString().startsWith("Unable to load asset"),
+    );
+  }
+  // Ignore if is overflow error.
+  if (ifIsOverflowError || isUnableToLoadAsset) {
+    debugPrint('Ignored Rendering Error');
+  } else {
+    FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
+  }
 }

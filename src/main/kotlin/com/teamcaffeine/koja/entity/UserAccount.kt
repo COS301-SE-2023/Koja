@@ -20,6 +20,7 @@ class UserAccount(
     var refreshToken: String = "",
     var authProvider: AuthProviderEnum = AuthProviderEnum.NONE,
     var userID: Int = Int.MAX_VALUE,
+    var eventSuggestionsCalendarID: String? = null,
 ) {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
