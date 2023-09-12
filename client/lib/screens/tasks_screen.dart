@@ -61,15 +61,18 @@ class _TasksState extends State<Tasks> {
                         
                         // Call getEventsFromAPI and await the result
                          await contextProvider.getEventsFromAPI(accessToken!);  
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Scaffold(
-                                body: NavigationScreen(initialIndex: 1),
-                              ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Scaffold(
+                              body: NavigationScreen(initialIndex: 1),
                             ),
-                          );
-                        
+                          ),
+                        );
+                        const snackBar = SnackBar(
+                          content: Text('Page refreshed!'),
+                          duration: Duration(seconds: 5));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);  
                       },
                       icon: Icon(
                         Bootstrap.arrow_clockwise,
