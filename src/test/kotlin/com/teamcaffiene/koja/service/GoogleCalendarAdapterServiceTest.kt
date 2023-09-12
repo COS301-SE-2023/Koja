@@ -37,9 +37,6 @@ class GoogleCalendarAdapterServiceTest {
     lateinit var userRepository: UserRepository
 
     @Mock
-    lateinit var calendarService: Calendar
-
-    @Mock
     lateinit var userAccountRepository: UserAccountRepository
 
     private lateinit var service: GoogleCalendarAdapterService

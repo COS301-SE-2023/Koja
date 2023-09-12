@@ -1,3 +1,4 @@
+import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -56,6 +57,13 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 }
 
+tasks.withType<JacocoReport> {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -67,11 +75,25 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-allprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
+tasks.named<JacocoReport>("jacocoTestReport") {
+    dependsOn("test")
+
+    sourceDirectories.setFrom(files("src/main/kotlin"))
+    classDirectories.setFrom(files("build/classes/kotlin/main"))
+    executionData.setFrom(fileTree("build") { include("jacoco/test.exec") })
+
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
 }
 
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "17"
+}
+
+allprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
 }
