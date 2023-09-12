@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:koja/screens/navigation_management_screen.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -13,7 +12,6 @@ import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
 import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
-import '../screens/tasks_screen.dart';
 import './choose_category_widget.dart';
 import './choose_recurrence_widget.dart';
 
@@ -222,8 +220,8 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 12),
                 if (widget.event != null) deleteEventButton(),
                 SizedBox(height: 12),
-                if (widget.event != null && widget.event?.recurrenceRule != [])
-                  deleteRecurringEventsButton(),
+                // if (widget.event != null && widget.event?.recurrenceRule != [])
+                //   deleteRecurringEventsButton(),
               ],
             )),
       ),
@@ -805,53 +803,30 @@ class EventEditingState extends State<EventEditing> {
           Provider.of<ServiceProvider>(context, listen: false);
 
       if (widget.event == null) {
-         if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NavigationScreen(initialIndex: 1), 
-              ),
-            );
+        if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationScreen(initialIndex: 1), 
+            ),
+          );
 
-            var snackBar = SnackBar(
-              content: Center(
-                child: Text('Event is being created.',
-                    style:
-                        TextStyle(fontFamily: 'Railway', color: Colors.white)),
-              ),
-              duration: Duration(seconds: 5),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-        // showEventCreatedSnackBar(context);
+          var snackBar = SnackBar(
+            content: Center(
+              child: Text('Event is being created.',
+                  style:
+                      TextStyle(fontFamily: 'Railway', color: Colors.white)),
+            ),
+            duration: Duration(seconds: 5),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
-          // if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
-          //   if (Navigator.of(context).canPop()) {
-          //     Navigator.of(context).pop();
-          //   }
-          //   var snackBar = SnackBar(
-          //     content: Center(
-          //       child: Text('Event is being created.',
-          //           style:
-          //               TextStyle(fontFamily: 'Railway', color: Colors.white)),
-          //     ),
-          //     duration: Duration(seconds: 5),
-          //   );
-          //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          // }
-
           eventProvider.retrieveEvents();
           showEventCreatedSnackBar(context);
-          // var snackBar = SnackBar(
-          //   content: Center(
-          //     child: Text('Event Created!',
-          //         style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-          //   ),
-          //   duration: Duration(seconds: 5),
-          // );
-          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          
         } else {
           var snackBar = SnackBar(
             content: Center(
