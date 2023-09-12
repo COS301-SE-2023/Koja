@@ -473,8 +473,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.DAILY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant.atOffset(ZoneOffset.UTC)
-                    )
+                        instant.atOffset(ZoneOffset.UTC),
+                    ),
                 )
             }
             if (recurrence[0] == "WEEKLY") {
@@ -483,8 +483,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant
-                    )
+                        instant,
+                    ),
                 )
             }
             if (recurrence[0] == "MONTHLY") {
@@ -493,8 +493,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant
-                    )
+                        instant,
+                    ),
                 )
             }
 
@@ -504,8 +504,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant
-                    )
+                        instant,
+                    ),
                 )
             }
         }
@@ -735,14 +735,12 @@ class GoogleCalendarAdapterService(
     }
 
     fun getAllUserDynamicEventsInRange(token: String, event: UserEventDTO): List<UserEventDTO> {
-
         val dynamicEvents: MutableList<UserEventDTO> = mutableListOf()
 
         val currentDateTime = OffsetDateTime.now()
         val dynamicEventsInRange = getUserEventsInRange(token, currentDateTime, event.getEndTime())
 
         for (events in dynamicEventsInRange) {
-
             if (events.isDynamic()) {
                 dynamicEvents.add(events)
             }

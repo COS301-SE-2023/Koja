@@ -239,7 +239,7 @@ class UserCalendarService(
                 if (eventDTO.isDynamic()) {
                     adapter.createEvent(accessToken, eventDTO, token)
                     adapter.addPriorityEvents(accessToken, eventDTO, token)
-                } else{
+                } else {
                     adapter.createEvent(accessToken, eventDTO, token)
                 }
             }
@@ -292,7 +292,7 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
-                    recurrence = mutableListOf("")
+                    recurrence = mutableListOf(""),
 
                 ),
             )
