@@ -15,7 +15,7 @@ PODS:
   - flutter_inappwebview/Core (0.0.1):
     - Flutter
     - OrderedSet (~> 5.0)
-  - flutter_web_auth (0.5.0):
+  - flutter_web_auth_2 (1.1.1):
     - Flutter
   - geocoding_ios (1.0.5):
     - Flutter
@@ -47,7 +47,7 @@ DEPENDENCIES:
   - fl_location (from `.symlinks/plugins/fl_location/ios`)
   - Flutter (from `Flutter`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
-  - flutter_web_auth (from `.symlinks/plugins/flutter_web_auth/ios`)
+  - flutter_web_auth_2 (from `.symlinks/plugins/flutter_web_auth_2/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
@@ -71,8 +71,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
-  flutter_web_auth:
-    :path: ".symlinks/plugins/flutter_web_auth/ios"
+  flutter_web_auth_2:
+    :path: ".symlinks/plugins/flutter_web_auth_2/ios"
   geocoding_ios:
     :path: ".symlinks/plugins/geocoding_ios/ios"
   geolocator_apple:
@@ -80,7 +80,8 @@ EXTERNAL SOURCES:
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/ios"
   integration_test:
-    :path: ".symlinks/plugins/integration_test/ios"  path_provider_foundation:
+    :path: ".symlinks/plugins/integration_test/ios"
+  path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   uni_links:
     :path: ".symlinks/plugins/uni_links/ios"
@@ -92,7 +93,7 @@ SPEC CHECKSUMS:
   fl_location: 68b4a6c4aad2a453493ff66f196e0748280cf43e
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
-  flutter_web_auth: c25208760459cec375a3c39f6a8759165ca0fa4d
+  flutter_web_auth_2: a1bc00762c408a8f80b72a538cd7ff5b601c3e71
   geocoding_ios: a389ea40f6f548de6e63006a2e31bf66ff80769a
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   google_sign_in_ios: 1256ff9d941db546373826966720b0c24804bcdd
