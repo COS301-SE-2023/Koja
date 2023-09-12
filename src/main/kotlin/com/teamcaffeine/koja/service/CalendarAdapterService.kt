@@ -19,10 +19,10 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
         addAdditionalAccount: Boolean = false,
         token: String = "",
     ): RedirectView
-
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String
     abstract fun getUserEvents(accessToken: String): Map<String, UserEventDTO>
+    abstract fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO>
 
     abstract fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO>
 
@@ -37,6 +37,10 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     abstract fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String): JWTAuthDetailsDTO?
 
     abstract fun getFutureEventsLocations(accessToken: String?): List<String>
+
+    abstract fun createNewCalendar(userAccounts: List<UserAccount>, userEvents: List<UserEventDTO>, jwtToken: String)
+
+    abstract fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String, calendarID: String): Event
 
     abstract fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean
 

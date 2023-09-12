@@ -99,9 +99,6 @@ env
 */amplify
 */node_modules
 !client/lib/
-<<<<<<< HEAD
-!gradle-wrapper.jar
-=======
+
 !gradle-wrapper.jar
 config.json
->>>>>>> d075a8edfcf0503bd2778e6b3d7b1d8fba6186f9
