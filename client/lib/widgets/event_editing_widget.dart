@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
+import 'package:koja/screens/navigation_management_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +13,7 @@ import '../models/location_predict_widget.dart';
 import '../models/place_auto_response_model.dart';
 import '../providers/context_provider.dart';
 import '../providers/service_provider.dart';
+import '../screens/tasks_screen.dart';
 import './choose_category_widget.dart';
 import './choose_recurrence_widget.dart';
 
@@ -651,9 +653,8 @@ class EventEditingState extends State<EventEditing> {
       if (isDuplicateEvent) {
         Navigator.of(context).pop();
         const snackBar = SnackBar(
-          content: Text('Event already exists!'),
-          duration: Duration(seconds: 5)
-        );
+            content: Text('Event already exists!'),
+            duration: Duration(seconds: 5));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         Navigator.of(context).pop();
       } else {
@@ -767,39 +768,6 @@ class EventEditingState extends State<EventEditing> {
 
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
-      // if (selectedEventType == 'Fixed') {
-      //   // mounted ? Navigator.of(context).pop() : null;
-      //   showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //       return Dialog(
-      //         backgroundColor: Colors.transparent,
-      //         child: Container(
-      //           decoration: BoxDecoration(
-      //             shape: BoxShape.circle,
-      //             color: Colors.transparent,
-      //           ),
-      //           child: AlertDialog(
-      //             backgroundColor: Colors.transparent,
-      //             title: Container(
-      //               alignment: Alignment.center,
-      //               child: Lottie.asset(
-      //                 'assets/animations/loading.json',
-      //                 height: 150,
-      //                 width: 150,
-      //               ),
-      //               decoration: BoxDecoration(
-      //                 shape: BoxShape.circle,
-      //                 color: Colors.transparent,
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       );
-      //     },
-      //   );
-      // }
-
 
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
@@ -837,32 +805,50 @@ class EventEditingState extends State<EventEditing> {
           Provider.of<ServiceProvider>(context, listen: false);
 
       if (widget.event == null) {
-        var response = await serviceProvider.createEvent(event);
-
-        if (response) {
-          if (selectedEventType == 'Fixed') {
-            Navigator.of(context).pop();
+         if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
             var snackBar = SnackBar(
               content: Center(
-                child: Text('Event is being created!',
+                child: Text('Event is being created.',
                     style:
                         TextStyle(fontFamily: 'Railway', color: Colors.white)),
               ),
               duration: Duration(seconds: 5),
             );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
+        // showEventCreatedSnackBar(context);
+        var response = await serviceProvider.createEvent(event);
+
+        if (response) {
+          // if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+          //   if (Navigator.of(context).canPop()) {
+          //     Navigator.of(context).pop();
+          //   }
+          //   var snackBar = SnackBar(
+          //     content: Center(
+          //       child: Text('Event is being created.',
+          //           style:
+          //               TextStyle(fontFamily: 'Railway', color: Colors.white)),
+          //     ),
+          //     duration: Duration(seconds: 5),
+          //   );
+          //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          // }
+
           eventProvider.retrieveEvents();
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event Created!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-            duration: Duration(seconds: 5),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          // mounted ? Navigator.of(context).pop() : null;
+          showEventCreatedSnackBar(context);
+          // var snackBar = SnackBar(
+          //   content: Center(
+          //     child: Text('Event Created!',
+          //         style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+          //   ),
+          //   duration: Duration(seconds: 5),
+          // );
+          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } else {
-          Navigator.of(context).pop();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Creation failed!',
@@ -881,7 +867,7 @@ class EventEditingState extends State<EventEditing> {
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
-              style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -900,6 +886,17 @@ class EventEditingState extends State<EventEditing> {
         }
       }
     }
+  }
+
+  void showEventCreatedSnackBar(BuildContext context) {
+    var snackBar = SnackBar(
+      content: Center(
+        child: Text('Event is created!',
+            style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      ),
+      duration: Duration(seconds: 5),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Future<bool> getUpdateResponse() async {
