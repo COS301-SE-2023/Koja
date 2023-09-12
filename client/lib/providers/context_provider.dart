@@ -228,7 +228,10 @@ class ContextProvider extends ChangeNotifier {
         key.currentState!.showSnackBar(
           const SnackBar(
             content: Text('Event successfully deleted.'),
+            elevation: 30,
+            behavior: SnackBarBehavior.floating,
           ),
+          
         );
       } else {
         final key = scaffoldKey;

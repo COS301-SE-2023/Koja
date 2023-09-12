@@ -23,15 +23,12 @@ class _TasksState extends State<Tasks> {
 
   @override
   Widget build(BuildContext context) {
-    // final serviceProvider =
-    //     Provider.of<ServiceProvider>(context, listen: false);
-    // final contextProvider =
-    //     Provider.of<ContextProvider>(context, listen: false);
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             'Tasks',
             style: TextStyle(
@@ -99,6 +96,7 @@ class CurrentTasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: null,
       body: CalendarWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

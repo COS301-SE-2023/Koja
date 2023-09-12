@@ -316,7 +316,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );

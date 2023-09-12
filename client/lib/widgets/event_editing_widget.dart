@@ -649,12 +649,19 @@ class EventEditingState extends State<EventEditing> {
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
       if (isDuplicateEvent) {
-        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: null,
+              body: NavigationScreen(initialIndex: 1),
+            ),
+          ),
+        );
         const snackBar = SnackBar(
             content: Text('Event already exists!'),
             duration: Duration(seconds: 5));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.of(context).pop();
       } else {
         isValid = true;
       }
@@ -807,15 +814,17 @@ class EventEditingState extends State<EventEditing> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NavigationScreen(initialIndex: 1), 
+              builder: (context) => Scaffold(
+                appBar: null,
+                body: NavigationScreen(initialIndex: 1),
+              ),
             ),
           );
 
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event is being created.',
-                  style:
-                      TextStyle(fontFamily: 'Railway', color: Colors.white)),
+                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
             duration: Duration(seconds: 5),
           );
@@ -826,7 +835,6 @@ class EventEditingState extends State<EventEditing> {
         if (response) {
           eventProvider.retrieveEvents();
           showEventCreatedSnackBar(context);
-          
         } else {
           var snackBar = SnackBar(
             content: Center(
@@ -836,12 +844,20 @@ class EventEditingState extends State<EventEditing> {
             duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
         }
       } else {
         updatedEvent = event;
         var response = await getUpdateResponse();
-
+        // if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+        //   Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => NavigationScreen(initialIndex: 1),
+        //     ),
+        //     (route) => false,
+        //   );
+        // }
+        print('ctx=> $context');
         if (response) {
           var snackBar = SnackBar(
             content: Center(
@@ -850,7 +866,6 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
           needsReschedule = false;
         } else {
           var snackBar = SnackBar(
@@ -860,7 +875,6 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
           needsReschedule = false;
         }
       }
@@ -871,6 +885,17 @@ class EventEditingState extends State<EventEditing> {
     var snackBar = SnackBar(
       content: Center(
         child: Text('Event is created!',
+            style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      ),
+      duration: Duration(seconds: 5),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showEventUpdatingSnackBar(BuildContext context) {
+    var snackBar = SnackBar(
+      content: Center(
+        child: Text('Event is being updated!',
             style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
       ),
       duration: Duration(seconds: 5),

@@ -31,6 +31,7 @@ class NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: null,
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 18,
