@@ -653,7 +653,6 @@ class EventEditingState extends State<EventEditing> {
           context,
           MaterialPageRoute(
             builder: (context) => Scaffold(
-              appBar: null,
               body: NavigationScreen(initialIndex: 1),
             ),
           ),
@@ -815,7 +814,6 @@ class EventEditingState extends State<EventEditing> {
             context,
             MaterialPageRoute(
               builder: (context) => Scaffold(
-                appBar: null,
                 body: NavigationScreen(initialIndex: 1),
               ),
             ),
@@ -849,12 +847,11 @@ class EventEditingState extends State<EventEditing> {
         updatedEvent = event;
         var response = await getUpdateResponse();
         if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
-          Navigator.pushAndRemoveUntil(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => NavigationScreen(initialIndex: 1),
             ),
-            (route) => false,
           );
         }
         // print('ctx=> $context');

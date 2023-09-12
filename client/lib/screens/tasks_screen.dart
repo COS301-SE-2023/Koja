@@ -1,8 +1,14 @@
 
+import 'package:icons_plus/icons_plus.dart';
+import 'package:provider/provider.dart';
+
 import '../Utils/constants_util.dart';
+import './navigation_management_screen.dart';
 import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
+import '../providers/context_provider.dart';
+import '../providers/service_provider.dart';
 import '../widgets/calendar_widget.dart';
 import '../widgets/event_editing_widget.dart';
 
@@ -16,6 +22,7 @@ class Tasks extends StatefulWidget {
 }
 
 class _TasksState extends State<Tasks> {
+
   @override
   void initState() {
     super.initState();
@@ -23,7 +30,8 @@ class _TasksState extends State<Tasks> {
 
   @override
   Widget build(BuildContext context) {
-
+    final contextProvider = Provider.of<ContextProvider>(context);
+    final serviceProvider = Provider.of<ServiceProvider>(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -47,26 +55,28 @@ class _TasksState extends State<Tasks> {
                       'Current',
                       style: TextStyle(color: Colors.white),
                     ),
-                    // if(isLoading)
-                    //   SizedBox(width: 10),
-                    //   SizedBox(
-                    //     height: 15,
-                    //     width: 15,
-                    //     child: CircularProgressIndicator(
-                    //       strokeWidth: 2.0,
-                    //     ),
-                    //   ),
-                    // IconButton(
-                    //   onPressed: () async {
-                    //     String? accessToken = serviceProvider.accessToken;
-                    //     await contextProvider.getEventsFromAPI(accessToken!);
-                    //   },
-                    //   icon: Icon(
-                    //     Bootstrap.arrow_clockwise,
-                    //     size: 20.0,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
+                    IconButton(
+                      onPressed: () async {
+                        String? accessToken = serviceProvider.accessToken;
+                        
+                        // Call getEventsFromAPI and await the result
+                         await contextProvider.getEventsFromAPI(accessToken!);  
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                body: NavigationScreen(initialIndex: 1),
+                              ),
+                            ),
+                          );
+                        
+                      },
+                      icon: Icon(
+                        Bootstrap.arrow_clockwise,
+                        size: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
               ),
