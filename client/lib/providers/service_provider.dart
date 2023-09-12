@@ -277,6 +277,7 @@ class ServiceProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       final List<dynamic> eventsJson = jsonDecode(response.body);
+      
       return eventsJson.map((json) => Event.fromJson(json)).toList();
     } else {
       return [];

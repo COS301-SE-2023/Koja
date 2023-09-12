@@ -287,28 +287,10 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
-            // Navigator.of(context).pop();
             Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Container(
-                    alignment: Alignment.center,
-                    child: Lottie.asset(
-                      'assets/animations/del.json',
-                      height: 150,
-                      width: 150,
-                    ),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                );
-              },
-            );
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
           }
         },
         child: const Text('Delete Event'),
@@ -661,14 +643,16 @@ class EventEditingState extends State<EventEditing> {
                   : selectedPriority == "Medium"
                       ? 2
                       : 3) &&
-          existingEvent.backgroundColor == selectedColor
-          && needsReschedule == false;
+          existingEvent.backgroundColor == selectedColor &&
+          needsReschedule == false;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
       if (isDuplicateEvent) {
+        Navigator.of(context).pop();
         const snackBar = SnackBar(
           content: Text('Event already exists!'),
+          duration: Duration(seconds: 5)
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         Navigator.of(context).pop();
@@ -783,38 +767,39 @@ class EventEditingState extends State<EventEditing> {
 
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
-      if (selectedEventType == 'Fixed') {    
-        // mounted ? Navigator.of(context).pop() : null;  
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              backgroundColor: Colors.transparent,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.transparent,
-                ),
-                child: AlertDialog(
-                  backgroundColor: Colors.transparent,
-                  title: Container(
-                    alignment: Alignment.center,
-                    child: Lottie.asset(
-                      'assets/animations/loading.json',
-                      height: 150,
-                      width: 150,
-                    ),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      }
+      // if (selectedEventType == 'Fixed') {
+      //   // mounted ? Navigator.of(context).pop() : null;
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return Dialog(
+      //         backgroundColor: Colors.transparent,
+      //         child: Container(
+      //           decoration: BoxDecoration(
+      //             shape: BoxShape.circle,
+      //             color: Colors.transparent,
+      //           ),
+      //           child: AlertDialog(
+      //             backgroundColor: Colors.transparent,
+      //             title: Container(
+      //               alignment: Alignment.center,
+      //               child: Lottie.asset(
+      //                 'assets/animations/loading.json',
+      //                 height: 150,
+      //                 width: 150,
+      //               ),
+      //               decoration: BoxDecoration(
+      //                 shape: BoxShape.circle,
+      //                 color: Colors.transparent,
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       );
+      //     },
+      //   );
+      // }
+
 
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
@@ -855,12 +840,18 @@ class EventEditingState extends State<EventEditing> {
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
-          eventProvider.retrieveEvents();
           if (selectedEventType == 'Fixed') {
-            // BuildContext context = this.context;
             Navigator.of(context).pop();
+            var snackBar = SnackBar(
+              content: Center(
+                child: Text('Event is being created!',
+                    style:
+                        TextStyle(fontFamily: 'Railway', color: Colors.white)),
+              ),
+              duration: Duration(seconds: 5),
+            );
           }
-          // Navigator.of(context).pop();
+          eventProvider.retrieveEvents();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Created!',
@@ -890,14 +881,13 @@ class EventEditingState extends State<EventEditing> {
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+              style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
           needsReschedule = false;
-        } 
-        else {
+        } else {
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Update Failed.',
