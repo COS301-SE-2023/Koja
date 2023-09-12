@@ -520,24 +520,13 @@ class GoogleCalendarAdapterService(
         val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
-        val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
-            .build()
-
-        val userLocations = LocationService(userRepository, this)
-        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        var lat = userLocation.second.toString().toDouble() ?: 28.218370
-        var lng = userLocation.first.toString().toDouble() ?: -25.731340
         val travelTime = eventDTO.getTravelTime()
 
-        if (lat == 0.0 || lng == 0.0) {
-            lat = -25.731340
-            lng = 28.218370
-        }
-        // TODO: Use calendar timezone instead of user timezone
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
+        val calendar = calendarService.calendars().get("primary").execute()
+        val calendarTimezone = calendar.timeZone
+
         val eventLocaltime = eventStartTime.toZonedDateTime()
-            .withZoneSameInstant(timezone.toZoneId())
+            .withZoneSameInstant(ZoneId.of(calendarTimezone))
             .plusSeconds(travelTime)
 
         val formattedTime = DateTimeFormatter
@@ -553,9 +542,11 @@ class GoogleCalendarAdapterService(
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
             .setLocation(eventDTO.getLocation())
-            .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
+            .setStart(
+                EventDateTime().setDateTime(startDateTime).setTimeZone(calendarTimezone),
+            )
             .setEnd(
-                EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
+                EventDateTime().setDateTime(endDateTime).setTimeZone(calendarTimezone),
             )
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
