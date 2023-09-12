@@ -123,7 +123,7 @@ class EventEditingState extends State<EventEditing> {
 
     if (widget.event == null) {
       fromDate = DateTime.now();
-      toDate = DateTime.now().add(const Duration(hours: 2));
+      toDate = DateTime.now().add(const Duration(hours: 1));
     } else {
       final event = widget.event!;
 
@@ -153,6 +153,7 @@ class EventEditingState extends State<EventEditing> {
 
   @override
   Widget build(BuildContext context) {
+    
     return AlertDialog(
       scrollable: true,
       actions: <Widget>[
@@ -609,15 +610,6 @@ class EventEditingState extends State<EventEditing> {
 
     if (date == null) return;
 
-    // if (date.isAfter(toDate)) {
-    //   toDate = DateTime(
-    //     date.year,
-    //     date.month,
-    //     date.day,
-    //     toDate.hour,
-    //     toDate.minute,
-    //   );
-    // }
     if (mounted) {
       setState(() {
         toDate = date;
@@ -818,16 +810,15 @@ class EventEditingState extends State<EventEditing> {
               ),
             ),
           );
-
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event is being created.',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-            duration: Duration(seconds: 5),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
+        var snackBar = SnackBar(
+          content: Center(
+            child: Text('Event is being created.',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+          ),
+          duration: Duration(seconds: 5),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
@@ -856,6 +847,11 @@ class EventEditingState extends State<EventEditing> {
         }
         // print('ctx=> $context');
         if (response) {
+          //might be deleted
+          final contextProvider = Provider.of<ContextProvider>(context, listen: false);
+          String? accessToken = serviceProvider.accessToken;
+            await contextProvider.getEventsFromAPI(accessToken!);
+          //might be deleted
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
