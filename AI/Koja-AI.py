@@ -92,6 +92,26 @@ def clean_training_data(training_data):
         return all_events
 
 
+@app.route('/train/new-user', methods=['POST'])
+def train_for_new_user():
+    if request.is_json:
+        data = request.get_json()
+        retrain_for_new_users(data)
+        return "Successfully Trained", 200
+    else:
+        return "Request was not JSON", 400
+
+
+@app.route('/train/all', methods=['POST'])
+def train_for_new_user():
+    if request.is_json:
+        data = request.get_json()
+        retrain_for_all_users(data)
+        return "Successfully Trained", 200
+    else:
+        return "Request was not JSON", 400
+
+
 def retrain_for_new_users(training_data):
     events_data = clean_training_data(training_data)
     loaded_user_model = tf.keras.models.load_model("user_model")
@@ -122,7 +142,7 @@ def auto_train_new(training_data):
     if now > next_retrain_time:
         next_retrain_time += datetime.timedelta(days=1)
 
-    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users,training_data)
+    schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_new_users, training_data)
 
     while True:
         schedule.run_pending()
@@ -134,7 +154,7 @@ def auto_train_all(training_data):
     next_retrain_time = now + datetime.timedelta(days=7)
 
     # Schedule the retraining to occur every 7 days
-    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users,training_data)
+    schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users, training_data)
 
     # Start the scheduling loop
     while True:
@@ -169,10 +189,9 @@ def recommend_categories():
         return "Request was not JSON", 400
 
 
-@app.route('/training-data')
 def get_training_data():
-    api_url = "koja api endpoint"
-    headers = {'Authorization': 'Bearer YOUR_ACCESS_TOKEN'}
+    api_url = "localhost:8080/api/v1/ai/all-users-events"
+    headers = {'Authorization': 'Access token'}
     response = requests.get(api_url, headers=headers)
 
     if response.status_code == 200:
