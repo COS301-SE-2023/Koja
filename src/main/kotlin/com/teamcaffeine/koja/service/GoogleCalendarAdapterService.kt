@@ -526,10 +526,14 @@ class GoogleCalendarAdapterService(
 
         val userLocations = LocationService(userRepository, this)
         val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        val lat = userLocation.second.toString().toDouble()
-        val lng = userLocation.first.toString().toDouble()
+        var lat = userLocation.second.toString().toDouble() ?: 28.218370
+        var lng = userLocation.first.toString().toDouble() ?: -25.731340
         val travelTime = eventDTO.getTravelTime()
 
+        if (lat == 0.0 || lng == 0.0) {
+            lat = -25.731340
+            lng = 28.218370
+        }
         // TODO: Use calendar timezone instead of user timezone
         val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
         val eventLocaltime = eventStartTime.toZonedDateTime()
