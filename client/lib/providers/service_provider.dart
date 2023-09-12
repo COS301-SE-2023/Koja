@@ -330,9 +330,15 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<bool>setSuggestedCalendar(List<Event> events) async {
-    final url = Uri.http(
-        '$_serverAddress:$_serverPort',
-        '/api/v1/user/calendar/setSuggestedCalendar');
+
+    final path = '/api/v1/user/calendar/setSuggestedCalendar';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http(
+            '${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https(
+            '${serverAddressComponents[1]}:$_serverPort', path);
+
     final response = await http.post(
       url,
       headers: {
@@ -341,6 +347,7 @@ class ServiceProvider with ChangeNotifier {
       },
       body: jsonEncode(events),
     );
+
 
     if (response.statusCode == 200) {
       return true;
