@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:koja/Utils/event_util.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -136,6 +137,49 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
               child: SizedBox(
                 child: _suggestionsWidget,
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                final eventList = List<Event>.empty(growable: true);
+                final Event event1 = Event(
+                  title: 'Event 1',
+                  description: 'Event 1 Description',
+                  from: DateTime.now().add(Duration(hours: 2)),
+                  to: DateTime.now().add(Duration(hours: 4)),
+                  isAllDay: false,
+                  location: ""
+
+                );
+                eventList.add(event1);
+                final Event event2 = Event(
+                  title: 'Event 2',
+                  description: 'Event 2 Description',
+                  from: DateTime.now().add(Duration(hours: 5)),
+                  to: DateTime.now().add(Duration(hours: 7)),
+                  isAllDay: false,
+                  location: ""
+                );
+                eventList.add(event2);
+
+                if (await serviceProvider.setSuggestedCalendar(eventList)){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Calendar Set Successfully'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Calendar Set Failed'),
+                    ),
+                  );
+                }
+              },
+              child: Text('Set Koja Calendar'),
+
             ),
           ),
         ],

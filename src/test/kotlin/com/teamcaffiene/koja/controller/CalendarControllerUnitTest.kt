@@ -61,9 +61,29 @@ class CalendarControllerUnitTest {
     }
 
     @Test
-    fun `rescheduleEvent should return BAD_REQUEST when event or token is null`() {
-        val response = calendarController.rescheduleEvent(null, null)
+    fun `test setSuggestedCalendar with valid input`() {
+        // Arrange
+        val token = "validToken"
+        val eventList = arrayListOf<UserEventDTO>()
 
+        // Act
+        val response = calendarController.setSuggestedCalendar(token, eventList)
+
+        // Assert
+        assert(response.statusCode == HttpStatus.OK)
+        assert(response.body == "New calendar successfully created.")
+    }
+
+    @Test
+    fun `test setSuggestedCalendar with missing parameters`() {
+        // Arrange
+        val token = null
+        val eventList = emptyList<UserEventDTO>()
+
+        // Act
+        val response = calendarController.setSuggestedCalendar(token, eventList)
+
+        // Assert
         assert(response.statusCode == HttpStatus.BAD_REQUEST)
         assert(response.body == ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
     }
@@ -102,7 +122,8 @@ class CalendarControllerUnitTest {
         // doNothing().`when`(userCalendarService.deleteEvent(token, "", OffsetDateTime.now(), OffsetDateTime.now()))
         `when`(userCalendarService.getAllUserEvents(token)).thenReturn(listOf(event))
 
-        val response = calendarController.rescheduleEvent(token, null)
+        val response = calendarController.rescheduleEvent(token, event)
+
         assert(response.statusCode == HttpStatus.BAD_REQUEST)
         assert(response.body == ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
     }
