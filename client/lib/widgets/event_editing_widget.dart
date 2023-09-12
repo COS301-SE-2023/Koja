@@ -848,16 +848,16 @@ class EventEditingState extends State<EventEditing> {
       } else {
         updatedEvent = event;
         var response = await getUpdateResponse();
-        // if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
-        //   Navigator.pushAndRemoveUntil(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => NavigationScreen(initialIndex: 1),
-        //     ),
-        //     (route) => false,
-        //   );
-        // }
-        print('ctx=> $context');
+        if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationScreen(initialIndex: 1),
+            ),
+            (route) => false,
+          );
+        }
+        // print('ctx=> $context');
         if (response) {
           var snackBar = SnackBar(
             content: Center(

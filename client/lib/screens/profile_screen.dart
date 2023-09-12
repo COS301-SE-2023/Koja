@@ -18,6 +18,7 @@ class Profile extends StatelessWidget {
     final eventProvider = Provider.of<ContextProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Profile',
             style: TextStyle(
               color: Colors.white,
