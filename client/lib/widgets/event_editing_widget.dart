@@ -806,9 +806,13 @@ class EventEditingState extends State<EventEditing> {
 
       if (widget.event == null) {
          if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigationScreen(initialIndex: 1), 
+              ),
+            );
+
             var snackBar = SnackBar(
               content: Center(
                 child: Text('Event is being created.',
