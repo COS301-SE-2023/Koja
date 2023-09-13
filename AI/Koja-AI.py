@@ -110,13 +110,18 @@ def clean_training_data(training_data):
 
 @app.route('/train/new-user', methods=['POST'])
 def train_for_new_user():
+    data = os.getenv("KOJA_ID_SECRET")
     if request.method == 'POST':
         public_key = request.POST.get("publicKey")
         koja_id_secret = request.POST.get("kojaIDSecret")
-        retrain_for_new_users()
-        return "Successfully Trained", 200
+        CryptoService.decrypt_private_key(public_key, koja_id_secret)
+        if koja_id_secret == data:
+            retrain_for_new_users()
+            return "Successfully Trained", 200
+        else:
+            return "Unknown source", 400
     else:
-        return "Request was not JSON", 400
+        return "Request was not POST", 400
 
 
 @app.route('/train/all', methods=['POST'])
@@ -142,11 +147,11 @@ def retrain_for_new_users(training_data):
 
 def retrain_for_all_users():
     account_events_endpoint = f"{koja_server_address}:{koja_server_port}/api/v1/ai/get-account-events"
-    
+
     all_user_emails = get_all_users_emails()
 
     user_account_events = [None] * len(all_user_emails)
-    
+
     koja_public_key = get_koja_public_key()
     public_key = crypto_service.get_public_key()
     encrypted_koja_secret_id = crypto_service.encrypt_data(
@@ -171,7 +176,7 @@ def retrain_for_all_users():
     for user_event_set in user_account_events:
         if user_event_set.status_code == 200:
             usable_events += user_event_set.json()
-    
+
     events_data = clean_training_data(usable_events)
     loaded_user_model = tf.keras.models.load_model(user_model_file_location)
     loaded_category_model = tf.keras.models.load_model(category_model_file_location)
@@ -234,6 +239,11 @@ def recommend_categories():
         return jsonify(recommendations)
     else:
         return "Request was not JSON", 400
+
+
+@app.route('api/v1/auth/ai/public-key')
+def get_ai_public_key():
+    return jsonify(CryptoService.get_public_key())
 
 
 def get_training_data():
