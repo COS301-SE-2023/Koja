@@ -166,6 +166,7 @@ void ignoreOverflowErrors(
     }) {
   bool ifIsOverflowError = false;
   bool isUnableToLoadAsset = false;
+  
   // Detect overflow error.
   var exception = details.exception;
   if (exception is FlutterError) {
@@ -178,9 +179,9 @@ void ignoreOverflowErrors(
   }
   // Ignore if is overflow error.
   if (ifIsOverflowError || isUnableToLoadAsset) {
-    debugPrint('Ignored Rendering Error');
+    //debugPrint('Ignored Rendering Error');
   } else {
-    FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
+    //FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
   }
 }
 
