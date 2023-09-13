@@ -1,27 +1,22 @@
-import requests
-import schedule as schedule
-from flask import Flask, request, jsonify
+import base64
+import datetime
+import json
+import os
+import time
+
 import numpy as np
 import pandas as pd
+import requests
+import schedule as schedule
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
-import json
-import time
-import datetime
-from dotenv import load_dotenv
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives import hashes
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+
 from CryptoService import CryptoService
-import base64
-
-import os
-
 from main import CategoryRecommender, task
-
-# from main import CategoryRecommender, task
 
 app = Flask(__name__)
 crypto_service = CryptoService()
@@ -88,7 +83,7 @@ user_model_index, weekday_model_index, time_frame_model_index = load_data_and_mo
 
 
 def clean_training_data(training_data):
-    training_data = CryptoService.decrypt_data(training_data)
+    training_data = crypto_service.decrypt_data(training_data)
     all_events = []
 
     for block in training_data:
