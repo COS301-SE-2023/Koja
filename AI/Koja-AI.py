@@ -110,7 +110,9 @@ def clean_training_data(training_data):
 
 @app.route('/train/new-user', methods=['POST'])
 def train_for_new_user():
-    if request.is_json:
+    if request.method == 'POST':
+        public_key = request.POST.get("publicKey")
+        koja_id_secret = request.POST.get("kojaIDSecret")
         retrain_for_new_users()
         return "Successfully Trained", 200
     else:
