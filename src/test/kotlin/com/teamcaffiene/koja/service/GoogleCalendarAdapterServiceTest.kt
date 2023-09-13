@@ -3,7 +3,6 @@ package com.teamcaffiene.koja.service
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
-import com.google.api.services.calendar.model.Calendar
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
@@ -35,9 +34,6 @@ import com.google.api.services.calendar.Calendar as GoogleCalendar
 class GoogleCalendarAdapterServiceTest {
     @Mock
     lateinit var userRepository: UserRepository
-
-    @Mock
-    lateinit var calendarService: Calendar
 
     @Mock
     lateinit var userAccountRepository: UserAccountRepository
