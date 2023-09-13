@@ -22,7 +22,6 @@ class TimeCategory extends StatefulWidget {
 class _TimeCategoryState extends State<TimeCategory> {
   @override
   Widget build(BuildContext context) {
-    print('Category: ${widget.category}');
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Slidable(
@@ -48,6 +47,7 @@ class _TimeCategoryState extends State<TimeCategory> {
           ],
         ),
         child: Container(
+          height: 60,
           width: MediaQuery.of(context).size.width * 0.91,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -70,7 +70,7 @@ class _TimeCategoryState extends State<TimeCategory> {
                     : widget.category == 'Resting'
                     ? Icons.hotel_outlined
                     : Icons.help,
-                    size: 28,
+                    size: 23,
                   ),
                   SizedBox(width: 7),
                   Text(
@@ -85,7 +85,8 @@ class _TimeCategoryState extends State<TimeCategory> {
               SizedBox(height: 10),
               Row(children: [
                 Icon(
-                  Icons.watch_later_outlined,
+                  Bootstrap.alarm,
+                  size: 18,
                 ),
                 SizedBox(width: 5),
                 Text(
@@ -97,7 +98,8 @@ class _TimeCategoryState extends State<TimeCategory> {
                 ),
                 SizedBox(width: 10),
                 Icon(
-                  Icons.watch_later_outlined,
+                  Bootstrap.alarm,
+                  size: 18,
                 ),
                 SizedBox(width: 5),
                 Text(

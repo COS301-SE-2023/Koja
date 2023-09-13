@@ -32,12 +32,14 @@ class UserDetails extends StatelessWidget {
                   //This is the profile picture
                   child: CircleAvatar(
                     radius: 50,
-                    child: Text(
-                      profile.toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 70,
-                        color: darkBlue,
+                    child: Center(
+                      child: Text(
+                        profile.toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 70,
+                          color: darkBlue,
+                        ),
                       ),
                     ),
                   ),
