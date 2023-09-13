@@ -19,6 +19,7 @@ from CryptoService import CryptoService
 from main import CategoryRecommender, task
 
 app = Flask(__name__)
+load_dotenv()
 crypto_service = CryptoService()
 user_model_file_location = "AI/Models/user_model"
 category_model_file_location = "AI/Models/category_model"
