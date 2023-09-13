@@ -62,11 +62,11 @@ class _TimeCategoryState extends State<TimeCategory> {
                     : widget.category == 'Work'
                     ? LineAwesome.suitcase_rolling_solid
                     : widget.category == 'Hobbies'
-                    ? Icons.self_improvement_outlined
+                    ? Bootstrap.scooter
                     : widget.category == 'Bed-Time'
                     ? Icons.king_bed_outlined
                     : widget.category == 'Chores'
-                    ? Icons.help
+                    ? Icons.local_laundry_service_outlined
                     : widget.category == 'Resting'
                     ? Icons.hotel_outlined
                     : Icons.help,
