@@ -79,7 +79,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         }
 
         try {
-            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
+            userCalendar.deleteEvent(token, event.getId())
         } catch (e: Exception) {
             return ResponseEntity.badRequest().body(ResponseConstant.EVENT_DELETION_FAILED_INTERNAL_ERROR)
         }
@@ -99,7 +99,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
             val timeZoneId = ZoneId.of("Africa/Johannesburg")
             val currentTime = OffsetDateTime.now(timeZoneId)
-            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
+            userCalendar.deleteEvent(token, event.getId())
             event.setStartTime(currentTime)
             event.setEndTime(currentTime.plusSeconds(event.getDurationInSeconds()))
             val events = userCalendar.getAllUserEvents(token)
@@ -125,7 +125,7 @@ class CalendarController(private val userCalendar: UserCalendarService) {
             // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
             val timeZoneId = ZoneId.of("Africa/Johannesburg")
             val currentTime = OffsetDateTime.now(timeZoneId)
-            userCalendar.deleteEvent(token, event.getSummary(), event.getStartTime(), event.getEndTime())
+            userCalendar.deleteEvent(token, event.getId())
             val events = userCalendar.getAllUserEvents(token)
             val timeslot = userCalendar.findEarliestTimeSlot(events, event)
             event.setStartTime(timeslot.first)
