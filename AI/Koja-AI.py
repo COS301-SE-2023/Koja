@@ -79,8 +79,8 @@ def clean_training_data(training_data):
         for event in block['training'] + block['testing']:
             for time_frame in event['timeFrame']:
                 new_event = event.copy()
-                new_event['startTime'] = time_frame['first'].strip()
-                new_event['endTime'] = time_frame['second'].strip()
+                new_event['startTime'] = time_frame['startTime'].strip()
+                new_event['endTime'] = time_frame['endTime'].strip()
                 new_event['category'] = event['category'].strip()
                 new_event['weekday'] = event['weekday'].strip()
                 new_event['userID'] = event['userID'].strip()
@@ -151,7 +151,7 @@ def auto_train_new(training_data):
 
 def auto_train_all(training_data):
     now = datetime.datetime.now()
-    next_retrain_time = now + datetime.timedelta(days=7)
+    next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0) + datetime.timedelta(days=7)
 
     # Schedule the retraining to occur every 7 days
     schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(retrain_for_all_users, training_data)
@@ -193,6 +193,17 @@ def get_training_data():
     api_url = "localhost:8080/api/v1/ai/all-users-events"
     headers = {'Authorization': 'Access token'}
     response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        return jsonify(data)
+    else:
+        return jsonify({'error': 'Failed to fetch data'}), 500
+
+
+def get_public_key():
+    api_url = "http://localhost:8080/api/v1/auth/koja/public-key"
+    response = requests.get(api_url)
 
     if response.status_code == 200:
         data = response.json()

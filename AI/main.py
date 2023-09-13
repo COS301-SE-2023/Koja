@@ -101,22 +101,22 @@ time_frame_vocabulary.adapt(time_frame_dataset)
 # # Define user and category models
 user_model = tf.keras.Sequential([
     user_ids_vocabulary,
-    tf.keras.layers.Embedding(user_ids_vocabulary.vocab_size() + 1, 16),
+    tf.keras.layers.Embedding(user_ids_vocabulary.vocabulary_size() + 1, 16),
 ])
 
 category_model = tf.keras.Sequential([
     categories_vocabulary,
-    tf.keras.layers.Embedding(categories_vocabulary.vocab_size() + 1, 16),
+    tf.keras.layers.Embedding(categories_vocabulary.vocabulary_size() + 1, 16),
 ])
 
 weekday_model = tf.keras.Sequential([
     weekday_vocabulary,
-    tf.keras.layers.Embedding(weekday_vocabulary.vocab_size() + 1, 16),
+    tf.keras.layers.Embedding(weekday_vocabulary.vocabulary_size() + 1, 16),
 ])
 
 time_frame_model = tf.keras.Sequential([
     time_frame_vocabulary,
-    tf.keras.layers.Embedding(time_frame_vocabulary.vocab_size() + 1, 16),
+    tf.keras.layers.Embedding(time_frame_vocabulary.vocabulary_size() + 1, 16),
 ])
 
 category_candidates = category_dataset.batch(128).map(category_model)
