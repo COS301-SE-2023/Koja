@@ -22,18 +22,20 @@ class TimeCategory extends StatefulWidget {
 class _TimeCategoryState extends State<TimeCategory> {
   @override
   Widget build(BuildContext context) {
+    print('Category: ${widget.category}');
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
           children: [
-            SlidableAction(
-              onPressed: (context) => widget.delete!(context),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              icon: Icons.delete_outline_rounded,
-            ),
+            if(widget.category != 'Bed-Time')
+              SlidableAction(
+                onPressed: (context) => widget.delete!(context),
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                icon: Icons.delete_outline_rounded,
+              ),
             SlidableAction(
               onPressed: (context) => {
                 widget.edit!(context),
@@ -56,17 +58,19 @@ class _TimeCategoryState extends State<TimeCategory> {
                 children: [
                   Icon(
                     widget.category == 'School'
-                        ? Bootstrap.book
-                        : widget.category == 'Work'
-                            ? Icons.card_travel_outlined
-                            : widget.category == 'Hobbies'
-                                ? Icons.self_improvement_outlined
-                                : widget.category == 'Resting'
-                                    ? Icons.king_bed_outlined
-                                    : widget.category == 'Chores'
-                                        ? Icons.help
-                                        : LineAwesome.question_circle,
-                    size: 30,
+                    ? Bootstrap.journals
+                    : widget.category == 'Work'
+                    ? LineAwesome.suitcase_rolling_solid
+                    : widget.category == 'Hobbies'
+                    ? Icons.self_improvement_outlined
+                    : widget.category == 'Bed-Time'
+                    ? Icons.king_bed_outlined
+                    : widget.category == 'Chores'
+                    ? Icons.help
+                    : widget.category == 'Resting'
+                    ? Icons.hotel_outlined
+                    : Icons.help,
+                    size: 28,
                   ),
                   SizedBox(width: 7),
                   Text(
