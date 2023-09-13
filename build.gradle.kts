@@ -53,6 +53,8 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     implementation("software.amazon.awssdk:dynamodb:2.20.115")
+    implementation("org.bouncycastle:bcprov-jdk15on:1.68")
+
 }
 
 tasks.withType<KotlinCompile> {

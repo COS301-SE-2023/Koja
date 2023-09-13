@@ -1,13 +1,17 @@
 import json
 from abc import ABC
+import os
 from typing import Dict, Text
 import requests
-import pandas as pd
+import pandas as pd 
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
 import numpy as np
 
-f = open('./test.json')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+file_path = os.path.join(dir_path, 'test.json')
+f = open(file_path)
+
 
 # returns JSON object as
 # a dictionary
@@ -163,7 +167,7 @@ model = CategoryRecommender(user_model, category_model, weekday_model, time_fram
 model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
 # # Train the model
-model.fit(all_data.batch(128), epochs=50)
+model.fit(all_data.batch(128), epochs=3)
 
 user_model_index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
 user_model_index.index_from_dataset(
@@ -195,8 +199,8 @@ for category_id in titles[0][:10]:
     print(f"Weekday recommendations for category {category_id_np}: {weekdays[0]}")
     print(f"Time frame recommendations for category {category_id_np}: {time_frames[0]}")
 
-user_model.save("user_model")
-category_model.save("category_model")
-weekday_model.save("weekday_model")
-time_frame_model.save("time_frame_model")
+user_model.save("AI/Models/user_model")
+category_model.save("AI/Models/category_model")
+weekday_model.save("AI/Models/weekday_model")
+time_frame_model.save("AI/Models/time_frame_model")
 
