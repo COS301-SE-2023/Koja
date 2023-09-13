@@ -18,8 +18,6 @@ from flask import Flask, request, jsonify
 from CryptoService import CryptoService
 from main import CategoryRecommender, task
 
-# from main import CategoryRecommender, task
-
 app = Flask(__name__)
 load_dotenv()
 crypto_service = CryptoService()
@@ -86,6 +84,7 @@ user_model_index, weekday_model_index, time_frame_model_index = load_data_and_mo
 
 
 def clean_training_data(training_data):
+    training_data = crypto_service.decrypt_data(training_data)
     all_events = []
 
     for block in training_data:
@@ -141,6 +140,15 @@ def retrain_for_new_users(training_data):
                                 task)
     model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
     model.fit(events_data.batch(128), epochs=50)
+
+
+@app.route('/train/all', methods=['POST'])
+def train_for_new_user():
+    if request.is_json:
+        retrain_for_all_users()
+        return "Successfully Trained", 200
+    else:
+        return "Request was not JSON", 400
 
 
 def retrain_for_all_users():
