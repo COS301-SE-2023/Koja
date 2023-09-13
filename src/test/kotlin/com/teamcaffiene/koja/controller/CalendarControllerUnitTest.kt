@@ -116,16 +116,16 @@ class CalendarControllerUnitTest {
     }
 
     // TODO: Fix this test
-//    @Test
-//    fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
-//        val token = "valid_token"
-//        val event = UserEventDTO(Event().setId("minimanimo").setStart(EventDateTime().setDate(DateTime("2022-03-15"))).setEnd(EventDateTime().setDate(DateTime("2022-03-16"))))
-//        // doNothing().`when`(userCalendarService.deleteEvent(token, "", OffsetDateTime.now(), OffsetDateTime.now()))
-//        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(listOf(event))
-//
-//        val response = calendarController.rescheduleEvent(token, event)
-//
-//        assert(response.statusCode == HttpStatus.BAD_REQUEST)
-//        assert(response.body == ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-//    }
+    @Test
+    fun `rescheduleEvent should return BAD_REQUEST when event update fails`() {
+        val token = "valid_token"
+        val event = UserEventDTO(Event().setId("minimanimo").setStart(EventDateTime().setDate(DateTime("2022-03-15"))).setEnd(EventDateTime().setDate(DateTime("2022-03-16"))))
+        // doNothing().`when`(userCalendarService.deleteEvent(token, "", OffsetDateTime.now(), OffsetDateTime.now()))
+        `when`(userCalendarService.getAllUserEvents(token)).thenReturn(listOf(event))
+
+        val response = calendarController.rescheduleEvent(token, null)
+
+        assert(response.statusCode == HttpStatus.BAD_REQUEST)
+        assert(response.body == ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+    }
 }

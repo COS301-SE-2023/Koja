@@ -257,7 +257,11 @@ class ServiceProvider with ChangeNotifier {
       },
       body: jsonEncode(event.toJson()),
     );
-    print(jsonEncode(event.toJson()));
+
+    if(kDebugMode) {
+      print(jsonEncode(event.toJson()));
+    }
+    
     return response.statusCode == 200;
   }
 
