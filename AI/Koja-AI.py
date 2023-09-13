@@ -1,29 +1,27 @@
-import requests
-import schedule as schedule
-from flask import Flask, request, jsonify
+import base64
+import datetime
+import json
+import os
+import time
+
 import numpy as np
 import pandas as pd
+import requests
+import schedule as schedule
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
-import json
-import time
-import datetime
-from dotenv import load_dotenv
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives import hashes
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+
 from CryptoService import CryptoService
-import base64
-
-import os
-
 from main import CategoryRecommender, task
 
 # from main import CategoryRecommender, task
 
 app = Flask(__name__)
+load_dotenv()
 crypto_service = CryptoService()
 user_model_file_location = "AI/Models/user_model"
 category_model_file_location = "AI/Models/category_model"
@@ -125,7 +123,7 @@ def train_for_new_user():
 
 
 @app.route('/train/all', methods=['POST'])
-def train_for_new_user():
+def train_for_all_user_endpoint():
     if request.is_json:
         retrain_for_all_users()
         return "Successfully Trained", 200
@@ -241,7 +239,7 @@ def recommend_categories():
         return "Request was not JSON", 400
 
 
-@app.route('api/v1/auth/ai/public-key')
+@app.route('/api/v1/auth/ai/public-key')
 def get_ai_public_key():
     return jsonify(CryptoService.get_public_key())
 
@@ -266,7 +264,7 @@ def get_koja_public_key():
         data = response.json()
         public_key_bytes = base64.b64decode(data)
         public_key = serialization.load_der_public_key(public_key_bytes, backend=default_backend())
-        return jsonify(public_key)
+        return public_key
     else:
         return jsonify({'error': 'Failed to fetch data'}), 500
 
