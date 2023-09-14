@@ -10,8 +10,9 @@ import 'tasks_screen.dart';
 class NavigationScreen extends StatefulWidget {
   static const routeName = '/navigation';
   final int initialIndex;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  const NavigationScreen({Key? key, this.initialIndex = 0}) : super(key: key);
+  NavigationScreen({Key? key, this.initialIndex = 0,}) : super(key: key);
 
   @override
   NavigationScreenState createState() => NavigationScreenState(initialIndex);

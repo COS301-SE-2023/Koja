@@ -28,6 +28,8 @@ class _TasksState extends State<Tasks> {
     super.initState();
   }
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final contextProvider = Provider.of<ContextProvider>(context);
@@ -55,31 +57,43 @@ class _TasksState extends State<Tasks> {
                       'Current',
                       style: TextStyle(color: Colors.white),
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        String? accessToken = serviceProvider.accessToken;
-                        
-                        // Call getEventsFromAPI and await the result
-                         await contextProvider.getEventsFromAPI(accessToken!);  
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Scaffold(
-                              body: NavigationScreen(initialIndex: 1),
+                    isLoading
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: SizedBox(
+                            height: 15,
+                            width: 15,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
                             ),
                           ),
-                        );
-                        const snackBar = SnackBar(
-                          content: Text('Page refreshed!'),
-                          duration: Duration(seconds: 5));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);  
-                      },
-                      icon: Icon(
-                        Bootstrap.arrow_clockwise,
-                        size: 20.0,
-                        color: Colors.white,
+                        )
+                      : IconButton(
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          String? accessToken = serviceProvider.accessToken;
+
+                          // Call getEventsFromAPI and await the result
+                          await contextProvider.getEventsFromAPI(accessToken!); 
+
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          final snackBar = SnackBar(
+                            content: Text('Page refreshed!'),
+                            duration: Duration(seconds: 5));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);    
+                        },
+                        icon: Icon(
+                          Bootstrap.arrow_clockwise,
+                          size: 20.0,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -121,8 +135,34 @@ class CurrentTasksScreen extends StatelessWidget {
           );
         },
         backgroundColor: darkBlue,
-        child: const Icon(Icons.add, color: Colors.white, size: 25.0),
+        child: Icon(Icons.add, color: Colors.white, size: 25.0),
       ),
     );
   }
 }
+/*
+IconButton(
+  onPressed: () async {
+    String? accessToken = serviceProvider.accessToken;
+
+    // Call getEventsFromAPI and await the result
+    await contextProvider.getEventsFromAPI(accessToken!);  
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NavigationScreen(initialIndex: 1),
+      ),
+    ); 
+
+    final snackBar = SnackBar(
+      content: Text('Page refreshed!'),
+      duration: Duration(seconds: 5));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);    
+  },
+  icon: Icon(
+    Bootstrap.arrow_clockwise,
+    size: 20.0,
+    color: Colors.white,
+  ),
+),
+*/
