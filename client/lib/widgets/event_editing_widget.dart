@@ -788,13 +788,17 @@ class EventEditingState extends State<EventEditing> {
         // Initialize variables to store the hours, minutes, and seconds
 
         // Iterate through the timeParts and extract the corresponding values
-        for (int i = 0; i < timeParts.length; i += 2) {
-          String unit = timeParts[i + 1];
+        if(timeParts.length > 1)
+        {
+          for (int i = 0; i < timeParts.length; i += 2) {
+            String unit = timeParts[i + 1];
 
-          if (unit.contains('hour')) {
-          } else if (unit.contains('minute')) {
-          } else if (unit.contains('second')) {}
+            if (unit.contains('hour')) {
+            } else if (unit.contains('minute')) {
+            } else if (unit.contains('second')) {}
+          }
         }
+          
       }
 
       final serviceProvider =
@@ -805,9 +809,7 @@ class EventEditingState extends State<EventEditing> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Scaffold(
-                body: NavigationScreen(initialIndex: 1),
-              ),
+              builder: (context) => NavigationScreen(initialIndex: 1)
             ),
           );
         }
@@ -874,7 +876,12 @@ class EventEditingState extends State<EventEditing> {
     }
   }
 
-  void showEventCreatedSnackBar(BuildContext context) {
+  Future<void> showEventCreatedSnackBar(BuildContext context) async {
+    final contextProvider =
+        Provider.of<ContextProvider>(context, listen: false);
+    final serviceProvider = Provider.of<ServiceProvider>(context, listen: false);
+
+    await contextProvider.getEventsFromAPI(serviceProvider.accessToken!);
     var snackBar = SnackBar(
       content: Center(
         child: Text('Event is created!',

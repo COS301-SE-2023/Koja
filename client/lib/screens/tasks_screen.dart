@@ -3,7 +3,6 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/constants_util.dart';
-import './navigation_management_screen.dart';
 import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
@@ -140,29 +139,3 @@ class CurrentTasksScreen extends StatelessWidget {
     );
   }
 }
-/*
-IconButton(
-  onPressed: () async {
-    String? accessToken = serviceProvider.accessToken;
-
-    // Call getEventsFromAPI and await the result
-    await contextProvider.getEventsFromAPI(accessToken!);  
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NavigationScreen(initialIndex: 1),
-      ),
-    ); 
-
-    final snackBar = SnackBar(
-      content: Text('Page refreshed!'),
-      duration: Duration(seconds: 5));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);    
-  },
-  icon: Icon(
-    Bootstrap.arrow_clockwise,
-    size: 20.0,
-    color: Colors.white,
-  ),
-),
-*/
