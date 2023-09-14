@@ -68,3 +68,4 @@ String existingCategory = '';
 String existingPriority = '';
 String existingRecurrence = '';
 List<String> existingRecurrenceString = [];
+DateTime recurrenceStart = DateTime.now();

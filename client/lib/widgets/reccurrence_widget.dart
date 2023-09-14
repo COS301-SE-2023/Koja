@@ -10,6 +10,7 @@ class RecurrenceWidget extends StatefulWidget {
 
 List<String> endingChoice = ['Occurrences', 'EndDate'];
 
+
 class RecurrenceWidgetState extends State<RecurrenceWidget> {
   static List<String> intervalString = [
     '1(One)',
@@ -86,7 +87,7 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
   String selectedFor =
       isExistingEvent ? existingRecurrenceString[0].startsWith('D') ? 'day(s)' : existingRecurrenceString[0].startsWith('W') ? 'week(s)' : existingRecurrenceString[0].startsWith('M') ? 'month(s)' : 'year(s)' : 'day(s)';
   String selectedInterval = isExistingEvent ? intervalString[int.parse(existingRecurrenceString[1]) - 1] : intervalString[0];
-  String selectedOccurrence = occurrences[0];
+  // late String selectedOccurrence = isExistingEvent ? occurrences[convertDateToOccurrence(DateTime.parse(existingRecurrenceString[2]), selectedFor, recurrenceStart)] : occurrences[0];
   String selectedEnding =
       (isExistingEvent && existingRecurrence != 'None' && isEndDate)
           ? endingChoice[1]
@@ -95,6 +96,15 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
   late DateTime endDate = (isExistingEvent && existingRecurrence != 'None' && isEndDate)
       ? DateTime.parse(existingRecurrenceString[2])
       : DateTime.now();
+
+  late String selectedOccurrence;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedOccurrence = isExistingEvent ? occurrences[convertDateToOccurrence(DateTime.parse(existingRecurrenceString[2]), selectedFor, recurrenceStart)] : occurrences[0];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -433,4 +443,22 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
     // Default case
     return DateAndTimeUtil.toUTCFormat(currentDate).toString();
   }
+
+  //create a function to convert date to occurence
+  int convertDateToOccurrence(DateTime targetDate, String selectedFor, DateTime baseDate) {
+    int occurrence = 0;
+
+    if (selectedFor == 'day(s)') {
+      occurrence = targetDate.difference(baseDate).inDays;
+    } else if (selectedFor == 'week(s)') {
+      occurrence = targetDate.difference(baseDate).inDays ~/ 7;
+    } else if (selectedFor == 'month(s)') {
+      occurrence = (targetDate.year - baseDate.year) * 12 + (targetDate.month - baseDate.month);
+    } else if (selectedFor == 'year(s)') {
+      occurrence = targetDate.year - baseDate.year;
+    }
+
+    return occurrence;
+  }
+ 
 }

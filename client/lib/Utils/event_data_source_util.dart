@@ -49,4 +49,9 @@ class EventDataSource extends CalendarDataSource {
   String? getCategory(int index) {
     return getEvent(index).category;
   }
+
+  //for recurrence  
+  List<String>? getRecursion(int index) {
+    return getEvent(index).recurrenceRule;
+  }
 }

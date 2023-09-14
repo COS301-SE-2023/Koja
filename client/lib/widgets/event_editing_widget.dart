@@ -133,7 +133,8 @@ class EventEditingState extends State<EventEditing> {
 
       titleController.text = event.title;
       fromDate = event.from;
-      toDate = event.to;  
+      recurrenceStart = event.from;
+      toDate = event.to;
       existingType = event.isDynamic ? 'Dynamic' : 'Fixed';
       existingPriority = event.priority == 1
           ? 'High'
@@ -143,12 +144,9 @@ class EventEditingState extends State<EventEditing> {
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
       existingCategory = event.category;
-      if(event.recurrenceRule != [])
-      {
+      if (event.recurrenceRule != []) {
         existingRecurrence = 'Custom';
-      }
-      else
-      {
+      } else {
         existingRecurrence = 'None';
       }
       existingRecurrenceString = event.recurrenceRule;
@@ -159,8 +157,6 @@ class EventEditingState extends State<EventEditing> {
       updatePriority(existingPriority);
       updateColor(selectedColor);
       updateRecurrence(existingRecurrence);
-
-
     }
   }
 
@@ -801,17 +797,17 @@ class EventEditingState extends State<EventEditing> {
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
-        location: placeId,
         description: '',
-        category: selectedCategory,
-        isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        location: placeId,
         from: fromDate,
         to: toDate,
         duration: await getDurationInMilliseconds(durationInSeconds),
-        isAllDay: false,
         timeSlots: [timeSlot],
-        priority: priorityValue,
+        category: selectedCategory,
         backgroundColor: selectedColor,
+        isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        isAllDay: false,
+        priority: priorityValue,
         recurrenceRule: recurrenceString,
         isEndByDate: isEndDate,
       );
@@ -868,7 +864,7 @@ class EventEditingState extends State<EventEditing> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
-        updatedEvent = event;     
+        updatedEvent = event;
         if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
           Navigator.push(
             context,
@@ -879,14 +875,13 @@ class EventEditingState extends State<EventEditing> {
           showEventUpdatingSnackBar(context);
         }
         var response = await getUpdateResponse();
-        
+
         if (response) {
-          
           final contextProvider =
               Provider.of<ContextProvider>(context, listen: false);
           String? accessToken = serviceProvider.accessToken;
           await contextProvider.getEventsFromAPI(accessToken!);
-          
+
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',

@@ -48,10 +48,13 @@ class Event {
         timeSlots: (json['timeSlots'] as List)
             .map((i) => TimeSlot.fromJson(i))
             .toList(),
-        priority: json['priority'] ?? 0,
         category: json['category'] ?? 'None',
+        backgroundColor: Colors.blue,
+        priority: json['priority'] ?? 0,
+        isDynamic: json['dynamic'],
         recurrenceRule: json['recurrence'] ?? [],
-        isDynamic: json['dynamic']);
+        isEndByDate: json['isEndByDate'] ?? false
+        );
   }
 
   Map<String, dynamic> toJson() => {
@@ -67,6 +70,7 @@ class Event {
         'priority': priority,
         'dynamic': isDynamic,
         'recurrence': recurrenceRule,
+        'isEndByDate': isEndByDate,
       };
 }
 
