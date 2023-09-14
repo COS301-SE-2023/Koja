@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:koja/Utils/constants_util.dart';
 
 class ChooseCategory extends StatefulWidget {
   final void Function(String category) onCategorySelected;
@@ -18,7 +19,8 @@ class ChooseCategoryState extends State<ChooseCategory> {
     'Resting',
     'Chore'
   ];
-  String selectedCategory = categories[0];
+  
+  String selectedCategory = isExistingEvent ? existingCategory : categories[0];
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +79,7 @@ class ChooseEventType extends StatefulWidget {
 }
 
 class ChooseEventTypeState extends State<ChooseEventType> {
-  String selectedCategory = 'Fixed';
+  String selectedCategory = isExistingEvent ? existingType : 'Fixed';
   List<String> categories = ['Fixed', 'Dynamic'];
 
   @override
@@ -135,7 +137,7 @@ class ChoosePriority extends StatefulWidget {
 }
 
 class ChoosePriorityState extends State<ChoosePriority> {
-  String selectedCategory = 'Low';
+  String selectedCategory = isExistingEvent ? existingPriority : 'Low';
   List<String> categories = ['Low', 'Medium', 'High'];
 
   @override

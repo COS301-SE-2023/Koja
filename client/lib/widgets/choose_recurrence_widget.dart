@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:koja/Utils/constants_util.dart';
 import 'reccurrence_widget.dart';
 
 class ChooseRecurrence extends StatefulWidget {
@@ -12,7 +13,7 @@ class ChooseRecurrence extends StatefulWidget {
 }
 
 class ChooseRecurrenceState extends State<ChooseRecurrence> {
-  String selectedCategory = 'None';
+  String selectedCategory = isExistingEvent ? existingRecurrence : 'None';
   List<String> recurOptions = ['None', 'Custom'];
 
   @override

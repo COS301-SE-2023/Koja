@@ -17,7 +17,7 @@ class Event {
   final bool isDynamic;
   final List<String> recurrenceRule;
 
-  const Event({
+   Event({
     this.id = '',
     required this.title,
     this.description = '',
@@ -26,7 +26,7 @@ class Event {
     required this.to,
     this.duration = 0,
     this.timeSlots = const [],
-    this.category = '',
+    this.category = 'None',
     this.backgroundColor = Colors.blue,
     this.isAllDay = false,
     this.priority = 3,
@@ -47,6 +47,8 @@ class Event {
             .map((i) => TimeSlot.fromJson(i))
             .toList(),
         priority: json['priority'] ?? 0,
+        category: json['category'] ?? 'None',
+        recurrenceRule: json['recurrence'] ?? [],
         isDynamic: json['dynamic']);
   }
 

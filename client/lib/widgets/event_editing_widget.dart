@@ -102,6 +102,7 @@ class EventEditingState extends State<EventEditing> {
   @override
   void initState() {
     super.initState();
+    isExistingEvent = false;
 
     if (widget.event != null && widget.event!.isDynamic) {
       if (widget.event!.duration > 0) {
@@ -127,23 +128,39 @@ class EventEditingState extends State<EventEditing> {
       fromDate = DateTime.now();
       toDate = DateTime.now().add(const Duration(hours: 1));
     } else {
+      isExistingEvent = true;
       final event = widget.event!;
 
       titleController.text = event.title;
       fromDate = event.from;
-      toDate = event.to;
-      updateCategory(event.category);
-      event.isDynamic ? updateEventType('Dynamic') : updateEventType('Fixed');
-      event.priority == 1
-          ? updatePriority('Low')
+      toDate = event.to;  
+      existingType = event.isDynamic ? 'Dynamic' : 'Fixed';
+      existingPriority = event.priority == 1
+          ? 'High'
           : event.priority == 2
-              ? updatePriority('Medium')
-              : updatePriority('High');
+              ? 'Medium'
+              : 'Low';
       selectedColor = event.backgroundColor;
       _eventPlace.text = placeId;
-      event.recurrenceRule.isNotEmpty
-          ? updateRecurrence('Custom')
-          : updateRecurrence('None');
+      existingCategory = event.category;
+      if(event.recurrenceRule != [])
+      {
+        existingRecurrence = 'Custom';
+      }
+      else
+      {
+        existingRecurrence = 'None';
+      }
+      existingRecurrenceString = event.recurrenceRule;
+
+      //The function definitions
+      updateCategory(existingCategory);
+      updateEventType(existingType);
+      updatePriority(existingPriority);
+      updateColor(selectedColor);
+      updateRecurrence(existingRecurrence);
+
+
     }
   }
 
@@ -769,16 +786,15 @@ class EventEditingState extends State<EventEditing> {
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
 
-      if(kDebugMode)
-      {
-        print('occ: $isOccurrence' ' selFor: $selFor'  ' selOcc: $selOcc');
+      if (kDebugMode) {
+        print('occ: $isOccurrence' ' selFor: $selFor' ' selOcc: $selOcc');
       }
 
-      if (selectedRecurrence != 'None' && isOccurrence) 
-      {
+      if (selectedRecurrence != 'None' && isOccurrence) {
         recurrenceDate = fromDate;
         RecurrenceWidgetState recurrenceWidgetState = RecurrenceWidgetState();
-        recurrenceString[2] = recurrenceWidgetState.convertOccurrenceToDate(selFor, selOcc);
+        recurrenceString[2] =
+            recurrenceWidgetState.convertOccurrenceToDate(selFor, selOcc);
         isOccurrence = false;
       }
 
@@ -851,8 +867,7 @@ class EventEditingState extends State<EventEditing> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
-        updatedEvent = event;
-        var response = await getUpdateResponse();
+        updatedEvent = event;     
         if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
           Navigator.push(
             context,
@@ -860,15 +875,17 @@ class EventEditingState extends State<EventEditing> {
               builder: (context) => NavigationScreen(initialIndex: 1),
             ),
           );
+          showEventUpdatingSnackBar(context);
         }
-        // print('ctx=> $context');
+        var response = await getUpdateResponse();
+        
         if (response) {
-          //might be deleted
+          
           final contextProvider =
               Provider.of<ContextProvider>(context, listen: false);
           String? accessToken = serviceProvider.accessToken;
           await contextProvider.getEventsFromAPI(accessToken!);
-          //might be deleted
+          
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
