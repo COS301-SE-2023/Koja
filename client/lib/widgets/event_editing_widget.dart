@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:koja/screens/navigation_management_screen.dart';
+import 'package:koja/widgets/reccurrence_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -153,7 +155,6 @@ class EventEditingState extends State<EventEditing> {
 
   @override
   Widget build(BuildContext context) {
-    
     return AlertDialog(
       scrollable: true,
       actions: <Widget>[
@@ -473,17 +474,20 @@ class EventEditingState extends State<EventEditing> {
         children: [
           Expanded(
             child: buildDropdownField(
-              text: DateAndTimeUtil.toDate(fromDate),
-              //If the user clicked the date the new date is saved in the fromDate variable
-              onClicked: () => pickFromDateTime(pickDate: true),
-            ),
+                text: DateAndTimeUtil.toDate(fromDate),
+                //If the user clicked the date the new date is saved in the fromDate variable
+                onClicked: () {
+                  pickFromDateTime(pickDate: true);
+                }),
           ),
           if (!isDynamic)
             Expanded(
               child: buildDropdownField(
                   text: DateAndTimeUtil.toTime(fromDate),
                   //If the user clicked the time the new time is saved in the fromDate variable
-                  onClicked: () => pickFromDateTime(pickDate: false)),
+                  onClicked: () {
+                    pickFromDateTime(pickDate: false);
+                  }),
             ),
         ],
       ),
@@ -765,6 +769,19 @@ class EventEditingState extends State<EventEditing> {
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
 
+      if(kDebugMode)
+      {
+        print('occ: $isOccurrence' ' selFor: $selFor'  ' selOcc: $selOcc');
+      }
+
+      if (selectedRecurrence != 'None' && isOccurrence) 
+      {
+        recurrenceDate = fromDate;
+        RecurrenceWidgetState recurrenceWidgetState = RecurrenceWidgetState();
+        recurrenceString[2] = recurrenceWidgetState.convertOccurrenceToDate(selFor, selOcc);
+        isOccurrence = false;
+      }
+
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
@@ -788,8 +805,7 @@ class EventEditingState extends State<EventEditing> {
         // Initialize variables to store the hours, minutes, and seconds
 
         // Iterate through the timeParts and extract the corresponding values
-        if(timeParts.length > 1)
-        {
+        if (timeParts.length > 1) {
           for (int i = 0; i < timeParts.length; i += 2) {
             String unit = timeParts[i + 1];
 
@@ -798,7 +814,6 @@ class EventEditingState extends State<EventEditing> {
             } else if (unit.contains('second')) {}
           }
         }
-          
       }
 
       final serviceProvider =
@@ -809,8 +824,7 @@ class EventEditingState extends State<EventEditing> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NavigationScreen(initialIndex: 1)
-            ),
+                builder: (context) => NavigationScreen(initialIndex: 1)),
           );
         }
         var snackBar = SnackBar(
@@ -850,9 +864,10 @@ class EventEditingState extends State<EventEditing> {
         // print('ctx=> $context');
         if (response) {
           //might be deleted
-          final contextProvider = Provider.of<ContextProvider>(context, listen: false);
+          final contextProvider =
+              Provider.of<ContextProvider>(context, listen: false);
           String? accessToken = serviceProvider.accessToken;
-            await contextProvider.getEventsFromAPI(accessToken!);
+          await contextProvider.getEventsFromAPI(accessToken!);
           //might be deleted
           var snackBar = SnackBar(
             content: Center(
@@ -879,7 +894,8 @@ class EventEditingState extends State<EventEditing> {
   Future<void> showEventCreatedSnackBar(BuildContext context) async {
     final contextProvider =
         Provider.of<ContextProvider>(context, listen: false);
-    final serviceProvider = Provider.of<ServiceProvider>(context, listen: false);
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
 
     await contextProvider.getEventsFromAPI(serviceProvider.accessToken!);
     var snackBar = SnackBar(

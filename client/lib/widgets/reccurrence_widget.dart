@@ -349,6 +349,9 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
     //convert selOccurrence to integer
     int occur = int.parse(selOccurrence) - 1;
 
+    selOcc = occur;
+    selFor = selectedFor;
+
     if (selectedFor == 'day(s)') {
       recurrenceString.add('DAILY');
       recurrenceString.add(selInterval);
@@ -394,9 +397,11 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
   }
 
   //create a function to convert the occurrence to date based on whether the selected option is day, month or year
-  String convertOccurrenceToDate(String selectedFor, int occurrence) {
-    DateTime currentDate = DateTime.now();
-
+  String convertOccurrenceToDate(String selectedFor, int occurrence) 
+  {
+    DateTime currentDate = recurrenceDate;
+    isOccurrence = true;
+    
     if (selectedFor == 'day(s)') {
       currentDate = currentDate.add(Duration(days: occurrence));
       return DateAndTimeUtil.toUTCFormat(currentDate).toString();

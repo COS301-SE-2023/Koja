@@ -26,4 +26,8 @@ class DateAndTimeUtil {
   static String toUTCFormat(DateTime dateTime) {
     return DateFormat("yyyy-MM-dd'T'23:59:ss.000'Z'").format(dateTime);
   }
+
+  static String forRecurrenceStart(DateTime dateTime) {
+    return DateFormat("yyyy-MM-dd'T'00:00:ss.000'Z'").format(dateTime);
+  }
 }
