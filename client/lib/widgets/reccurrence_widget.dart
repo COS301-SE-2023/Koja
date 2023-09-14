@@ -83,12 +83,18 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
     'year(s)'
   ];
 
-  String selectedFor = recurrenceFor[0];
-  String selectedInterval = intervalString[0];
+  String selectedFor =
+      isExistingEvent ? existingRecurrenceString[0].startsWith('D') ? 'day(s)' : existingRecurrenceString[0].startsWith('W') ? 'week(s)' : existingRecurrenceString[0].startsWith('M') ? 'month(s)' : 'year(s)' : 'day(s)';
+  String selectedInterval = isExistingEvent ? intervalString[int.parse(existingRecurrenceString[1]) - 1] : intervalString[0];
   String selectedOccurrence = occurrences[0];
-  String selectedEnding = endingChoice[0];
+  String selectedEnding =
+      (isExistingEvent && existingRecurrence != 'None' && isEndDate)
+          ? endingChoice[1]
+          : endingChoice[0];
 
-  late DateTime endDate = DateTime.now();
+  late DateTime endDate = (isExistingEvent && existingRecurrence != 'None' && isEndDate)
+      ? DateTime.parse(existingRecurrenceString[2])
+      : DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +278,11 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
                   onChanged: (value) {
                     setState(() {
                       selectedEnding = value.toString();
+                      if (value == 'EndDate') {
+                        isEndDate = true;
+                      } else {
+                        isEndDate = false;
+                      }
                     });
                   },
                 ),
@@ -397,11 +408,10 @@ class RecurrenceWidgetState extends State<RecurrenceWidget> {
   }
 
   //create a function to convert the occurrence to date based on whether the selected option is day, month or year
-  String convertOccurrenceToDate(String selectedFor, int occurrence) 
-  {
+  String convertOccurrenceToDate(String selectedFor, int occurrence) {
     DateTime currentDate = recurrenceDate;
     isOccurrence = true;
-    
+
     if (selectedFor == 'day(s)') {
       currentDate = currentDate.add(Duration(days: occurrence));
       return DateAndTimeUtil.toUTCFormat(currentDate).toString();

@@ -16,6 +16,7 @@ class Event {
   final int priority;
   final bool isDynamic;
   final List<String> recurrenceRule;
+  final bool isEndByDate;
 
    Event({
     this.id = '',
@@ -32,6 +33,7 @@ class Event {
     this.priority = 3,
     this.isDynamic = false,
     this.recurrenceRule = const [],
+    this.isEndByDate = false,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {

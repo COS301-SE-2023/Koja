@@ -813,6 +813,7 @@ class EventEditingState extends State<EventEditing> {
         priority: priorityValue,
         backgroundColor: selectedColor,
         recurrenceRule: recurrenceString,
+        isEndByDate: isEndDate,
       );
 
       if (event.location != "") {
