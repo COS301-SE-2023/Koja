@@ -483,7 +483,7 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant,
+                        instant.atOffset(ZoneOffset.UTC),
                     ),
                 )
             }
@@ -493,7 +493,7 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant,
+                        instant.atOffset(ZoneOffset.UTC),
                     ),
                 )
             }
@@ -504,7 +504,7 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant,
+                        instant.atOffset(ZoneOffset.UTC),
                     ),
                 )
             }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
 import 'package:koja/screens/navigation_management_screen.dart';
@@ -142,7 +143,8 @@ class EventEditingState extends State<EventEditing> {
               ? 'Medium'
               : 'Low';
       selectedColor = event.backgroundColor;
-      _eventPlace.text = placeId;
+      // _eventPlace.text = placeId;
+      _eventPlace.text = placeName;
       existingCategory = event.category;
       if (event.recurrenceRule != []) {
         existingRecurrence = 'Custom';
@@ -362,7 +364,7 @@ class EventEditingState extends State<EventEditing> {
                 if (_eventPlace.text.isNotEmpty)
                   IconButton(
                     onPressed: clearLocation,
-                    icon: const Icon(Icons.clear, color: Colors.black),
+                    icon: const Icon(Bootstrap.x_circle, color: Colors.black),
                   ),
               ],
             ),
@@ -390,7 +392,7 @@ class EventEditingState extends State<EventEditing> {
                 ),
                 suffixIcon: IconButton(
                   onPressed: clearLocation,
-                  icon: const Icon(Icons.clear, color: Colors.black),
+                  icon: const Icon(Bootstrap.x_circle, color: Colors.black),
                 ),
               ),
               onFieldSubmitted: (_) {
@@ -799,6 +801,7 @@ class EventEditingState extends State<EventEditing> {
         title: titleController.text,
         description: '',
         location: placeId,
+        placeName: placeName,
         from: fromDate,
         to: toDate,
         duration: await getDurationInMilliseconds(durationInSeconds),

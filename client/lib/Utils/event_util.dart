@@ -6,6 +6,7 @@ class Event {
   final String title;
   final String description;
   final String location;
+  final String placeName;
   final DateTime from;
   final DateTime to;
   final int duration;
@@ -18,11 +19,12 @@ class Event {
   final List<String> recurrenceRule;
   final bool isEndByDate;
 
-   Event({
+  Event({
     this.id = '',
     required this.title,
     this.description = '',
     this.location = '',
+    this.placeName = '',
     required this.from,
     required this.to,
     this.duration = 0,
@@ -42,6 +44,7 @@ class Event {
         title: json['summary'] ?? "",
         description: json['description'] ?? "",
         location: json['location'] ?? "",
+        placeName: json['placeName'] ?? "",
         from: DateTime.parse(json['startTime']).toLocal(),
         to: DateTime.parse(json['endTime']).toLocal(),
         duration: json['duration'] ?? 0,
@@ -62,6 +65,7 @@ class Event {
         'summary': title,
         'description': title,
         'location': location,
+        'placeName': placeName,
         'startTime': from.toUtc().toIso8601String(),
         'endTime': to.toUtc().toIso8601String(),
         'duration': duration,
@@ -70,7 +74,6 @@ class Event {
         'priority': priority,
         'dynamic': isDynamic,
         'recurrence': recurrenceRule,
-        'isEndByDate': isEndByDate,
       };
 }
 
