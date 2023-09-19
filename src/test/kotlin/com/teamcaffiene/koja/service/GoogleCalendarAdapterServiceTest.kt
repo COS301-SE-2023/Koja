@@ -224,4 +224,26 @@ class GoogleCalendarAdapterServiceTest {
     fun testGetFutureEventsLocationsScenario4() {
         assertThrows<IllegalArgumentException> { service.getFutureEventsLocations(null) }
     }
+
+    @Test
+    fun testGetAllUserDynamicEventsWithNullToken() {
+        // Prepare function parameters
+        val token = ""
+        val eventDTO = UserEventDTO(
+            id = "3",
+            summary = "desc3",
+            location = "location1",
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+
+        // Call the function and it should throw an exception
+        assertThrows<Exception> { service.getAllUserDynamicEventsInRange(token, eventDTO) }
+    }
 }
