@@ -1,12 +1,13 @@
+
 import 'package:icons_plus/icons_plus.dart';
-import 'package:koja/providers/context_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/constants_util.dart';
-import '../providers/service_provider.dart';
 import 'suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
+import '../providers/context_provider.dart';
+import '../providers/service_provider.dart';
 import '../widgets/calendar_widget.dart';
 import '../widgets/event_editing_widget.dart';
 
@@ -20,22 +21,23 @@ class Tasks extends StatefulWidget {
 }
 
 class _TasksState extends State<Tasks> {
+
   @override
   void initState() {
     super.initState();
   }
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    // final serviceProvider =
-    //     Provider.of<ServiceProvider>(context, listen: false);
-    // final contextProvider =
-    //     Provider.of<ContextProvider>(context, listen: false);
-
+    final contextProvider = Provider.of<ContextProvider>(context);
+    final serviceProvider = Provider.of<ServiceProvider>(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             'Tasks',
             style: TextStyle(
@@ -54,26 +56,43 @@ class _TasksState extends State<Tasks> {
                       'Current',
                       style: TextStyle(color: Colors.white),
                     ),
-                    // if(isLoading)
-                    //   SizedBox(width: 10),
-                    //   SizedBox(
-                    //     height: 15,
-                    //     width: 15,
-                    //     child: CircularProgressIndicator(
-                    //       strokeWidth: 2.0,
-                    //     ),
-                    //   ),
-                    // IconButton(
-                    //   onPressed: () async {
-                    //     String? accessToken = serviceProvider.accessToken;
-                    //     await contextProvider.getEventsFromAPI(accessToken!);
-                    //   },
-                    //   icon: Icon(
-                    //     Bootstrap.arrow_clockwise,
-                    //     size: 20.0,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
+                    isLoading
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: SizedBox(
+                            height: 15,
+                            width: 15,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        )
+                      : IconButton(
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          String? accessToken = serviceProvider.accessToken;
+
+                          // Call getEventsFromAPI and await the result
+                          await contextProvider.getEventsFromAPI(accessToken!); 
+
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          final snackBar = SnackBar(
+                            content: Text('Page refreshed!'),
+                            duration: Duration(seconds: 5));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);    
+                        },
+                        icon: Icon(
+                          Bootstrap.arrow_clockwise,
+                          size: 20.0,
+                          color: Colors.white,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -103,6 +122,7 @@ class CurrentTasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: null,
       body: CalendarWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -114,7 +134,7 @@ class CurrentTasksScreen extends StatelessWidget {
           );
         },
         backgroundColor: darkBlue,
-        child: const Icon(Icons.add, color: Colors.white, size: 25.0),
+        child: Icon(Icons.add, color: Colors.white, size: 25.0),
       ),
     );
   }

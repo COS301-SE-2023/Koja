@@ -51,7 +51,7 @@ class KojaApp extends StatelessWidget {
               Login.routeName: (ctx) => const Login(),
               Profile.routeName: (ctx) => const Profile(),
               Home.routeName: (ctx) => const Home(),
-              NavigationScreen.routeName: (ctx) => const NavigationScreen(),
+              NavigationScreen.routeName: (ctx) => NavigationScreen(),
             },
           );
         },

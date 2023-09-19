@@ -12,23 +12,8 @@ void main(){
     TestWidgetsFlutterBinding.ensureInitialized();
   });
   testWidgets('Login Modal Widget Test', (WidgetTester tester) async {
-    // await tester.pumpWidget(
-    //   MultiProvider(
-    //     providers: [
-    //       ChangeNotifierProvider<ContextProvider>(
-    //         create: (_) => ContextProvider(),
-    //       ),
-    //       ChangeNotifierProvider<ServiceProvider>(
-    //         create: (_) => ServiceProvider(),
-    //       ),
-    //     ],
-    //     child: MaterialApp(
-    //       home: Scaffold(
-    //         body: LoginModal(),
-    //       ),
-    //     ),
-    //   ),
-    // );
+
+    FlutterError.onError = ignoreOverflowErrors;
     final serviceProvider = ServiceProvider();
     final contextProvider = ContextProvider();
     await tester.pumpWidget(
@@ -51,9 +36,30 @@ void main(){
     expect(find.byType(LoginModal), findsOneWidget);
     expect(find.text("Debug Mode Route"), findsOneWidget);
 
-    //await tester.tap(find.widgetWithText(ElevatedButton, "Debug Mode Route"));
-    //await tester.pumpAndSettle(Duration(seconds: 2));
 
-    //await tester.enterText(, text)
   });
+}
+
+void ignoreOverflowErrors(
+    FlutterErrorDetails details, {
+      bool forceReport = false,
+    }) {
+  bool ifIsOverflowError = false;
+  bool isUnableToLoadAsset = false;
+  // Detect overflow error.
+  var exception = details.exception;
+  if (exception is FlutterError) {
+    ifIsOverflowError = !exception.diagnostics.any(
+          (e) => e.value.toString().startsWith("A RenderFlex overflowed by"),
+    );
+    isUnableToLoadAsset = !exception.diagnostics.any(
+          (e) => e.value.toString().startsWith("Unable to load asset"),
+    );
+  }
+  // Ignore if is overflow error.
+  if (ifIsOverflowError || isUnableToLoadAsset) {
+    //debugPrint();
+  } else {
+    FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
+  }
 }

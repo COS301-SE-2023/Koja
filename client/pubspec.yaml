@@ -71,8 +71,7 @@ dependencies:
   number_selector: ^1.0.7
   geolocator: ^9.0.2
   flutter_web_auth_2: ^2.1.5
-  awesome_notifications: ^0.6.19
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

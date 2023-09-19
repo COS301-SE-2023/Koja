@@ -22,6 +22,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 @Service
@@ -51,6 +52,27 @@ class UserCalendarService(
                 if (authDetails.getRefreshToken() == userAccount.refreshToken) {
                     val accessToken = authDetails.getAccessToken()
                     userEvents.putAll(adapter.getUserEvents(accessToken))
+                }
+            }
+        }
+
+        return userEvents.values.toList()
+    }
+
+    fun getAllUserEventsKojaSuggestions(token: String): List<UserEventDTO> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+
+        val userEvents = mutableMapOf<String, UserEventDTO>()
+
+        for (adapter in calendarAdapters) {
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEventsKojaSuggestions(accessToken))
                 }
             }
         }
@@ -92,7 +114,7 @@ class UserCalendarService(
         return false
     }
 
-    fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
+    fun deleteEvent(token: String, eventID: String) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -102,10 +124,8 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
-            adapter.getUserEventsInRange(accessToken, eventStartTime, eventEndTime).forEach {
-                if (accessToken != null && it.getSummary().trim() == eventSummary.trim()) {
-                    adapter.deleteEvent(accessToken, it.getId())
-                }
+            if (accessToken != null) {
+                adapter.deleteEvent(accessToken, eventID)
             }
         }
     }
@@ -125,10 +145,10 @@ class UserCalendarService(
             if (startTimeString != null && endTimeString != null) {
                 val startTime = LocalTime.parse(startTimeString)
                 val endTime = LocalTime.parse(endTimeString)
-                val today = LocalDate.now(ZoneOffset.UTC)
+                val eventDay = eventDTO.getStartTime().toLocalDate()
 
-                val startTimeOffsetDateTime = OffsetDateTime.of(today, startTime, ZoneOffset.UTC)
-                var endTimeOffsetDateTime = OffsetDateTime.of(today, endTime, ZoneOffset.UTC)
+                val startTimeOffsetDateTime = OffsetDateTime.of(eventDay.minusDays(1), startTime, ZoneOffset.UTC)
+                var endTimeOffsetDateTime = OffsetDateTime.of(eventDay, endTime, ZoneOffset.UTC)
 
                 if (endTimeOffsetDateTime.isBefore(startTimeOffsetDateTime)) {
                     endTimeOffsetDateTime = endTimeOffsetDateTime.plusDays(1)
@@ -146,7 +166,6 @@ class UserCalendarService(
                         priority = 1,
                         dynamic = false,
                         userID = "1",
-                        recurrence = mutableListOf("")
                     ),
                 )
             }
@@ -219,7 +238,7 @@ class UserCalendarService(
                 if (eventDTO.isDynamic()) {
                     adapter.createEvent(accessToken, eventDTO, token)
                     adapter.addPriorityEvents(accessToken, eventDTO, token)
-                } else{
+                } else {
                     adapter.createEvent(accessToken, eventDTO, token)
                 }
             }
@@ -237,7 +256,7 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(
+    fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
@@ -272,7 +291,7 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
-                    recurrence = mutableListOf("")
+                    recurrence = mutableListOf(""),
 
                 ),
             )
@@ -499,4 +518,11 @@ class UserCalendarService(
         return dynamicEvents.values.toList()
     }
 
+    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>) {
+        val userJWTTokenData = getUserJWTTokenData(accessToken)
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+        for (adapter in calendarAdapters) {
+            adapter.createNewCalendar(userAccounts, eventList, accessToken)
+        }
+    }
 }

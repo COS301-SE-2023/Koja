@@ -6,6 +6,7 @@ class Event {
   final String title;
   final String description;
   final String location;
+  final String placeName;
   final DateTime from;
   final DateTime to;
   final int duration;
@@ -16,22 +17,25 @@ class Event {
   final int priority;
   final bool isDynamic;
   final List<String> recurrenceRule;
+  final bool isEndByDate;
 
-  const Event({
+  Event({
     this.id = '',
     required this.title,
     this.description = '',
     this.location = '',
+    this.placeName = '',
     required this.from,
     required this.to,
     this.duration = 0,
     this.timeSlots = const [],
-    this.category = '',
+    this.category = 'None',
     this.backgroundColor = Colors.blue,
     this.isAllDay = false,
     this.priority = 3,
     this.isDynamic = false,
     this.recurrenceRule = const [],
+    this.isEndByDate = false,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -40,14 +44,20 @@ class Event {
         title: json['summary'] ?? "",
         description: json['description'] ?? "",
         location: json['location'] ?? "",
+        placeName: json['placeName'] ?? "",
         from: DateTime.parse(json['startTime']).toLocal(),
         to: DateTime.parse(json['endTime']).toLocal(),
         duration: json['duration'] ?? 0,
         timeSlots: (json['timeSlots'] as List)
             .map((i) => TimeSlot.fromJson(i))
             .toList(),
+        category: json['category'] ?? 'None',
+        backgroundColor: Colors.blue,
         priority: json['priority'] ?? 0,
-        isDynamic: json['dynamic']);
+        isDynamic: json['dynamic'],
+        recurrenceRule: json['recurrence'] ?? [],
+        isEndByDate: json['isEndByDate'] ?? false
+        );
   }
 
   Map<String, dynamic> toJson() => {
@@ -55,6 +65,7 @@ class Event {
         'summary': title,
         'description': title,
         'location': location,
+        'placeName': placeName,
         'startTime': from.toUtc().toIso8601String(),
         'endTime': to.toUtc().toIso8601String(),
         'duration': duration,

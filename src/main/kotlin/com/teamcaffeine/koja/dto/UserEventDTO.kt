@@ -27,7 +27,7 @@ class UserEventDTO(
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
     private var userID: String = "",
-    private var recurrence: MutableList<String>? = null
+    private var recurrence: MutableList<String>? = null,
 
 ) {
 
@@ -43,7 +43,7 @@ class UserEventDTO(
         priority = googleEvent.extendedProperties?.shared?.get("priority")?.toInt() ?: 0,
         dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true",
         travelTime = googleEvent.extendedProperties?.shared?.get("travelTime")?.toLong() ?: 0L,
-        recurrence = googleEvent.recurrence ?: null
+        recurrence = googleEvent.recurrence ?: null,
     )
 
     fun getId(): String {

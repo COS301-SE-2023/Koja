@@ -20,7 +20,6 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
-import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
@@ -39,7 +38,7 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.transaction.Transactional
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -99,7 +98,6 @@ class GoogleCalendarAdapterService(
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
-
         val url = if (!addAdditionalAccount) {
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
@@ -118,13 +116,11 @@ class GoogleCalendarAdapterService(
                 .setAccessType("offline")
                 .setApprovalPrompt("force")
                 .build()
-
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
                 .setState(token) // Set state parameter here
                 .build()
         }
-
         return RedirectView(url)
     }
 
@@ -136,17 +132,14 @@ class GoogleCalendarAdapterService(
     override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
-
         val headers = org.springframework.http.HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE)
-
         val parameters = LinkedMultiValueMap<String, String>()
         parameters.add("grant_type", "authorization_code")
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
-
         if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
         } else if (deviceType == CallbackConfigEnum.MOBILE) {
@@ -158,28 +151,22 @@ class GoogleCalendarAdapterService(
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
-
         val requestEntity = HttpEntity(parameters, headers)
-
         val builder = UriComponentsBuilder
             .fromHttpUrl(tokenEndpointUrl)
             .queryParams(parameters)
         val requestUrl = builder.build().encode().toUri()
         val responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java)
-
         val responseJson = ObjectMapper().readTree(responseEntity.body)
         val accessToken = responseJson.get("access_token").asText()
         val refreshToken = responseJson.get("refresh_token")?.asText()
         val expiresIn = responseJson.get("expires_in").asLong()
-
         val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
         val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
-
         val jwtToken: String
         if (existingUser != null) {
             val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
             val existingUserAccounts = userAccountRepository.findByUserID(existingUser.userID)
-
             for (userAccount in existingUserAccounts) {
                 val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
                 if (updatedCredentials != null) {
@@ -200,7 +187,6 @@ class GoogleCalendarAdapterService(
                     )
                 }
             }
-
             jwtToken = createToken(
                 TokenRequest(
                     userTokens,
@@ -219,7 +205,6 @@ class GoogleCalendarAdapterService(
             newUser.addTimeBoundary(timeBoundary)
             timeBoundary.user = newUser
             userRepository.save(newUser)
-
             jwtToken = createToken(
                 TokenRequest(
                     arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
@@ -228,7 +213,6 @@ class GoogleCalendarAdapterService(
                 ),
             )
         }
-
         return jwtToken
     }
 
@@ -324,6 +308,7 @@ class GoogleCalendarAdapterService(
         newUserAccount.authProvider = AuthProviderEnum.GOOGLE
         newUserAccount.userID = storedUser.id!!
         newUserAccount.user = storedUser
+        newUserAccount.eventSuggestionsCalendarID = ""
         val savedUserAccount = userAccountRepository.save(newUserAccount)
 
         storedUser.userAccounts.add(savedUserAccount)
@@ -372,7 +357,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
+    override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -457,15 +442,12 @@ class GoogleCalendarAdapterService(
             .apiKey(System.getProperty("API_KEY"))
             .build()
 
-        val userLocations = LocationService(userRepository, this)
-        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        val lat = userLocation.second.toString().toDouble()
-        val lng = userLocation.first.toString().toDouble()
+        val calendarTimezone = getCalendarTimezone(calendarService, "primary")
+
         val travelTime = eventDTO.getTravelTime()
 
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(-25.755648, 28.2361856)).await()
         val eventLocaltime = eventStartTime.toZonedDateTime()
-            .withZoneSameInstant(timezone.toZoneId())
+            .withZoneSameInstant(ZoneId.of(calendarTimezone))
             .plusSeconds(travelTime)
 
         val formattedTime = DateTimeFormatter
@@ -486,8 +468,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.DAILY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant.atOffset(ZoneOffset.UTC)
-                    )
+                        instant.atOffset(ZoneOffset.UTC),
+                    ),
                 )
             }
             if (recurrence[0] == "WEEKLY") {
@@ -496,8 +478,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.WEEKLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant
-                    )
+                        instant.atOffset(ZoneOffset.UTC),
+                    ),
                 )
             }
             if (recurrence[0] == "MONTHLY") {
@@ -506,8 +488,8 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.MONTHLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant
-                    )
+                        instant.atOffset(ZoneOffset.UTC),
+                    ),
                 )
             }
 
@@ -517,11 +499,12 @@ class GoogleCalendarAdapterService(
                 val instant = Instant.from(inputFormatter.parse(recurrence[2]))
                 eventRecurrence.add(
                     Frequency.YEARLY + Frequency.INTERVAL + recurrence[1] + Frequency.UNTIL + outputFormatter.format(
-                        instant
-                    )
+                        instant.atOffset(ZoneOffset.UTC),
+                    ),
                 )
             }
         }
+
         val event = Event()
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
@@ -558,7 +541,7 @@ class GoogleCalendarAdapterService(
         return createdEvent
     }
 
-    fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
+    override fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String, calendarID: String): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val eventStartTime = eventDTO.getStartTime()
@@ -567,19 +550,12 @@ class GoogleCalendarAdapterService(
         val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
-        val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
-            .build()
-
-        val userLocations = LocationService(userRepository, this)
-        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        val lat = userLocation.second.toString().toDouble()
-        val lng = userLocation.first.toString().toDouble()
         val travelTime = eventDTO.getTravelTime()
 
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
+        val calendarTimezone = getCalendarTimezone(calendarService, calendarID)
+
         val eventLocaltime = eventStartTime.toZonedDateTime()
-            .withZoneSameInstant(timezone.toZoneId())
+            .withZoneSameInstant(ZoneId.of(calendarTimezone))
             .plusSeconds(travelTime)
 
         val formattedTime = DateTimeFormatter
@@ -595,9 +571,11 @@ class GoogleCalendarAdapterService(
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
             .setLocation(eventDTO.getLocation())
-            .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
+            .setStart(
+                EventDateTime().setDateTime(startDateTime).setTimeZone(calendarTimezone),
+            )
             .setEnd(
-                EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
+                EventDateTime().setDateTime(endDateTime).setTimeZone(calendarTimezone),
             )
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
@@ -620,10 +598,17 @@ class GoogleCalendarAdapterService(
             shared = extendedPropertiesMap
         }
 
-        val calendarId = "Koja-Suggestions"
-        val createdEvent = calendarService.events().insert(calendarId, event).execute()
+        val createdEvent = calendarService.events().insert(calendarID, event).execute()
         println("Event created: ${createdEvent.htmlLink}")
         return createdEvent
+    }
+
+    private fun getCalendarTimezone(
+        calendarService: com.google.api.services.calendar.Calendar,
+        calendarID: String,
+    ): String? {
+        val calendar = calendarService.calendars().get(calendarID).execute()
+        return calendar.timeZone
     }
 
     override fun updateEvent(accessToken: String, eventDTO: UserEventDTO): Event {
@@ -753,14 +738,12 @@ class GoogleCalendarAdapterService(
     }
 
     fun getAllUserDynamicEventsInRange(token: String, event: UserEventDTO): List<UserEventDTO> {
-
         val dynamicEvents: MutableList<UserEventDTO> = mutableListOf()
 
         val currentDateTime = OffsetDateTime.now()
         val dynamicEventsInRange = getUserEventsInRange(token, currentDateTime, event.getEndTime())
 
         for (events in dynamicEventsInRange) {
-
             if (events.isDynamic()) {
                 dynamicEvents.add(events)
             }
@@ -811,38 +794,78 @@ class GoogleCalendarAdapterService(
             ?: ZoneId.of("UTC")
     }
 
-    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
-        val calendar = buildCalendarService(accessToken)
-        val newCalendar = Calendar()
-        newCalendar.summary = "This calendar serves as Koja's generated calendar to optimize your schedule with suggestions."
-        newCalendar.id = "Koja-Suggestions"
-        calendar.calendars().delete(newCalendar.id).execute()
-        calendar.calendars().insert(newCalendar).execute()
-        for (event in eventList) {
-            createEventInSuggestions(accessToken, event, accessToken)
+    @Transactional
+    override fun createNewCalendar(userAccounts: List<UserAccount>, userEvents: List<UserEventDTO>, jwtToken: String) {
+        for (userAccount in userAccounts) {
+            val accessToken = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
+            if (accessToken != null) {
+                val calendar = buildCalendarService(accessToken.getAccessToken())
+                var existingCalendar: Calendar? = null
+                var calendarId = userAccount.eventSuggestionsCalendarID
+                if (!calendarId.isNullOrEmpty()) {
+                    existingCalendar = try {
+                        calendar.calendars().get(calendarId).execute()
+                    } catch (e: com.google.api.client.googleapis.json.GoogleJsonResponseException) {
+                        if (e.statusCode == 404) {
+                            null
+                        } else {
+                            throw e
+                        }
+                    }
+                }
+                calendarId = if (existingCalendar != null) {
+                    val events = calendar.events().list(calendarId).execute().items
+                    for (event in events) {
+                        calendar.events().delete(calendarId, event.id).execute()
+                    }
+                    calendar.calendars().delete(calendarId).execute()
+                    createCalendar(calendar, calendarId, userAccount)
+                } else {
+                    createCalendar(calendar, calendarId, userAccount)
+                }
+                if (calendarId != null) {
+                    for (event in userEvents) {
+                        createEventInSuggestions(accessToken.getAccessToken(), event, jwtToken, calendarId)
+                    }
+                }
+            }
         }
-        return newCalendar
+    }
+
+    fun createCalendar(
+        calendar: com.google.api.services.calendar.Calendar,
+        calendarId: String?,
+        userAccount: UserAccount,
+    ): String? {
+        var calendarId1 = calendarId
+        val newCalendar = Calendar()
+        newCalendar.summary = "Koja Suggestions"
+        val result = calendar.calendars().insert(newCalendar).execute()
+        calendarId1 = result.id
+        userAccount.eventSuggestionsCalendarID = calendarId1
+        userAccountRepository.save(userAccount)
+        return calendarId1
     }
 }
 
-class TimezoneUtility() {
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
-    fun getTimeOfTimeZone(jwtToken: String): String? {
-        val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
-            .build()
-        val userLocations = LocationService(userRepository, googleCalendarAdapterService)
-        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        val lat = userLocation.second.toString().toDouble()
-        val lng = userLocation.first.toString().toDouble()
-        return TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await().toString()
-    }
-}
+// class TimezoneUtility() {
+//
+//    @Autowired
+//    private lateinit var userRepository: UserRepository
+//
+//    @Autowired
+//    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
+//    fun getTimeOfTimeZone(jwtToken: String): String? {
+//        val context = GeoApiContext.Builder()
+//            .apiKey(System.getProperty("API_KEY"))
+//            .build()
+//        val userLocations = LocationService(userRepository, googleCalendarAdapterService)
+//        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
+//        val lat = userLocation.second.toString().toDouble()
+//        val lng = userLocation.first.toString().toDouble()
+//        return TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await().toString()
+//    }
+// }
 
 class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
     override fun serialize(src: OffsetDateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {

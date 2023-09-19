@@ -54,3 +54,18 @@ const int localServerPort = 43823;
 
 // loading icon on calendar
 bool isLoading = false;
+
+//Date for the recurrence
+DateTime recurrenceDate = DateTime.now();
+bool isOccurrence = false;
+int selOcc = 1;
+String selFor = '';
+
+// for an existing event
+bool isExistingEvent = false;
+String existingType = '';
+String existingCategory = '';
+String existingPriority = '';
+String existingRecurrence = '';
+List<String> existingRecurrenceString = [];
+DateTime recurrenceStart = DateTime.now();

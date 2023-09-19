@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:koja/Utils/constants_util.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:koja/screens/navigation_management_screen.dart';
+import 'package:koja/widgets/reccurrence_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../Utils/date_and_time_util.dart';
@@ -29,6 +32,7 @@ class EventEditingState extends State<EventEditing> {
   final TextEditingController _eventPlace = TextEditingController();
   String placeId = "";
   String placeName = "";
+  late Event? updatedEvent;
 
   Future<void> eventPlaceAutocomplete(String query) async {
     Uri uri = Uri.https("maps.googleapis.com",
@@ -99,6 +103,7 @@ class EventEditingState extends State<EventEditing> {
   @override
   void initState() {
     super.initState();
+    isExistingEvent = false;
 
     if (widget.event != null && widget.event!.isDynamic) {
       if (widget.event!.duration > 0) {
@@ -122,25 +127,38 @@ class EventEditingState extends State<EventEditing> {
 
     if (widget.event == null) {
       fromDate = DateTime.now();
-      toDate = DateTime.now().add(const Duration(hours: 2));
+      toDate = DateTime.now().add(const Duration(hours: 1));
     } else {
+      isExistingEvent = true;
       final event = widget.event!;
 
       titleController.text = event.title;
       fromDate = event.from;
+      recurrenceStart = event.from;
       toDate = event.to;
-      updateCategory(event.category);
-      event.isDynamic ? updateEventType('Dynamic') : updateEventType('Fixed');
-      event.priority == 1
-          ? updatePriority('Low')
+      existingType = event.isDynamic ? 'Dynamic' : 'Fixed';
+      existingPriority = event.priority == 1
+          ? 'High'
           : event.priority == 2
-              ? updatePriority('Medium')
-              : updatePriority('High');
+              ? 'Medium'
+              : 'Low';
       selectedColor = event.backgroundColor;
-      _eventPlace.text = placeId;
-      event.recurrenceRule.isNotEmpty
-          ? updateRecurrence('Custom')
-          : updateRecurrence('None');
+      // _eventPlace.text = placeId;
+      _eventPlace.text = placeName;
+      existingCategory = event.category;
+      if (event.recurrenceRule != []) {
+        existingRecurrence = 'Custom';
+      } else {
+        existingRecurrence = 'None';
+      }
+      existingRecurrenceString = event.recurrenceRule;
+
+      //The function definitions
+      updateCategory(existingCategory);
+      updateEventType(existingType);
+      updatePriority(existingPriority);
+      updateColor(selectedColor);
+      updateRecurrence(existingRecurrence);
     }
   }
 
@@ -164,9 +182,14 @@ class EventEditingState extends State<EventEditing> {
                   foregroundColor: MaterialStatePropertyAll(Colors.black),
                 ),
                 child: Text('Cancel')),
-            if (selectedEventType == 'Dynamic' && needsReschedule == true)
+            if (selectedEventType == 'Dynamic' &&
+                widget.event != null &&
+                DateTime.now().isAfter(fromDate))
               TextButton(
-                  onPressed: saveForm,
+                  onPressed: () {
+                    needsReschedule = true;
+                    saveForm();
+                  },
                   style: const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll(Colors.black),
                   ),
@@ -214,8 +237,8 @@ class EventEditingState extends State<EventEditing> {
                 const SizedBox(height: 12),
                 if (widget.event != null) deleteEventButton(),
                 SizedBox(height: 12),
-                if (widget.event != null && widget.event?.recurrenceRule != [])
-                  deleteRecurringEventsButton(),
+                // if (widget.event != null && widget.event?.recurrenceRule != [])
+                //   deleteRecurringEventsButton(),
               ],
             )),
       ),
@@ -281,31 +304,10 @@ class EventEditingState extends State<EventEditing> {
       child: ElevatedButton(
         onPressed: () {
           if (widget.event != null) {
-            // Navigator.of(context).pop();
             Provider.of<ContextProvider>(context, listen: false)
                 .deleteEvent(widget.event!);
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Container(
-                    alignment: Alignment.center,
-                    child: Lottie.asset(
-                      'assets/animations/del.json',
-                      height: 150,
-                      width: 150,
-                    ),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                );
-              },
-            );
-            Timer timer = Timer(Duration(seconds: 2), () {
-              Navigator.of(context).pop();
-            });
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
           }
         },
         child: const Text('Delete Event'),
@@ -362,7 +364,7 @@ class EventEditingState extends State<EventEditing> {
                 if (_eventPlace.text.isNotEmpty)
                   IconButton(
                     onPressed: clearLocation,
-                    icon: const Icon(Icons.clear, color: Colors.black),
+                    icon: const Icon(Bootstrap.x_circle, color: Colors.black),
                   ),
               ],
             ),
@@ -390,7 +392,7 @@ class EventEditingState extends State<EventEditing> {
                 ),
                 suffixIcon: IconButton(
                   onPressed: clearLocation,
-                  icon: const Icon(Icons.clear, color: Colors.black),
+                  icon: const Icon(Bootstrap.x_circle, color: Colors.black),
                 ),
               ),
               onFieldSubmitted: (_) {
@@ -487,17 +489,20 @@ class EventEditingState extends State<EventEditing> {
         children: [
           Expanded(
             child: buildDropdownField(
-              text: DateAndTimeUtil.toDate(fromDate),
-              //If the user clicked the date the new date is saved in the fromDate variable
-              onClicked: () => pickFromDateTime(pickDate: true),
-            ),
+                text: DateAndTimeUtil.toDate(fromDate),
+                //If the user clicked the date the new date is saved in the fromDate variable
+                onClicked: () {
+                  pickFromDateTime(pickDate: true);
+                }),
           ),
           if (!isDynamic)
             Expanded(
               child: buildDropdownField(
                   text: DateAndTimeUtil.toTime(fromDate),
                   //If the user clicked the time the new time is saved in the fromDate variable
-                  onClicked: () => pickFromDateTime(pickDate: false)),
+                  onClicked: () {
+                    pickFromDateTime(pickDate: false);
+                  }),
             ),
         ],
       ),
@@ -624,15 +629,6 @@ class EventEditingState extends State<EventEditing> {
 
     if (date == null) return;
 
-    // if (date.isAfter(toDate)) {
-    //   toDate = DateTime(
-    //     date.year,
-    //     date.month,
-    //     date.day,
-    //     toDate.hour,
-    //     toDate.minute,
-    //   );
-    // }
     if (mounted) {
       setState(() {
         toDate = date;
@@ -659,14 +655,22 @@ class EventEditingState extends State<EventEditing> {
                       ? 2
                       : 3) &&
           existingEvent.backgroundColor == selectedColor &&
-          existingEvent.recurrenceRule == recurrenceString;
+          needsReschedule == false;
     });
 
     if (_formKey.currentState!.validate() && titleController.text.isNotEmpty) {
       if (isDuplicateEvent) {
-        const snackBar = SnackBar(
-          content: Text('Event already exists!'),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              body: NavigationScreen(initialIndex: 1),
+            ),
+          ),
         );
+        const snackBar = SnackBar(
+            content: Text('Event already exists!'),
+            duration: Duration(seconds: 5));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         isValid = true;
@@ -779,54 +783,36 @@ class EventEditingState extends State<EventEditing> {
 
       durationInSeconds =
           ((durationHours ?? 0) * 60 * 60) + ((durationMinutes ?? 0) * 60);
-      if (selectedEventType == 'Fixed') {    
-        // mounted ? Navigator.of(context).pop() : null;  
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              backgroundColor: Colors.transparent,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.transparent,
-                ),
-                child: AlertDialog(
-                  backgroundColor: Colors.transparent,
-                  title: Container(
-                    alignment: Alignment.center,
-                    child: Lottie.asset(
-                      'assets/animations/loading.json',
-                      height: 150,
-                      width: 150,
-                    ),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        );
+
+      if (kDebugMode) {
+        print('occ: $isOccurrence' ' selFor: $selFor' ' selOcc: $selOcc');
+      }
+
+      if (selectedRecurrence != 'None' && isOccurrence) {
+        recurrenceDate = fromDate;
+        RecurrenceWidgetState recurrenceWidgetState = RecurrenceWidgetState();
+        recurrenceString[2] =
+            recurrenceWidgetState.convertOccurrenceToDate(selFor, selOcc);
+        isOccurrence = false;
       }
 
       final event = Event(
         id: (widget.event != null) ? widget.event!.id : "",
         title: titleController.text,
-        location: placeId,
         description: '',
-        category: selectedCategory,
-        isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        location: placeId,
+        placeName: placeName,
         from: fromDate,
         to: toDate,
         duration: await getDurationInMilliseconds(durationInSeconds),
-        isAllDay: false,
         timeSlots: [timeSlot],
-        priority: priorityValue,
+        category: selectedCategory,
         backgroundColor: selectedColor,
+        isDynamic: (selectedEventType == "Dynamic") ? true : false,
+        isAllDay: false,
+        priority: priorityValue,
         recurrenceRule: recurrenceString,
+        isEndByDate: isEndDate,
       );
 
       if (event.location != "") {
@@ -835,12 +821,14 @@ class EventEditingState extends State<EventEditing> {
         // Initialize variables to store the hours, minutes, and seconds
 
         // Iterate through the timeParts and extract the corresponding values
-        for (int i = 0; i < timeParts.length; i += 2) {
-          String unit = timeParts[i + 1];
+        if (timeParts.length > 1) {
+          for (int i = 0; i < timeParts.length; i += 2) {
+            String unit = timeParts[i + 1];
 
-          if (unit.contains('hour')) {
-          } else if (unit.contains('minute')) {
-          } else if (unit.contains('second')) {}
+            if (unit.contains('hour')) {
+            } else if (unit.contains('minute')) {
+            } else if (unit.contains('second')) {}
+          }
         }
       }
 
@@ -848,26 +836,27 @@ class EventEditingState extends State<EventEditing> {
           Provider.of<ServiceProvider>(context, listen: false);
 
       if (widget.event == null) {
+        if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NavigationScreen(initialIndex: 1)),
+          );
+        }
+        var snackBar = SnackBar(
+          content: Center(
+            child: Text('Event is being created.',
+                style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+          ),
+          duration: Duration(seconds: 5),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         var response = await serviceProvider.createEvent(event);
 
         if (response) {
           eventProvider.retrieveEvents();
-          if (selectedEventType == 'Fixed') {
-            // BuildContext context = this.context;
-            Navigator.of(context).pop();
-          }
-          // Navigator.of(context).pop();
-          var snackBar = SnackBar(
-            content: Center(
-              child: Text('Event Created!',
-                  style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
-            ),
-            duration: Duration(seconds: 5),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          // mounted ? Navigator.of(context).pop() : null;
+          showEventCreatedSnackBar(context);
         } else {
-          Navigator.of(context).pop();
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Creation failed!',
@@ -876,12 +865,26 @@ class EventEditingState extends State<EventEditing> {
             duration: Duration(seconds: 5),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          mounted ? Navigator.of(context).pop() : null;
         }
       } else {
-        var response = await serviceProvider.updateEvent(event);
+        updatedEvent = event;
+        if (selectedEventType == 'Fixed' || selectedEventType == 'Dynamic') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationScreen(initialIndex: 1),
+            ),
+          );
+          showEventUpdatingSnackBar(context);
+        }
+        var response = await getUpdateResponse();
+
         if (response) {
-          eventProvider.updateEvent(event);
+          final contextProvider =
+              Provider.of<ContextProvider>(context, listen: false);
+          String? accessToken = serviceProvider.accessToken;
+          await contextProvider.getEventsFromAPI(accessToken!);
+
           var snackBar = SnackBar(
             content: Center(
               child: Text('Event Updated!',
@@ -889,7 +892,7 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.of(context).pop();
+          needsReschedule = false;
         } else {
           var snackBar = SnackBar(
             content: Center(
@@ -898,8 +901,47 @@ class EventEditingState extends State<EventEditing> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          needsReschedule = false;
         }
       }
+    }
+  }
+
+  Future<void> showEventCreatedSnackBar(BuildContext context) async {
+    final contextProvider =
+        Provider.of<ContextProvider>(context, listen: false);
+    final serviceProvider =
+        Provider.of<ServiceProvider>(context, listen: false);
+
+    await contextProvider.getEventsFromAPI(serviceProvider.accessToken!);
+    var snackBar = SnackBar(
+      content: Center(
+        child: Text('Event is created!',
+            style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      ),
+      duration: Duration(seconds: 5),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showEventUpdatingSnackBar(BuildContext context) {
+    var snackBar = SnackBar(
+      content: Center(
+        child: Text('Event is being updated!',
+            style: TextStyle(fontFamily: 'Railway', color: Colors.white)),
+      ),
+      duration: Duration(seconds: 5),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Future<bool> getUpdateResponse() async {
+    if (needsReschedule) {
+      return await Provider.of<ServiceProvider>(context, listen: false)
+          .rescheduleEvent(updatedEvent!);
+    } else {
+      return await Provider.of<ServiceProvider>(context, listen: false)
+          .updateEvent(updatedEvent!);
     }
   }
 

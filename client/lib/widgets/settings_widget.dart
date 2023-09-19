@@ -1,16 +1,16 @@
-import 'package:koja/Utils/constants_util.dart';
-import 'package:koja/providers/service_provider.dart';
-import 'package:koja/widgets/time_boundaries_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../Utils/constants_util.dart';
+import '../providers/service_provider.dart';
+import './time_boundaries_widget.dart';
 import '../models/autocomplete_predict_model.dart';
 import '../models/place_auto_response_model.dart';
 import '../models/location_predict_widget.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'about_us_widget.dart';
-import 'account_settings_widget.dart';
+import './about_us_widget.dart';
+import './account_settings_widget.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -210,7 +210,7 @@ class SettingsState extends State<Settings> {
                         });
                       },
                       icon: Icon(
-                        Icons.clear,
+                        Bootstrap.x_circle,
                       ),
                     ),
                   ],
@@ -242,7 +242,10 @@ class SettingsState extends State<Settings> {
                     ),
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Home Address',
-                    hintStyle: const TextStyle(),
+                    hintStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400
+                    ),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _homeTextController.clear();
@@ -250,7 +253,7 @@ class SettingsState extends State<Settings> {
                           placeAutoComplete("");
                         });
                       },
-                      icon: Icon(Icons.clear),
+                      icon: Icon(Bootstrap.x_circle),
                     ),
                   ),
                 ),
@@ -329,7 +332,7 @@ class SettingsState extends State<Settings> {
                         });
                       },
                       icon: const Icon(
-                        Icons.clear,
+                        Bootstrap.x_circle,
                       ),
                     ),
                   ],
@@ -344,9 +347,9 @@ class SettingsState extends State<Settings> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
-                  onChanged: (wvalue) {
-                    if (wvalue.length > 2) {
-                      workplaceAutocomplete(wvalue);
+                  onChanged: (wValue) {
+                    if (wValue.length > 2) {
+                      workplaceAutocomplete(wValue);
                     } else {
                       setState(() {
                         workplaceAutocomplete("");
@@ -361,7 +364,10 @@ class SettingsState extends State<Settings> {
                     ),
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Work Address',
-                    hintStyle: const TextStyle(),
+                    hintStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400
+                    ),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _workTextController.clear();
@@ -369,7 +375,8 @@ class SettingsState extends State<Settings> {
                           workplaceAutocomplete("");
                         });
                       },
-                      icon: const Icon(Icons.clear, color: Colors.black),
+                      icon: Icon
+                      (Bootstrap.x_circle , color: Colors.black),
                     ),
                   ),
                 ),
