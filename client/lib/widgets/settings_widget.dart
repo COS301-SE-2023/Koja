@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 import '../Utils/constants_util.dart';
 import '../providers/service_provider.dart';
@@ -134,14 +136,21 @@ class SettingsState extends State<Settings> {
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
             SingleChildScrollView(
-              child: Container(
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.all(10.0),
-                child: AboutUsWidget(),
+              child: Column(
+                children: [  
+                  Container(
+                    width: constraints.maxWidth * 0.95,
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.all(10.0),
+                    child: AboutUsWidget(),
+                  ),
+                  SizedBox(height: 10),
+                  UserManual(),
+                  SizedBox(height: 5),
+                ],
               ),
             ),
           ],
@@ -406,6 +415,118 @@ class SettingsState extends State<Settings> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget UserManual()
+  {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.95,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: Colors.black),
+      ),
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'User Manual',
+            style: GoogleFonts.ubuntu(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                width: 176,
+                child: Text(
+                  'View The User Manual',
+                  style: GoogleFonts.ubuntu(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: Colors.black),
+                ),
+              ),
+              SizedBox(width: 2),
+              IconButton(
+                icon: Icon(
+                  Icons.download_rounded,
+                  color: Colors.white,
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    darkBlue,
+                  ),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('User Manual'),
+                        content: PDFView(
+                          filePath: 'assets/pdf/user_manual.pdf',
+                          enableSwipe: true,
+                          swipeHorizontal: true,
+                          autoSpacing: false,
+                          pageFling: false,
+                          pageSnap: true,
+                          defaultPage: 0,
+                          fitPolicy: FitPolicy.BOTH,
+                          preventLinkNavigation: false,
+                          onRender: (pages) {
+                            if(kDebugMode)
+                            {
+                              print('Rendered');
+                            } 
+                          },
+                          onError: (error) {
+                            if(kDebugMode)
+                            {
+                              print(error.toString());
+                            }
+                          },
+                          onPageError: (page, error) {
+                            if(kDebugMode)
+                            {
+                              print('$page: ${error.toString()}');
+                            }
+                          },
+                          onViewCreated: (PDFViewController pdfViewController) {
+                            // _controller.complete(pdfViewController);
+                          },
+                          onLinkHandler: (String? uri) {
+                            if(kDebugMode)
+                            {
+                              print('goto uri: $uri');
+                            }
+                          },
+                          onPageChanged: (int? page, int? total) {
+                            if(kDebugMode)
+                            {
+                              print('page change: $page/$total');
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
