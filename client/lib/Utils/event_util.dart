@@ -44,16 +44,16 @@ class Event {
     final fromTime = int.parse(DateAndTimeUtil.toTime(from).replaceAll(':', ''));
 
     if (fromTime >= 0 && fromTime < 800) {
-      return Colors.blue;
+      return Colors.blue.shade600;
     } else if (fromTime >= 800 && fromTime < 1200) {
       return Colors.purple;
-    } else if (fromTime >= 1200 && fromTime < 1400) {
+    } else if (fromTime >= 1200 && fromTime < 1500) {
       return Colors.pink;
     }
-    else if (fromTime >= 1400 && fromTime < 1800) {
+    else if (fromTime >= 1500 && fromTime < 1900) {
       return Colors.green;
     } else {
-      return Colors.yellow;
+      return Colors.indigo;
     }
   }
 
