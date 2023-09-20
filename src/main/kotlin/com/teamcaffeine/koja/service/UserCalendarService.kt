@@ -19,7 +19,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -144,10 +143,10 @@ class UserCalendarService(
             if (startTimeString != null && endTimeString != null) {
                 val startTime = LocalTime.parse(startTimeString)
                 val endTime = LocalTime.parse(endTimeString)
-                val today = LocalDate.now(ZoneOffset.UTC)
+                val eventDay = eventDTO.getStartTime().toLocalDate()
 
-                val startTimeOffsetDateTime = OffsetDateTime.of(today, startTime, ZoneOffset.UTC)
-                var endTimeOffsetDateTime = OffsetDateTime.of(today, endTime, ZoneOffset.UTC)
+                val startTimeOffsetDateTime = OffsetDateTime.of(eventDay.minusDays(1), startTime, ZoneOffset.UTC)
+                var endTimeOffsetDateTime = OffsetDateTime.of(eventDay, endTime, ZoneOffset.UTC)
 
                 if (endTimeOffsetDateTime.isBefore(startTimeOffsetDateTime)) {
                     endTimeOffsetDateTime = endTimeOffsetDateTime.plusDays(1)
