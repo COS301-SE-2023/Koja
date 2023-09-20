@@ -313,7 +313,6 @@ class GoogleCalendarAdapterServiceTest {
         val dynamicEvents = service.getSortedDynamicEvents(eq(accessToken), eq(event3))
 
         assertEquals(listOf(event2, event3), dynamicEvents)
-
     }
    /* @Test
     @Transactional
