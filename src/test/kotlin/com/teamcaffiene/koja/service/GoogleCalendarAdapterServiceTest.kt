@@ -260,6 +260,62 @@ class GoogleCalendarAdapterServiceTest {
     }
 
     @Test
+    fun testGetSortedByTimeDynamicEvents() {
+        val accessToken = "test_token"
+
+        val location1 = "loc1"
+        val location2 = "loc2"
+
+        val event1 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = location1,
+            startTime = OffsetDateTime.now().plusHours(2),
+            endTime = OffsetDateTime.now().plusHours(3),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = true,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+        val event2 = UserEventDTO(
+            id = "2",
+            summary = "desc2",
+            location = location2,
+            startTime = OffsetDateTime.now(),
+            endTime = OffsetDateTime.now().plusHours(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = true,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+        val event3 = UserEventDTO(
+            id = "3",
+            summary = "desc3",
+            location = location1,
+            startTime = OffsetDateTime.now().plusDays(1),
+            endTime = OffsetDateTime.now().plusDays(2),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = true,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+
+        val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
+
+        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+
+        val dynamicEvents = service.getSortedByTimeDynamicEvents(eq(accessToken), eq(event3))
+
+        assertEquals(event2, dynamicEvents[0])
+    }
+
+    @Test
     fun testGetAllUserDynamicEventsWithValidToken() {
         val accessToken = "test_token"
 
@@ -313,6 +369,63 @@ class GoogleCalendarAdapterServiceTest {
         val dynamicEvents = service.getSortedDynamicEvents(eq(accessToken), eq(event3))
 
         assertEquals(listOf(event2, event3), dynamicEvents)
+    }
+
+    @Test
+    fun testAddPriorityEventsWithValidParameters() {
+        val accessToken = "test_token"
+        val jwtToken = "test_jwt_token"
+
+        val location1 = "loc1"
+        val location2 = "loc2"
+
+        val event1 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = location1,
+            startTime = OffsetDateTime.now().plusDays(5),
+            endTime = OffsetDateTime.now().plusDays(6),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 2,
+            dynamic = true,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+        val event2 = UserEventDTO(
+            id = "2",
+            summary = "desc2",
+            location = location2,
+            startTime = OffsetDateTime.now().plusDays(2),
+            endTime = OffsetDateTime.now().plusDays(3),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 3,
+            dynamic = true,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+        val event3 = UserEventDTO(
+            id = "3",
+            summary = "desc3",
+            location = location1,
+            startTime = OffsetDateTime.now().minusDays(2),
+            endTime = OffsetDateTime.now().minusDays(1),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = true,
+            userID = "1",
+            recurrence = mutableListOf()
+        )
+
+        val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
+
+        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+
+        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event3), eq(jwtToken))
+
+        assertEquals(false, prioritySuccess)
     }
    /* @Test
     @Transactional
