@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "dart:core";
+import './date_and_time_util.dart';
 
 class Event {
   final String id;
@@ -12,7 +13,7 @@ class Event {
   final int duration;
   final List<TimeSlot> timeSlots;
   final String category;
-  final Color backgroundColor;
+  late Color backgroundColor;
   final bool isAllDay;
   final int priority;
   final bool isDynamic;
@@ -30,13 +31,31 @@ class Event {
     this.duration = 0,
     this.timeSlots = const [],
     this.category = 'None',
-    this.backgroundColor = Colors.blue,
     this.isAllDay = false,
     this.priority = 3,
     this.isDynamic = false,
     this.recurrenceRule = const [],
     this.isEndByDate = false,
-  });
+  }){
+    backgroundColor = calculateBackgroundColor();
+  }
+
+  Color calculateBackgroundColor() {
+    final fromTime = int.parse(DateAndTimeUtil.toTime(from).replaceAll(':', ''));
+
+    if (fromTime >= 0 && fromTime < 800) {
+      return Colors.blue;
+    } else if (fromTime >= 800 && fromTime < 1200) {
+      return Colors.purple;
+    } else if (fromTime >= 1200 && fromTime < 1400) {
+      return Colors.pink;
+    }
+    else if (fromTime >= 1400 && fromTime < 1800) {
+      return Colors.green;
+    } else {
+      return Colors.yellow;
+    }
+  }
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
@@ -52,13 +71,13 @@ class Event {
             .map((i) => TimeSlot.fromJson(i))
             .toList(),
         category: json['category'] ?? 'None',
-        backgroundColor: Colors.blue,
+        // backgroundColor: Colors.blue,
         priority: json['priority'] ?? 0,
         isDynamic: json['dynamic'],
         recurrenceRule: json['recurrence'] ?? [],
-        isEndByDate: json['isEndByDate'] ?? false
-        );
+        isEndByDate: json['isEndByDate'] ?? false);
   }
+  
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -102,3 +121,4 @@ class TimeSlot {
         'bookable': bookable,
       };
 }
+

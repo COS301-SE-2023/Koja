@@ -227,7 +227,6 @@ class EventEditingState extends State<EventEditing> {
                 ChooseCategory(onCategorySelected: updateCategory),
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
-                ChooseColor(onColorSelected: updateColor),
                 if (selectedEventType == 'Fixed')
                   ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
@@ -807,7 +806,7 @@ class EventEditingState extends State<EventEditing> {
         duration: await getDurationInMilliseconds(durationInSeconds),
         timeSlots: [timeSlot],
         category: selectedCategory,
-        backgroundColor: selectedColor,
+        // backgroundColor: selectedColor,
         isDynamic: (selectedEventType == "Dynamic") ? true : false,
         isAllDay: false,
         priority: priorityValue,
