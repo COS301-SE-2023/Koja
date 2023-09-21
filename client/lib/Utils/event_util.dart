@@ -43,15 +43,12 @@ class Event {
   Color calculateBackgroundColor() {
     final fromTime = int.parse(DateAndTimeUtil.toTime(from).replaceAll(':', ''));
 
-    if (fromTime >= 0 && fromTime < 800) {
-      return Colors.blue.shade500;
-    } else if (fromTime >= 800 && fromTime < 1400) {
-      return Colors.purple.shade500;
-    } else if (fromTime >= 1400 && fromTime < 1900) {
-      return Colors.pink;
+    if (fromTime >= 0 && fromTime < 1500) {
+      return Colors.blue.shade400;
     } else {
-      return Colors.indigo;
+      return Colors.green;
     }
+
   }
 
   factory Event.fromJson(Map<String, dynamic> json) {

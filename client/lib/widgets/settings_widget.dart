@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:pdfx/pdfx.dart';
 
 import '../Utils/constants_util.dart';
 import '../providers/service_provider.dart';
@@ -132,6 +132,20 @@ class SettingsState extends State<Settings> {
             /*  This is the About Us Section  */
 
             const SizedBox(height: 15),
+            header(LineIcons.book, ' User Manual'),
+            const Divider(height: 1, color: Colors.grey),
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              child: Column(
+                children: [  
+                  UserManual(),               
+                ],
+              ),
+            ),
+
+            /*  This is the About Us Section  */
+
+            const SizedBox(height: 15),
             header(LineIcons.tags, ' About Us'),
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
@@ -146,9 +160,7 @@ class SettingsState extends State<Settings> {
                     ),
                     padding: const EdgeInsets.all(10.0),
                     child: AboutUsWidget(),
-                  ),
-                  SizedBox(height: 10),
-                  UserManual(),
+                  ),                 
                   SizedBox(height: 5),
                 ],
               ),
@@ -475,52 +487,17 @@ class SettingsState extends State<Settings> {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
+                      final pdfController = PdfController(
+                        document: PdfDocument.openAsset('assets/pdf/user_manual.pdf'),
+                      );
+
                       return AlertDialog(
                         title: Text('User Manual'),
-                        content: PDFView(
-                          filePath: 'assets/pdf/user_manual.pdf',
-                          enableSwipe: true,
-                          swipeHorizontal: true,
-                          autoSpacing: false,
-                          pageFling: false,
-                          pageSnap: true,
-                          defaultPage: 0,
-                          fitPolicy: FitPolicy.BOTH,
-                          preventLinkNavigation: false,
-                          onRender: (pages) {
-                            if(kDebugMode)
-                            {
-                              print('Rendered');
-                            } 
-                          },
-                          onError: (error) {
-                            if(kDebugMode)
-                            {
-                              print(error.toString());
-                            }
-                          },
-                          onPageError: (page, error) {
-                            if(kDebugMode)
-                            {
-                              print('$page: ${error.toString()}');
-                            }
-                          },
-                          onViewCreated: (PDFViewController pdfViewController) {
-                            // _controller.complete(pdfViewController);
-                          },
-                          onLinkHandler: (String? uri) {
-                            if(kDebugMode)
-                            {
-                              print('goto uri: $uri');
-                            }
-                          },
-                          onPageChanged: (int? page, int? total) {
-                            if(kDebugMode)
-                            {
-                              print('page change: $page/$total');
-                            }
-                          },
-                        ),
+                        content: PdfView(
+                          controller: pdfController
+
+                        )
+                        
                       );
                     },
                   );
