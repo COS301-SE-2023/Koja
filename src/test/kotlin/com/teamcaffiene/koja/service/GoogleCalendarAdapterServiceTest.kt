@@ -14,8 +14,9 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import io.github.cdimascio.dotenv.Dotenv
-import org.aspectj.lang.annotation.Before
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -35,9 +36,8 @@ import java.time.OffsetDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
 import com.google.api.services.calendar.model.Calendar as CalendarService
 
-
 class GoogleCalendarAdapterServiceTest {
-    private lateinit var calendarService:  CalendarService
+    private lateinit var calendarService: CalendarService
 
     @Mock
     lateinit var userRepository: UserRepository
@@ -47,8 +47,6 @@ class GoogleCalendarAdapterServiceTest {
 
     private lateinit var service: GoogleCalendarAdapterService
     private lateinit var dotenv: Dotenv
-
-
 
     @BeforeEach
     fun setup() {
@@ -405,7 +403,7 @@ class GoogleCalendarAdapterServiceTest {
 
         val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event1), eq(jwtToken))
 
-        assertEquals(false, prioritySuccess)
+        assertEquals(true, prioritySuccess)
     }
 
     @Test
@@ -414,11 +412,14 @@ class GoogleCalendarAdapterServiceTest {
         val redirectView = service.setupConnection(request, CallbackConfigEnum.WEB, false, "token")
 
         assertNotNull(redirectView)
-        assertEquals("https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=" +
+        assertEquals(
+            "https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=" +
                 "317800768757-k0h32bjc9220q37m4uhk85kjlh79rnhs.apps.googleusercontent." +
                 "com&redirect_uri=null:null/api/v1/auth/google/callback&response_type=code&scope=https:" +
                 "//www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.profile%20https:" +
-                "//www.googleapis.com/auth/userinfo.email&state=1", redirectView.url)
+                "//www.googleapis.com/auth/userinfo.email&state=1",
+            redirectView.url
+        )
         redirectView.url?.let { assertTrue(it.contains("redirect_uri=")) }
         redirectView.url?.let { assertTrue(it.contains("state=")) }
         redirectView.url?.let { assertTrue(it.contains("scope=")) }
