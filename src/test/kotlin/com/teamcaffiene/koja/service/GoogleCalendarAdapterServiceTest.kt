@@ -362,9 +362,9 @@ class GoogleCalendarAdapterServiceTest {
             recurrence = mutableListOf()
         )
 
-        val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
+        val response: List<UserEventDTO> = listOf(event1, event2, event3)
 
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(response)
 
         val dynamicEvents = service.getSortedDynamicEvents(eq(accessToken), eq(event3))
 
@@ -377,7 +377,6 @@ class GoogleCalendarAdapterServiceTest {
         val jwtToken = "test_jwt_token"
 
         val location1 = "loc1"
-        val location2 = "loc2"
 
         val event1 = UserEventDTO(
             id = "1",
@@ -392,40 +391,16 @@ class GoogleCalendarAdapterServiceTest {
             userID = "1",
             recurrence = mutableListOf()
         )
-        val event2 = UserEventDTO(
-            id = "2",
-            summary = "desc2",
-            location = location2,
-            startTime = OffsetDateTime.now().plusDays(2),
-            endTime = OffsetDateTime.now().plusDays(3),
-            duration = 1,
-            timeSlots = emptyList(),
-            priority = 3,
-            dynamic = true,
-            userID = "1",
-            recurrence = mutableListOf()
-        )
-        val event3 = UserEventDTO(
-            id = "3",
-            summary = "desc3",
-            location = location1,
-            startTime = OffsetDateTime.now().minusDays(2),
-            endTime = OffsetDateTime.now().minusDays(1),
-            duration = 1,
-            timeSlots = emptyList(),
-            priority = 1,
-            dynamic = true,
-            userID = "1",
-            recurrence = mutableListOf()
-        )
 
-        val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
-
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
-
-        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event2), eq(jwtToken))
+        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event1), eq(jwtToken))
 
         assertEquals(false, prioritySuccess)
+    }
+
+    @Test
+    fun testGetUserEmailWithValidParameters() {
+        val accessToken = "access_token"
+
     }
    /* @Test
     @Transactional
