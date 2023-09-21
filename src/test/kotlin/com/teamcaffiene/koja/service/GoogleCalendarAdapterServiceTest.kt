@@ -423,7 +423,7 @@ class GoogleCalendarAdapterServiceTest {
 
         whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
 
-        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event3), eq(jwtToken))
+        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event2), eq(jwtToken))
 
         assertEquals(false, prioritySuccess)
     }
