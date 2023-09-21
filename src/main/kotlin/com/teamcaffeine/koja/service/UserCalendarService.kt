@@ -135,6 +135,7 @@ class UserCalendarService(
         val userBedTime = getUserTimeBoundaries(token).firstOrNull {
             it.getName() == "Bed-Time"
         }
+        val adapterAccessTokenMap = HashMap<CalendarAdapterService, String?>()
 
         if (userBedTime != null) {
             val startTimeString = userBedTime.getStartTime()
@@ -204,6 +205,8 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
+            adapterAccessTokenMap[adapter] = accessToken
+
             if (accessToken != null) {
                 userEvents.addAll(
                     adapter.getUserEventsInRange(
@@ -215,30 +218,58 @@ class UserCalendarService(
             }
         }
 
+        val dynamicFutureEvents = ArrayList<UserEventDTO>()
+
         if (eventDTO.isDynamic()) {
+            dynamicFutureEvents.addAll(
+                userEvents.filter {
+                    it.isDynamic() && it.getStartTime().isAfter(
+                        OffsetDateTime.now().withOffsetSameInstant(eventDTO.getStartTime().offset),
+                    )
+                },
+            )
+
             val newEventDuration =
                 (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
             eventDTO.setDuration(newEventDuration)
 
-            val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
-            eventDTO.setStartTime(earliestSlotStartTime)
-            eventDTO.setEndTime(earliestSlotEndTime)
+            for ((adapter, accessToken) in adapterAccessTokenMap) {
+                if (accessToken != null) {
+                    for (dynamicFutureEvent in dynamicFutureEvents) {
+                        adapter.deleteEvent(accessToken, dynamicFutureEvent.getId())
+                    }
+                    dynamicFutureEvents.add(eventDTO)
+                    dynamicFutureEvents.sortBy { it.getPriority() }
+                }
+            }
+
+            userEvents.removeAll(dynamicFutureEvents.toSet())
+
+            if (dynamicFutureEvents.isEmpty()) {
+                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
+                eventDTO.setStartTime(earliestSlotStartTime)
+                eventDTO.setEndTime(earliestSlotEndTime)
+            } else {
+                for (dynamicFutureEvent in dynamicFutureEvents) {
+                    val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, dynamicFutureEvent)
+                    dynamicFutureEvent.setStartTime(earliestSlotStartTime)
+                    dynamicFutureEvent.setEndTime(earliestSlotEndTime)
+                    userEvents.add(dynamicFutureEvent)
+                }
+            }
         } else {
             eventDTO.setStartTime(eventDTO.getStartTime().minusSeconds(travelDuration))
         }
 
-        for (adapter in calendarAdapters) {
-            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
-                it.getRefreshToken() == userAccount.refreshToken
-            }?.getAccessToken()
-            if (accessToken != null) {
-                if (eventDTO.isDynamic()) {
-                    adapter.createEvent(accessToken, eventDTO, token)
-                    adapter.addPriorityEvents(accessToken, eventDTO, token)
-                } else {
-                    adapter.createEvent(accessToken, eventDTO, token)
+        for ((adapter, accessToken) in adapterAccessTokenMap) {
+            if (accessToken != null && dynamicFutureEvents.isEmpty()) {
+                adapter.createEvent(accessToken, eventDTO, token)
+            } else if (accessToken != null) {
+                for (dynamicFutureEvent in dynamicFutureEvents) {
+                    adapter.createEvent(accessToken, dynamicFutureEvent, token)
                 }
+            } else {
+                // Do nothing
             }
         }
     }
