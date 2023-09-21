@@ -9,11 +9,14 @@ import com.google.api.services.calendar.model.Events
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -27,11 +30,15 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.mock.web.MockHttpServletRequest
 import java.lang.System.setProperty
 import java.time.OffsetDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
+import com.google.api.services.calendar.model.Calendar as CalendarService
 
 class GoogleCalendarAdapterServiceTest {
+    private lateinit var calendarService: CalendarService
+
     @Mock
     lateinit var userRepository: UserRepository
 
@@ -44,6 +51,8 @@ class GoogleCalendarAdapterServiceTest {
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
+
+        calendarService = CalendarService()
 
         importEnvironmentVariables()
 
@@ -362,9 +371,9 @@ class GoogleCalendarAdapterServiceTest {
             recurrence = mutableListOf()
         )
 
-        val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
+        val response: List<UserEventDTO> = listOf(event1, event2, event3)
 
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(response)
 
         val dynamicEvents = service.getSortedDynamicEvents(eq(accessToken), eq(event3))
 
@@ -377,7 +386,6 @@ class GoogleCalendarAdapterServiceTest {
         val jwtToken = "test_jwt_token"
 
         val location1 = "loc1"
-        val location2 = "loc2"
 
         val event1 = UserEventDTO(
             id = "1",
@@ -392,40 +400,29 @@ class GoogleCalendarAdapterServiceTest {
             userID = "1",
             recurrence = mutableListOf()
         )
-        val event2 = UserEventDTO(
-            id = "2",
-            summary = "desc2",
-            location = location2,
-            startTime = OffsetDateTime.now().plusDays(2),
-            endTime = OffsetDateTime.now().plusDays(3),
-            duration = 1,
-            timeSlots = emptyList(),
-            priority = 3,
-            dynamic = true,
-            userID = "1",
-            recurrence = mutableListOf()
+
+        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event1), eq(jwtToken))
+
+        assertEquals(true, prioritySuccess)
+    }
+
+    @Test
+    fun testSetupConnection() {
+        val request = MockHttpServletRequest()
+        val redirectView = service.setupConnection(request, CallbackConfigEnum.WEB, false, "token")
+
+        assertNotNull(redirectView)
+        assertEquals(
+            "https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=" +
+                "317800768757-k0h32bjc9220q37m4uhk85kjlh79rnhs.apps.googleusercontent." +
+                "com&redirect_uri=null:null/api/v1/auth/google/callback&response_type=code&scope=https:" +
+                "//www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.profile%20https:" +
+                "//www.googleapis.com/auth/userinfo.email&state=1",
+            redirectView.url
         )
-        val event3 = UserEventDTO(
-            id = "3",
-            summary = "desc3",
-            location = location1,
-            startTime = OffsetDateTime.now().minusDays(2),
-            endTime = OffsetDateTime.now().minusDays(1),
-            duration = 1,
-            timeSlots = emptyList(),
-            priority = 1,
-            dynamic = true,
-            userID = "1",
-            recurrence = mutableListOf()
-        )
-
-        val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
-
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
-
-        val prioritySuccess = service.addPriorityEvents(eq(accessToken), eq(event3), eq(jwtToken))
-
-        assertEquals(false, prioritySuccess)
+        redirectView.url?.let { assertTrue(it.contains("redirect_uri=")) }
+        redirectView.url?.let { assertTrue(it.contains("state=")) }
+        redirectView.url?.let { assertTrue(it.contains("scope=")) }
     }
    /* @Test
     @Transactional

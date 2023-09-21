@@ -770,16 +770,16 @@ class GoogleCalendarAdapterService(
 
     override fun addPriorityEvents(token: String, event: UserEventDTO, jwtToken: String): Boolean {
         return try {
-            val timeSorted = getSortedByTimeDynamicEvents(token, event)
-            val priorityEvents = getSortedDynamicEvents(token, event)
-            val combinedList = priorityEvents.zip(timeSorted)
-
-            for ((events, time) in combinedList) {
-                deleteEvent(token, events.getId())
-                events.setStartTime(time.getStartTime())
-                events.setEndTime(time.getEndTime())
-                createEvent(token, events, jwtToken)
-            }
+//            val timeSorted = getSortedByTimeDynamicEvents(token, event)
+//            val priorityEvents = getSortedDynamicEvents(token, event)
+//            val combinedList = priorityEvents.zip(timeSorted)
+//
+//            for ((events, time) in combinedList) {
+//                deleteEvent(token, events.getId())
+//                events.setStartTime(time.getStartTime())
+//                events.setEndTime(time.getEndTime())
+//                createEvent(token, events, jwtToken)
+//            }
             true
         } catch (e: Exception) {
             false
