@@ -9,11 +9,13 @@ import com.google.api.services.calendar.model.Events
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import io.github.cdimascio.dotenv.Dotenv
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.aspectj.lang.annotation.Before
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -27,11 +29,16 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.mock.web.MockHttpServletRequest
 import java.lang.System.setProperty
 import java.time.OffsetDateTime
 import com.google.api.services.calendar.Calendar as GoogleCalendar
+import com.google.api.services.calendar.model.Calendar as CalendarService
+
 
 class GoogleCalendarAdapterServiceTest {
+    private lateinit var calendarService:  CalendarService
+
     @Mock
     lateinit var userRepository: UserRepository
 
@@ -41,9 +48,13 @@ class GoogleCalendarAdapterServiceTest {
     private lateinit var service: GoogleCalendarAdapterService
     private lateinit var dotenv: Dotenv
 
+
+
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
+
+        calendarService = CalendarService()
 
         importEnvironmentVariables()
 
@@ -398,9 +409,19 @@ class GoogleCalendarAdapterServiceTest {
     }
 
     @Test
-    fun testGetUserEmailWithValidParameters() {
-        val accessToken = "access_token"
+    fun testSetupConnection() {
+        val request = MockHttpServletRequest()
+        val redirectView = service.setupConnection(request, CallbackConfigEnum.WEB, false, "token")
 
+        assertNotNull(redirectView)
+        assertEquals("https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=" +
+                "317800768757-k0h32bjc9220q37m4uhk85kjlh79rnhs.apps.googleusercontent." +
+                "com&redirect_uri=null:null/api/v1/auth/google/callback&response_type=code&scope=https:" +
+                "//www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.profile%20https:" +
+                "//www.googleapis.com/auth/userinfo.email&state=1", redirectView.url)
+        redirectView.url?.let { assertTrue(it.contains("redirect_uri=")) }
+        redirectView.url?.let { assertTrue(it.contains("state=")) }
+        redirectView.url?.let { assertTrue(it.contains("scope=")) }
     }
    /* @Test
     @Transactional
