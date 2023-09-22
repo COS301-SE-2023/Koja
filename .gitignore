@@ -100,7 +100,6 @@ env
 */node_modules
 !client/lib/
 !gradle-wrapper.jar
-!gradle-wrapper.jar
 config.json
 # */private_key.pem
 *private_key.pem

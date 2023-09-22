@@ -121,7 +121,6 @@ class UserController(
             return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaryAndLocation(token, location)))
         }
     }
-
     private fun getTimeBoundaryType(timeBoundaryType: String): TimeBoundaryType {
         return when (timeBoundaryType) {
             "allowed" -> TimeBoundaryType.ALLOWED

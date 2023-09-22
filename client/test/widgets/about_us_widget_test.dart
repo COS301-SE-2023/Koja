@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 // import your widgets
-import 'package:client/widgets/about_us_widget.dart';
+import 'package:koja/widgets/about_us_widget.dart';
 
 // Create a mock navigator
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}

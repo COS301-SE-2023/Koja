@@ -34,7 +34,6 @@ class User {
     fun getCurrentLocation(): Pair<Double, Double>? {
         return Pair(currentLatitude ?: return null, currentLongitude ?: return null)
     }
-
     fun getUserTimeBoundaries(): MutableList<TimeBoundary> {
         return timeBoundaries
     }

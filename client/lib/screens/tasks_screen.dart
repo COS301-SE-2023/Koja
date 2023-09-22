@@ -1,5 +1,5 @@
-import 'package:client/Utils/constants_util.dart';
-import 'package:client/screens/suggestions_screens.dart';
+import 'package:koja/Utils/constants_util.dart';
+import 'package:koja/screens/suggestions_screens.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/calendar_widget.dart';
