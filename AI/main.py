@@ -1,4 +1,5 @@
 import json
+from abc import ABC
 from typing import Dict, Text
 import requests
 import pandas as pd
@@ -129,8 +130,9 @@ task = tfrs.tasks.Retrieval(metrics=tfrs.metrics.FactorizedTopK(
     candidates=all_candidates
 ))
 
+
 # # Create a TFRS model
-class CategoryRecommender(tfrs.models.Model):
+class CategoryRecommender(tfrs.models.Model, ABC):
     def __init__(self, user_model, category_model, weekday_model, time_frame_model, task):
         super().__init__()
         self.user_model = user_model
@@ -153,6 +155,7 @@ class CategoryRecommender(tfrs.models.Model):
 
         # Combine these losses
         return user_loss + category_loss + weekday_loss + time_frame_loss
+
 
 model = CategoryRecommender(user_model, category_model, weekday_model, time_frame_model, task)
 
@@ -196,3 +199,4 @@ user_model.save("user_model")
 category_model.save("category_model")
 weekday_model.save("weekday_model")
 time_frame_model.save("time_frame_model")
+
