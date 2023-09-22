@@ -65,12 +65,12 @@ dependencies:
   time_duration_picker: ^0.0.1
   duration: ^3.0.12
   flutter_dotenv: ^5.1.0
-  fl_location: ^2.0.0+1
   geocoding: ^2.1.0
   numberpicker: ^2.1.2
   number_selector: ^1.0.7
   geolocator: ^9.0.2
   flutter_web_auth_2: ^2.1.5
+  fl_location: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
@@ -97,7 +97,6 @@ flutter:
   assets:
     - assets/icons/
     - assets/animations/
-    - ../.env
     - assets/.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
