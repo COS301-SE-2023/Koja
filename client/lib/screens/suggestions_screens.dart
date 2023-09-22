@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:koja/Utils/event_util.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -16,13 +16,12 @@ class SuggestionsTasksScreen extends StatefulWidget {
 }
 
 class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
-  Widget? _suggestionsWidget;
   @override
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     // final contextProvider = Provider.of<ContextProvider>(context, listen: false);
-    final _mockEventList = List<Event>.empty(growable: true);
+    final mockEventList = List<Event>.empty(growable: true);
     final Event event1 = Event(
       title: 'Event 1',
       description: 'Event 1 Description',
@@ -31,7 +30,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
       isAllDay: false,
       location: ""
     );
-    _mockEventList.add(event1);
+    mockEventList.add(event1);
     final Event event2 = Event(
       title: 'Event 2',
       description: 'Event 2 Description',
@@ -40,7 +39,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
       isAllDay: false,
       location: ""
     );
-    _mockEventList.add(event2);
+    mockEventList.add(event2);
     //final mediaQuery = MediaQuery.of(context);
     // return Scaffold(
     //   body: Column(
@@ -122,7 +121,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
                 CalendarView.week,
                 CalendarView.month,
               ],
-              dataSource: MeetingDataSource(_mockEventList),
+              dataSource: MeetingDataSource(mockEventList),
               monthViewSettings: MonthViewSettings(
                   appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
               onTap: (CalendarTapDetails details) {
@@ -132,7 +131,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
                     //meeting.isDynamic = meeting.isDynamic ? false : true;
                     //meeting.backgroundColor = meeting.isDynamic ? Colors.red : Colors.blue;
                   });
-                  print(meeting.isDynamic);
+                  if(kDebugMode) print(meeting.isDynamic);
                 }
               },
             ),
@@ -142,7 +141,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
             right: 15.0,
             child: ElevatedButton(
               onPressed: () async {
-                if (await serviceProvider.setSuggestedCalendar(_mockEventList)){
+                if (await serviceProvider.setSuggestedCalendar(mockEventList)){
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Calendar Set Successfully'),
