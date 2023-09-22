@@ -1,24 +1,19 @@
 package com.teamcaffeine.koja.controller
 
 import com.google.gson.Gson
-import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.enums.CallbackConfigEnum
+import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.transaction.Transactional
+import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.Resource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.view.RedirectView
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.Paths
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ClassPathResource
-
-
 
 @RestController
 @RequestMapping("/api/v1/auth")

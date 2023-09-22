@@ -15,12 +15,17 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model.*
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest
+import software.amazon.awssdk.services.dynamodb.model.DeleteRequest
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest
+import software.amazon.awssdk.services.dynamodb.model.WriteRequest
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Base64
 
 @Service
 @Transactional
@@ -193,7 +198,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                 if (timeSlotDuration / eventDuration >= 2) {
                                     var timeSlotOffset = 0L
                                     while (timeSlot.startTime.plusSeconds(timeSlotOffset)
-                                            .isBefore(timeSlot.endTime)
+                                        .isBefore(timeSlot.endTime)
                                     ) {
                                         tempTimeSlots.add(
                                             TimeSlot(

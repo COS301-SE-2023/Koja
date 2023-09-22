@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.lang.reflect.Type
-import java.security.PublicKey
 import java.time.OffsetDateTime
 
 @RestController
@@ -128,7 +127,6 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
     fun getPublicKey(): ResponseEntity<String> {
         return ResponseEntity.ok(Gson().toJson(cryptoService.getPublicKey()))
     }
-
 
     class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {
         override fun serialize(src: OffsetDateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {

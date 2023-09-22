@@ -1,7 +1,6 @@
 package com.teamcaffeine.koja.dto
 
 import com.google.gson.Gson
-import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 
 data class EncryptedData(val publicKey: String, val kojaIDSecret: String)
 
