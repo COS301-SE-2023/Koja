@@ -58,6 +58,27 @@ class UserCalendarService(
         return userEvents.values.toList()
     }
 
+    fun getAllUserEventsKojaSuggestions(token: String): List<UserEventDTO> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+
+        val userEvents = mutableMapOf<String, UserEventDTO>()
+
+        for (adapter in calendarAdapters) {
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEventsKojaSuggestions(accessToken))
+                }
+            }
+        }
+
+        return userEvents.values.toList()
+    }
+
     @Transactional
     fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
@@ -74,7 +95,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun updateEvent(token: String, eventDTO: UserEventDTO) {
+    fun updateEvent(token: String, eventDTO: UserEventDTO): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -86,8 +107,10 @@ class UserCalendarService(
 
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
+                return true
             }
         }
+        return false
     }
 
     fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
@@ -459,5 +482,13 @@ class UserCalendarService(
             }
         }
         return toReturn
+    }
+
+    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>) {
+        val userJWTTokenData = getUserJWTTokenData(accessToken)
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+        for (adapter in calendarAdapters) {
+            adapter.createNewCalendar(userAccounts, eventList, accessToken)
+        }
     }
 }

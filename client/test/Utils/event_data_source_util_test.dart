@@ -1,6 +1,6 @@
-import 'package:client/Utils/event_data_source_util.dart';
+import 'package:koja/Utils/event_data_source_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:client/Utils/event_util.dart';
+import 'package:koja/Utils/event_util.dart';
 
 void main(){
   var timeFrom = DateTime.now();

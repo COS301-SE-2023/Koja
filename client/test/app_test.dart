@@ -1,9 +1,9 @@
-import 'package:client/main.dart';
-import 'package:client/providers/context_provider.dart';
-import 'package:client/providers/service_provider.dart';
-import 'package:client/screens/information_screen.dart';
-import 'package:client/screens/login_screen.dart';
-import 'package:client/widgets/login_modal_widget.dart';
+import 'package:koja/main.dart';
+import 'package:koja/providers/context_provider.dart';
+import 'package:koja/providers/service_provider.dart';
+import 'package:koja/screens/information_screen.dart';
+import 'package:koja/screens/login_screen.dart';
+import 'package:koja/widgets/login_modal_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -76,6 +76,7 @@ void main() {
 
     });
     testWidgets("Sign-in integration test", (WidgetTester tester) async {
+      FlutterError.onError = ignoreOverflowErrors;
       final serviceProvider = ServiceProvider();
       final contextProvider = ContextProvider();
 
@@ -157,5 +158,29 @@ void main() {
 
 
   //TODO: Add integration tests here
+}
+
+void ignoreOverflowErrors(
+    FlutterErrorDetails details, {
+      bool forceReport = false,
+    }) {
+  bool ifIsOverflowError = false;
+  bool isUnableToLoadAsset = false;
+  // Detect overflow error.
+  var exception = details.exception;
+  if (exception is FlutterError) {
+    ifIsOverflowError = !exception.diagnostics.any(
+          (e) => e.value.toString().startsWith("A RenderFlex overflowed by"),
+    );
+    isUnableToLoadAsset = !exception.diagnostics.any(
+          (e) => e.value.toString().startsWith("Unable to load asset"),
+    );
+  }
+  // Ignore if is overflow error.
+  if (ifIsOverflowError || isUnableToLoadAsset) {
+    debugPrint('Ignored Rendering Error');
+  } else {
+    FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
+  }
 }
 

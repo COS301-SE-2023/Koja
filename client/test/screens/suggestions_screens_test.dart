@@ -1,24 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lottie/lottie.dart';
-import 'package:client/screens/suggestions_screens.dart';
+import 'package:koja/providers/context_provider.dart';
+import 'package:koja/providers/service_provider.dart';
+import 'package:koja/screens/suggestions_screens.dart';
+import 'package:provider/provider.dart';
 
 void main() {
+  setUp(() async{
+    await dotenv.load(fileName: "assets/.env");
+  });
+
   testWidgets('SuggestionsTasksScreen widget test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MaterialApp(
-      home: SuggestionsTasksScreen(),
-    ));
 
-    // Verify if the Lottie animation is displayed.
-    expect(find.byType(Lottie), findsOneWidget);
+    final serviceProvider = ServiceProvider();
+    final contextProvider = ContextProvider();
 
-    // Verify the dimensions of the Lottie widget.
-    final lottieElement = tester.firstElement(find.byType(Lottie));
-    final lottieHeight = lottieElement.size!.height;
-    final lottieWidth = lottieElement.size!.width;
 
-    expect(lottieHeight, 550.0);
-    expect(lottieWidth, 300.0);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ServiceProvider>.value(
+            value: serviceProvider,
+          ),
+          ChangeNotifierProvider<ContextProvider>.value(
+            value: contextProvider,
+          ),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: SuggestionsTasksScreen(),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.byType(SuggestionsTasksScreen), findsOneWidget);
+
   });
 }

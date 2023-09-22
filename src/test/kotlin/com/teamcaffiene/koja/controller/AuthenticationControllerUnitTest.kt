@@ -1,6 +1,7 @@
 package com.teamcaffiene.koja.controller
 
 import com.teamcaffeine.koja.controller.AuthenticationController
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -33,7 +34,7 @@ class AuthenticationControllerUnitTest {
     fun testAuthenticateWithGoogle() {
         // Mock the behavior of the googleCalendarAdapterService
         val redirectView = RedirectView("https://example.com")
-        `when`(googleCalendarAdapterService.setupConnection(request, false)).thenReturn(redirectView)
+        `when`(googleCalendarAdapterService.setupConnection(request, CallbackConfigEnum.WEB)).thenReturn(redirectView)
 
         // Invoke the authenticateWithGoogle method in the authenticationController
         val result: RedirectView = authenticationController.authenticateWithGoogle(request)
@@ -47,7 +48,7 @@ class AuthenticationControllerUnitTest {
         // Mock the behavior of the googleCalendarAdapterService
         val authCode = "testAuthCode"
         val responseEntity = ResponseEntity.status(HttpStatus.OK).body("Authentication successful")
-        `when`(googleCalendarAdapterService.oauth2Callback(authCode, false)).thenReturn(responseEntity.toString())
+        `when`(googleCalendarAdapterService.oauth2Callback(authCode, CallbackConfigEnum.WEB)).thenReturn(responseEntity.toString())
 
         // Invoke the handleGoogleOAuth2Callback method in the authenticationController
         val result: ResponseEntity<String> = authenticationController.handleGoogleOAuth2Callback(authCode)
