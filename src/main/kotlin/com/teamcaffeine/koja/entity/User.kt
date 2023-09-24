@@ -21,6 +21,7 @@ class User {
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val timeBoundaries: MutableList<TimeBoundary> = mutableListOf()
+
     private var homeLocation: String ? = null
     private var workLocation: String ? = null
     private var currentLatitude: Double ? = null
