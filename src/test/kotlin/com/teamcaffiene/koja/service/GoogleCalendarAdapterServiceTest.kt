@@ -342,7 +342,7 @@ class GoogleCalendarAdapterServiceTest {
         val refreshToken = "testRefreshToken"
         val newUser = User()
         val newUserAccount = UserAccount()
-
+        newUser.id = 1
         // Mock userRepository behavior
         `when`(userRepository.save(newUser)).thenReturn(newUser)
         `when`(userAccountRepository.save(newUserAccount)).thenReturn(newUserAccount)
@@ -376,7 +376,7 @@ class GoogleCalendarAdapterServiceTest {
         val newUserEmail = "test@example.com"
         val refreshToken = "testRefreshToken"
         val storedUser = User()
-
+        storedUser.id = 1
         // Mock user account object
         val newUserAccount = UserAccount()
         newUserAccount.email = newUserEmail

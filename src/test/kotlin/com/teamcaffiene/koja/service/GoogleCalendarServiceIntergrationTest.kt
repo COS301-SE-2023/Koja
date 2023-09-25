@@ -6,32 +6,65 @@ import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
+import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-@SpringJUnitConfig
-@DataJpaTest
 class GoogleCalendarServiceIntergrationTest {
 
-    @Autowired
+    private lateinit var dotenv: Dotenv
+
+    @Mock
     private lateinit var userRepository: UserRepository
 
-    @Autowired
+    @Mock
     private lateinit var userAccountRepository: UserAccountRepository
 
     @Autowired
     private lateinit var entityManager: TestEntityManager
 
+    @Autowired
     private lateinit var userService: GoogleCalendarAdapterService
 
+    var mockMvc: MockMvc? = null
+
     @BeforeEach
-    fun setUp() {
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
+        importEnvironmentVariables()
         userService = GoogleCalendarAdapterService(userRepository, userAccountRepository)
+        mockMvc = MockMvcBuilders.standaloneSetup(userService).build()
+    }
+
+    private fun importEnvironmentVariables() {
+        dotenv = Dotenv.load()
+
+        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
+        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
+            System.setProperty(
+                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
+                it,
+            )
+        }
+        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
+            System.setProperty(
+                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
+                it,
+            )
+        }
+
+        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
+        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
+        dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
+
+        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }
 
     @Test
