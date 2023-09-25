@@ -334,4 +334,39 @@ class GoogleCalendarAdapterServiceTest {
         verifyZeroInteractions(userRepository)
         // verifyZeroInteractions(createToken)
     }
+
+    @Test
+    fun testCreateNewUser() {
+        // Mock user data
+        val userEmail = "test@example.com"
+        val refreshToken = "testRefreshToken"
+        val newUser = User()
+        val newUserAccount = UserAccount()
+
+        // Mock userRepository behavior
+        `when`(userRepository.save(newUser)).thenReturn(newUser)
+        `when`(userAccountRepository.save(newUserAccount)).thenReturn(newUserAccount)
+
+        // Call the function
+        val createdUser = service.createNewUser(userEmail, refreshToken)
+
+        // Verify that the function performs the expected operations
+        newUser.getCurrentLocation()?.let { assertEquals(it.first, .0) }
+        newUser.getCurrentLocation()?.let { assertEquals(it.second, .0) }
+        assertEquals(newUser.getHomeLocation(), "Uninitialised")
+        assertEquals(newUser.getWorkLocation(), "Uninitialised")
+
+        assertEquals(newUserAccount.email, userEmail)
+        assertEquals(newUserAccount.refreshToken, refreshToken)
+        assertEquals(newUserAccount.authProvider, AuthProviderEnum.GOOGLE)
+        assertEquals(newUserAccount.userID, newUser.id)
+        assertEquals(newUserAccount.user, newUser)
+
+        // Verify that userRepository.save and userAccountRepository.save were called
+        verify(userRepository, times(1)).save(newUser)
+        verify(userAccountRepository, times(1)).save(newUserAccount)
+
+        // Verify that the createdUser matches the expected newUser
+        assertEquals(createdUser, newUser)
+    }
 }
