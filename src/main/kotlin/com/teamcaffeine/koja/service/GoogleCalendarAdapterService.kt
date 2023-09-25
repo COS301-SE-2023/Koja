@@ -313,7 +313,7 @@ class GoogleCalendarAdapterService(
         return newUser
     }
 
-    private fun addUserEmail(newUserEmail: String, refreshToken: String?, storedUser: User) {
+    fun addUserEmail(newUserEmail: String, refreshToken: String?, storedUser: User) {
         val newUserAccount = UserAccount()
         newUserAccount.email = newUserEmail
         newUserAccount.refreshToken = refreshToken ?: ""

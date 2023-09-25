@@ -59,4 +59,29 @@ class GoogleCalendarServiceIntergrationTest {
         assertEquals(userAccountFromDatabase.userID, userFromDatabase.id)
         assertEquals(userAccountFromDatabase.user, userFromDatabase)
     }
+
+    @Test
+    fun testAddUserEmail() {
+        // Create a user and save it to the database
+        val storedUser = User()
+        entityManager.persist(storedUser)
+        entityManager.flush()
+
+        // Mock input data
+        val newUserEmail = "test@example.com"
+        val refreshToken = "testRefreshToken"
+
+        // Call the function
+        userService.addUserEmail(newUserEmail, refreshToken, storedUser)
+
+        // Fetch the user account from the database
+        val userAccountFromDatabase = entityManager.find(UserAccount::class.java, storedUser.userAccounts[0].userID)
+
+        // Verify that the user account was saved correctly
+        assertEquals(userAccountFromDatabase.email, newUserEmail)
+        assertEquals(userAccountFromDatabase.refreshToken, refreshToken)
+        assertEquals(userAccountFromDatabase.authProvider, AuthProviderEnum.GOOGLE)
+        assertEquals(userAccountFromDatabase.userID, storedUser.id)
+        assertEquals(userAccountFromDatabase.user, storedUser)
+    }
 }

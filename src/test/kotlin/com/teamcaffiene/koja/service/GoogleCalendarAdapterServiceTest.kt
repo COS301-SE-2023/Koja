@@ -369,4 +369,39 @@ class GoogleCalendarAdapterServiceTest {
         // Verify that the createdUser matches the expected newUser
         assertEquals(createdUser, newUser)
     }
+
+    @Test
+    fun testAddUserEmail() {
+        // Mock input data
+        val newUserEmail = "test@example.com"
+        val refreshToken = "testRefreshToken"
+        val storedUser = User()
+
+        // Mock user account object
+        val newUserAccount = UserAccount()
+        newUserAccount.email = newUserEmail
+        newUserAccount.refreshToken = refreshToken
+        newUserAccount.authProvider = AuthProviderEnum.GOOGLE
+        newUserAccount.userID = 1
+        newUserAccount.user = storedUser
+
+        // Mock repository behavior
+        `when`(userAccountRepository.save(newUserAccount)).thenReturn(newUserAccount)
+        `when`(userRepository.save(storedUser)).thenReturn(storedUser)
+
+        // Call the function
+        service.addUserEmail(newUserEmail, refreshToken, storedUser)
+
+        // Verify that the user account was saved
+        verify(userAccountRepository, times(1)).save(newUserAccount)
+
+        // Verify that the user was updated with the new user account
+        assertEquals(storedUser.userAccounts.size, 1)
+        assertEquals(storedUser.userAccounts[0], newUserAccount)
+
+        // Verify that the user was saved
+        verify(userRepository, times(1)).save(storedUser)
+    }
+
+
 }
