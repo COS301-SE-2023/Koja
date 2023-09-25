@@ -293,7 +293,7 @@ class GoogleCalendarAdapterService(
         return jwtToken
     }
 
-    private fun createNewUser(userEmail: String, refreshToken: String?): User {
+    fun createNewUser(userEmail: String, refreshToken: String?): User {
         val newUser = User()
         newUser.setCurrentLocation(.0, .0)
         newUser.setHomeLocation("Uninitialised")

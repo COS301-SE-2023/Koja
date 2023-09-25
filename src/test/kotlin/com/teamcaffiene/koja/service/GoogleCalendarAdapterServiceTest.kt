@@ -1,26 +1,48 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
+import com.teamcaffeine.koja.controller.TokenRequest
+import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
+import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
+import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.entity.UserAccount
+import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import io.github.cdimascio.dotenv.Dotenv
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
+import org.mockito.Mockito.verifyZeroInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
+import org.springframework.web.client.RestTemplate
 import java.lang.System.setProperty
 import java.time.OffsetDateTime
 
 class GoogleCalendarAdapterServiceTest {
     @Mock
     lateinit var userRepository: UserRepository
+
+    @Mock
+    val restTemplate: RestTemplate = RestTemplate()
 
     @Mock
     lateinit var userAccountRepository: UserAccountRepository
@@ -215,5 +237,101 @@ class GoogleCalendarAdapterServiceTest {
     @Test
     fun testGetFutureEventsLocationsScenario4() {
         assertThrows<IllegalArgumentException> { service.getFutureEventsLocations(null) }
+    }
+
+    @Test
+    fun `test oauth2Callback with valid auth code and existing user account`() {
+        // Mock the necessary variables and objects
+
+        mockkObject(TokenManagerController.Companion)
+        every { TokenManagerController.Companion.createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5)) } returns "expected_jwt_token"
+        val authCode = "valid_auth_code"
+        val deviceType = CallbackConfigEnum.WEB
+        val serverAddress = "https://example.com"
+        val expectedJwtToken = "expected_jwt_token"
+
+        // Mock the response entity from the REST API call
+        val responseEntity = ResponseEntity.ok("response_body")
+        `when`(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java)))
+            .thenReturn(responseEntity)
+
+        // Mock the userAccountRepository.findByEmail() method
+        val existingUser = UserAccount()
+        `when`(userAccountRepository.findByEmail(anyString())).thenReturn(existingUser)
+
+        // Mock the refreshAccessToken() method
+        `when`(service.refreshAccessToken(anyString(), anyString(), anyString())).thenReturn(JWTGoogleDTO("access_token", "refresh_token", 5))
+
+        // Mock the createToken() method
+        // `when`(createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5))).thenReturn(expectedJwtToken)
+
+        // Call the function being tested
+        val result = service.oauth2Callback(authCode, deviceType)
+
+        // Assert the result
+        assertEquals(expectedJwtToken, result)
+
+        // Verify the interactions with the mocked dependencies
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))
+        verify(userAccountRepository, times(1)).findByEmail(anyString())
+        verify(service, times(1)).refreshAccessToken(anyString(), anyString(), anyString())
+        // verify(service.createToken(), times(1)).invoke(any(TokenRequest::class.java))
+    }
+
+    @Test
+    fun `test oauth2Callback with valid auth code and new user account`() {
+        // Mock the necessary variables and objects
+        val authCode = "valid_auth_code"
+        val deviceType = CallbackConfigEnum.WEB
+        val serverAddress = "https://example.com"
+        val expectedJwtToken = "expected_jwt_token"
+
+        mockkObject(TokenManagerController.Companion)
+        every { TokenManagerController.Companion.createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5)) } returns "expected_jwt_token"
+
+        // Mock the response entity from the REST API call
+        val responseEntity = ResponseEntity.ok("response_body")
+        `when`(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java)))
+            .thenReturn(responseEntity)
+
+        // Mock the userAccountRepository.findByEmail() method
+        `when`(userAccountRepository.findByEmail(anyString())).thenReturn(null)
+
+        // Mock the createNewUser() method
+        val newUser = User()
+        `when`(service.createNewUser(anyString(), anyString())).thenReturn(newUser)
+        `when`(userRepository.save(newUser)).thenReturn(newUser)
+
+        // Mock the createToken() method
+        `when`(createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5))).thenReturn(expectedJwtToken)
+
+        // Call the function being tested
+        val result = service.oauth2Callback(authCode, deviceType)
+
+        // Assert the result
+        assertEquals(expectedJwtToken, result)
+
+        // Verify the interactions with the mocked dependencies
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))
+        verify(userAccountRepository, times(1)).findByEmail(anyString())
+        verify(service, times(1)).createNewUser(anyString(), anyString())
+        verify(userRepository, times(1)).save(newUser)
+        // verify(createToken, times(1)).invoke(any(TokenRequest::class.java))
+    }
+
+    @Test
+    fun `test oauth2Callback with invalid auth code`() {
+        // Mock the necessary variables and objects
+        val authCode = null
+        val deviceType = CallbackConfigEnum.WEB
+
+        // Call the function being tested and assert that it throws an exception
+        assertThrows<Exception> { service.oauth2Callback(authCode, deviceType) }
+
+        // Verify that the expected exception was thrown
+        verifyZeroInteractions(restTemplate)
+        verifyZeroInteractions(userAccountRepository)
+        verifyZeroInteractions(userRepository)
+        // verifyZeroInteractions(createToken)
     }
 }
