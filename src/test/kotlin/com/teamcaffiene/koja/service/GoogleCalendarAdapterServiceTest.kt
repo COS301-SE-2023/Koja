@@ -402,6 +402,4 @@ class GoogleCalendarAdapterServiceTest {
         // Verify that the user was saved
         verify(userRepository, times(1)).save(storedUser)
     }
-
-
 }
