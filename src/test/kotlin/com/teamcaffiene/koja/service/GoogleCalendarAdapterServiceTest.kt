@@ -47,6 +47,7 @@ class GoogleCalendarAdapterServiceTest {
     @Mock
     lateinit var userAccountRepository: UserAccountRepository
 
+    @Mock
     private lateinit var service: GoogleCalendarAdapterService
     private lateinit var dotenv: Dotenv
 
@@ -297,10 +298,10 @@ class GoogleCalendarAdapterServiceTest {
         // Mock the userAccountRepository.findByEmail() method
         `when`(userAccountRepository.findByEmail(anyString())).thenReturn(null)
 
-        // Mock the createNewUser() method
+        // Mock the createNewUser( b) method
         val newUser = User()
         `when`(service.createNewUser(anyString(), anyString())).thenReturn(newUser)
-        `when`(userRepository.save(newUser)).thenReturn(newUser)
+        `when`(userRepository.save(org.mockito.kotlin.any<User>())).thenReturn(newUser)
 
         // Mock the createToken() method
         `when`(createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5))).thenReturn(expectedJwtToken)
@@ -337,7 +338,6 @@ class GoogleCalendarAdapterServiceTest {
 
     @Test
     fun testCreateNewUser() {
-        // Mock user data
         val newUserEmail = "test@example.com"
         val refreshToken = "testRefreshToken"
         val storedUser = User()

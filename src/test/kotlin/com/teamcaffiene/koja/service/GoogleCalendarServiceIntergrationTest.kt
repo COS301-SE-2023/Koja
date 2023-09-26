@@ -27,7 +27,7 @@ class GoogleCalendarServiceIntergrationTest {
     @Mock
     private lateinit var userAccountRepository: UserAccountRepository
 
-    @Autowired
+    @Mock
     private lateinit var entityManager: TestEntityManager
 
     @Autowired
