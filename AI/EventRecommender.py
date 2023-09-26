@@ -90,7 +90,6 @@ class EventRecommender:
 
     def get_user_recommendation(self, user_id):
         model = CategoryRecommender.load_model()
-
         all_df = self.load_dataframe()
 
         user_ids = all_df["userID"].values
@@ -101,46 +100,40 @@ class EventRecommender:
         for time_frame in all_df[["startTime", "endTime"]].values:
             time_frames.append(f"{time_frame[0]}-{time_frame[1]}")
 
-        # Load the datasets
-        user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
-        category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
-        weekday_dataset = tf.data.Dataset.from_tensor_slices(np.unique(weekdays))
-        time_frame_dataset = tf.data.Dataset.from_tensor_slices(np.unique(time_frames))
+        unique_user_ids = np.unique(user_ids)
+        unique_category_ids = np.unique(category_ids)
+        unique_weekdays = np.unique(weekdays)
+        unique_time_frames = np.unique(time_frames)
 
-        # Create indexing layers
+        # Load the datasets
+        user_dataset = tf.data.Dataset.from_tensor_slices(unique_user_ids)
+        category_dataset = tf.data.Dataset.from_tensor_slices(unique_category_ids)
+        weekday_dataset = tf.data.Dataset.from_tensor_slices(unique_weekdays)
+        time_frame_dataset = tf.data.Dataset.from_tensor_slices(unique_time_frames)
+
+        model.create_models(
+            category_dataset, weekday_dataset, time_frame_dataset
+        )
+
+        # model.user_model.build((None, unique_user_ids.shape[0]))
+        # model.category_model.build((None, unique_category_ids.shape[0]))
+        # model.weekday_model.build((None, unique_weekdays.shape[0]))
+        # model.time_frame_model.build((None, unique_time_frames.shape[0]))
+
         # Create indexing layers
         user_model_index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
         user_model_index.index_from_dataset(
-            tf.data.Dataset.zip(
-                (
-                    user_dataset.batch(100).map(model.user_model),
-                    user_dataset.batch(100),
-                )
-            )
+            tf.data.Dataset.zip((category_dataset.batch(100), category_dataset.batch(100).map(model.category_model)))
         )
 
-        weekday_model_index = tfrs.layers.factorized_top_k.BruteForce(
-            model.weekday_model
-        )
+        weekday_model_index = tfrs.layers.factorized_top_k.BruteForce(model.weekday_model)
         weekday_model_index.index_from_dataset(
-            tf.data.Dataset.zip(
-                (
-                    weekday_dataset.batch(100).map(model.weekday_model),
-                    weekday_dataset.batch(100),
-                )
-            )
+            tf.data.Dataset.zip((weekday_dataset.batch(100), weekday_dataset.batch(100).map(model.weekday_model)))
         )
 
-        timeframe_model_index = tfrs.layers.factorized_top_k.BruteForce(
-            model.time_frame_model
-        )
+        timeframe_model_index = tfrs.layers.factorized_top_k.BruteForce(model.time_frame_model)
         timeframe_model_index.index_from_dataset(
-            tf.data.Dataset.zip(
-                (
-                    time_frame_dataset.batch(100).map(model.time_frame_model),
-                    time_frame_dataset.batch(100),
-                )
-            )
+            tf.data.Dataset.zip((time_frame_dataset.batch(100), time_frame_dataset.batch(100).map(model.time_frame_model)))
         )
 
         # Get top 10 category recommendations
@@ -153,7 +146,7 @@ class EventRecommender:
             category_id_tensor = tf.constant([category_id])
 
             # Get top 10 weekday and timeframe recommendations for each category
-            _, weekday_recommendations = weekday_model_index(category_id_tensor)
+            _, weekday_recommendations = weekday_model_index(category_id_tensor, k=7)
             _, timeframe_recommendations = timeframe_model_index(category_id_tensor)
 
             top_10_weekday_ids = weekday_recommendations[0][:10].numpy()
