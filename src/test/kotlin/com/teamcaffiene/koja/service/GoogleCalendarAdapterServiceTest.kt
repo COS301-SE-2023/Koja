@@ -424,6 +424,11 @@ class GoogleCalendarAdapterServiceTest {
         redirectView.url?.let { assertTrue(it.contains("state=")) }
         redirectView.url?.let { assertTrue(it.contains("scope=")) }
     }
+
+    @Test
+    fun testGetUserEventWithValidParameters() {
+
+    }
    /* @Test
     @Transactional
     fun testCreateNewCalendar() {
