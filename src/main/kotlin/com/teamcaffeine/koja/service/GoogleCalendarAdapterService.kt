@@ -626,7 +626,7 @@ class GoogleCalendarAdapterService(
         return toReturn
     }
 
-    private fun secondsToHumanFormat(seconds: Long): String {
+    fun secondsToHumanFormat(seconds: Long): String {
         if (seconds < 0) {
             throw IllegalArgumentException("Seconds cannot be negative.")
         }

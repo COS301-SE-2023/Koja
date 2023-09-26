@@ -420,9 +420,10 @@ class GoogleCalendarAdapterServiceTest {
     fun testDeleteEvent_Success() {
         // Mock a successful event deletion
         val eventID = "event123"
+
         `when`(service.buildCalendarService("accessToken")).thenReturn(calendar)
 
-        `when`(calendar.events()?.delete("primary", eventID)?.execute() ?: true).thenReturn(null)
+        `when`(calendar.events().delete("primary", eventID).execute()).thenReturn(null)
 
         // No exceptions should be thrown
         val accessToken = "your-access-token"
@@ -442,5 +443,40 @@ class GoogleCalendarAdapterServiceTest {
         val result = service.deleteEvent(accessToken, eventID)
 
         assert(!result) // Deletion should fail
+    }
+
+    @Test
+    fun `test secondsToHumanFormat with positive seconds`() {
+        // Arrange
+        val seconds: Long = 3665 // 1 hour, 1 minute, and 5 seconds
+
+        // Act
+        val result = service.secondsToHumanFormat(seconds)
+
+        // Assert
+        assertEquals("01h 01m 05s", result)
+    }
+
+    @Test
+    fun `test secondsToHumanFormat with zero seconds`() {
+        // Arrange
+        val seconds: Long = 0
+
+        // Act
+        val result = service.secondsToHumanFormat(seconds)
+
+        // Assert
+        assertEquals("00s", result)
+    }
+
+    @Test
+    fun `test secondsToHumanFormat with negative seconds`() {
+        // Arrange
+        val seconds: Long = -100
+
+        // Act and Assert
+        assertThrows<IllegalArgumentException> {
+            service.secondsToHumanFormat(seconds)
+        }
     }
 }
