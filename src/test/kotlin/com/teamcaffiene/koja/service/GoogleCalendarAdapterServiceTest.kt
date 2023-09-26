@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.service
 
+import com.google.api.services.calendar.Calendar
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -40,6 +41,9 @@ import java.time.OffsetDateTime
 class GoogleCalendarAdapterServiceTest {
     @Mock
     lateinit var userRepository: UserRepository
+
+    @Mock
+    lateinit var calendar: Calendar
 
     @Mock
     val restTemplate: RestTemplate = RestTemplate()
@@ -351,8 +355,9 @@ class GoogleCalendarAdapterServiceTest {
         newUserAccount.user = storedUser
 
         // Mock repository behavior
-        `when`(userAccountRepository.save(newUserAccount)).thenReturn(newUserAccount)
         `when`(userRepository.save(storedUser)).thenReturn(storedUser)
+        `when`(userAccountRepository.save(newUserAccount)).thenReturn(newUserAccount)
+
         // Call the function
         val createdUser = service.createNewUser(newUserEmail, refreshToken)
 
@@ -408,5 +413,29 @@ class GoogleCalendarAdapterServiceTest {
         assertEquals(storedUser.userAccounts[0].authProvider, newUserAccount.authProvider)
         // Verify that the user was saved
         // verify(userRepository, times(1)).save(storedUser)
+    }
+
+    @Test
+    fun testDeleteEvent_Success() {
+        // Mock a successful event deletion
+        val eventID = "event123"
+        `when`(calendar.events().delete("primary", eventID)).thenReturn(null)
+
+        // No exceptions should be thrown
+        val accessToken = "your-access-token"
+        val result = service.deleteEvent(accessToken, eventID)
+
+        assert(result) // Deletion should succeed
+    }
+
+    @Test
+    fun testDeleteEvent_Failure() {
+        // Mock an exception when trying to delete the event
+        val eventID = "event456"
+        `when`(calendar.events().delete("primary", eventID)).thenThrow(Exception("Failed to delete event"))
+        val accessToken = "your-access-token"
+        val result = service.deleteEvent(accessToken, eventID)
+
+        assert(!result) // Deletion should fail
     }
 }

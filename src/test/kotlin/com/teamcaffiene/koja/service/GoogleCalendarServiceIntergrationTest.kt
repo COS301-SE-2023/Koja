@@ -97,6 +97,7 @@ class GoogleCalendarServiceIntergrationTest {
     fun testAddUserEmail() {
         // Create a user and save it to the database
         val storedUser = User()
+        storedUser.id = 1
         entityManager.persist(storedUser)
         entityManager.flush()
 
