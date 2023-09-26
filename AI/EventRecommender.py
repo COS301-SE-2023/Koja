@@ -81,6 +81,7 @@ class EventRecommender:
         model.fit(all_data.batch(128), epochs=3)
 
         model.save_model()
+        self.save_dataframe(all_df)
 
     def refit_model(self, training_data):
         model = CategoryRecommender.load_model()
@@ -90,24 +91,73 @@ class EventRecommender:
     def get_user_recommendation(self, user_id):
         model = CategoryRecommender.load_model()
 
-        user_id_tensor = tf.constant([user_id])
+        all_df = self.load_dataframe()
 
-        category_recommendations = model.category_model(user_id_tensor)
-        top_10_category_ids = category_recommendations.numpy()[0][:10]
+        user_ids = all_df["userID"].values
+        category_ids = all_df["category"].values
+        weekdays = all_df["weekday"].values
+        time_frames = []
+
+        for time_frame in all_df[["startTime", "endTime"]].values:
+            time_frames.append(f"{time_frame[0]}-{time_frame[1]}")
+
+        # Load the datasets
+        user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
+        category_dataset = tf.data.Dataset.from_tensor_slices(np.unique(category_ids))
+        weekday_dataset = tf.data.Dataset.from_tensor_slices(np.unique(weekdays))
+        time_frame_dataset = tf.data.Dataset.from_tensor_slices(np.unique(time_frames))
+
+        # Create indexing layers
+        # Create indexing layers
+        user_model_index = tfrs.layers.factorized_top_k.BruteForce(model.user_model)
+        user_model_index.index_from_dataset(
+            tf.data.Dataset.zip(
+                (
+                    user_dataset.batch(100).map(model.user_model),
+                    user_dataset.batch(100),
+                )
+            )
+        )
+
+        weekday_model_index = tfrs.layers.factorized_top_k.BruteForce(
+            model.weekday_model
+        )
+        weekday_model_index.index_from_dataset(
+            tf.data.Dataset.zip(
+                (
+                    weekday_dataset.batch(100).map(model.weekday_model),
+                    weekday_dataset.batch(100),
+                )
+            )
+        )
+
+        timeframe_model_index = tfrs.layers.factorized_top_k.BruteForce(
+            model.time_frame_model
+        )
+        timeframe_model_index.index_from_dataset(
+            tf.data.Dataset.zip(
+                (
+                    time_frame_dataset.batch(100).map(model.time_frame_model),
+                    time_frame_dataset.batch(100),
+                )
+            )
+        )
+
+        # Get top 10 category recommendations
+        _, category_recommendations = user_model_index(tf.constant([user_id]))
+        top_10_category_ids = category_recommendations[0][:10].numpy()
 
         recommendations = {}
 
         for category_id in top_10_category_ids:
             category_id_tensor = tf.constant([category_id])
 
-            weekday_recommendations = model.weekday_model(category_id_tensor)
-            timeframe_recommendations = model.time_frame_model(category_id_tensor)
+            # Get top 10 weekday and timeframe recommendations for each category
+            _, weekday_recommendations = weekday_model_index(category_id_tensor)
+            _, timeframe_recommendations = timeframe_model_index(category_id_tensor)
 
-            weekday_ids, _ = weekday_recommendations
-            timeframe_ids, _ = timeframe_recommendations
-
-            top_10_weekday_ids = weekday_ids.numpy()[0][:10]
-            top_10_timeframe_ids = timeframe_ids.numpy()[0][:10]
+            top_10_weekday_ids = weekday_recommendations[0][:10].numpy()
+            top_10_timeframe_ids = timeframe_recommendations[0][:10].numpy()
 
             week_days = {}
             for weekday_id, timeframe_id in zip(
@@ -123,38 +173,28 @@ class EventRecommender:
 
         return recommendations
 
-    def get_stored_models(self):
-        model = tf.keras.models.load_model(
-            KOJA_MODEL_FILE_LOCATION,
-            custom_objects={
-                "CategoryRecommender": CategoryRecommender,
-                "Retrieval": tfrs.tasks.Retrieval,
-            },
-        )
-        # Load the user model and its index
-        user_model = tf.keras.models.load_model(USER_MODEL_FILE_LOCATION)
-        user_model_index = tf.keras.models.load_model(
-            USER_MODEL_FILE_LOCATION + "_index"
-        )
-        # Load the category model
-        category_model = tf.keras.models.load_model(CATEGORY_MODEL_FILE_LOCATION)
-        # Load the weekday model and its index
-        weekday_model = tf.keras.models.load_model(WEEKDAY_MODEL_FILE_LOCATION)
-        weekday_model_index = tf.keras.models.load_model(
-            WEEKDAY_MODEL_FILE_LOCATION + "_index"
-        )
-        # Load the time frame model and its index
-        time_frame_model = tf.keras.models.load_model(TIME_FRAME_MODEL_FILE_LOCATION)
-        timeframe_model_index = tf.keras.models.load_model(
-            TIME_FRAME_MODEL_FILE_LOCATION + "_index"
-        )
-        return (
-            category_model,
-            model,
-            time_frame_model,
-            timeframe_model_index,
-            user_model,
-            user_model_index,
-            weekday_model,
-            weekday_model_index,
-        )
+    def save_datasets(
+        self, user_dataset, category_dataset, weekday_dataset, time_frame_dataset
+    ):
+        tf.data.experimental.save(user_dataset, "AI/Datasets/user_dataset")
+        tf.data.experimental.save(category_dataset, "AI/Datasets/category_dataset")
+        tf.data.experimental.save(weekday_dataset, "AI/Datasets/weekday_dataset")
+        tf.data.experimental.save(time_frame_dataset, "AI/Datasets/time_frame_dataset")
+
+    def load_datasets(self):
+        user_dataset = tf.data.experimental.load("AI/Datasets/user_dataset")
+        category_dataset = tf.data.experimental.load("AI/Datasets/category_dataset")
+        weekday_dataset = tf.data.experimental.load("AI/Datasets/weekday_dataset")
+        time_frame_dataset = tf.data.experimental.load("AI/Datasets/time_frame_dataset")
+
+        return user_dataset, category_dataset, weekday_dataset, time_frame_dataset
+
+    def save_dataframe(self, df):
+        os.makedirs("AI/Data", exist_ok=True)
+        if os.path.exists("AI/Data/all_df.csv"):
+            df.to_csv("AI/Data/all_df.csv", mode="a", header=False, index=False)
+        else:
+            df.to_csv("AI/Data/all_df.csv", index=False)
+
+    def load_dataframe(self):
+        return pd.read_csv("AI/Data/all_df.csv")

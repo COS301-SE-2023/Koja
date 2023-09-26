@@ -1,5 +1,8 @@
+import os
+
 import tensorflow_recommenders as tfrs
 import tensorflow as tf
+import numpy as np
 
 KOJA_MODEL_FILE_LOCATION = "AI/Models/koja_model"
 USER_MODEL_FILE_LOCATION = "AI/Models/user_model"
@@ -39,41 +42,42 @@ class CategoryRecommender(tf.keras.Model):
         self.time_frame_vocabulary.adapt(time_frame_dataset)
 
     def create_models(self, category_dataset, weekday_dataset, time_frame_dataset):
-
-        self.user_model.add(self.user_ids_vocabulary)
-        self.user_model.add(
-            tf.keras.layers.Embedding(
-                self.user_ids_vocabulary.vocabulary_size() + 1, 16
-            )
+        self.user_model = tf.keras.Sequential(
+            [
+                self.user_ids_vocabulary,
+                tf.keras.layers.Embedding(self.user_ids_vocabulary.vocabulary_size() + 1, 16),
+            ]
         )
-
-        self.category_model.add(self.categories_vocabulary)
-        self.category_model.add(
-            tf.keras.layers.Embedding(
-                self.categories_vocabulary.vocabulary_size() + 1, 16
-            )
+        
+        self.category_model = tf.keras.Sequential(
+            [
+                self.categories_vocabulary,
+                tf.keras.layers.Embedding(self.categories_vocabulary.vocabulary_size() + 1, 16),
+            ]
         )
-
-        self.weekday_model.add(self.weekday_vocabulary)
-        self.weekday_model.add(
-            tf.keras.layers.Embedding(self.weekday_vocabulary.vocabulary_size() + 1, 16)
+        
+        self.weekday_model = tf.keras.Sequential(
+            [
+                self.weekday_vocabulary,
+                tf.keras.layers.Embedding(self.weekday_vocabulary.vocabulary_size() + 1, 16),
+            ]
         )
-
-        self.time_frame_model.add(self.time_frame_vocabulary)
-        self.time_frame_model.add(
-            tf.keras.layers.Embedding(
-                self.time_frame_vocabulary.vocabulary_size() + 1, 16
-            )
+        
+        self.time_frame_model = tf.keras.Sequential(
+            [
+                self.time_frame_vocabulary,
+                tf.keras.layers.Embedding(self.time_frame_vocabulary.vocabulary_size() + 1, 16),
+            ]
         )
 
         category_candidates = category_dataset.batch(128).map(self.category_model)
         weekday_candidates = weekday_dataset.batch(128).map(self.weekday_model)
         time_frame_candidates = time_frame_dataset.batch(128).map(self.time_frame_model)
-        
-        all_candidates = category_candidates.concatenate(weekday_candidates).concatenate(
-            time_frame_candidates
-        )
-        
+
+        all_candidates = category_candidates.concatenate(
+            weekday_candidates
+        ).concatenate(time_frame_candidates)
+
         self.task = tfrs.tasks.Retrieval(
             metrics=tfrs.metrics.FactorizedTopK(candidates=all_candidates)
         )
@@ -94,10 +98,19 @@ class CategoryRecommender(tf.keras.Model):
         return vocab
 
     def save_all_vocabularies(self):
-        self.save_vocabulary(self.user_ids_vocabulary, "user")
-        self.save_vocabulary(self.categories_vocabulary, "category")
-        self.save_vocabulary(self.weekday_vocabulary, "weekday")
-        self.save_vocabulary(self.time_frame_vocabulary, "time_frame")
+        vocab_names = {
+            "user": "user_ids_vocabulary",
+            "category": "categories_vocabulary",
+            "weekday": "weekday_vocabulary",
+            "time_frame": "time_frame_vocabulary",
+        }
+        for vocab_type in self.vocab_filepaths:
+            filepath = self.vocab_filepaths[vocab_type]
+            vocab_layer = getattr(self, vocab_names[vocab_type])
+            vocab = vocab_layer.get_vocabulary()
+            with open(filepath, "w") as f:
+                for item in vocab:
+                    f.write(f"{item}\n")
 
     def load_all_vocabularies(self):
         user_vocab = self.load_vocabulary("user")
@@ -138,10 +151,8 @@ class CategoryRecommender(tf.keras.Model):
         return user_loss + category_loss + weekday_loss + time_frame_loss
 
     def save_model(self):
-        # Save the model's architecture and weights
-        self.save_weights(KOJA_MODEL_FILE_LOCATION + "_weights")
-
-        # Save all vocabularies
+        weights_filepath = KOJA_MODEL_FILE_LOCATION + "_weights"
+        self.save_weights(weights_filepath)
         self.save_all_vocabularies()
 
     @classmethod
