@@ -419,6 +419,8 @@ class GoogleCalendarAdapterServiceTest {
     fun testDeleteEvent_Success() {
         // Mock a successful event deletion
         val eventID = "event123"
+        `when`(service.buildCalendarService("accessToken")).thenReturn(calendar)
+
         `when`(calendar.events().delete("primary", eventID)).thenReturn(null)
 
         // No exceptions should be thrown
@@ -432,6 +434,8 @@ class GoogleCalendarAdapterServiceTest {
     fun testDeleteEvent_Failure() {
         // Mock an exception when trying to delete the event
         val eventID = "event456"
+        `when`(service.buildCalendarService("accessToken")).thenReturn(calendar)
+
         `when`(calendar.events().delete("primary", eventID)).thenThrow(Exception("Failed to delete event"))
         val accessToken = "your-access-token"
         val result = service.deleteEvent(accessToken, eventID)
