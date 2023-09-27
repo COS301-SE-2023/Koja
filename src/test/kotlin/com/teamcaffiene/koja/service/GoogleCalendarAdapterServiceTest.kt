@@ -426,8 +426,8 @@ class GoogleCalendarAdapterServiceTest {
     }
 
     @Test
-    fun testGetUserEventWithValidParameters() {
-
+    fun testGetUserDynamicEventsWithInValidToken() {
+        val token = "token"
     }
    /* @Test
     @Transactional
