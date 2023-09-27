@@ -221,7 +221,7 @@ class UserCalendarService(
         }
     }
 
-    private fun anyToPair(any: Any?): Pair<Double, Double> {
+    fun anyToPair(any: Any?): Pair<Double, Double> {
         return if (any is Pair<*, *> &&
             any.first is Double &&
             any.second is Double

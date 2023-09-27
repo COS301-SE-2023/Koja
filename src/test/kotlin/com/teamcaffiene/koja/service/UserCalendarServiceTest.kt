@@ -563,4 +563,16 @@ class UserCalendarServiceTest {
 
         assertEquals(false, result)
     }
+
+    @Test
+    fun testAnyToPairWithValidInput() {
+        // Arrange
+        val validPair: Pair<Double, Double> = Pair(1.0, 2.0)
+
+        // Act
+        val result = userCalendarService.anyToPair(validPair)
+
+        // Assert
+        assertEquals(Pair(1.0, 2.0), result)
+    }
 }
