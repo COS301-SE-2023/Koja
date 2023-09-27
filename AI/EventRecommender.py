@@ -14,6 +14,8 @@ CATEGORY_MODEL_FILE_LOCATION = "AI/Models/category_model"
 WEEKDAY_MODEL_FILE_LOCATION = "AI/Models/weekday_model"
 TIME_FRAME_MODEL_FILE_LOCATION = "AI/Models/time_frame_model"
 
+TRAINING_EPOCHS = 3
+
 
 class EventRecommender:
     all_events = []
@@ -48,7 +50,7 @@ class EventRecommender:
 
         model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
-        model.fit(all_data.batch(128), epochs=3)
+        model.fit(all_data.batch(128), epochs=TRAINING_EPOCHS)
 
         model.save_model()
         self.save_dataframe(all_df)
@@ -127,7 +129,7 @@ class EventRecommender:
 
         model.compile(optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.008))
 
-        model.fit(training_data.batch(128), epochs=3)
+        model.fit(training_data.batch(128), epochs=TRAINING_EPOCHS)
 
         model.save_model()
         self.save_dataframe(merged_df)

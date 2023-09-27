@@ -5,10 +5,8 @@ import logging
 import os
 import time
 
-import numpy as np
 import requests
 import schedule as schedule
-import tensorflow as tf
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from dotenv import load_dotenv
@@ -66,16 +64,23 @@ def clean_training_data(training_data):
 
 @app.route("/train/new-user", methods=["POST"])
 def train_for_new_user():
-    if request.method == "POST":
-        request_koja_id_secret = request.POST.get("kojaIDSecret")
-        decrypted_koja_id = crypto_service.decrypt_data(request_koja_id_secret)
-        if koja_id_secret == decrypted_koja_id:
-            retrain_for_new_users()
-            return "Successfully Trained", 200
+    try:
+        if request.method == "POST" and request.is_json:
+            data = request.get_json()
+            request_koja_id_secret = data.get("kojaIDSecret")
+            decrypted_koja_id = crypto_service.decrypt_data(request_koja_id_secret)
+            if os.getenv("KOJA_ID_SECRET") == decrypted_koja_id:
+                try:
+                    return "Successfully started training", 200
+                finally:
+                    retrain_for_new_users()
+            else:
+                return "Unauthorised request", 401
         else:
-            return "Unknown source", 400
-    else:
-        return "Request was not POST", 400
+            return "Request was not POST", 400
+    except Exception as e:
+        logging.error(f"An error occurred in `train_for_all_user_endpoint`: {e}")
+        return "Server error occurred, please try again later", 500
 
 
 @app.route("/train/all-users", methods=["POST"])
@@ -109,24 +114,53 @@ def get_ai_public_key():
         return "Server error occurred, please try again later", 500
 
 
-def retrain_for_new_users(training_data):
-    events_data = clean_training_data(training_data)
-    event_recommender.refit_model(events_data)
+def retrain_for_new_users():
+    try:
+        training = True
+        account_events_endpoint = f"{os.getenv('SERVER_ADDRESS')}:{os.getenv('SERVER_PORT')}/api/v1/ai/get-account-events"
+        new_users_emails = get_new_users_emails()
 
+        user_account_events = [None] * len(new_users_emails)
 
-# @app.route("/train/new-users", methods=["POST"])
-# def train_for_new_user():
-#     if request.is_json:
-#         retrain_for_all_users()
-#         return "Successfully Trained", 200
-#     else:
-#         return "Request was not JSON", 400
+        koja_public_key = get_koja_public_key()
+        public_key = crypto_service.get_public_key()
+        encrypted_koja_secret_id = crypto_service.encrypt_data(
+            data=os.getenv("KOJA_ID_SECRET"), public_key=koja_public_key
+        )
+
+        request_payload = {
+            "publicKey": public_key,
+            "kojaIDSecret": base64.b64encode(encrypted_koja_secret_id).decode("ascii"),
+        }
+
+        request_json_str = json.dumps(request_payload)
+
+        for i in range(len(new_users_emails)):
+            encrypted_email = base64.b64encode(
+                crypto_service.encrypt_data(
+                    data=new_users_emails[i], public_key=get_koja_public_key()
+                )
+            ).decode("ascii")
+            user_account_events[i] = requests.get(
+                account_events_endpoint,
+                params={"request": request_json_str, "userEmail": encrypted_email},
+            )
+
+        usable_events = []
+        for user_event_set in user_account_events:
+            if user_event_set.status_code == 200:
+                usable_events += user_event_set.json()
+
+        events_data = clean_training_data(usable_events)
+        if len(events_data) > 0:
+            event_recommender.refit_model(events_data)
+
+    finally:
+        training = False
 
 
 def retrain_for_all_users():
-    account_events_endpoint = (
-        f"{os.getenv('SERVER_ADDRESS')}:{os.getenv('SERVER_PORT')}/api/v1/ai/get-account-events"
-    )
+    account_events_endpoint = f"{os.getenv('SERVER_ADDRESS')}:{os.getenv('SERVER_PORT')}/api/v1/ai/get-account-events"
 
     all_user_emails = get_all_users_emails()
 
@@ -162,16 +196,18 @@ def retrain_for_all_users():
             usable_events += user_event_set.json()
 
     events_data = clean_training_data(usable_events)
-    event_recommender.refit_model(events_data)
+    if len(events_data) > 0:
+        event_recommender.refit_model(events_data)
 
-def auto_train_new(training_data):
+
+def auto_train_new():
     now = datetime.datetime.now()
     next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0)
     if now > next_retrain_time:
         next_retrain_time += datetime.timedelta(days=1)
 
     schedule.every().day.at(next_retrain_time.strftime("%H:%M")).do(
-        retrain_for_new_users, training_data
+        retrain_for_new_users
     )
 
     while True:
@@ -179,7 +215,7 @@ def auto_train_new(training_data):
         time.sleep(1)
 
 
-def auto_train_all(training_data):
+def auto_train_all():
     now = datetime.datetime.now()
     next_retrain_time = now.replace(
         hour=23, minute=59, second=0, microsecond=0
@@ -187,47 +223,13 @@ def auto_train_all(training_data):
 
     # Schedule the retraining to occur every 7 days
     schedule.every(7).days.at(next_retrain_time.strftime("%H:%M")).do(
-        retrain_for_all_users, training_data
+        retrain_for_all_users
     )
 
     # Start the scheduling loop
     while True:
         schedule.run_pending()
         time.sleep(1)
-
-
-@app.route("/recommendations", methods=["POST"])
-def recommend_categories():
-    if request.is_json:
-        data = request.get_json()
-        user_id = data["userID"]
-
-        max_output = 7
-        _, titles = user_model_index(np.array([user_id]))
-
-        recommendations = []
-        for category_id in titles[0][:10]:
-            # Convert TensorFlow EagerTensor to numpy array
-            category_id_np = category_id.numpy().decode("utf-8")
-            _, weekdays = weekday_model_index(np.array([category_id_np]), k=max_output)
-            _, time_frames = time_frame_model_index(np.array([category_id_np]))
-
-            recommendations.append(
-                {
-                    "category": category_id_np,
-                    "weekdays": [
-                        weekday.numpy().decode("utf-8") for weekday in weekdays[0]
-                    ],
-                    "time_frames": [
-                        time_frame.numpy().decode("utf-8")
-                        for time_frame in time_frames[0]
-                    ],
-                }
-            )
-
-        return jsonify(recommendations)
-    else:
-        return "Request was not JSON", 400
 
 
 def get_training_data():
@@ -309,5 +311,4 @@ if __name__ == "__main__":
     load_dotenv()
     port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
-    retrain_for_all_users()
     app.run(host="0.0.0.0", port=port, debug=True)
