@@ -59,6 +59,9 @@ class UserCalendarServiceTest {
     private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
 
     @Mock
+    private lateinit var calendarAdapterService: CalendarAdapterService
+
+    @Mock
     private lateinit var userCalendarService: UserCalendarService
     private lateinit var dotenv: Dotenv
 
@@ -499,7 +502,7 @@ class UserCalendarServiceTest {
 
     @Test
     fun `test updateEvent should return true if event is updated successfully`() {
-        val token = "dummyToken"
+        val token = "your_access_token"
         val event1 = UserEventDTO(
             id = "1",
             summary = "desc1",
@@ -516,20 +519,8 @@ class UserCalendarServiceTest {
         val userAccountz = mutableListOf<JWTAuthDetailsDTO>()
 
         val mockUserJWTData = UserJWTTokenDataDTO(userAccountz, mockUserID)
-        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
-        val jwtToken = TokenManagerController.createToken(
-            TokenRequest(
-                arrayListOf(authDetails),
-                AuthProviderEnum.GOOGLE,
-                mockUserID,
-            ),
-        )
-        val userAccounts = listOf(UserAccount(/* mock necessary properties */))
-
         whenever(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(mockUserJWTData)
-        whenever(userCalendarService.getUserCalendarAdapters(mockUserJWTData)).thenReturn(Pair(userAccounts, arrayListOf(googleCalendarAdapterService)))
-        whenever(userAccountRepository.findByUserID(mockUserID)).thenReturn(userAccounts)
-        whenever(googleCalendarAdapterService.updateEvent(any(), any())).thenReturn(null)
+        whenever(calendarAdapterService.updateEvent(token, event1)).thenReturn(null)
 
         val result = userCalendarService.updateEvent(token, event1)
 
@@ -538,7 +529,7 @@ class UserCalendarServiceTest {
 
     @Test
     fun `test updateEvent should return false if event is not updated`() {
-        val token = "dummyToken"
+        val token = "your_access_token"
         val event1 = UserEventDTO(
             id = "1",
             summary = "desc1",
@@ -551,17 +542,20 @@ class UserCalendarServiceTest {
             dynamic = false,
             userID = "1",
         )
-        val userAccounts = listOf(UserAccount(/* mock necessary properties */))
-
         val mockUserID = Int.MAX_VALUE
         val userAccountz = mutableListOf<JWTAuthDetailsDTO>()
-
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val jwtToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
         val mockUserJWTData = UserJWTTokenDataDTO(userAccountz, mockUserID)
 
         whenever(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(mockUserJWTData)
-        whenever(userCalendarService.getUserCalendarAdapters(mockUserJWTData)).thenReturn(Pair(userAccounts, arrayListOf(googleCalendarAdapterService)))
-        whenever(userAccountRepository.findByUserID(mockUserID)).thenReturn(userAccounts)
-        whenever(googleCalendarAdapterService.updateEvent(any(), any())).thenReturn(null)
+        whenever(calendarAdapterService.updateEvent(token, event1)).thenReturn(null)
 
         val result = userCalendarService.updateEvent(token, event1)
 
