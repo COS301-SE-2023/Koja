@@ -296,7 +296,7 @@ class GoogleCalendarAdapterServiceTest {
 
         // Mock the response entity from the REST API call
         val responseEntity = ResponseEntity.ok("response_body")
-        `when`(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java)))
+        `when`(restTemplate.exchange(eq("url"), eq(HttpMethod.POST), any(), eq(String::class.java)))
             .thenReturn(responseEntity)
 
         // Mock the userAccountRepository.findByEmail() method
@@ -304,7 +304,6 @@ class GoogleCalendarAdapterServiceTest {
 
         // Mock the createNewUser( b) method
         val newUser = User()
-        `when`(service.createNewUser(anyString(), anyString())).thenReturn(newUser)
         `when`(userRepository.save(org.mockito.kotlin.any<User>())).thenReturn(newUser)
 
         // Mock the createToken() method

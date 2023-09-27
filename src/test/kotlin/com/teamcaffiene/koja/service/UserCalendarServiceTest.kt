@@ -516,12 +516,14 @@ class UserCalendarServiceTest {
             userID = "1",
         )
         val mockUserID = Int.MAX_VALUE
-        val userAccountz = mutableListOf<JWTAuthDetailsDTO>()
-
-        val mockUserJWTData = UserJWTTokenDataDTO(userAccountz, mockUserID)
+        val userAccountList = mutableListOf<JWTAuthDetailsDTO>()
+        val userAccount = UserAccount()
+        userAccount.authProvider = AuthProviderEnum.GOOGLE
+        userAccount.refreshToken = "refresh"
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccountList, mockUserID)
         whenever(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(mockUserJWTData)
         whenever(calendarAdapterService.updateEvent(token, event1)).thenReturn(null)
-
+        whenever(userCalendarService.getUserCalendarAdapters(mockUserJWTData)).thenReturn(listOf(userAccount) to ArrayList<CalendarAdapterService>())
         val result = userCalendarService.updateEvent(token, event1)
 
         assertEquals(true, result)
