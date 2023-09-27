@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:koja/widgets/user_manual_widget.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pdfx/pdfx.dart';
+// import 'package:pdfx/pdfx.dart';
 
 import '../Utils/constants_util.dart';
 import '../providers/service_provider.dart';
@@ -474,7 +475,7 @@ class SettingsState extends State<Settings> {
               SizedBox(width: 2),
               IconButton(
                 icon: Icon(
-                  Icons.download_rounded,
+                  Icons.remove_red_eye,
                   color: Colors.white,
                 ),
                 style: ButtonStyle(
@@ -483,22 +484,9 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      final pdfController = PdfController(
-                        document: PdfDocument.openAsset('assets/pdf/user_manual.pdf'),
-                      );
-
-                      return AlertDialog(
-                        title: Text('User Manual'),
-                        content: PdfView(
-                          controller: pdfController
-
-                        )
-                        
-                      );
-                    },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserManualPage()),
                   );
                 },
               ),
