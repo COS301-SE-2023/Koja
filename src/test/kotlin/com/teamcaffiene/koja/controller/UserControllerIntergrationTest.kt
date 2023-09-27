@@ -4,6 +4,7 @@ import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.controller.UserController
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
@@ -34,6 +35,9 @@ class UserControllerIntergrationTest {
     @Mock
     private lateinit var userRepository: UserRepository
 
+    @Mock
+    private lateinit var userAccountRepository: UserAccountRepository
+
     @MockBean
     private lateinit var userCalendarService: UserCalendarService
 
@@ -44,7 +48,7 @@ class UserControllerIntergrationTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userCalendarService = UserCalendarService(userRepository, jwtFunctionality)
+        userCalendarService = UserCalendarService(userRepository, jwtFunctionality, userAccountRepository)
     }
 
     private fun importEnvironmentVariables() {

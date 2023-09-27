@@ -47,7 +47,7 @@ class UserCalendarServiceIntergrationTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         importEnvironmentVariables()
-        userCalendarService = UserCalendarService(userRepository, jwtFunctionality)
+        userCalendarService = UserCalendarService(userRepository, jwtFunctionality, userAccountRepository)
         mockMvc = standaloneSetup(userCalendarService).build()
         userController = UserController(userAccountRepository, userRepository, userCalendarService, timeBoundaryRepository)
     }

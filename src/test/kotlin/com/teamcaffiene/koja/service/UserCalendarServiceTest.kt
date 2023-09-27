@@ -70,7 +70,7 @@ class UserCalendarServiceTest {
 
         importEnvironmentVariables()
         googleCalendarAdapterService = GoogleCalendarAdapterService(userRepository, userAccountRepository)
-        userCalendarService = spy(UserCalendarService(userRepository, jwtFunctionality))
+        userCalendarService = spy(UserCalendarService(userRepository, jwtFunctionality, userAccountRepository))
     }
 
     private fun importEnvironmentVariables() {

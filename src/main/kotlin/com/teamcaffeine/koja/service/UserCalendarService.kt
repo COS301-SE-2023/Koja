@@ -29,10 +29,11 @@ class UserCalendarService(
     @Autowired
     private var userRepository: UserRepository,
     private val jwtFunctionality: JWTFunctionality,
+    private var userAccountRepository: UserAccountRepository,
 ) {
 
-    @Autowired
-    private lateinit var userAccountRepository: UserAccountRepository
+    // @Autowired
+    // private lateinit var userAccountRepository: UserAccountRepository
 
     @Autowired
     private lateinit var timeBoundaryRepository: TimeBoundaryRepository
