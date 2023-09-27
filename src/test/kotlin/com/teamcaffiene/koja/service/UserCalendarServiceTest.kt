@@ -6,12 +6,14 @@ import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
+import com.teamcaffeine.koja.dto.TimeSlot
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.enums.TimeBoundaryType
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.CalendarAdapterFactoryService
@@ -580,6 +582,12 @@ class UserCalendarServiceTest {
     fun testFindEarliestTimeSlotWithValidInput() {
         // Arrange
         val currentDateTime = OffsetDateTime.now()
+        val timeSlot1 = TimeSlot(
+            name = "Example Time Slot",
+            startTime = OffsetDateTime.now(),
+            endTime = OffsetDateTime.now().plusHours(1),
+            type = TimeBoundaryType.ALLOWED,
+        )
         val event1 = UserEventDTO(
             id = "1",
             summary = "desc1",
@@ -587,12 +595,31 @@ class UserCalendarServiceTest {
             startTime = OffsetDateTime.now().plusDays(2),
             endTime = OffsetDateTime.now().plusDays(2),
             duration = 1,
-            timeSlots = emptyList(),
+            timeSlots = listOf(timeSlot1),
             priority = 1,
             dynamic = false,
             userID = "1",
         )
-        val userEvents = listOf(event1)
+
+        val timeSlot2 = TimeSlot(
+            name = "Example Time Slot",
+            startTime = OffsetDateTime.now(),
+            endTime = OffsetDateTime.now().plusHours(1),
+            type = TimeBoundaryType.BLOCKED,
+        )
+        val event2 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = "",
+            startTime = OffsetDateTime.now().plusDays(3),
+            endTime = OffsetDateTime.now().plusDays(3),
+            duration = 1,
+            timeSlots = listOf(timeSlot2),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val userEvents = listOf(event1, event2)
 
         // Act
         val result = userCalendarService.findEarliestTimeSlot(userEvents, event1)
