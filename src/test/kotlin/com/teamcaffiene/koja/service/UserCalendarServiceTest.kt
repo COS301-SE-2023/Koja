@@ -575,4 +575,29 @@ class UserCalendarServiceTest {
         // Assert
         assertEquals(Pair(1.0, 2.0), result)
     }
+
+    @Test
+    fun testFindEarliestTimeSlotWithValidInput() {
+        // Arrange
+        val currentDateTime = OffsetDateTime.now()
+        val event1 = UserEventDTO(
+            id = "1",
+            summary = "desc1",
+            location = "",
+            startTime = OffsetDateTime.now().plusDays(2),
+            endTime = OffsetDateTime.now().plusDays(2),
+            duration = 1,
+            timeSlots = emptyList(),
+            priority = 1,
+            dynamic = false,
+            userID = "1",
+        )
+        val userEvents = listOf(event1)
+
+        // Act
+        val result = userCalendarService.findEarliestTimeSlot(userEvents, event1)
+
+        // Assert
+        // Add assertions to verify the expected behavior with valid input
+    }
 }
