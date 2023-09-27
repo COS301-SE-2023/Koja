@@ -18,7 +18,7 @@ TIME_FRAME_MODEL_FILE_LOCATION = "AI/Models/time_frame_model"
 class EventRecommender:
     all_events = []
 
-    def train_model_on_json(self, json_data):
+    def train_model_on_json(self, cleaned_data):
         (
             all_data,
             all_df,
@@ -26,7 +26,7 @@ class EventRecommender:
             time_frames,
             user_ids,
             weekdays,
-        ) = self.get_training_data_from_json(json_data)
+        ) = self.get_training_data_from_cleaned_data(cleaned_data)
 
         # Preparing the datasets
         user_dataset = tf.data.Dataset.from_tensor_slices(np.unique(user_ids))
@@ -53,38 +53,13 @@ class EventRecommender:
         model.save_model()
         self.save_dataframe(all_df)
 
-    def get_training_data_from_json(self, json_data):
-        data = json.load(json_data)
-        for block in data:
-            expanded_training_events = []
-            for event in block["training"]:
-                for time_frame in event["timeFrame"]:
-                    new_event = event.copy()
-                    new_event["startTime"] = time_frame["first"].strip()
-                    new_event["endTime"] = time_frame["second"].strip()
-                    new_event["category"] = event["category"].strip()
-                    new_event["weekday"] = event["weekday"].strip()
-                    new_event["userID"] = event["userID"].strip()
-                    expanded_training_events.append(new_event)
-            expanded_testing_events = []
-            for event in block["testing"]:
-                for time_frame in event["timeFrame"]:
-                    new_event = event.copy()
-                    new_event["startTime"] = time_frame["first"].strip()
-                    new_event["endTime"] = time_frame["second"].strip()
-                    new_event["category"] = event["category"].strip()
-                    new_event["weekday"] = event["weekday"].strip()
-                    new_event["userID"] = event["userID"].strip()
-                    expanded_testing_events.append(new_event)
-
-            self.all_events = expanded_training_events + expanded_testing_events
+    def get_training_data_from_cleaned_data(self, cleaned_data):
+        self.all_events = cleaned_data
         all_df = pd.DataFrame(self.all_events)
         user_ids = all_df["userID"].values
         category_ids = all_df["category"].values
         weekdays = all_df["weekday"].values
-        time_frames = []
-        for time_frame in all_df[["startTime", "endTime"]].values:
-            time_frames.append(f"{time_frame[0]}-{time_frame[1]}")
+        time_frames = all_df["timeFrame"].values
         all_data = tf.data.Dataset.from_tensor_slices(
             {
                 "user_id": user_ids,
@@ -95,7 +70,7 @@ class EventRecommender:
         )
         return all_data, all_df, category_ids, time_frames, user_ids, weekdays
 
-    def refit_model(self, json_data):
+    def refit_model(self, cleaned_data):
         old_df = self.load_dataframe()
 
         (
@@ -105,7 +80,7 @@ class EventRecommender:
             _,
             _,
             _,
-        ) = self.get_training_data_from_json(json_data)
+        ) = self.get_training_data_from_cleaned_data(cleaned_data)
 
         merged_df = pd.concat([old_df, all_df]).reset_index(drop=True)
 
@@ -130,7 +105,9 @@ class EventRecommender:
         weekday_dataset = tf.data.Dataset.from_tensor_slices(unique_weekdays)
         time_frame_dataset = tf.data.Dataset.from_tensor_slices(unique_time_frames)
 
-        model.create_vocabularies(user_dataset, category_dataset, weekday_dataset, time_frame_dataset)
+        model.create_vocabularies(
+            user_dataset, category_dataset, weekday_dataset, time_frame_dataset
+        )
 
         user_dataset = tf.data.Dataset.from_tensor_slices(user_ids)
         category_dataset = tf.data.Dataset.from_tensor_slices(category_ids)
@@ -154,7 +131,6 @@ class EventRecommender:
 
         model.save_model()
         self.save_dataframe(merged_df)
-
 
     def get_user_recommendation(self, user_id):
         model = CategoryRecommender.load_model()
