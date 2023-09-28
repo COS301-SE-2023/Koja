@@ -4,17 +4,21 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
+import os
 
 
 class EventClassifier:
     def __init__(self, classifier_path="KOJA-CR.joblib"):
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        full_classifier_path = os.path.join(script_dir, classifier_path)
+        
         self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         self.model = TFBertModel.from_pretrained("bert-base-uncased")
 
         nltk.download("punkt")
         nltk.download("stopwords")
 
-        self.classifier = load(classifier_path)
+        self.classifier = load(full_classifier_path)
 
     def bert_feature_extraction(self, text):
         inputs = self.tokenizer.encode_plus(

@@ -265,9 +265,9 @@ def retrain_for_all_users():
             usable_events += user_event_set.json()
 
     events_data = clean_training_data(usable_events)
-    store_event_names_per_category(events_data)
-    if len(events_data) > 0:
-        event_recommender.refit_model(events_data)
+    # store_event_names_per_category(events_data)
+    # if len(events_data) > 0:
+    #     event_recommender.refit_model(events_data)
 
     unique_user_ids = get_unique_user_ids(events_data)
     for user_id in unique_user_ids:
@@ -472,3 +472,4 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
     app.run(host="0.0.0.0", port=port, debug=True)
+    retrain_for_all_users()

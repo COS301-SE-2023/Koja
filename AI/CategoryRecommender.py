@@ -90,9 +90,11 @@ class CategoryRecommender(tf.keras.Model):
                 f.write(f"{item}\n")
 
     def load_vocabulary(self, vocab_type):
+        script_dir = os.path.dirname(os.path.realpath(__file__))
         filepath = self.vocab_filepaths[vocab_type]
+        full_vocab_path = os.path.join(script_dir, filepath)
         vocab = []
-        with open(filepath, "r") as f:
+        with open(full_vocab_path, "r") as f:
             for line in f:
                 vocab.append(line.strip())
         return vocab
@@ -106,9 +108,11 @@ class CategoryRecommender(tf.keras.Model):
         }
         for vocab_type in self.vocab_filepaths:
             filepath = self.vocab_filepaths[vocab_type]
+            script_dir = os.path.dirname(os.path.realpath(__file__))
+            full_vocab_path = os.path.join(script_dir, filepath)
             vocab_layer = getattr(self, vocab_names[vocab_type])
             vocab = vocab_layer.get_vocabulary()
-            with open(filepath, "w") as f:
+            with open(full_vocab_path, "w") as f:
                 for item in vocab:
                     f.write(f"{item}\n")
 
@@ -151,14 +155,18 @@ class CategoryRecommender(tf.keras.Model):
         return user_loss + category_loss + weekday_loss + time_frame_loss
 
     def save_model(self):
+        script_dir = os.path.dirname(os.path.realpath(__file__))
         weights_filepath = KOJA_MODEL_FILE_LOCATION + "_weights"
-        self.save_weights(weights_filepath)
+        full_model_path = os.path.join(script_dir, weights_filepath)
+        self.save_weights(full_model_path)
         self.save_all_vocabularies()
 
     @classmethod
     def load_model(cls):
         loaded_model = cls()
-        loaded_model.load_weights(KOJA_MODEL_FILE_LOCATION + "_weights")
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        full_model_path = os.path.join(script_dir, KOJA_MODEL_FILE_LOCATION + "_weights")
+        loaded_model.load_weights(full_model_path)
         loaded_model.load_all_vocabularies()
 
         return loaded_model

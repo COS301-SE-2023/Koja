@@ -59,6 +59,7 @@ class UserCalendarService(
 
     fun getAllUserEventsKojaSuggestions(token: String): List<UserEventDTO> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val userID = userJWTTokenData.userID
 
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -466,58 +467,25 @@ class UserCalendarService(
             .expressionAttributeNames(attrNames)
             .build()
 
-        val categories = mutableListOf<String>()
-        val timeframes = mutableMapOf<String, List<String>>()
-        val weekDays = mutableMapOf<String, List<String>>()
+        var toReturn: Map<String, Map<String, List<String>>>? = null
 
         val response = dynamoDBClient.query(request)
         val items = response.items()
         if (items.isNotEmpty()) {
             val userItem = items.firstOrNull()
             if (userItem != null) {
-                val categorySuggestions = userItem["data"]?.l()
-                if (categorySuggestions != null) {
-                    for (suggestion in categorySuggestions) {
-                        val current = suggestion.m()
-                        val category = current["category"]?.s()
-                        if (category != null) {
-                            categories.add(category)
-                            val currentTimeFrames = mutableListOf<String>()
-                            for (timeFrame in current["time_frames"]?.l()!!) {
-                                val timeFrameString = timeFrame.s()
-                                if (timeFrameString != null) {
-                                    currentTimeFrames.add(timeFrameString)
-                                }
-                            }
-                            timeframes[category] = currentTimeFrames
-
-                            val currentWeekDays = mutableListOf<String>()
-                            for (weekday in current["weekdays"]?.l()!!) {
-                                val weekdayString = weekday.s()
-                                if (weekdayString != null) {
-                                    currentWeekDays.add(weekdayString)
-                                }
-                            }
-                            weekDays[category] = currentWeekDays
-                        }
+                val recommendations = userItem["recommendations"]?.m()
+                if (recommendations != null) {
+                    toReturn = recommendations.mapValues { entry ->
+                        entry.value.l().map { it.m()["week_days"]?.m()?.mapValues { attr -> attr.value.l().map { it.s() ?: "" } } ?: mapOf() }
                     }
                 }
             }
         }
 
-        val toReturn = mutableMapOf<String, Any>()
-        for (category in categories) {
-            val categoryTimeFrames = timeframes[category]
-            val categoryWeekDays = weekDays[category]
-            if (categoryTimeFrames != null && categoryWeekDays != null) {
-                toReturn[category] = mutableMapOf<String, Any>(
-                    "timeFrames" to categoryTimeFrames,
-                    "weekdays" to categoryWeekDays,
-                )
-            }
-        }
-        return toReturn
+        return toReturn ?: mapOf<String, Map<String, List<String>>>()
     }
+
 
     fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)

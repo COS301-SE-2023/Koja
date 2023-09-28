@@ -244,11 +244,15 @@ class EventRecommender:
         return user_dataset, category_dataset, weekday_dataset, time_frame_dataset
 
     def save_dataframe(self, df):
-        os.makedirs("AI/Data", exist_ok=True)
-        if os.path.exists("AI/Data/all_df.csv"):
-            df.to_csv("AI/Data/all_df.csv", mode="a", header=False, index=False)
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        full_dataframe_path = os.path.join(script_dir, "AI/Data/all_df.csv")
+        os.makedirs(full_dataframe_path, exist_ok=True)
+        if os.path.exists(full_dataframe_path):
+            df.to_csv(full_dataframe_path, mode="a", header=False, index=False)
         else:
-            df.to_csv("AI/Data/all_df.csv", index=False)
+            df.to_csv(full_dataframe_path, index=False)
 
     def load_dataframe(self):
-        return pd.read_csv("AI/Data/all_df.csv")
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        full_dataframe_path = os.path.join(script_dir, "AI/Data/all_df.csv")
+        return pd.read_csv(full_dataframe_path)
