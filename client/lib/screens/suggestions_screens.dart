@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:koja/Utils/event_util.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../providers/service_provider.dart';
 
@@ -14,249 +16,188 @@ class SuggestionsTasksScreen extends StatefulWidget {
 }
 
 class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
-  Widget? _suggestionsWidget;
   @override
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     // final contextProvider = Provider.of<ContextProvider>(context, listen: false);
-    final mediaQuery = MediaQuery.of(context);
+    final mockEventList = List<Event>.empty(growable: true);
+    final Event event1 = Event(
+      title: 'Event 1',
+      description: 'Event 1 Description',
+      from: DateTime.now().add(Duration(hours: 2)),
+      to: DateTime.now().add(Duration(hours: 4)),
+      isAllDay: false,
+      location: ""
+    );
+    mockEventList.add(event1);
+    final Event event2 = Event(
+      title: 'Event 2',
+      description: 'Event 2 Description',
+      from: DateTime.now().add(Duration(hours: 5)),
+      to: DateTime.now().add(Duration(hours: 7)),
+      isAllDay: false,
+      location: ""
+    );
+    mockEventList.add(event2);
+    //final mediaQuery = MediaQuery.of(context);
+    // return Scaffold(
+    //   body: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //
+    //     children : [
+    //       SizedBox(
+    //         height: 10,
+    //       ),
+    //       Container(
+    //         height: 700,
+    //         width: 1500,
+    //         child: SfCalendar(
+    //
+    //           view: CalendarView.week,
+    //           allowedViews: const [
+    //             CalendarView.day,
+    //             CalendarView.week,
+    //             CalendarView.month,
+    //           ],
+    //
+    //           dataSource: MeetingDataSource(_mockEventList),
+    //           monthViewSettings: MonthViewSettings(
+    //               appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+    //           onTap: (CalendarTapDetails details) {
+    //             if (details.targetElement == CalendarElement.appointment) {
+    //
+    //               final Event meeting = details.appointments![0] as Event;
+    //               setState(() {
+    //                 //meeting.isDynamic = meeting.isDynamic ? false : true;
+    //                 //meeting.backgroundColor = meeting.isDynamic ? Colors.red : Colors.blue;
+    //               });
+    //               print(meeting.isDynamic);
+    //             }
+    //           },
+    //         ),
+    //       ),
+    //
+    //
+    //       Padding(
+    //         padding: const EdgeInsets.only(left: 10.0),
+    //
+    //         child: ElevatedButton(
+    //           onPressed: () async {
+    //             if (await serviceProvider.setSuggestedCalendar(_mockEventList)){
+    //               ScaffoldMessenger.of(context).showSnackBar(
+    //                 SnackBar(
+    //                   content: Text('Calendar Set Successfully'),
+    //                 ),
+    //               );
+    //             } else {
+    //               ScaffoldMessenger.of(context).showSnackBar(
+    //                 SnackBar(
+    //                   content: Text('Calendar Set Failed'),
+    //                 ),
+    //               );
+    //             }
+    //           },
+    //           child: Text('Set Koja Calendar'),
+    //
+    //         ),
+    //       ),
+    //       SizedBox(
+    //         height: 10,
+    //       ),
+    // ]  ),
+    // );
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
         children: [
-          SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Text(
-              'Emails In System',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: SfCalendar(
+              view: CalendarView.week,
+              allowedViews: const [
+                CalendarView.day,
+                CalendarView.week,
+                CalendarView.month,
+              ],
+              dataSource: MeetingDataSource(mockEventList),
+              monthViewSettings: MonthViewSettings(
+                  appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+              onTap: (CalendarTapDetails details) {
+                if (details.targetElement == CalendarElement.appointment) {
+                  final Event meeting = details.appointments![0] as Event;
+                  setState(() {
+                    //meeting.isDynamic = meeting.isDynamic ? false : true;
+                    //meeting.backgroundColor = meeting.isDynamic ? Colors.red : Colors.blue;
+                  });
+                  if(kDebugMode) print(meeting.isDynamic);
+                }
+              },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: FutureBuilder(
-                future: serviceProvider.getEmailsForAI(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  // Check if snapshot.data is not null before casting it to List<String>
-                  if (snapshot.hasData &&
-                      snapshot.data is Map<String, dynamic> &&
-                      (snapshot.data as Map<String, dynamic>).isNotEmpty) {
-                    final accounts = (snapshot.data as Map<String, String>);
-                    final emails = accounts.values.toList();
-                    return ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: mediaQuery.size.height * 0.25,
-                      ),
-                      child: ListView.builder(
-                        itemCount: emails.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(emails[index]),
-                            trailing: InkWell(
-                              child: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Text(
-                                    'More Info',
-                                    style: TextStyle(fontSize: 15),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8),
-                                    child: Icon(
-                                      Icons.info,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  _suggestionsWidget = createWidget(
-                                    accounts.keys.toList()[index],
-                                    context,
-                                    serviceProvider,
-                                    mediaQuery,
-                                  );
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  } else {
-                    // Handle the case when snapshot.data is null or not of type List<String>
-                    return Center(
-                      child: Lottie.asset('assets/animations/empty.json',
-                          repeat: false, height: 200),
-                    );
-                  }
-                },
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Text(
-              'Suggested Tasks',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: SizedBox(
-                child: _suggestionsWidget,
+          Positioned(
+            bottom: 15.0,
+            right: 15.0,
+            child: ElevatedButton(
+              onPressed: () async {
+                if (await serviceProvider.setSuggestedCalendar(mockEventList)){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Calendar Set Successfully'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Calendar Set Failed'),
+                    ),
+                  );
+                }
+              },
+              child: Text('Set Koja Calendar'),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               ),
             ),
           ),
         ],
       ),
     );
+
+
+
   }
 
-  createWidget(
-    String user,
-    BuildContext context,
-    ServiceProvider serviceProvider,
-    MediaQueryData mediaQuery,
-  ) {
-    return FutureBuilder(
-      future: serviceProvider.getSuggestionsForUser(user),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+}
 
-        // Check if snapshot.data is not null before casting it to List<String>
-        if (snapshot.hasData &&
-            snapshot.data is Map<String, dynamic> &&
-            (snapshot.data as Map<String, dynamic>).isNotEmpty) {
-          final suggestions = snapshot.data as Map<String, dynamic>;
-          if (suggestions[""] != null) {
-            suggestions["Other"] = suggestions[""];
-            suggestions.remove("");
-          }
-          final suggestedEventCategories = suggestions.keys.toList();
+class MeetingDataSource extends CalendarDataSource {
+  MeetingDataSource(List<Event> source) {
+    appointments = source;
+  }
 
-          return SizedBox(
-            height: mediaQuery.size.height * 0.3,
-            width: double.infinity,
-            child: ListView.builder(
-              itemCount: suggestedEventCategories.length,
-              itemBuilder: (context, index) {
-                final currentItem = suggestedEventCategories[index];
-                final curentItemValue =
-                    suggestions[currentItem] as Map<String, dynamic>;
-                final weekdays = curentItemValue["weekdays"].cast<String>();
-                final timeFrames = curentItemValue['timeFrames'].cast<String>();
-                return ListTile(
-                  title: Text(
-                    suggestedEventCategories[index],
-                  ),
-                  trailing: InkWell(
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          'More Info',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: Icon(
-                            Icons.info,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text(
-                              suggestedEventCategories[index],
-                            ),
-                            content: Table(
-                              defaultColumnWidth: IntrinsicColumnWidth(),
-                              border: TableBorder.all(),
-                              children: weekdays.map<TableRow>(
-                                (weekday) {
-                                  int i = weekdays.indexOf(weekday);
-                                  return TableRow(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(weekday.toString()),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(i < timeFrames.length
-                                            ? timeFrames[i].toString()
-                                            : 'N/A'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ).toList(),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Close'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          );
-        } else {
-          // Handle the case when snapshot.data is null or not of type List<String>
-          return Center(
-            child: Lottie.asset('assets/animations/empty.json',
-                repeat: false, height: 200),
-          );
-        }
-      },
-    );
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].from;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].to;
+  }
+
+  @override
+  String getSubject(int index) {
+    return appointments![index].title;
+  }
+
+  @override
+  Color getColor(int index) {
+    return appointments![index].backgroundColor;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    return appointments![index].isAllDay;
   }
 }

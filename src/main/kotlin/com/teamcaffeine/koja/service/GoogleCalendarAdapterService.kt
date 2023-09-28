@@ -38,6 +38,7 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -47,6 +48,11 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -194,6 +200,7 @@ class GoogleCalendarAdapterService(
             )
         } else {
             val newUser = createNewUser(userEmail, refreshToken)
+
             val timeBoundary = TimeBoundary(
                 name = "Bed-Time",
                 startTime = "20:00",
@@ -203,6 +210,28 @@ class GoogleCalendarAdapterService(
             newUser.addTimeBoundary(timeBoundary)
             timeBoundary.user = newUser
             userRepository.save(newUser)
+
+            val awsCreds = AwsBasicCredentials.create(
+                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
+                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+            )
+
+            val dynamoDBClient = DynamoDbClient.builder()
+                .region(Region.EU_NORTH_1)
+                .credentialsProvider { awsCreds }
+                .build()
+
+            val putItemRequest = PutItemRequest.builder()
+                .tableName("NewUsers") // Replace with your table name
+                .item(
+                    mapOf(
+                        "UserID" to AttributeValue.builder().s(newUser.id.toString()).build(), // Adjust the attribute name accordingly
+                        // Add other attributes if needed
+                    ),
+                )
+                .build()
+
+            dynamoDBClient.putItem(putItemRequest)
             jwtToken = createToken(
                 TokenRequest(
                     arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
@@ -306,6 +335,7 @@ class GoogleCalendarAdapterService(
         newUserAccount.authProvider = AuthProviderEnum.GOOGLE
         newUserAccount.userID = storedUser.id!!
         newUserAccount.user = storedUser
+        newUserAccount.eventSuggestionsCalendarID = ""
         val savedUserAccount = userAccountRepository.save(newUserAccount)
 
         storedUser.userAccounts.add(savedUserAccount)
@@ -354,7 +384,7 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
+    override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
@@ -494,7 +524,7 @@ class GoogleCalendarAdapterService(
         return createdEvent
     }
 
-    fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String): Event {
+    override fun createEventInSuggestions(accessToken: String, eventDTO: UserEventDTO, jwtToken: String, calendarID: String): Event {
         val calendarService = buildCalendarService(accessToken)
 
         val eventStartTime = eventDTO.getStartTime()
@@ -503,19 +533,13 @@ class GoogleCalendarAdapterService(
         val startDateTime = DateTime(eventStartTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
-        val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
-            .build()
-
-        val userLocations = LocationService(userRepository, this)
-        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
-        val lat = userLocation.second.toString().toDouble()
-        val lng = userLocation.first.toString().toDouble()
         val travelTime = eventDTO.getTravelTime()
 
-        val timezone = TimeZoneApi.getTimeZone(context, com.google.maps.model.LatLng(lat, lng)).await()
+        val calendar = calendarService.calendars().get("primary").execute()
+        val calendarTimezone = calendar.timeZone
+
         val eventLocaltime = eventStartTime.toZonedDateTime()
-            .withZoneSameInstant(timezone.toZoneId())
+            .withZoneSameInstant(ZoneId.of(calendarTimezone))
             .plusSeconds(travelTime)
 
         val formattedTime = DateTimeFormatter
@@ -531,9 +555,11 @@ class GoogleCalendarAdapterService(
             .setSummary(eventDTO.getSummary())
             .setDescription(description)
             .setLocation(eventDTO.getLocation())
-            .setStart(EventDateTime().setDateTime(startDateTime).setTimeZone(eventStartTime.toZonedDateTime().zone.id))
+            .setStart(
+                EventDateTime().setDateTime(startDateTime).setTimeZone(calendarTimezone),
+            )
             .setEnd(
-                EventDateTime().setDateTime(endDateTime).setTimeZone(eventEndTime.toZonedDateTime().zone.toString()),
+                EventDateTime().setDateTime(endDateTime).setTimeZone(calendarTimezone),
             )
 
         val extendedPropertiesMap = mutableMapOf<String, String>()
@@ -556,8 +582,7 @@ class GoogleCalendarAdapterService(
             shared = extendedPropertiesMap
         }
 
-        val calendarId = "Koja-Suggestions"
-        val createdEvent = calendarService.events().insert(calendarId, event).execute()
+        val createdEvent = calendarService.events().insert(calendarID, event).execute()
         println("Event created: ${createdEvent.htmlLink}")
         return createdEvent
     }
@@ -696,17 +721,57 @@ class GoogleCalendarAdapterService(
             ?: ZoneId.of("UTC")
     }
 
-    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>): Calendar {
-        val calendar = buildCalendarService(accessToken)
-        val newCalendar = Calendar()
-        newCalendar.summary = "This calendar serves as Koja's generated calendar to optimize your schedule with suggestions."
-        newCalendar.id = "Koja-Suggestions"
-        calendar.calendars().delete(newCalendar.id).execute()
-        calendar.calendars().insert(newCalendar).execute()
-        for (event in eventList) {
-            createEventInSuggestions(accessToken, event, accessToken)
+    @Transactional
+    override fun createNewCalendar(userAccounts: List<UserAccount>, userEvents: List<UserEventDTO>, jwtToken: String) {
+        for (userAccount in userAccounts) {
+            val accessToken = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
+            if (accessToken != null) {
+                val calendar = buildCalendarService(accessToken.getAccessToken())
+                var existingCalendar: Calendar? = null
+                var calendarId = userAccount.eventSuggestionsCalendarID
+                if (!calendarId.isNullOrEmpty()) {
+                    existingCalendar = try {
+                        calendar.calendars().get(calendarId).execute()
+                    } catch (e: com.google.api.client.googleapis.json.GoogleJsonResponseException) {
+                        if (e.statusCode == 404) {
+                            null
+                        } else {
+                            throw e
+                        }
+                    }
+                }
+                calendarId = if (existingCalendar != null) {
+                    val events = calendar.events().list(calendarId).execute().items
+                    for (event in events) {
+                        calendar.events().delete(calendarId, event.id).execute()
+                    }
+                    calendar.calendars().delete(calendarId).execute()
+                    createCalendar(calendar, calendarId, userAccount)
+                } else {
+                    createCalendar(calendar, calendarId, userAccount)
+                }
+                if (calendarId != null) {
+                    for (event in userEvents) {
+                        createEventInSuggestions(accessToken.getAccessToken(), event, jwtToken, calendarId)
+                    }
+                }
+            }
         }
-        return newCalendar
+    }
+
+    fun createCalendar(
+        calendar: com.google.api.services.calendar.Calendar,
+        calendarId: String?,
+        userAccount: UserAccount,
+    ): String? {
+        var calendarId1 = calendarId
+        val newCalendar = Calendar()
+        newCalendar.summary = "Koja Suggestions"
+        val result = calendar.calendars().insert(newCalendar).execute()
+        calendarId1 = result.id
+        userAccount.eventSuggestionsCalendarID = calendarId1
+        userAccountRepository.save(userAccount)
+        return calendarId1
     }
 }
 

@@ -1,6 +1,12 @@
 package com.teamcaffiene.koja.service
 
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
+import com.google.api.services.calendar.model.Events
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -25,12 +31,12 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mock
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verifyZeroInteractions
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpEntity
@@ -44,6 +50,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.lang.System.setProperty
 import java.time.OffsetDateTime
+import com.google.api.services.calendar.Calendar as GoogleCalendar
 
 class GoogleCalendarAdapterServiceTest {
     @Mock
@@ -122,7 +129,13 @@ class GoogleCalendarAdapterServiceTest {
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2)
 
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+        whenever(
+            service.getUserEventsInRange(
+                eq(accessToken),
+                any<OffsetDateTime>(),
+                any<OffsetDateTime>(),
+            ),
+        ).thenReturn(mockResponse)
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
@@ -179,7 +192,13 @@ class GoogleCalendarAdapterServiceTest {
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
 
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+        whenever(
+            service.getUserEventsInRange(
+                eq(accessToken),
+                any<OffsetDateTime>(),
+                any<OffsetDateTime>(),
+            ),
+        ).thenReturn(mockResponse)
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
@@ -236,7 +255,13 @@ class GoogleCalendarAdapterServiceTest {
 
         val mockResponse: List<UserEventDTO> = listOf(event1, event2, event3)
 
-        whenever(service.getUserEventsInRange(eq(accessToken), any<OffsetDateTime>(), any<OffsetDateTime>())).thenReturn(mockResponse)
+        whenever(
+            service.getUserEventsInRange(
+                eq(accessToken),
+                any<OffsetDateTime>(),
+                any<OffsetDateTime>(),
+            ),
+        ).thenReturn(mockResponse)
 
         val futureEvents = service.getFutureEventsLocations(eq(accessToken))
 
@@ -256,7 +281,15 @@ class GoogleCalendarAdapterServiceTest {
         // Mock the necessary variables and objects
 
         mockkObject(TokenManagerController.Companion)
-        every { TokenManagerController.Companion.createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5)) } returns "expected_jwt_token"
+        every {
+            TokenManagerController.Companion.createToken(
+                TokenRequest(
+                    listOf<JWTAuthDetailsDTO>(),
+                    AuthProviderEnum.GOOGLE,
+                    5,
+                ),
+            )
+        } returns "expected_jwt_token"
         val authCode = "valid_auth_code"
         val deviceType = CallbackConfigEnum.WEB
         val serverAddress = "https://example.com"
@@ -272,7 +305,13 @@ class GoogleCalendarAdapterServiceTest {
         `when`(userAccountRepository.findByEmail(anyString())).thenReturn(existingUser)
 
         // Mock the refreshAccessToken() method
-        `when`(service.refreshAccessToken(anyString(), anyString(), anyString())).thenReturn(JWTGoogleDTO("access_token", "refresh_token", 5))
+        `when`(
+            service.refreshAccessToken(
+                anyString(),
+                anyString(),
+                anyString(),
+            ),
+        ).thenReturn(JWTGoogleDTO("access_token", "refresh_token", 5))
 
         // Mock the createToken() method
         // `when`(createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5))).thenReturn(expectedJwtToken)
@@ -299,7 +338,15 @@ class GoogleCalendarAdapterServiceTest {
         val expectedJwtToken = "expected_jwt_token"
 
         mockkObject(TokenManagerController.Companion)
-        every { TokenManagerController.Companion.createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5)) } returns "expected_jwt_token"
+        every {
+            TokenManagerController.Companion.createToken(
+                TokenRequest(
+                    listOf<JWTAuthDetailsDTO>(),
+                    AuthProviderEnum.GOOGLE,
+                    5,
+                ),
+            )
+        } returns "expected_jwt_token"
 
         // Mock the response entity from the REST API call
         val responseEntity = ResponseEntity.ok("response_body")
@@ -314,7 +361,9 @@ class GoogleCalendarAdapterServiceTest {
         `when`(userRepository.save(org.mockito.kotlin.any<User>())).thenReturn(newUser)
 
         // Mock the createToken() method
-        `when`(createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5))).thenReturn(expectedJwtToken)
+        `when`(createToken(TokenRequest(listOf<JWTAuthDetailsDTO>(), AuthProviderEnum.GOOGLE, 5))).thenReturn(
+            expectedJwtToken,
+        )
 
         // Call the function being tested
         val result = service.oauth2Callback(authCode, deviceType)
@@ -496,7 +545,8 @@ class GoogleCalendarAdapterServiceTest {
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
         // Mock the behavior of restTemplate.exchange
         val responseHeaders = HttpHeaders()
-        val responseJson = "{\"access_token\":\"expectedAccessToken\",\"expires_in\":expires_in,\"refresh_token\":\"expectedRefreshToken\"}"
+        val responseJson =
+            "{\"access_token\":\"expectedAccessToken\",\"expires_in\":expires_in,\"refresh_token\":\"expectedRefreshToken\"}"
         "}"
         val headers = org.springframework.http.HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
@@ -541,5 +591,66 @@ class GoogleCalendarAdapterServiceTest {
         )
 
         // Add more assertions as needed to verify the behavior of your function
+        /* @Test
+    @Transactional
+    fun testCreateNewCalendar() {
+        // Set up test data
+        val userAccounts = listOf(UserAccount())
+        val eventDTO = UserEventDTO(Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime()))
+        val event = Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime())
+        val userEvents = listOf(eventDTO)
+        val jwtToken = "jwtToken"
+        val accessToken = "accessToken"
+        // Mock the dependencies
+        // `when`(service.buildCalendarService(accessToken)).thenReturn(GoogleCalendar())
+        `when`(service.createEventInSuggestions(accessToken, eventDTO, jwtToken, "Koja-Suggestions")).thenReturn(event)
+
+        // Call the function under test
+        service.createNewCalendar(userAccounts, userEvents, jwtToken)
+
+        // Assert the expected behavior
+        // ...
+    }*/
+
+        @Test
+        fun testCreateNewCalendar2() {
+            // Create mock dependencies
+            val jwtToken = JWTGoogleDTO("accessToken", "refreshToken", 3600)
+            val userAccounts = listOf(UserAccount())
+            val eventDTO = UserEventDTO(
+                Event().setId("minima").setStart(EventDateTime().setDate(DateTime("2022-03-15")))
+                    .setEnd(EventDateTime().setDate(DateTime("2022-03-16"))),
+            )
+            val event = Event().setRecurringEventId("minima").setStart(EventDateTime()).setEnd(EventDateTime())
+            val userEvents = listOf(eventDTO)
+            `when`(service.refreshAccessToken(eq("clientId"), eq("clientSecret"), anyString())).thenReturn(jwtToken)
+            val calendarService = GoogleCalendar(NetHttpTransport(), JacksonFactory(), null)
+            `when`(service.buildCalendarService(jwtToken.getAccessToken())).thenReturn(
+                GoogleCalendar(
+                    NetHttpTransport(),
+                    JacksonFactory(),
+                    null,
+                ),
+            )
+            `when`(calendarService.calendars().get(anyString()).execute()).thenReturn(null)
+            `when`(calendarService.events().list(anyString()).execute()).thenReturn(Events())
+            `when`(calendarService.events().delete(anyString(), anyString()).execute()).thenReturn(null)
+            `when`(service.createCalendar(calendarService, "id", userAccounts.get(0))).thenReturn("Created")
+
+            // Call the function under test
+            service.createNewCalendar(userAccounts, userEvents, "jwtToken")
+
+            // Verify interactions with the mocked dependencies
+            verify(calendarService.calendars(), times(1)).get(anyString())
+            verify(calendarService.events(), times(userEvents.size)).delete(anyString(), anyString())
+            verify(calendarService.calendars(), times(1)).delete(anyString())
+            // verify(service, times(1)).createCalendar(Calendar(), anyString(), any(UserAccount::class.java))
+            verify(service, times(userEvents.size)).createEventInSuggestions(
+                anyString(),
+                eventDTO,
+                anyString(),
+                anyString(),
+            )
+        }
     }
 }

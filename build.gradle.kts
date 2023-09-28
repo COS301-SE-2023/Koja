@@ -1,3 +1,4 @@
+import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -53,6 +54,16 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     implementation("software.amazon.awssdk:dynamodb:2.20.115")
+    implementation("org.bouncycastle:bcprov-jdk15on:1.68")
+
+    implementation(kotlin("stdlib-jdk8"))
+}
+
+tasks.withType<JacocoReport> {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -64,6 +75,25 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    dependsOn("test")
+
+    sourceDirectories.setFrom(files("src/main/kotlin"))
+    classDirectories.setFrom(files("build/classes/kotlin/main"))
+    executionData.setFrom(fileTree("build") { include("jacoco/test.exec") })
+
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "17"
 }
 
 allprojects {
