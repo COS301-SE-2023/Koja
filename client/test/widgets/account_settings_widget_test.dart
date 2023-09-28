@@ -7,6 +7,7 @@ import 'package:koja/widgets/account_settings_widget.dart';
 import 'package:koja/providers/service_provider.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:koja/widgets/add_email_widget.dart';
+import 'package:mockito/mockito.dart';
 
 void main() {
   setUp(() async{
@@ -113,9 +114,52 @@ void main() {
   });
 
   testWidgets('DeleteEmail delete test', (WidgetTester tester) async {
-    
-  })
+    final serviceProvider = MockServiceProvider();
+    final contextProvider = ContextProvider();
 
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ServiceProvider>.value(
+            value: serviceProvider,
+          ),
+          ChangeNotifierProvider<ContextProvider>.value(
+            value: contextProvider,
+          ),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: AccountSettingsWidget(),
+          ),
+        ),
+      ),
+    );
+
+    // when(serviceProvider.deleteUserAccount())
+    //     .thenReturn(Future.value(true));
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.text('Are you sure you want to delete this account?'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
+
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+
+  });
+
+
+}
+
+class MockServiceProvider extends Mock implements ServiceProvider {
+
+  @override
+  Future<bool> deleteUserAccount() {
+    return Future.value(true);
+  }
 }
 
 void ignoreOverflowErrors(
