@@ -5,15 +5,18 @@ import logging
 import os
 import time
 
+import boto3
 import requests
 import schedule as schedule
+from boto3.dynamodb.conditions import Key
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-
+from decimal import Decimal
 from CryptoService import CryptoService
 from EventClassifier import EventClassifier
+from datetime import datetime
 
 from EventRecommender import EventRecommender
 
@@ -32,7 +35,7 @@ TIME_FRAME_MODEL_FILE_LOCATION = "AI/Models/time_frame_model"
 def clean_training_data(training_data):
     all_events = []
 
-    for block in training_data[:3]:
+    for block in training_data:
         expanded_events = []
         for event in block["training"] + block["testing"]:
             for time_frame in event["timeFrame"]:
@@ -43,9 +46,9 @@ def clean_training_data(training_data):
                 new_event["endTime"] = crypto_service.decrypt_data(
                     time_frame["second"]
                 ).strip()
-                new_event["category"] = classifier.classify_event(
-                    crypto_service.decrypt_data(event["category"]).strip()
-                )
+                new_event["category"] = crypto_service.decrypt_data(
+                    event["category"]
+                ).strip()
                 new_event["weekday"] = crypto_service.decrypt_data(
                     event["weekday"]
                 ).strip()
@@ -55,11 +58,76 @@ def clean_training_data(training_data):
                 new_event[
                     "timeFrame"
                 ] = f"{new_event['startTime']}-{new_event['endTime']}"
+
+                # Calculate duration
+                start_time = datetime.strptime(new_event["startTime"], "%H:%M")
+                end_time = datetime.strptime(new_event["endTime"], "%H:%M")
+                duration = abs((end_time - start_time).seconds / 60)
+                new_event["duration"] = duration
+
                 expanded_events.append(new_event)
 
         all_events += expanded_events
 
     return all_events
+
+
+def store_event_names_per_category(all_events):
+    unique_user_ids = get_unique_user_ids(all_events)
+    for user_id in unique_user_ids:
+        event_names_per_category = get_user_categories(user_id)
+
+        for index in range(len(all_events)):
+            if all_events[index]["userID"] == user_id:
+                event = all_events[index]
+
+                event_name = event["category"]
+                category = classifier.classify_event(event["category"])
+                event["category"] = category
+
+                all_events[index] = event
+
+                if category not in event_names_per_category:
+                    event_names_per_category[category] = []
+                    event_entry = {
+                        "name": str.strip(event_name),
+                        "occurrence": 1,
+                        "total_time": event["duration"],
+                    }
+                    event_names_per_category[category].append(event_entry)
+                else:
+                    categories_event_names = event_names_per_category.get(category)
+                    found = False
+                    for i in range(len(categories_event_names)):
+                        event_entry = categories_event_names[i]
+
+                        if event_name.find(event_entry["name"]) != -1:
+                            found = True
+                            event_entry["occurrence"] += 1
+                            event_entry["total_time"] += event["duration"]
+                            break
+
+                        if found:
+                            categories_event_names[i] = event_entry
+
+                    if not found:
+                        event_entry = {
+                            "name": str.strip(event_name),
+                            "occurrence": 1,
+                            "total_time": event["duration"],
+                        }
+                        categories_event_names.append(event_entry)
+
+                    event_names_per_category[category] = categories_event_names
+
+        store_user_categories(user_id, event_names_per_category)
+
+
+def get_unique_user_ids(all_events):
+    unique_user_ids = set()
+    for event in all_events:
+        unique_user_ids.add(event["userID"])
+    return unique_user_ids
 
 
 @app.route("/train/new-user", methods=["POST"])
@@ -115,48 +183,49 @@ def get_ai_public_key():
 
 
 def retrain_for_new_users():
-    try:
-        training = True
-        account_events_endpoint = f"{os.getenv('SERVER_ADDRESS')}:{os.getenv('SERVER_PORT')}/api/v1/ai/get-account-events"
-        new_users_emails = get_new_users_emails()
+    account_events_endpoint = f"{os.getenv('SERVER_ADDRESS')}:{os.getenv('SERVER_PORT')}/api/v1/ai/get-account-events"
+    new_users_emails = get_new_users_emails()
 
-        user_account_events = [None] * len(new_users_emails)
+    user_account_events = [None] * len(new_users_emails)
 
-        koja_public_key = get_koja_public_key()
-        public_key = crypto_service.get_public_key()
-        encrypted_koja_secret_id = crypto_service.encrypt_data(
-            data=os.getenv("KOJA_ID_SECRET"), public_key=koja_public_key
+    koja_public_key = get_koja_public_key()
+    public_key = crypto_service.get_public_key()
+    encrypted_koja_secret_id = crypto_service.encrypt_data(
+        data=os.getenv("KOJA_ID_SECRET"), public_key=koja_public_key
+    )
+
+    request_payload = {
+        "publicKey": public_key,
+        "kojaIDSecret": base64.b64encode(encrypted_koja_secret_id).decode("ascii"),
+    }
+
+    request_json_str = json.dumps(request_payload)
+
+    for i in range(len(new_users_emails)):
+        encrypted_email = base64.b64encode(
+            crypto_service.encrypt_data(
+                data=new_users_emails[i], public_key=get_koja_public_key()
+            )
+        ).decode("ascii")
+        user_account_events[i] = requests.get(
+            account_events_endpoint,
+            params={"request": request_json_str, "userEmail": encrypted_email},
         )
 
-        request_payload = {
-            "publicKey": public_key,
-            "kojaIDSecret": base64.b64encode(encrypted_koja_secret_id).decode("ascii"),
-        }
+    usable_events = []
+    for user_event_set in user_account_events:
+        if user_event_set.status_code == 200:
+            usable_events += user_event_set.json()
 
-        request_json_str = json.dumps(request_payload)
+    events_data = clean_training_data(usable_events)
+    store_event_names_per_category(events_data)
+    if len(events_data) > 0:
+        event_recommender.refit_model(events_data)
 
-        for i in range(len(new_users_emails)):
-            encrypted_email = base64.b64encode(
-                crypto_service.encrypt_data(
-                    data=new_users_emails[i], public_key=get_koja_public_key()
-                )
-            ).decode("ascii")
-            user_account_events[i] = requests.get(
-                account_events_endpoint,
-                params={"request": request_json_str, "userEmail": encrypted_email},
-            )
-
-        usable_events = []
-        for user_event_set in user_account_events:
-            if user_event_set.status_code == 200:
-                usable_events += user_event_set.json()
-
-        events_data = clean_training_data(usable_events)
-        if len(events_data) > 0:
-            event_recommender.refit_model(events_data)
-
-    finally:
-        training = False
+    unique_user_ids = get_unique_user_ids(events_data)
+    for user_id in unique_user_ids:
+        user_recommendations = event_recommender.get_user_recommendation(user_id)
+        store_user_recommendations(user_id, user_recommendations)
 
 
 def retrain_for_all_users():
@@ -196,8 +265,14 @@ def retrain_for_all_users():
             usable_events += user_event_set.json()
 
     events_data = clean_training_data(usable_events)
+    store_event_names_per_category(events_data)
     if len(events_data) > 0:
         event_recommender.refit_model(events_data)
+
+    unique_user_ids = get_unique_user_ids(events_data)
+    for user_id in unique_user_ids:
+        user_recommendations = event_recommender.get_user_recommendation(user_id)
+        store_user_recommendations(user_id, user_recommendations)
 
 
 def auto_train_new():
@@ -305,10 +380,95 @@ def get_all_users_emails():
     return emails
 
 
+def store_user_recommendations(user_id, user_recommendations):
+    aws_access_key_id = os.getenv("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID")
+    aws_secret_access_key = os.getenv("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET")
+
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        region_name="eu-north-1",
+    )
+
+    dynamodb = session.resource("dynamodb")
+    table = dynamodb.Table("Koja-AI")
+
+    # Convert float values to Decimal
+    user_recommendations_json = json.loads(
+        json.dumps(user_recommendations), parse_float=Decimal
+    )
+
+    response = table.put_item(
+        Item={"user": user_id, "recommendations": user_recommendations_json}
+    )
+
+    return response
+
+
+def store_user_categories(user_id, event_names_per_category):
+    aws_access_key_id = os.getenv("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID")
+    aws_secret_access_key = os.getenv("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET")
+
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        region_name="eu-north-1",
+    )
+
+    dynamodb = session.resource("dynamodb")
+    table = dynamodb.Table("User-Category-Events")
+
+    # Convert float values to Decimal
+    event_names_per_category = json.loads(
+        json.dumps(event_names_per_category), parse_float=Decimal
+    )
+
+    response = table.put_item(
+        Item={"user": user_id, "categories": event_names_per_category}
+    )
+
+    return response
+
+
+def get_user_categories(user_id):
+    aws_access_key_id = os.getenv("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID")
+    aws_secret_access_key = os.getenv("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET")
+
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        region_name="eu-north-1",
+    )
+
+    dynamodb = session.resource("dynamodb")
+    table = dynamodb.Table("User-Category-Events")
+
+    response = table.query(KeyConditionExpression=Key("user").eq(user_id))
+
+    if "Items" in response and len(response["Items"]) > 0:
+        # No need to use json.loads()
+        event_names_per_category = response["Items"][0]["categories"]
+    else:
+        event_names_per_category = {}
+
+    return decimal_to_float(event_names_per_category)
+
+
+def decimal_to_float(d):
+    if isinstance(d, list):
+        return [decimal_to_float(v) for v in d]
+    elif isinstance(d, dict):
+        return {k: decimal_to_float(v) for k, v in d.items()}
+    elif isinstance(d, Decimal):
+        return float(d)
+    else:
+        return d
+
+
 if __name__ == "__main__":
-    # auto_train_new(get_training_data())
-    # auto_train_new(get_training_data())
     load_dotenv()
+    # auto_train_new()
+    # auto_train_new()
     port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
     app.run(host="0.0.0.0", port=port, debug=True)
