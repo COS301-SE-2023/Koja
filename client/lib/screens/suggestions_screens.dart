@@ -16,98 +16,34 @@ class SuggestionsTasksScreen extends StatefulWidget {
 }
 
 class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
+
+  final List<Event> _mockEventList = <Event>[
+    Event(
+        title: 'Event 1',
+        description: 'Event 1 Description',
+        from: DateTime.now().add(Duration(hours: 2)),
+        to: DateTime.now().add(Duration(hours: 4)),
+        isAllDay: false,
+        location: "",
+        backgroundColor: Colors.red,
+        isDynamic: false),
+    Event(
+        title: 'Event 2',
+        description: 'Event 2 Description',
+        from: DateTime.now().add(Duration(hours: 5)),
+        to: DateTime.now().add(Duration(hours: 7)),
+        isAllDay: false,
+        location: "",
+        backgroundColor: Colors.red,
+        isDynamic: false),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     // final contextProvider = Provider.of<ContextProvider>(context, listen: false);
-    final mockEventList = List<Event>.empty(growable: true);
-    final Event event1 = Event(
-      title: 'Event 1',
-      description: 'Event 1 Description',
-      from: DateTime.now().add(Duration(hours: 2)),
-      to: DateTime.now().add(Duration(hours: 4)),
-      isAllDay: false,
-      location: ""
-    );
-    mockEventList.add(event1);
-    final Event event2 = Event(
-      title: 'Event 2',
-      description: 'Event 2 Description',
-      from: DateTime.now().add(Duration(hours: 5)),
-      to: DateTime.now().add(Duration(hours: 7)),
-      isAllDay: false,
-      location: ""
-    );
-    mockEventList.add(event2);
-    //final mediaQuery = MediaQuery.of(context);
-    // return Scaffold(
-    //   body: Column(
-    //       mainAxisAlignment: MainAxisAlignment.start,
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //
-    //     children : [
-    //       SizedBox(
-    //         height: 10,
-    //       ),
-    //       Container(
-    //         height: 700,
-    //         width: 1500,
-    //         child: SfCalendar(
-    //
-    //           view: CalendarView.week,
-    //           allowedViews: const [
-    //             CalendarView.day,
-    //             CalendarView.week,
-    //             CalendarView.month,
-    //           ],
-    //
-    //           dataSource: MeetingDataSource(_mockEventList),
-    //           monthViewSettings: MonthViewSettings(
-    //               appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-    //           onTap: (CalendarTapDetails details) {
-    //             if (details.targetElement == CalendarElement.appointment) {
-    //
-    //               final Event meeting = details.appointments![0] as Event;
-    //               setState(() {
-    //                 //meeting.isDynamic = meeting.isDynamic ? false : true;
-    //                 //meeting.backgroundColor = meeting.isDynamic ? Colors.red : Colors.blue;
-    //               });
-    //               print(meeting.isDynamic);
-    //             }
-    //           },
-    //         ),
-    //       ),
-    //
-    //
-    //       Padding(
-    //         padding: const EdgeInsets.only(left: 10.0),
-    //
-    //         child: ElevatedButton(
-    //           onPressed: () async {
-    //             if (await serviceProvider.setSuggestedCalendar(_mockEventList)){
-    //               ScaffoldMessenger.of(context).showSnackBar(
-    //                 SnackBar(
-    //                   content: Text('Calendar Set Successfully'),
-    //                 ),
-    //               );
-    //             } else {
-    //               ScaffoldMessenger.of(context).showSnackBar(
-    //                 SnackBar(
-    //                   content: Text('Calendar Set Failed'),
-    //                 ),
-    //               );
-    //             }
-    //           },
-    //           child: Text('Set Koja Calendar'),
-    //
-    //         ),
-    //       ),
-    //       SizedBox(
-    //         height: 10,
-    //       ),
-    // ]  ),
-    // );
+
     return Scaffold(
       body: Stack(
         children: [
@@ -121,17 +57,24 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
                 CalendarView.week,
                 CalendarView.month,
               ],
-              dataSource: MeetingDataSource(mockEventList),
+              dataSource: MeetingDataSource(_mockEventList),
               monthViewSettings: MonthViewSettings(
                   appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
               onTap: (CalendarTapDetails details) {
                 if (details.targetElement == CalendarElement.appointment) {
+
                   final Event meeting = details.appointments![0] as Event;
                   setState(() {
-                    //meeting.isDynamic = meeting.isDynamic ? false : true;
-                    //meeting.backgroundColor = meeting.isDynamic ? Colors.red : Colors.blue;
+                    //meeting.changeColor();
+                    if (meeting.backgroundColor == Colors.blue){
+                      meeting.backgroundColor = Colors.red;
+                      meeting.isLocked = true;
+                    }else {
+                      meeting.backgroundColor = Colors.blue;
+                      meeting.isLocked = false;
+                    }
                   });
-                  if(kDebugMode) print(meeting.isDynamic);
+                  print(meeting.isLocked);
                 }
               },
             ),
@@ -141,7 +84,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
             right: 15.0,
             child: ElevatedButton(
               onPressed: () async {
-                if (await serviceProvider.setSuggestedCalendar(mockEventList)){
+                if (await serviceProvider.setSuggestedCalendar(_mockEventList)){
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Calendar Set Successfully'),
@@ -170,6 +113,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
   }
 
 }
+
 
 class MeetingDataSource extends CalendarDataSource {
   MeetingDataSource(List<Event> source) {

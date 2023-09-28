@@ -11,12 +11,13 @@ class Event {
   final int duration;
   final List<TimeSlot> timeSlots;
   final String category;
-  final Color backgroundColor;
+  Color backgroundColor;
   final bool isAllDay;
   final int priority;
-  final bool isDynamic;
+  bool isDynamic;
+  bool isLocked = false;
 
-  const Event({
+  Event({
     this.id = '',
     required this.title,
     this.description = '',
@@ -31,6 +32,7 @@ class Event {
     this.priority = 1,
     this.isDynamic = false,
   });
+
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
