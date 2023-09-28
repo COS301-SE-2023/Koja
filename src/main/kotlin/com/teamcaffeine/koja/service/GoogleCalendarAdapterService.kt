@@ -828,13 +828,13 @@ class GoogleCalendarAdapterService(
         }
     }
 
-    private fun findTimeZoneIdForOffset(offsetDateTime: OffsetDateTime): ZoneId {
-        val offset = offsetDateTime.offset
-        return ZoneId.systemDefault().rules.getValidOffsets(offsetDateTime.toLocalDateTime())
-            .find { it == offset }
-            ?.let { ZoneId.ofOffset("UTC", it) }
-            ?: ZoneId.of("UTC")
-    }
+//    private fun findTimeZoneIdForOffset(offsetDateTime: OffsetDateTime): ZoneId {
+//        val offset = offsetDateTime.offset
+//        return ZoneId.systemDefault().rules.getValidOffsets(offsetDateTime.toLocalDateTime())
+//            .find { it == offset }
+//            ?.let { ZoneId.ofOffset("UTC", it) }
+//            ?: ZoneId.of("UTC")
+//    }
 
     @Transactional
     override fun createNewCalendar(userAccounts: List<UserAccount>, userEvents: List<UserEventDTO>, jwtToken: String) {
