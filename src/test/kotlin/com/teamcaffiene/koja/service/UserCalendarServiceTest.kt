@@ -521,7 +521,6 @@ class UserCalendarServiceTest {
         val mockUserJWTData = UserJWTTokenDataDTO(userAccountList, mockUserID)
         whenever(jwtFunctionality.getUserJWTTokenData(token)).thenReturn(mockUserJWTData)
         whenever(calendarAdapterService.updateEvent(token, event1)).thenReturn(null)
-        whenever(userCalendarService.getUserCalendarAdapters(mockUserJWTData)).thenReturn(listOf(userAccount) to ArrayList<CalendarAdapterService>())
         val result = userCalendarService.updateEvent(token, event1)
 
         assertEquals(true, result)
