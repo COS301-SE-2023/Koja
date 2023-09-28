@@ -3,11 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../Utils/event_data_source_util.dart';
+import '../Utils/event_util.dart';
 import '../providers/context_provider.dart';
 import 'tasks_widget.dart';
 
 class CalendarWidget extends StatefulWidget {
-  const CalendarWidget({super.key});
+
+  final List<Event>? events;
+
+  const CalendarWidget({super.key, this.events});
 
   @override
   CalendarWidgetState createState() => CalendarWidgetState();
@@ -17,7 +21,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
   @override
   Widget build(BuildContext context) {
     final eventProvider = Provider.of<ContextProvider>(context);
-
     return SfCalendar(
       //This sets the view of the calendar to month view
 
@@ -33,7 +36,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
       firstDayOfWeek: 1,
 
       //Ths displays the events on the calendar
-      dataSource: EventDataSource(eventProvider.events),
+      dataSource: (widget.events != null) ? EventDataSource(widget.events!) : EventDataSource(eventProvider.events),
 
       //This initialises the calendar to the current date
       initialSelectedDate: DateTime.now(),
@@ -47,9 +50,12 @@ class CalendarWidgetState extends State<CalendarWidget> {
       onTap: (details) {
         final provider = Provider.of<ContextProvider>(context, listen: false);
         provider.setDate(details.date!);
+        if(widget.events != null) {
+          provider.setRecommended(widget.events!);
+        }
         showModalBottomSheet(
             context: context, 
-            builder: (context) => const TasksWidget()
+            builder: (context) => (widget.events != null) ? TasksWidget(date: details.date!,) : TasksWidget()
         );
       }
     );

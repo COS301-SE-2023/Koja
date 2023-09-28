@@ -94,12 +94,15 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will attempt to get all the events which will be used for suggestions
-  Future<List<String>> getEventsForAI() async {
+  Future<List<List<Event>>> getEventsForAI(String userID) async {
+    if(!kDebugMode) {
+      userID = "_";
+    }
     final path = '/api/v1/ai/get-user-events';
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
-        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
-        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path, {'userID': userID})
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path, {'userID': userID});
 
     final response = await http.get(
       url,
@@ -108,11 +111,14 @@ class ServiceProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(response.body);
-      return result.map((e) => e.toString()).toList();
+      return result.map((list) => (list as List).map((json) => Event.fromJson(json)).toList()).toList();
     } else {
       return [];
     }
   }
+
+
+
 
   /// This Section deals with all the user related functions (emails, login, etc.)
 

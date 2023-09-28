@@ -10,7 +10,9 @@ import '../providers/context_provider.dart';
 import 'event_editing_widget.dart';
 
 class TasksWidget extends StatefulWidget {
-  const TasksWidget({Key? key}) : super(key: key);
+  final DateTime? date;
+
+  const TasksWidget({Key? key, this.date}) : super(key: key);
 
   @override
   TasksWidgetState createState() => TasksWidgetState();
@@ -20,7 +22,7 @@ class TasksWidgetState extends State<TasksWidget> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ContextProvider>(context);
-    final selectedEvents = provider.eventsOfSelectedDate;
+    final selectedEvents = (widget.date != null) ? provider.recomendedEventsSelection : provider.eventsOfSelectedDate;
 
     DateTime selectedDate = DateTime(
       provider.selectedDate.year,
@@ -75,7 +77,7 @@ class TasksWidgetState extends State<TasksWidget> {
         ),
       ),
       child: SfCalendar(
-        dataSource: EventDataSource(provider.events),
+        dataSource: EventDataSource(selectedEvents),
         initialSelectedDate: provider.selectedDate,
 
         timeSlotViewSettings: TimeSlotViewSettings(

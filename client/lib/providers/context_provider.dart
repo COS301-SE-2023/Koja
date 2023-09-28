@@ -13,6 +13,7 @@ import '../models/user_time_boundary_model.dart';
 class ContextProvider extends ChangeNotifier {
   String? _accessToken;
   List<String> userEmails = [];
+  List<Event> recommendedEvents = [];
 
   void init(String accessToken) {
     _accessToken = accessToken;
@@ -153,6 +154,8 @@ class ContextProvider extends ChangeNotifier {
   //This returns the events of the selected date
   List<Event> get eventsOfSelectedDate => _events;
 
+  List<Event> get recomendedEventsSelection => recommendedEvents;
+
   //This adds an event to the list
   void addEvent(Event event) {
     _events.add(event);
@@ -253,5 +256,9 @@ class ContextProvider extends ChangeNotifier {
     if (accessToken != null) {
       getEventsFromAPI(accessToken!);
     }
+  }
+
+  void setRecommended(List<Event> list) {
+    recommendedEvents = list;
   }
 }

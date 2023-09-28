@@ -529,8 +529,7 @@ class UserCalendarService(
 
         // For each category
         for ((category, events) in userCategoryEvents) {
-            // Get top 3 events
-            val topEventNames = events.sortedByDescending { it["occurrence"].toString().toInt() }.map { it["name"] }
+            val orderedEvents = events.sortedByDescending { it["occurrence"].toString().toInt() }.map { it }
 
             // Get days and timeframes for this category
             val daysAndTimeframes = toReturn[category]?.flatMap { it.entries } ?: listOf()
@@ -538,70 +537,63 @@ class UserCalendarService(
             // Generate permutations
             for ((day, timeframes) in daysAndTimeframes) {
                 for (timeframe in timeframes) {
-                    for (eventName in topEventNames) {
-                        val eventNameStr = eventName.toString()
+                    for (event in orderedEvents) {
+                        val eventNameStr = event["name"].toString()
                         var evenStart = OffsetDateTime.now().withOffsetSameLocal(ZoneOffset.UTC)
                         var eventEnd = OffsetDateTime.now().withOffsetSameLocal(ZoneOffset.UTC)
                         val timeFrameSplit = timeframe.split("-")
                         val startTimeSplit = timeFrameSplit[0].split(":")
-                        val endTimeSplit = timeFrameSplit[1].split(":")
+                        val avgEventDurr = event["total_time"].toString().toLong() / event["occurrence"].toString().toLong()
+
                         when (day.lowercase()) {
                             "monday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
                             "tuesday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.TUESDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.TUESDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
                             "wednesday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
                             "thursday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.THURSDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.THURSDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
                             "friday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.FRIDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.FRIDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
                             "saturday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
                             "sunday" -> {
                                 evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
                                     .withHour(startTimeSplit[0].toInt())
                                     .withMinute(startTimeSplit[1].toInt())
-                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
-                                    .withHour(endTimeSplit[0].toInt())
-                                    .withMinute(endTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
                             }
+                        }
+
+                        if (evenStart.isAfter(eventEnd)) {
+                            val temp = evenStart
+                            evenStart = eventEnd
+                            eventEnd = temp
                         }
 
                         val toAdd = UserEventDTO()
@@ -616,6 +608,8 @@ class UserCalendarService(
                 }
             }
         }
+
+        categoryPermutations.shuffle()
 
         val noClashPermutations = mutableListOf<MutableList<UserEventDTO>>()
         for (event in categoryPermutations) {
@@ -634,17 +628,17 @@ class UserCalendarService(
         }
 
         for (list in noClashPermutations) {
-            if (list.size < 7) {
+            if (list.size < 12) {
                 for (event in categoryPermutations) {
                     if (!hasClash(list, event)) {
                         list.add(event)
-                        if (list.size == 7) break
+                        if (list.size == 12) break
                     }
                 }
             }
         }
 
-        return noClashPermutations
+        return noClashPermutations.sortedByDescending { it.size }.toMutableList()
     }
 
     fun hasClash(list: List<UserEventDTO>, event: UserEventDTO): Boolean {
