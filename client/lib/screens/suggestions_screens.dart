@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:koja/Utils/event_util.dart';
 import 'package:provider/provider.dart';
@@ -74,7 +73,7 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
                       meeting.isLocked = false;
                     }
                   });
-                  print(meeting.isLocked);
+
                 }
               },
             ),

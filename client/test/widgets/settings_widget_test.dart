@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:koja/Utils/event_util.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:koja/providers/service_provider.dart';
 import 'package:koja/widgets/settings_widget.dart';

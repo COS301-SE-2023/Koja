@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +16,7 @@ void main(){
       testWidgets('UI test', (WidgetTester tester) async{
         final serviceProvider = ServiceProvider();
         final contextProvider = ContextProvider();
-        final deleteFunction = (BuildContext context) {};
+        deleteFunction(BuildContext context) {}
         await tester.pumpWidget(
           MultiProvider(
             providers: [
