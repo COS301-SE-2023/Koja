@@ -251,7 +251,7 @@ class GoogleCalendarAdapterServiceTest {
         // ...
     }*/
 
-    // @Test
+    @Test
     fun testCreateNewCalendar2() {
         // Create mock dependencies
         val jwtToken = JWTGoogleDTO("accessToken", "refreshToken", 3600)
