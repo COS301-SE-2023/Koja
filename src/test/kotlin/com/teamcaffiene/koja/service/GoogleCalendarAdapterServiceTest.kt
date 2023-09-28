@@ -67,7 +67,7 @@ class GoogleCalendarAdapterServiceTest {
         MockitoAnnotations.openMocks(this)
 
         importEnvironmentVariables()
-
+        restTemplate = RestTemplate()
         service = spy(GoogleCalendarAdapterService(userRepository, userAccountRepository))
     }
 
@@ -509,14 +509,15 @@ class GoogleCalendarAdapterServiceTest {
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
 
         val requestEntity = HttpEntity(parameters, headers)
+
         responseHeaders.contentType = MediaType.APPLICATION_JSON
-        val responseEntity = ResponseEntity(responseJson, responseHeaders, HttpStatus.OK)
         val builder = UriComponentsBuilder
             .fromHttpUrl(tokenEndpointUrl)
             .queryParams(parameters)
         val requestUrl = builder.build().encode().toUri()
+        val responseEntity = ResponseEntity(responseJson, responseHeaders, HttpStatus.OK)
 
-        whenever(restTemplate.exchange(anyString(), any(HttpMethod::class.java), any(), eq(String::class.java)))
+        whenever(restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java))
             .thenReturn(responseEntity)
         whenever(userAccountRepository.findByEmail(anyString())).thenReturn(UserAccount())
 
@@ -528,14 +529,14 @@ class GoogleCalendarAdapterServiceTest {
         // Assert
         assertEquals(expectedAccessToken, jwtToken)
         val body = HttpEntity(
-            "code=authCode&client_id=your_client_id&client_secret=your_client_secret&redirect_uri=http://localhost:8080/oauth2/callback&grant_type=authorization_code",
+            "code=authCode&client_id=GOOGLE_CLIENT_ID&client_secret=GOOGLE_CLIENT_Secret&redirect_uri=http://localhost:8080/oauth2/callback&grant_type=authorization_code",
             HttpHeaders(),
         )
         // Verify that restTemplate.exchange was called with the correct arguments
         verify(restTemplate).exchange(
             eq("https://oauth2.googleapis.com/token"),
             eq(HttpMethod.POST),
-            argThat { body is HttpEntity && (body as HttpEntity<*>).body.toString().contains("code=your_auth_code") },
+            argThat { body is HttpEntity && (body as HttpEntity<*>).body.toString().contains("code=authCode") },
             eq(String::class.java),
         )
 
