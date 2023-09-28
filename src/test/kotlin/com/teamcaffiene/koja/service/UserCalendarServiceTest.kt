@@ -1,23 +1,20 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.controller.TokenManagerController
-import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.controller.TokenRequest
-import com.teamcaffeine.koja.dto.*
+import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
+import com.teamcaffeine.koja.dto.JWTFunctionality
+import com.teamcaffeine.koja.dto.JWTGoogleDTO
+import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
-import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
-import com.teamcaffeine.koja.service.CalendarAdapterFactoryService
-import com.teamcaffeine.koja.service.CalendarAdapterService
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -25,7 +22,11 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 import java.util.Optional
 
 class UserCalendarServiceTest {
@@ -33,11 +34,8 @@ class UserCalendarServiceTest {
     @Mock
     lateinit var userRepository: UserRepository
 
-
     @Mock
     private lateinit var userAccountRepository: UserAccountRepository
-
-
 
     @Mock
     private lateinit var jwtFunctionality: JWTFunctionality
@@ -89,8 +87,6 @@ class UserCalendarServiceTest {
     @Test
     fun getAllUserEvents_with_null_token_throws_exception() {
         // Arrange
-        val token = "***redacted***"
-        val userJWTTokenDataDTO = UserJWTTokenDataDTO(userID = 1, userAuthDetails = emptyList())
         val mockUserID = 1
         val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
         val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
@@ -99,7 +95,7 @@ class UserCalendarServiceTest {
             TokenRequest(
                 arrayListOf(authDetails),
                 AuthProviderEnum.GOOGLE,
-                 mockUserID,
+                mockUserID,
             ),
         )
         val tokenT = "mockToken"
