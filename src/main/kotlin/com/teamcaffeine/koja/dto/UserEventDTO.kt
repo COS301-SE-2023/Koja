@@ -48,6 +48,21 @@ class UserEventDTO(
         recurrence = googleEvent.recurrence ?: null,
     )
 
+    constructor() : this(
+        id = "",
+        summary = "",
+        description = null,
+        location = "",
+        startTime = OffsetDateTime.now(ZoneOffset.UTC),
+        endTime = OffsetDateTime.now(ZoneOffset.UTC),
+        duration = 0L,
+        timeSlots = listOf(),
+        priority = 0,
+        dynamic = false,
+        travelTime = 0L,
+        recurrence = null,
+    )
+
     fun getId(): String {
         return id
     }

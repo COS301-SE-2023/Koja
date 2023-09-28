@@ -18,10 +18,8 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import java.time.Duration
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import java.time.*
+import java.time.temporal.TemporalAdjusters
 
 @Service
 class UserCalendarService(
@@ -467,7 +465,7 @@ class UserCalendarService(
             .expressionAttributeNames(attrNames)
             .build()
 
-        var toReturn: Map<String, Map<String, List<String>>>? = null
+        var toReturn: Map<String, List<Map<String, List<String>>>>? = null
 
         val response = dynamoDBClient.query(request)
         val items = response.items()
@@ -477,15 +475,199 @@ class UserCalendarService(
                 val recommendations = userItem["recommendations"]?.m()
                 if (recommendations != null) {
                     toReturn = recommendations.mapValues { entry ->
-                        entry.value.l().map { it.m()["week_days"]?.m()?.mapValues { attr -> attr.value.l().map { it.s() ?: "" } } ?: mapOf() }
+                        entry.value.l().map {
+                                value ->
+                            value.m()["week_days"]?.m()?.mapValues {
+                                    attr ->
+                                attr.value.l().map {
+                                    it.s() ?: ""
+                                }
+                            } ?: mapOf()
+                        }
                     }
                 }
             }
         }
 
-        return toReturn ?: mapOf<String, Map<String, List<String>>>()
+        val categoryRequest = QueryRequest.builder()
+            .tableName("User-Category-Events")
+            .keyConditionExpression("#n_user = :v_user")
+            .expressionAttributeValues(attrValues)
+            .expressionAttributeNames(attrNames)
+            .build()
+
+        var userCategoryEvents = mapOf<String, List<Map<String, Any>>>()
+
+        val categoryResponse = dynamoDBClient.query(categoryRequest)
+        val categoryItems = categoryResponse.items()
+        if (categoryItems.isNotEmpty()) {
+            val userCategoryItem = categoryItems.firstOrNull()
+            if (userCategoryItem != null) {
+                val categories = userCategoryItem["categories"]?.m()
+                if (categories != null) {
+                    userCategoryEvents = categories.mapValues { entry ->
+                        entry.value.l().map { categoryItem ->
+                            categoryItem.m().mapValues { attr ->
+                                if (attr.value.type() == AttributeValue.Type.S) {
+                                    attr.value.s() ?: ""
+                                } else {
+                                    attr.value.n() ?: ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        val results = toReturn?.let { createPermutations(userCategoryEvents, it) }
+        return results ?: emptyList<String>()
     }
 
+    fun createPermutations(userCategoryEvents: Map<String, List<Map<String, Any>>>, toReturn: Map<String, List<Map<String, List<String>>>>): MutableList<MutableList<UserEventDTO>> {
+        val categoryPermutations = mutableListOf<UserEventDTO>()
+
+        // For each category
+        for ((category, events) in userCategoryEvents) {
+            // Get top 3 events
+            val topEventNames = events.sortedByDescending { it["occurrence"].toString().toInt() }.map { it["name"] }
+
+            // Get days and timeframes for this category
+            val daysAndTimeframes = toReturn[category]?.flatMap { it.entries } ?: listOf()
+
+            // Generate permutations
+            for ((day, timeframes) in daysAndTimeframes) {
+                for (timeframe in timeframes) {
+                    for (eventName in topEventNames) {
+                        val eventNameStr = eventName.toString()
+                        var evenStart = OffsetDateTime.now().withOffsetSameLocal(ZoneOffset.UTC)
+                        var eventEnd = OffsetDateTime.now().withOffsetSameLocal(ZoneOffset.UTC)
+                        val timeFrameSplit = timeframe.split("-")
+                        val startTimeSplit = timeFrameSplit[0].split(":")
+                        val endTimeSplit = timeFrameSplit[1].split(":")
+                        when (day.lowercase()) {
+                            "monday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                            "tuesday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.TUESDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.TUESDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                            "wednesday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                            "thursday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.THURSDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.THURSDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                            "friday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.FRIDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.FRIDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                            "saturday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                            "sunday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = eventEnd.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
+                                    .withHour(endTimeSplit[0].toInt())
+                                    .withMinute(endTimeSplit[1].toInt())
+                            }
+                        }
+
+                        val toAdd = UserEventDTO()
+                        toAdd.setSummary(eventNameStr)
+                        toAdd.setStartTime(startTime = evenStart)
+                        toAdd.setEndTime(endTime = eventEnd)
+
+                        categoryPermutations.add(
+                            toAdd,
+                        )
+                    }
+                }
+            }
+        }
+
+        val noClashPermutations = mutableListOf<MutableList<UserEventDTO>>()
+        for (event in categoryPermutations) {
+            var added = false
+            for (list in noClashPermutations) {
+                if (!hasClash(list, event) && list.size < 21) {
+                    list.add(event)
+                    added = true
+                    break
+                }
+            }
+            if (!added) {
+                val newList = mutableListOf(event)
+                noClashPermutations.add(newList)
+            }
+        }
+
+        for (list in noClashPermutations) {
+            if (list.size < 7) {
+                for (event in categoryPermutations) {
+                    if (!hasClash(list, event)) {
+                        list.add(event)
+                        if (list.size == 7) break
+                    }
+                }
+            }
+        }
+
+        return noClashPermutations
+    }
+
+    fun hasClash(list: List<UserEventDTO>, event: UserEventDTO): Boolean {
+        val potentialStartTime = event.getStartTime()
+        val potentialEndTime = event.getEndTime()
+
+        val conflictingEvent = list.find {
+            val userEventStartTime = it.getStartTime()
+            val userEventEndTime = it.getEndTime()
+
+            (userEventEndTime.isAfter(potentialStartTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
+                (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
+                (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
+        }
+
+        return conflictingEvent != null
+    }
 
     fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
