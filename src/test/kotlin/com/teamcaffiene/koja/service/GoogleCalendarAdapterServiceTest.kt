@@ -39,7 +39,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
 import java.lang.System.setProperty
 import java.time.OffsetDateTime
 
@@ -51,7 +53,7 @@ class GoogleCalendarAdapterServiceTest {
     lateinit var calendar: Calendar
 
     @Mock
-    val restTemplate: RestTemplate = RestTemplate()
+    lateinit var restTemplate: RestTemplate
 
     @Mock
     lateinit var userAccountRepository: UserAccountRepository
@@ -491,16 +493,32 @@ class GoogleCalendarAdapterServiceTest {
         val expectedRefreshToken = "refresh_token"
         val expectedExpiresIn = 3600L
         val expectedUserEmail = "user@example.com"
-
+        val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
         // Mock the behavior of restTemplate.exchange
         val responseHeaders = HttpHeaders()
         val responseJson = "{\"access_token\":\"expectedAccessToken\",\"expires_in\":expires_in,\"refresh_token\":\"expectedRefreshToken\"}"
         "}"
+        val headers = org.springframework.http.HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        headers.accept = listOf(MediaType.APPLICATION_JSON)
+
+        val parameters = LinkedMultiValueMap<String, String>()
+        parameters.add("grant_type", "authorization_code")
+        parameters.add("code", "authCode")
+        parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
+        parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
+
+        val requestEntity = HttpEntity(parameters, headers)
         responseHeaders.contentType = MediaType.APPLICATION_JSON
         val responseEntity = ResponseEntity(responseJson, responseHeaders, HttpStatus.OK)
-        // `when`(restTemplate.exchange(anyString(), any(HttpMethod::class.java), any(HttpEntity::class.java), eq(String::class.java)))
-        //    .thenReturn(responseEntity)
-        `when`(userAccountRepository.findByEmail(anyString())).thenReturn(UserAccount())
+        val builder = UriComponentsBuilder
+            .fromHttpUrl(tokenEndpointUrl)
+            .queryParams(parameters)
+        val requestUrl = builder.build().encode().toUri()
+
+        whenever(restTemplate.exchange(anyString(), any(HttpMethod::class.java), any(), eq(String::class.java)))
+            .thenReturn(responseEntity)
+        whenever(userAccountRepository.findByEmail(anyString())).thenReturn(UserAccount())
 
         // Mock getUserEmail and other relevant methods
 
