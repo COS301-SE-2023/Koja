@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:koja/Utils/event_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -11,8 +12,9 @@ void main() {
   group('ContextProvider', () {
     late ContextProvider eventProvider;
 
-    setUp(() {
+    setUp(() async{
       eventProvider = ContextProvider();
+      await dotenv.load(fileName: "assets/.env");
     });
 
     test('setDate changes selected date and notifies listeners', () {
@@ -29,8 +31,7 @@ void main() {
       bool notified = false;
       eventProvider.addListener(() => notified = true);
 
-      var event = Event(title: 'Test', from: DateTime.now(), to: DateTime.now()); // fill out according to your Event constructor
-      // fill out according to your Event constructor
+      var event = Event(title: 'Test', from: DateTime.now(), to: DateTime.now());
 
       eventProvider.addEvent(event);
 
@@ -55,5 +56,6 @@ void main() {
       expect(eventProvider.events.contains(updatedEvent), true);
       expect(notified, true);
     });
+
   });
 }
