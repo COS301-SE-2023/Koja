@@ -1,28 +1,31 @@
 package com.teamcaffiene.koja.service
 
 import com.teamcaffeine.koja.controller.TokenManagerController
+import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.controller.TokenRequest
-import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
-import com.teamcaffeine.koja.dto.JWTFunctionality
-import com.teamcaffeine.koja.dto.JWTGoogleDTO
-import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
+import com.teamcaffeine.koja.dto.*
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
+import com.teamcaffeine.koja.entity.UserAccount
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
+import com.teamcaffeine.koja.service.CalendarAdapterFactoryService
+import com.teamcaffeine.koja.service.CalendarAdapterService
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.kotlin.any
-import org.mockito.kotlin.check
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.util.Optional
 
 class UserCalendarServiceTest {
@@ -30,10 +33,15 @@ class UserCalendarServiceTest {
     @Mock
     lateinit var userRepository: UserRepository
 
+
+    @Mock
+    private lateinit var userAccountRepository: UserAccountRepository
+
+
+
     @Mock
     private lateinit var jwtFunctionality: JWTFunctionality
 
-    @Mock
     private lateinit var userCalendarService: UserCalendarService
     private lateinit var dotenv: Dotenv
 
@@ -78,42 +86,31 @@ class UserCalendarServiceTest {
         userCalendarService = UserCalendarService(userRepository)
     }*/
 
-//    @Test
-//    fun getAllUserEvents_ReturnsEmptyList_WhenNoUserAccountsFound() {
-//        // Arrange
-//        val token = "***redacted***"
-//        val userJWTTokenDataDTO = UserJWTTokenDataDTO(userID = 123, userAuthDetails = emptyList())
-//        every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
-//        every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns emptyList()
-//
-//        // Act
-//        val result = userCalendarService.getAllUserEvents(token)
-//
-//        // Assert
-//        assertEquals(emptyList<UserEventDTO>(), result)
-//    }
+    @Test
+    fun getAllUserEvents_with_null_token_throws_exception() {
+        // Arrange
+        val token = "***redacted***"
+        val userJWTTokenDataDTO = UserJWTTokenDataDTO(userID = 1, userAuthDetails = emptyList())
+        val mockUserID = 1
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val jwtToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                 mockUserID,
+            ),
+        )
+        val tokenT = "mockToken"
+        MockitoAnnotations.openMocks(this)
+        whenever(jwtFunctionality.getUserJWTTokenData(eq(jwtToken))).thenReturn(mockUserJWTData)
+        whenever(userAccountRepository.findByUserID(mockUserID)).thenReturn(emptyList())
 
-//    @Test
-//    fun getAllUserEvents_ReturnsUserEventsFromCalendarAdapters() {
-//        val token = "***redacted***"
-//        val userJWTTokenDataDTO = UserJWTTokenDataDTO(
-//            userID = 123,
-//            userAuthDetails = listOf(JWTGoogleDTO(token, "dummyRefresh", 1L))
-//        )
-//        val userAccount = listOf(UserAccount(123))
-//        val calendarAdapterFactoryService = mockk<CalendarAdapterFactoryService>()
-//        val calendarAdapterService = mockk<CalendarAdapterService>()
-//        val userEvents = arrayListOf<UserEventDTO>()
-//
-//        every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
-//        every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns userAccount
-//        every { userCalendarService.getAllUserEvents(token) } returns userEvents
-//        every { calendarAdapterFactoryService.createCalendarAdapter(any()) } returns calendarAdapterService
-//
-//        val result = userCalendarService.getAllUserEvents(token)
-//
-//        assertEquals(userEvents, result)
-//    }
+        // Assert
+        assertThrows<Exception> { userCalendarService.getAllUserEvents(eq(jwtToken)) }
+    }
+
     @Test
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange
