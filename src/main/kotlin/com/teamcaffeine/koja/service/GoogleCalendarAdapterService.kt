@@ -48,6 +48,11 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -208,6 +213,7 @@ class GoogleCalendarAdapterService(
             )
         } else {
             val newUser = createNewUser(userEmail, refreshToken)
+
             val timeBoundary = TimeBoundary(
                 name = "Bed-Time",
                 startTime = "20:00",
@@ -217,6 +223,28 @@ class GoogleCalendarAdapterService(
             newUser.addTimeBoundary(timeBoundary)
             timeBoundary.user = newUser
             userRepository.save(newUser)
+
+            val awsCreds = AwsBasicCredentials.create(
+                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
+                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+            )
+
+            val dynamoDBClient = DynamoDbClient.builder()
+                .region(Region.EU_NORTH_1)
+                .credentialsProvider { awsCreds }
+                .build()
+
+            val putItemRequest = PutItemRequest.builder()
+                .tableName("NewUsers") // Replace with your table name
+                .item(
+                    mapOf(
+                        "UserID" to AttributeValue.builder().s(newUser.id.toString()).build(), // Adjust the attribute name accordingly
+                        // Add other attributes if needed
+                    ),
+                )
+                .build()
+
+            dynamoDBClient.putItem(putItemRequest)
 
             jwtToken = createToken(
                 TokenRequest(
