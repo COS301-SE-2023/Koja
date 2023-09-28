@@ -2,6 +2,7 @@ package com.teamcaffiene.koja.controller
 
 import com.teamcaffeine.koja.controller.AuthenticationController
 import com.teamcaffeine.koja.enums.CallbackConfigEnum
+import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,6 +22,9 @@ class AuthenticationControllerUnitTest {
 
     @Mock
     private lateinit var request: HttpServletRequest
+
+    @Mock
+    private lateinit var cryptoService: CryptoService
 
     @InjectMocks
     private lateinit var authenticationController: AuthenticationController

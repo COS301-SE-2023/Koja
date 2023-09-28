@@ -42,6 +42,10 @@ class UserCalendarServiceTest {
     private lateinit var userCalendarService: UserCalendarService
     private lateinit var dotenv: Dotenv
 
+    init {
+        importEnvironmentVariables()
+    }
+
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -52,28 +56,33 @@ class UserCalendarServiceTest {
     }
 
     private fun importEnvironmentVariables() {
-        dotenv = Dotenv.load()
+        val dotenv: Dotenv = Dotenv.load()
 
-        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
-                it,
-            )
+        System.setProperty("KOJA_AWS_RDS_DATABASE_URL", dotenv["KOJA_AWS_RDS_DATABASE_URL"]!!)
+        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]!!)
+        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
+        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"]!!)
+        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"]!!)
+        System.setProperty("OPENAI_API_KEY", dotenv["OPENAI_API_KEY"]!!)
+        System.setProperty("SERVER_ADDRESS", dotenv["SERVER_ADDRESS"]!!)
+        if (dotenv["SERVER_PORT"] != null) {
+            System.setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
+        } else {
+            System.setProperty("SERVER_PORT", "")
         }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
-                it,
-            )
-        }
 
-        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
-        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
+        // Set Google Sign In client ID and client secret properties
+        System.setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
+        System.setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
+        System.setProperty("API_KEY", dotenv["API_KEY"]!!)
 
-        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
+        // Set JWT secret key and other related properties
+        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+        System.setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
+        System.setProperty("KOJA_PRIVATE_KEY_PASS", dotenv["KOJA_PRIVATE_KEY_PASS"]!!)
+        System.setProperty("KOJA_PRIVATE_KEY_SALT", dotenv["KOJA_PRIVATE_KEY_SALT"]!!)
     }
+
     /*  @BeforeEach
     fun setup() {
         val dotenv: Dotenv = Dotenv.load()

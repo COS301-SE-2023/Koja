@@ -20,6 +20,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
+import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
@@ -39,6 +40,7 @@ import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -47,6 +49,11 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriComponentsBuilder
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import java.lang.reflect.Type
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -98,6 +105,7 @@ class GoogleCalendarAdapterService(
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
+
         val url = if (!addAdditionalAccount) {
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
@@ -116,11 +124,13 @@ class GoogleCalendarAdapterService(
                 .setAccessType("offline")
                 .setApprovalPrompt("force")
                 .build()
+
             flow.newAuthorizationUrl()
                 .setRedirectUri(redirectURI)
                 .setState(token) // Set state parameter here
                 .build()
         }
+
         return RedirectView(url)
     }
 
@@ -132,14 +142,17 @@ class GoogleCalendarAdapterService(
     override fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String {
         val restTemplate = RestTemplate()
         val tokenEndpointUrl = "https://oauth2.googleapis.com/token"
+
         val headers = org.springframework.http.HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE)
+
         val parameters = LinkedMultiValueMap<String, String>()
         parameters.add("grant_type", "authorization_code")
         parameters.add("code", authCode)
         parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
         parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
+
         if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
         } else if (deviceType == CallbackConfigEnum.MOBILE) {
@@ -151,22 +164,28 @@ class GoogleCalendarAdapterService(
         } else {
             throw Exception(ExceptionMessageConstant.INVALID_DEVICE_TYPE)
         }
+
         val requestEntity = HttpEntity(parameters, headers)
+
         val builder = UriComponentsBuilder
             .fromHttpUrl(tokenEndpointUrl)
             .queryParams(parameters)
         val requestUrl = builder.build().encode().toUri()
         val responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String::class.java)
+
         val responseJson = ObjectMapper().readTree(responseEntity.body)
         val accessToken = responseJson.get("access_token").asText()
         val refreshToken = responseJson.get("refresh_token")?.asText()
         val expiresIn = responseJson.get("expires_in").asLong()
+
         val userEmail = getUserEmail(accessToken) ?: throw Exception("Failed to get user email")
         val existingUser: UserAccount? = userAccountRepository.findByEmail(userEmail)
+
         val jwtToken: String
         if (existingUser != null) {
             val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
             val existingUserAccounts = userAccountRepository.findByUserID(existingUser.userID)
+
             for (userAccount in existingUserAccounts) {
                 val updatedCredentials = refreshAccessToken(clientId, clientSecret, userAccount.refreshToken)
                 if (updatedCredentials != null) {
@@ -187,6 +206,7 @@ class GoogleCalendarAdapterService(
                     )
                 }
             }
+
             jwtToken = createToken(
                 TokenRequest(
                     userTokens,
@@ -205,6 +225,29 @@ class GoogleCalendarAdapterService(
             newUser.addTimeBoundary(timeBoundary)
             timeBoundary.user = newUser
             userRepository.save(newUser)
+
+            val awsCreds = AwsBasicCredentials.create(
+                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
+                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+            )
+
+            val dynamoDBClient = DynamoDbClient.builder()
+                .region(Region.EU_NORTH_1)
+                .credentialsProvider { awsCreds }
+                .build()
+
+            val putItemRequest = PutItemRequest.builder()
+                .tableName("NewUsers") // Replace with your table name
+                .item(
+                    mapOf(
+                        "UserID" to AttributeValue.builder().s(newUser.id.toString()).build(), // Adjust the attribute name accordingly
+                        // Add other attributes if needed
+                    ),
+                )
+                .build()
+
+            dynamoDBClient.putItem(putItemRequest)
+
             jwtToken = createToken(
                 TokenRequest(
                     arrayOf(JWTGoogleDTO(accessToken, refreshToken ?: "", expiresIn)).toList(),
@@ -213,6 +256,7 @@ class GoogleCalendarAdapterService(
                 ),
             )
         }
+
         return jwtToken
     }
 
