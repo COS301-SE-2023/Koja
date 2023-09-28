@@ -1,6 +1,5 @@
 package com.teamcaffiene.koja.service
 
-import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
@@ -32,17 +31,9 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.time.OffsetDateTime
 import java.util.Optional
 
-@SpringJUnitConfig
-@SpringBootTest(classes = [KojaApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 class UserCalendarServiceTest {
 
     @Mock
@@ -81,31 +72,27 @@ class UserCalendarServiceTest {
     }
 
     private fun importEnvironmentVariables() {
-        val dotenv: Dotenv = Dotenv.load()
+        dotenv = Dotenv.load()
 
-        System.setProperty("KOJA_AWS_RDS_DATABASE_URL", dotenv["KOJA_AWS_RDS_DATABASE_URL"]!!)
-        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]!!)
-        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
-        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"]!!)
-        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"]!!)
-        System.setProperty("OPENAI_API_KEY", dotenv["OPENAI_API_KEY"]!!)
-        System.setProperty("SERVER_ADDRESS", dotenv["SERVER_ADDRESS"]!!)
-        if (dotenv["SERVER_PORT"] != null) {
-            System.setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
-        } else {
-            System.setProperty("SERVER_PORT", "")
+        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
+        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
+            System.setProperty(
+                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
+                it,
+            )
+        }
+        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
+            System.setProperty(
+                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
+                it,
+            )
         }
 
-        // Set Google Sign In client ID and client secret properties
-        System.setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
-        System.setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
-        System.setProperty("API_KEY", dotenv["API_KEY"]!!)
+        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
+        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
+        dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
 
-        // Set JWT secret key and other related properties
-        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
-        System.setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
-        System.setProperty("KOJA_PRIVATE_KEY_PASS", dotenv["KOJA_PRIVATE_KEY_PASS"]!!)
-        System.setProperty("KOJA_PRIVATE_KEY_SALT", dotenv["KOJA_PRIVATE_KEY_SALT"]!!)
+        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }
 
     /*  @BeforeEach

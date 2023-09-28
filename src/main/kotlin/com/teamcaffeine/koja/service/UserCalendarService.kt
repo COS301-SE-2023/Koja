@@ -29,10 +29,8 @@ class UserCalendarService(
     @Autowired
     private var userRepository: UserRepository,
     private val jwtFunctionality: JWTFunctionality,
+    private var userAccountRepository: UserAccountRepository,
 ) {
-
-    @Autowired
-    private lateinit var userAccountRepository: UserAccountRepository
 
     @Autowired
     private lateinit var timeBoundaryRepository: TimeBoundaryRepository
@@ -240,7 +238,7 @@ class UserCalendarService(
         }
     }
 
-    private fun anyToPair(any: Any?): Pair<Double, Double> {
+    fun anyToPair(any: Any?): Pair<Double, Double> {
         return if (any is Pair<*, *> &&
             any.first is Double &&
             any.second is Double
@@ -251,7 +249,7 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(
+    fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
