@@ -20,7 +20,6 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
-import com.google.maps.TimeZoneApi
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
@@ -40,7 +39,6 @@ import com.teamcaffeine.koja.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.transaction.Transactional
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
