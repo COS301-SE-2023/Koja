@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mock
 import org.mockito.Mockito.verifyZeroInteractions
 import org.mockito.Mockito.`when`
@@ -32,7 +33,11 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 import java.lang.System.setProperty
@@ -477,5 +482,45 @@ class GoogleCalendarAdapterServiceTest {
         assertThrows<IllegalArgumentException> {
             service.secondsToHumanFormat(seconds)
         }
+    }
+
+    @Test
+    fun testAddAnotherEmailOauth2Callback() {
+        // Arrange
+        val expectedAccessToken = "access_token"
+        val expectedRefreshToken = "refresh_token"
+        val expectedExpiresIn = 3600L
+        val expectedUserEmail = "user@example.com"
+
+        // Mock the behavior of restTemplate.exchange
+        val responseHeaders = HttpHeaders()
+        val responseJson = "{\"access_token\":\"expectedAccessToken\",\"expires_in\":expires_in,\"refresh_token\":\"expectedRefreshToken\"}"
+        "}"
+        responseHeaders.contentType = MediaType.APPLICATION_JSON
+        val responseEntity = ResponseEntity(responseJson, responseHeaders, HttpStatus.OK)
+        // `when`(restTemplate.exchange(anyString(), any(HttpMethod::class.java), any(HttpEntity::class.java), eq(String::class.java)))
+        //    .thenReturn(responseEntity)
+        `when`(userAccountRepository.findByEmail(anyString())).thenReturn(UserAccount())
+
+        // Mock getUserEmail and other relevant methods
+
+        // Act
+        val jwtToken = service.addAnotherEmailOauth2Callback("authCode", "token", true)
+
+        // Assert
+        assertEquals(expectedAccessToken, jwtToken)
+        val body = HttpEntity(
+            "code=authCode&client_id=your_client_id&client_secret=your_client_secret&redirect_uri=http://localhost:8080/oauth2/callback&grant_type=authorization_code",
+            HttpHeaders(),
+        )
+        // Verify that restTemplate.exchange was called with the correct arguments
+        verify(restTemplate).exchange(
+            eq("https://oauth2.googleapis.com/token"),
+            eq(HttpMethod.POST),
+            argThat { body is HttpEntity && (body as HttpEntity<*>).body.toString().contains("code=your_auth_code") },
+            eq(String::class.java),
+        )
+
+        // Add more assertions as needed to verify the behavior of your function
     }
 }
