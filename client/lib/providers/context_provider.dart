@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:client/providers/service_provider.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,8 @@ import '../models/user_time_boundary_model.dart';
 class ContextProvider extends ChangeNotifier {
   String? _accessToken;
   List<String> userEmails = [];
+  List<Event> recommendedEvents = [];
+  List<Event> lockedEvents = [];
 
   void init(String accessToken) {
     _accessToken = accessToken;
@@ -20,12 +22,11 @@ class ContextProvider extends ChangeNotifier {
   }
 
   void startUpdater() {
+    getData();
     final timer = Timer.periodic(Duration(seconds: 5), (timer) {
       if (_accessToken != null) {
-        getEventsFromAPI(_accessToken!);
-        getUserTimeslots(_accessToken!);
-        getAllUserEmails();
-        timer.cancel();
+        getData();
+        if(kDebugMode) timer.cancel();
       } else {
         timer.cancel();
       }
@@ -33,6 +34,12 @@ class ContextProvider extends ChangeNotifier {
     if (kDebugMode) {
       print(timer);
     }
+  }
+
+  void getData() {
+    getEventsFromAPI(_accessToken!);
+    getUserTimeslots(_accessToken!);
+    getAllUserEmails();
   }
 
   List<EventWrapper> _eventWrappers = [];
@@ -148,6 +155,10 @@ class ContextProvider extends ChangeNotifier {
   //This returns the events of the selected date
   List<Event> get eventsOfSelectedDate => _events;
 
+  List<Event> get recomendedEventsSelection => recommendedEvents;
+
+  List<Event> get lockedEventsSelection => lockedEvents;
+
   //This adds an event to the list
   void addEvent(Event event) {
     _events.add(event);
@@ -248,5 +259,24 @@ class ContextProvider extends ChangeNotifier {
     if (accessToken != null) {
       getEventsFromAPI(accessToken!);
     }
+  }
+
+  void setRecommended(List<Event> list) {
+    recommendedEvents = list;
+  }
+
+  void toggleEventLocked(userEvent) {
+    if (lockedEvents.contains(userEvent)) {
+      lockedEvents.remove(userEvent);
+    } else {
+      lockedEvents.add(userEvent);
+    }
+
+    notifyListeners();
+  }
+
+  void clearLockedEvents() {
+    lockedEvents.clear();
+    notifyListeners();
   }
 }

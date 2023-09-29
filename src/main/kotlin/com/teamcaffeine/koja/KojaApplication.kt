@@ -19,7 +19,11 @@ fun main(args: Array<String>) {
     setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"]!!)
     setProperty("OPENAI_API_KEY", dotenv["OPENAI_API_KEY"]!!)
     setProperty("SERVER_ADDRESS", dotenv["SERVER_ADDRESS"]!!)
-    setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
+    if (dotenv["SERVER_PORT"] != null) {
+        setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
+    } else {
+        setProperty("SERVER_PORT", "")
+    }
 
     // Set Google Sign In client ID and client secret properties
     setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
@@ -28,6 +32,10 @@ fun main(args: Array<String>) {
 
     // Set JWT secret key property
     setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+    setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
+
+    setProperty("KOJA_PRIVATE_KEY_PASS", dotenv["KOJA_PRIVATE_KEY_PASS"]!!)
+    setProperty("KOJA_PRIVATE_KEY_SALT", dotenv["KOJA_PRIVATE_KEY_SALT"]!!)
 
     runApplication<KojaApplication>(*args)
 }

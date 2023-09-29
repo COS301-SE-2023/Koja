@@ -8,8 +8,9 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
-import com.teamcaffeine.koja.repository.UserAccountRepository
+import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.service.AIUserDataService
+import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.service.UserCalendarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,26 +23,7 @@ import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping("/api/v1/ai")
-class AIDataController(private val userAccountRepository: UserAccountRepository, private val aiUserDataService: AIUserDataService, private val userCalendarService: UserCalendarService) {
-    @GetMapping("/all-users-events")
-    fun getUserEventData(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-//        } else if (token != System.getProperty("KOJA_JWT_SECRET")) {
-//            ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED)
-        } else {
-            val gsonBuilder = GsonBuilder()
-            gsonBuilder.registerTypeAdapter(
-                OffsetDateTime::class.java,
-                OffsetDateTimeAdapter(),
-            )
-            gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
-            val gson: Gson = gsonBuilder.setPrettyPrinting().create()
-            val userEvents = aiUserDataService.getUserEventData(token)
-            val jsonObject = gson.toJson(userEvents)
-            ResponseEntity.ok(jsonObject)
-        }
-    }
+class AIDataController(private val aiUserDataService: AIUserDataService, private val userCalendarService: UserCalendarService, private val cryptoService: CryptoService) {
 
     @GetMapping("/get-emails")
     fun getUserEmail(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
@@ -63,7 +45,7 @@ class AIDataController(private val userAccountRepository: UserAccountRepository,
     }
 
     @GetMapping("/get-user-events")
-    fun getUsersSuggesstions(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("userID") userID: String?): ResponseEntity<String> {
+    fun getUsersSuggestions(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("userID") userID: String?): ResponseEntity<String> {
         return if (token == null || userID == null) {
             ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
         } else {
@@ -74,10 +56,80 @@ class AIDataController(private val userAccountRepository: UserAccountRepository,
             )
             gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
             val gson: Gson = gsonBuilder.setPrettyPrinting().create()
-            val userEvents = userCalendarService.getUserSuggestions(userID)
+            var userIDRequest = userID
+            if (userIDRequest.toIntOrNull() == null) {
+                userIDRequest = TokenManagerController.getUserJWTTokenData(token).userID.toString()
+            }
+            val userEvents = userCalendarService.getUserSuggestions(userIDRequest)
             val jsonObject = gson.toJson(userEvents)
             ResponseEntity.ok(jsonObject)
         }
+    }
+
+    @GetMapping("/get-new-user-emails")
+    fun getNewUserEmails(@RequestParam("request") request: String?): ResponseEntity<String> {
+        return if (request == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                val req = AIRequestBodyDTO(request).encryptedData
+                if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getNewUserEmails(req)))
+                } else {
+                    ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
+                }
+            } catch (e: IllegalArgumentException) {
+                ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
+        }
+    }
+
+    @GetMapping("/get-all-user-emails")
+    fun getAllUserEmails(@RequestParam("request") request: String?): ResponseEntity<String> {
+        return if (request == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                val req = AIRequestBodyDTO(request).encryptedData
+                if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getAllUserEmails(req)))
+                } else {
+                    ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
+                }
+            } catch (e: IllegalArgumentException) {
+                ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
+        }
+    }
+
+    @GetMapping("/get-account-events")
+    fun getUserEvents(@RequestParam("request") request: String?, @RequestParam("userEmail") userEmail: String?): ResponseEntity<String> {
+        return if (request == null || userEmail == null) {
+            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        } else {
+            try {
+                val req = AIRequestBodyDTO(request).encryptedData
+                if (aiUserDataService.validateKojaSecretID(req.kojaIDSecret)) {
+                    val decryptedEmail = cryptoService.decryptData(userEmail).decodeToString()
+                    ResponseEntity.ok(Gson().toJson(aiUserDataService.getUserEvents(decryptedEmail, req)))
+                } else {
+                    ResponseEntity(ResponseConstant.UNAUTHORIZED, org.springframework.http.HttpStatus.UNAUTHORIZED)
+                }
+            } catch (e: IllegalArgumentException) {
+                ResponseEntity.badRequest().body(ResponseConstant.UNAUTHORIZED)
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+            }
+        }
+    }
+
+    @GetMapping("/get-public-key")
+    fun getPublicKey(): ResponseEntity<String> {
+        return ResponseEntity.ok(Gson().toJson(cryptoService.getPublicKey()))
     }
 
     class OffsetDateTimeAdapter : JsonSerializer<OffsetDateTime> {

@@ -1,6 +1,5 @@
 package com.teamcaffiene.koja.service
 
-import com.teamcaffeine.koja.KojaApplication
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
@@ -10,41 +9,42 @@ import com.teamcaffeine.koja.dto.UserJWTTokenDataDTO
 import com.teamcaffeine.koja.entity.TimeBoundary
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.enums.AuthProviderEnum
+import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.Optional
 
-@SpringJUnitConfig
-@SpringBootTest(classes = [KojaApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 class UserCalendarServiceTest {
 
     @Mock
     lateinit var userRepository: UserRepository
 
     @Mock
-    private lateinit var jwtFunctionality: JWTFunctionality
+    private lateinit var userAccountRepository: UserAccountRepository
 
     @Mock
+    private lateinit var jwtFunctionality: JWTFunctionality
+
     private lateinit var userCalendarService: UserCalendarService
     private lateinit var dotenv: Dotenv
+
+    init {
+        importEnvironmentVariables()
+    }
 
     @BeforeEach
     fun setup() {
@@ -56,28 +56,33 @@ class UserCalendarServiceTest {
     }
 
     private fun importEnvironmentVariables() {
-        dotenv = Dotenv.load()
+        val dotenv: Dotenv = Dotenv.load()
 
-        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
-                it,
-            )
+        System.setProperty("KOJA_AWS_RDS_DATABASE_URL", dotenv["KOJA_AWS_RDS_DATABASE_URL"]!!)
+        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]!!)
+        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
+        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"]!!)
+        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"]!!)
+        System.setProperty("OPENAI_API_KEY", dotenv["OPENAI_API_KEY"]!!)
+        System.setProperty("SERVER_ADDRESS", dotenv["SERVER_ADDRESS"]!!)
+        if (dotenv["SERVER_PORT"] != null) {
+            System.setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
+        } else {
+            System.setProperty("SERVER_PORT", "")
         }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
-                it,
-            )
-        }
 
-        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
-        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
+        // Set Google Sign In client ID and client secret properties
+        System.setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
+        System.setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
+        System.setProperty("API_KEY", dotenv["API_KEY"]!!)
 
-        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
+        // Set JWT secret key and other related properties
+        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+        System.setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
+        System.setProperty("KOJA_PRIVATE_KEY_PASS", dotenv["KOJA_PRIVATE_KEY_PASS"]!!)
+        System.setProperty("KOJA_PRIVATE_KEY_SALT", dotenv["KOJA_PRIVATE_KEY_SALT"]!!)
     }
+
     /*  @BeforeEach
     fun setup() {
         val dotenv: Dotenv = Dotenv.load()
@@ -87,42 +92,29 @@ class UserCalendarServiceTest {
         userCalendarService = UserCalendarService(userRepository)
     }*/
 
-//    @Test
-//    fun getAllUserEvents_ReturnsEmptyList_WhenNoUserAccountsFound() {
-//        // Arrange
-//        val token = "***redacted***"
-//        val userJWTTokenDataDTO = UserJWTTokenDataDTO(userID = 123, userAuthDetails = emptyList())
-//        every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
-//        every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns emptyList()
-//
-//        // Act
-//        val result = userCalendarService.getAllUserEvents(token)
-//
-//        // Assert
-//        assertEquals(emptyList<UserEventDTO>(), result)
-//    }
+    @Test
+    fun getAllUserEvents_with_null_token_throws_exception() {
+        // Arrange
+        val mockUserID = 1
+        val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
+        val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val jwtToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
+        val tokenT = "mockToken"
+        MockitoAnnotations.openMocks(this)
+        whenever(jwtFunctionality.getUserJWTTokenData(eq(jwtToken))).thenReturn(mockUserJWTData)
+        whenever(userAccountRepository.findByUserID(mockUserID)).thenReturn(emptyList())
 
-//    @Test
-//    fun getAllUserEvents_ReturnsUserEventsFromCalendarAdapters() {
-//        val token = "***redacted***"
-//        val userJWTTokenDataDTO = UserJWTTokenDataDTO(
-//            userID = 123,
-//            userAuthDetails = listOf(JWTGoogleDTO(token, "dummyRefresh", 1L))
-//        )
-//        val userAccount = listOf(UserAccount(123))
-//        val calendarAdapterFactoryService = mockk<CalendarAdapterFactoryService>()
-//        val calendarAdapterService = mockk<CalendarAdapterService>()
-//        val userEvents = arrayListOf<UserEventDTO>()
-//
-//        every { getUserJWTTokenData(token) } returns userJWTTokenDataDTO
-//        every { userAccountRepository.findByUserID(userJWTTokenDataDTO.userID) } returns userAccount
-//        every { userCalendarService.getAllUserEvents(token) } returns userEvents
-//        every { calendarAdapterFactoryService.createCalendarAdapter(any()) } returns calendarAdapterService
-//
-//        val result = userCalendarService.getAllUserEvents(token)
-//
-//        assertEquals(userEvents, result)
-//    }
+        // Assert
+        assertThrows<Exception> { userCalendarService.getAllUserEvents(eq(jwtToken)) }
+    }
+
     @Test
     fun `addTimeBoundary should return true when the timeBoundary is valid and user exists`() {
         // Arrange

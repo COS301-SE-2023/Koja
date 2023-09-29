@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:client/screens/information_screen.dart';
+import 'package:koja/screens/information_screen.dart';
 
 void main() {
   testWidgets('Info widget should render without error', (WidgetTester tester) async {

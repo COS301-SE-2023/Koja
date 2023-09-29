@@ -1,4 +1,4 @@
-import 'package:client/providers/service_provider.dart';
+import 'package:koja/providers/service_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -35,7 +35,7 @@ class LoginModalState extends State<LoginModal> {
                     Navigator.pushAndRemoveUntil(
                       eventProvider.navigationKey.currentContext!,
                       MaterialPageRoute(
-                          builder: (_) => const NavigationScreen()),
+                          builder: (_) =>  NavigationScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } else {
@@ -115,7 +115,7 @@ class LoginModalState extends State<LoginModal> {
                                         eventProvider.navigationKey.currentContext!,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const NavigationScreen(),
+                                              NavigationScreen(),
                                         ),
                                         (Route<dynamic> route) => false,
                                       );

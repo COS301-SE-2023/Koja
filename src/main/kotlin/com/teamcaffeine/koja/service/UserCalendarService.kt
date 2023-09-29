@@ -18,11 +18,14 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
+import java.time.DayOfWeek
 import java.time.Duration
-import java.time.LocalDate
+import java.time.Instant
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
 @Service
 class UserCalendarService(
@@ -58,6 +61,28 @@ class UserCalendarService(
         return userEvents.values.toList()
     }
 
+    fun getAllUserEventsKojaSuggestions(token: String): List<UserEventDTO> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+        val userID = userJWTTokenData.userID
+
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+
+        val userEvents = mutableMapOf<String, UserEventDTO>()
+
+        for (adapter in calendarAdapters) {
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEventsKojaSuggestions(accessToken))
+                }
+            }
+        }
+
+        return userEvents.values.toList()
+    }
+
     @Transactional
     fun getUserCalendarAdapters(userJWTTokenData: UserJWTTokenDataDTO): Pair<List<UserAccount>, ArrayList<CalendarAdapterService>> {
         val userAccounts = userAccountRepository.findByUserID(userJWTTokenData.userID)
@@ -74,7 +99,7 @@ class UserCalendarService(
         TODO("Not yet implemented")
     }
 
-    fun updateEvent(token: String, eventDTO: UserEventDTO) {
+    fun updateEvent(token: String, eventDTO: UserEventDTO): Boolean {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -86,11 +111,13 @@ class UserCalendarService(
 
             if (accessToken != null) {
                 adapter.updateEvent(accessToken, eventDTO)
+                return true
             }
         }
+        return false
     }
 
-    fun deleteEvent(token: String, eventSummary: String, eventStartTime: OffsetDateTime, eventEndTime: OffsetDateTime) {
+    fun deleteEvent(token: String, eventID: String) {
         val userJWTTokenData = getUserJWTTokenData(token)
         val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
 
@@ -100,10 +127,8 @@ class UserCalendarService(
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
 
-            adapter.getUserEventsInRange(accessToken, eventStartTime, eventEndTime).forEach {
-                if (accessToken != null && it.getSummary().trim() == eventSummary.trim()) {
-                    adapter.deleteEvent(accessToken, it.getId())
-                }
+            if (accessToken != null) {
+                adapter.deleteEvent(accessToken, eventID)
             }
         }
     }
@@ -115,6 +140,7 @@ class UserCalendarService(
         val userBedTime = getUserTimeBoundaries(token).firstOrNull {
             it.getName() == "Bed-Time"
         }
+        val adapterAccessTokenMap = HashMap<CalendarAdapterService, String?>()
 
         if (userBedTime != null) {
             val startTimeString = userBedTime.getStartTime()
@@ -123,10 +149,10 @@ class UserCalendarService(
             if (startTimeString != null && endTimeString != null) {
                 val startTime = LocalTime.parse(startTimeString)
                 val endTime = LocalTime.parse(endTimeString)
-                val today = LocalDate.now(ZoneOffset.UTC)
+                val eventDay = eventDTO.getStartTime().toLocalDate()
 
-                val startTimeOffsetDateTime = OffsetDateTime.of(today, startTime, ZoneOffset.UTC)
-                var endTimeOffsetDateTime = OffsetDateTime.of(today, endTime, ZoneOffset.UTC)
+                val startTimeOffsetDateTime = OffsetDateTime.of(eventDay.minusDays(1), startTime, ZoneOffset.UTC)
+                var endTimeOffsetDateTime = OffsetDateTime.of(eventDay, endTime, ZoneOffset.UTC)
 
                 if (endTimeOffsetDateTime.isBefore(startTimeOffsetDateTime)) {
                     endTimeOffsetDateTime = endTimeOffsetDateTime.plusDays(1)
@@ -177,12 +203,20 @@ class UserCalendarService(
                     travelDuration = travelTime
                     eventDTO.setTravelTime(travelTime)
                 }
+
+                val locationCoordinates = locationService.getLocationCoordinates(locationID)
+
+                if (locationCoordinates != null) {
+                    eventDTO.setLocation("${locationCoordinates.first},${locationCoordinates.second}")
+                }
             }
 
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
             val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
                 it.getRefreshToken() == userAccount.refreshToken
             }?.getAccessToken()
+
+            adapterAccessTokenMap[adapter] = accessToken
 
             if (accessToken != null) {
                 userEvents.addAll(
@@ -195,26 +229,165 @@ class UserCalendarService(
             }
         }
 
+        val dynamicFutureEvents = ArrayList<UserEventDTO>()
         if (eventDTO.isDynamic()) {
-            val newEventDuration = (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
+            handleRecurrence(eventDTO, token)
+
+            dynamicFutureEvents.addAll(
+                userEvents.filter {
+                    it.isDynamic() && it.getStartTime().isAfter(
+                        OffsetDateTime.now().withOffsetSameInstant(eventDTO.getStartTime().offset),
+                    )
+                },
+            )
+
+            val newEventDuration =
+                (eventDTO.getDurationInSeconds() + travelDuration) * 1000L // Multiply by 1000 to convert to milliseconds
             eventDTO.setDuration(newEventDuration)
 
-            val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
-            eventDTO.setStartTime(earliestSlotStartTime)
-            eventDTO.setEndTime(earliestSlotEndTime)
+            for ((adapter, accessToken) in adapterAccessTokenMap) {
+                if (accessToken != null) {
+                    for (dynamicFutureEvent in dynamicFutureEvents) {
+                        adapter.deleteEvent(accessToken, dynamicFutureEvent.getId())
+                    }
+                    dynamicFutureEvents.add(eventDTO)
+                    dynamicFutureEvents.sortBy { it.getPriority() }
+                }
+            }
+
+            userEvents.removeAll(dynamicFutureEvents.toSet())
+
+            if (dynamicFutureEvents.isEmpty()) {
+                val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, eventDTO)
+                eventDTO.setStartTime(earliestSlotStartTime)
+                eventDTO.setEndTime(earliestSlotEndTime)
+            } else {
+                for (dynamicFutureEvent in dynamicFutureEvents) {
+                    val (earliestSlotStartTime, earliestSlotEndTime) = findEarliestTimeSlot(userEvents, dynamicFutureEvent)
+                    dynamicFutureEvent.setStartTime(earliestSlotStartTime)
+                    dynamicFutureEvent.setEndTime(earliestSlotEndTime)
+                    userEvents.add(dynamicFutureEvent)
+                }
+            }
         } else {
             eventDTO.setStartTime(eventDTO.getStartTime().minusSeconds(travelDuration))
         }
 
-        for (adapter in calendarAdapters) {
-            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
-            val accessToken = userJWTTokenData.userAuthDetails.firstOrNull {
-                it.getRefreshToken() == userAccount.refreshToken
-            }?.getAccessToken()
-            if (accessToken != null) {
+        for ((adapter, accessToken) in adapterAccessTokenMap) {
+            if (accessToken != null && dynamicFutureEvents.isEmpty()) {
                 adapter.createEvent(accessToken, eventDTO, token)
+            } else if (accessToken != null) {
+                for (dynamicFutureEvent in dynamicFutureEvents) {
+                    adapter.createEvent(accessToken, dynamicFutureEvent, token)
+                }
+            } else {
+                // Do nothing
             }
         }
+    }
+
+    private fun handleRecurrence(eventDTO: UserEventDTO, token: String): UserEventDTO {
+        val recurrence = eventDTO.getRecurrence()
+        if (!recurrence.isNullOrEmpty()) {
+            val interval = recurrence[1].toLong()
+            val endDate = Instant.from(DateTimeFormatter.ISO_INSTANT.parse(recurrence[2])).atOffset(ZoneOffset.UTC).toLocalDate()
+            val startDate = eventDTO.getStartTime().toLocalDate()
+            val originalDate = eventDTO.getStartTime()
+            when (recurrence[0]) {
+                "DAILY" -> {
+                    var date = startDate.plusDays(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusDays(interval)
+                    }
+                }
+                "WEEKLY" -> {
+                    var date = startDate.plusWeeks(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusWeeks(interval)
+                    }
+                }
+                "MONTHLY" -> {
+                    var date = startDate.plusMonths(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusMonths(interval)
+                    }
+                }
+                "YEARLY" -> {
+                    var date = startDate.plusYears(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusYears(interval)
+                    }
+                }
+            }
+
+            eventDTO.setRecurrence(null)
+        }
+
+        return eventDTO
     }
 
     private fun anyToPair(any: Any?): Pair<Double, Double> {
@@ -228,7 +401,7 @@ class UserCalendarService(
         }
     }
 
-    private fun findEarliestTimeSlot(
+    fun findEarliestTimeSlot(
         userEvents: List<UserEventDTO>,
         eventDTO: UserEventDTO,
     ): Pair<OffsetDateTime, OffsetDateTime> {
@@ -263,6 +436,7 @@ class UserCalendarService(
                     duration = 0L,
                     timeSlots = listOf(),
                     priority = 0,
+                    recurrence = mutableListOf(""),
 
                 ),
             )
@@ -366,7 +540,7 @@ class UserCalendarService(
     fun getUserTimeBoundaryAndLocation(token: String, name: String?): Pair<TimeBoundary?, String?> {
         val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token) ?: return Pair(null, null)
         val user = userRepository.findById(userJWTTokenData.userID).get()
-        var timeBoundary: TimeBoundary ? = null
+        var timeBoundary: TimeBoundary? = null
 
         if (user != null && name != null) {
             for (i in 0..(user.getUserTimeBoundaries()?.size ?: 0))
@@ -408,56 +582,237 @@ class UserCalendarService(
             .expressionAttributeNames(attrNames)
             .build()
 
-        val categories = mutableListOf<String>()
-        val timeframes = mutableMapOf<String, List<String>>()
-        val weekDays = mutableMapOf<String, List<String>>()
+        var toReturn: Map<String, List<Map<String, List<String>>>>? = null
 
         val response = dynamoDBClient.query(request)
         val items = response.items()
         if (items.isNotEmpty()) {
             val userItem = items.firstOrNull()
             if (userItem != null) {
-                val categorySuggestions = userItem["data"]?.l()
-                if (categorySuggestions != null) {
-                    for (suggestion in categorySuggestions) {
-                        val current = suggestion.m()
-                        val category = current["category"]?.s()
-                        if (category != null) {
-                            categories.add(category)
-                            val currentTimeFrames = mutableListOf<String>()
-                            for (timeFrame in current["time_frames"]?.l()!!) {
-                                val timeFrameString = timeFrame.s()
-                                if (timeFrameString != null) {
-                                    currentTimeFrames.add(timeFrameString)
+                val recommendations = userItem["recommendations"]?.m()
+                if (recommendations != null) {
+                    toReturn = recommendations.mapValues { entry ->
+                        entry.value.l().map {
+                            value ->
+                            value.m()["week_days"]?.m()?.mapValues {
+                                attr ->
+                                attr.value.l().map {
+                                    it.s() ?: ""
                                 }
-                            }
-                            timeframes[category] = currentTimeFrames
-
-                            val currentWeekDays = mutableListOf<String>()
-                            for (weekday in current["weekdays"]?.l()!!) {
-                                val weekdayString = weekday.s()
-                                if (weekdayString != null) {
-                                    currentWeekDays.add(weekdayString)
-                                }
-                            }
-                            weekDays[category] = currentWeekDays
+                            } ?: mapOf()
                         }
                     }
                 }
             }
         }
 
-        val toReturn = mutableMapOf<String, Any>()
-        for (category in categories) {
-            val categoryTimeFrames = timeframes[category]
-            val categoryWeekDays = weekDays[category]
-            if (categoryTimeFrames != null && categoryWeekDays != null) {
-                toReturn[category] = mutableMapOf<String, Any>(
-                    "timeFrames" to categoryTimeFrames,
-                    "weekdays" to categoryWeekDays,
-                )
+        val categoryRequest = QueryRequest.builder()
+            .tableName("User-Category-Events")
+            .keyConditionExpression("#n_user = :v_user")
+            .expressionAttributeValues(attrValues)
+            .expressionAttributeNames(attrNames)
+            .build()
+
+        var userCategoryEvents = mapOf<String, List<Map<String, Any>>>()
+
+        val categoryResponse = dynamoDBClient.query(categoryRequest)
+        val categoryItems = categoryResponse.items()
+        if (categoryItems.isNotEmpty()) {
+            val userCategoryItem = categoryItems.firstOrNull()
+            if (userCategoryItem != null) {
+                val categories = userCategoryItem["categories"]?.m()
+                if (categories != null) {
+                    userCategoryEvents = categories.mapValues { entry ->
+                        entry.value.l().map { categoryItem ->
+                            categoryItem.m().mapValues { attr ->
+                                if (attr.value.type() == AttributeValue.Type.S) {
+                                    attr.value.s() ?: ""
+                                } else {
+                                    attr.value.n() ?: ""
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        return toReturn
+
+        val results = toReturn?.let { createPermutations(userCategoryEvents, it) }
+        return results ?: emptyList<String>()
+    }
+
+    fun createPermutations(userCategoryEvents: Map<String, List<Map<String, Any>>>, toReturn: Map<String, List<Map<String, List<String>>>>): MutableList<MutableList<UserEventDTO>> {
+        val categoryPermutations = mutableListOf<UserEventDTO>()
+
+        // For each category
+        for ((category, events) in userCategoryEvents) {
+            val orderedEvents = events.sortedByDescending { it["occurrence"].toString().toInt() }.map { it }
+
+            // Get days and timeframes for this category
+            val daysAndTimeframes = toReturn[category]?.flatMap { it.entries } ?: listOf()
+
+            // Generate permutations
+            for ((day, timeframes) in daysAndTimeframes) {
+                for (timeframe in timeframes) {
+                    for (event in orderedEvents) {
+                        val eventNameStr = event["name"].toString()
+                        var evenStart = OffsetDateTime.now().withOffsetSameLocal(ZoneOffset.UTC)
+                        var eventEnd = OffsetDateTime.now().withOffsetSameLocal(ZoneOffset.UTC)
+                        val timeFrameSplit = timeframe.split("-")
+                        val startTimeSplit = timeFrameSplit[0].split(":")
+                        val avgEventDurr = event["total_time"].toString().toLong() / event["occurrence"].toString().toLong()
+
+                        when (day.lowercase()) {
+                            "monday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                            "tuesday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.TUESDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                            "wednesday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                            "thursday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.THURSDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                            "friday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.FRIDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                            "saturday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                            "sunday" -> {
+                                evenStart = evenStart.with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
+                                    .withHour(startTimeSplit[0].toInt())
+                                    .withMinute(startTimeSplit[1].toInt())
+                                eventEnd = evenStart.plusMinutes(avgEventDurr)
+                            }
+                        }
+
+                        if (evenStart.isAfter(eventEnd)) {
+                            val temp = evenStart
+                            evenStart = eventEnd
+                            eventEnd = temp
+                        }
+
+                        val toAdd = UserEventDTO()
+                        toAdd.setSummary(eventNameStr)
+                        toAdd.setStartTime(startTime = evenStart)
+                        toAdd.setEndTime(endTime = eventEnd)
+
+                        categoryPermutations.add(
+                            toAdd,
+                        )
+                    }
+                }
+            }
+        }
+
+        categoryPermutations.shuffle()
+
+        val noClashPermutations = mutableListOf<MutableList<UserEventDTO>>()
+        for (event in categoryPermutations) {
+            var added = false
+            for (list in noClashPermutations) {
+                if (!hasClash(list, event) && list.size < 21) {
+                    list.add(event)
+                    added = true
+                    break
+                }
+            }
+            if (!added) {
+                val newList = mutableListOf(event)
+                noClashPermutations.add(newList)
+            }
+        }
+
+        for (list in noClashPermutations) {
+            if (list.size < 12) {
+                for (event in categoryPermutations) {
+                    if (!hasClash(list, event)) {
+                        list.add(event)
+                        if (list.size == 12) break
+                    }
+                }
+            }
+        }
+
+        return noClashPermutations.sortedByDescending { it.size }.toMutableList()
+    }
+
+    fun hasClash(list: List<UserEventDTO>, event: UserEventDTO): Boolean {
+        val potentialStartTime = event.getStartTime()
+        val potentialEndTime = event.getEndTime()
+
+        val conflictingEvent = list.find {
+            val userEventStartTime = it.getStartTime()
+            val userEventEndTime = it.getEndTime()
+
+            (userEventEndTime.isAfter(potentialStartTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                (userEventStartTime.isBefore(potentialEndTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                (userEventStartTime.isAfter(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                (userEventStartTime.isBefore(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime)) ||
+                (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isEqual(potentialEndTime)) ||
+                (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isBefore(potentialEndTime)) ||
+                (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isAfter(potentialStartTime)) ||
+                (userEventEndTime.isEqual(potentialEndTime) && userEventStartTime.isBefore(potentialStartTime)) ||
+                (userEventStartTime.isEqual(potentialStartTime) && userEventEndTime.isAfter(potentialEndTime))
+        }
+
+        return conflictingEvent != null
+    }
+
+    fun getAllDynamicUserEvents(token: String): List<UserEventDTO> {
+        val userJWTTokenData = jwtFunctionality.getUserJWTTokenData(token)
+
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+
+        val userEvents = mutableMapOf<String, UserEventDTO>()
+
+        for (adapter in calendarAdapters) {
+            val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
+            val userAuthDetails = userJWTTokenData.userAuthDetails
+            for (authDetails in userAuthDetails) {
+                if (authDetails.getRefreshToken() == userAccount.refreshToken) {
+                    val accessToken = authDetails.getAccessToken()
+                    userEvents.putAll(adapter.getUserEvents(accessToken))
+                }
+            }
+        }
+
+        val dynamicEvents = mutableMapOf<String, UserEventDTO>()
+        for (event in userEvents) {
+            if (event.value.isDynamic()) {
+                dynamicEvents[event.key] = event.value
+            }
+        }
+
+        return dynamicEvents.values.toList()
+    }
+
+    fun createNewCalendar(accessToken: String, eventList: List<UserEventDTO>) {
+        val userJWTTokenData = getUserJWTTokenData(accessToken)
+        val (userAccounts, calendarAdapters) = getUserCalendarAdapters(userJWTTokenData)
+        for (adapter in calendarAdapters) {
+            adapter.createNewCalendar(userAccounts, eventList, accessToken)
+        }
     }
 }

@@ -2,7 +2,9 @@ package com.teamcaffeine.koja.service
 
 import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
+import com.google.maps.GeocodingApi
 import com.google.maps.model.DistanceMatrix
+import com.google.maps.model.GeocodingResult
 import com.google.maps.model.TravelMode
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.entity.User
@@ -141,5 +143,22 @@ class LocationService(private val userRepository: UserRepository, private val go
         results["workLocation"] = retrievedUser.getWorkLocation() ?: ""
 
         return results
+    }
+
+    fun getLocationCoordinates(placeId: String): Pair<Double, Double>? {
+        val context = GeoApiContext.Builder()
+            .apiKey(System.getProperty("API_KEY"))
+            .build()
+
+        val results: Array<GeocodingResult> = GeocodingApi.newRequest(context)
+            .place(placeId)
+            .await()
+
+        return if (results.isNotEmpty()) {
+            val location = results[0].geometry.location
+            Pair(location.lat, location.lng)
+        } else {
+            null
+        }
     }
 }

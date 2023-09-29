@@ -1,16 +1,18 @@
-import 'package:client/Utils/constants_util.dart';
-import 'package:client/providers/service_provider.dart';
-import 'package:client/widgets/time_boundaries_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:koja/widgets/user_manual_widget.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:google_fonts/google_fonts.dart';
+// import 'package:pdfx/pdfx.dart';
 
+import '../Utils/constants_util.dart';
+import '../providers/service_provider.dart';
+import './time_boundaries_widget.dart';
 import '../models/autocomplete_predict_model.dart';
 import '../models/place_auto_response_model.dart';
 import '../models/location_predict_widget.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'about_us_widget.dart';
-import 'account_settings_widget.dart';
+import './about_us_widget.dart';
+import './account_settings_widget.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -130,18 +132,37 @@ class SettingsState extends State<Settings> {
             /*  This is the About Us Section  */
 
             const SizedBox(height: 15),
+            header(LineIcons.book, ' User Manual'),
+            const Divider(height: 1, color: Colors.grey),
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              child: Column(
+                children: [  
+                  userManual(),               
+                ],
+              ),
+            ),
+
+            /*  This is the About Us Section  */
+
+            const SizedBox(height: 15),
             header(LineIcons.tags, ' About Us'),
             const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 15),
             SingleChildScrollView(
-              child: Container(
-                width: constraints.maxWidth * 0.95,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.all(10.0),
-                child: AboutUsWidget(),
+              child: Column(
+                children: [  
+                  Container(
+                    width: constraints.maxWidth * 0.95,
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.all(10.0),
+                    child: AboutUsWidget(),
+                  ),                 
+                  SizedBox(height: 5),
+                ],
               ),
             ),
           ],
@@ -210,7 +231,7 @@ class SettingsState extends State<Settings> {
                         });
                       },
                       icon: Icon(
-                        Icons.clear,
+                        Bootstrap.x_circle,
                       ),
                     ),
                   ],
@@ -242,7 +263,10 @@ class SettingsState extends State<Settings> {
                     ),
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Home Address',
-                    hintStyle: const TextStyle(),
+                    hintStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400
+                    ),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _homeTextController.clear();
@@ -250,7 +274,7 @@ class SettingsState extends State<Settings> {
                           placeAutoComplete("");
                         });
                       },
-                      icon: Icon(Icons.clear),
+                      icon: Icon(Bootstrap.x_circle),
                     ),
                   ),
                 ),
@@ -329,7 +353,7 @@ class SettingsState extends State<Settings> {
                         });
                       },
                       icon: const Icon(
-                        Icons.clear,
+                        Bootstrap.x_circle,
                       ),
                     ),
                   ],
@@ -344,9 +368,9 @@ class SettingsState extends State<Settings> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
-                  onChanged: (wvalue) {
-                    if (wvalue.length > 2) {
-                      workplaceAutocomplete(wvalue);
+                  onChanged: (wValue) {
+                    if (wValue.length > 2) {
+                      workplaceAutocomplete(wValue);
                     } else {
                       setState(() {
                         workplaceAutocomplete("");
@@ -361,7 +385,10 @@ class SettingsState extends State<Settings> {
                     ),
                     border: const OutlineInputBorder(),
                     hintText: 'Enter Your Work Address',
-                    hintStyle: const TextStyle(),
+                    hintStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400
+                    ),
                     suffixIcon: IconButton(
                       onPressed: () {
                         _workTextController.clear();
@@ -369,7 +396,8 @@ class SettingsState extends State<Settings> {
                           workplaceAutocomplete("");
                         });
                       },
-                      icon: const Icon(Icons.clear, color: Colors.black),
+                      icon: Icon
+                      (Bootstrap.x_circle , color: Colors.black),
                     ),
                   ),
                 ),
@@ -399,6 +427,70 @@ class SettingsState extends State<Settings> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget userManual()
+  {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.95,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: Colors.black),
+      ),
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'User Manual',
+            style: GoogleFonts.ubuntu(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                width: 176,
+                child: Text(
+                  'View The User Manual',
+                  style: GoogleFonts.ubuntu(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: Colors.black),
+                ),
+              ),
+              SizedBox(width: 2),
+              IconButton(
+                icon: Icon(
+                  Icons.remove_red_eye,
+                  color: Colors.white,
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    darkBlue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserManualPage()),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

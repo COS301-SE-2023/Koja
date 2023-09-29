@@ -157,13 +157,7 @@ class AccountSettingsWidget extends StatelessWidget {
                                 content: Text(
                                     'Are you sure you want to delete this account?'),
                                 actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('Cancel'),
-                                  ),
-                                  TextButton(
+                                   TextButton(
                                     onPressed: () {
                                       Provider.of<ServiceProvider>(context, listen: false)
                                           .deleteUserAccount();
@@ -175,6 +169,12 @@ class AccountSettingsWidget extends StatelessWidget {
                                       );
                                     },
                                     child: Text('Delete'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Cancel'),
                                   ),
                                 ],
                               );

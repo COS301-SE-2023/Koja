@@ -1,12 +1,12 @@
-import 'package:client/widgets/time_category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import './time_category_list.dart';
 import '../Utils/constants_util.dart';
 import '../Utils/event_util.dart';
 import '../providers/context_provider.dart';
-import 'set_boundary_widget.dart';
+import './set_boundary_widget.dart';
 
 class TimeBoundaries extends StatefulWidget {
   @override
@@ -32,9 +32,9 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
   ///Function to trim start || end from TimeOfDay("HH:mm") to HH:mm
   String extractTime(String input) {
-    int colonindex = input.indexOf(':');
-    int startIndex = colonindex - 2;
-    int endIndex = colonindex + 3;
+    int colonIndex = input.indexOf(':');
+    int startIndex = colonIndex - 2;
+    int endIndex = colonIndex + 3;
     String timeValue = input.substring(startIndex, endIndex);
 
     return timeValue;
@@ -48,7 +48,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
     return '$formattedHour:$formattedMinute';
   }
 
-  /// function to save timein the category list
+  /// function to save time in the category list
   void saveTime({
     required ContextProvider contextProvider,
     required String itemName,
@@ -85,7 +85,6 @@ class TimeBoundariesState extends State<TimeBoundaries> {
 
     // If editing an item, remove the current item from the list and add the edited item
     if (editedindex >= 0) {
-      // categories.removeAt(editedindex);
       editedindex = -1;
       isEditing = false;
     }
@@ -128,7 +127,7 @@ class TimeBoundariesState extends State<TimeBoundaries> {
         title:
             Text("Times Boundaries ", style: GoogleFonts.ubuntu(fontSize: 17)),
         subtitle: Text(
-          "Click here to add time boundaries for each category, select category and then click +\n\nAfter adding time boundary for a category, you can swipe to the left to edit or delete a boundary.",
+          "Allocate daily time intervals for categories. Select a category, then use '+' to set its time range.\n\nAfter adding time boundary for a category, you can swipe to the left to edit or delete a boundary.",
           style: GoogleFonts.ubuntu(fontSize: 12.5),
         ),
         children: [
@@ -139,18 +138,21 @@ class TimeBoundariesState extends State<TimeBoundaries> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(" Category:",
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  style:
+                  TextStyle(fontSize: 16, fontWeight: FontWeight.w500, 
+                  color: Colors.black, fontFamily: GoogleFonts.ubuntu().fontFamily
+                  ),
+                ),
                 SizedBox(width: 8),
                 Container(
                   height: 35,
-                  width: screenSize.width * 0.4,
+                  width: screenSize.width * 0.35,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black,
                       width: 1,
                     ),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: DropdownButton<String>(
                     isExpanded: true,
@@ -168,7 +170,14 @@ class TimeBoundariesState extends State<TimeBoundaries> {
                       (String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                              fontFamily: GoogleFonts.ubuntu().fontFamily
+                            ),
+                          ),
                         );
                       },
                     ).toList(),

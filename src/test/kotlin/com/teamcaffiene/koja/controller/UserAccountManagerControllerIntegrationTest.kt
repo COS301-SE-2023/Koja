@@ -76,7 +76,7 @@ class UserAccountManagerControllerIntegrationTest {
     fun `Test adding another Google email without token should return bad request`() {
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/v1/user/auth/add-email/google")
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
@@ -89,14 +89,14 @@ class UserAccountManagerControllerIntegrationTest {
             TokenRequest(
                 arrayListOf(authDetails),
                 AuthProviderEnum.GOOGLE,
-                mockUserID
-            )
+                mockUserID,
+            ),
         )
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/v1/user/auth/add-email/google")
                 .param("token", mockToken)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
     }

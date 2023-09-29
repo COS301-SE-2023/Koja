@@ -1,4 +1,4 @@
-import 'package:client/providers/context_provider.dart';
+import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -88,7 +88,7 @@ class _EmailListState extends State<EmailList> {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                height: 50,
+                height: 45,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.black,
