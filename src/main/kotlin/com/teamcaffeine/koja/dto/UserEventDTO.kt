@@ -187,7 +187,6 @@ class UserEventDTO(
         )
     }
 
-
     companion object {
         private fun toKotlinDate(eventDateTime: GoogleEventDateTime): OffsetDateTime? {
             val dateTime: DateTime? = eventDateTime.dateTime

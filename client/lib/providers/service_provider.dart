@@ -516,8 +516,7 @@ class ServiceProvider with ChangeNotifier {
         accuracy: LocationAccuracy.high,
         distanceFilter: 100,
       );
-      StreamSubscription<Position> positionStream =
-          Geolocator.getPositionStream(locationSettings: locationSettings)
+        Geolocator.getPositionStream(locationSettings: locationSettings)
               .listen((Position? position) {
         if (position != null) {
           setLocationData(position);

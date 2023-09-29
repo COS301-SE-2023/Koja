@@ -138,7 +138,7 @@ class SettingsState extends State<Settings> {
             SingleChildScrollView(
               child: Column(
                 children: [  
-                  UserManual(),               
+                  userManual(),               
                 ],
               ),
             ),
@@ -433,7 +433,7 @@ class SettingsState extends State<Settings> {
     );
   }
 
-  Widget UserManual()
+  Widget userManual()
   {
     return Container(
       width: MediaQuery.of(context).size.width * 0.95,
