@@ -23,7 +23,6 @@ RUN ls -la && ./gradlew build -x test -x check
 FROM openjdk:17
 
 WORKDIR /app
-
 # Copy only the built jar file from the first stage
 COPY --from=builder /home/gradle/project/build/libs/ /app/
 
@@ -47,8 +46,6 @@ RUN echo "KOJA_AWS_RDS_DATABASE_URL=$KOJA_AWS_RDS_DATABASE_URL" >> .env && \
     echo "SERVER_ADDRESS=$SERVER_ADDRESS" >> .env && \
     echo "SERVER_PORT=$SERVER_PORT" >> .env
 
-# Document that the service listens on port 8080
-EXPOSE 8080
 
 # Start the built spring boot project when the Docker container is started
-ENTRYPOINT ["java", "-jar", "/app/Koja-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/app/Koja-0.0.1-SNAPSHOT.jar"]
