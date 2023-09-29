@@ -98,14 +98,20 @@ class TasksWidgetState extends State<TasksWidget> {
           if (details.appointments == null) {
             return;
           }
-
           final userEvent = details.appointments!.first;
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return EventEditing(event: userEvent);
-            },
-          );
+          if(widget.date != null) {
+            provider.toggleEventLocked(userEvent);
+          }
+          else
+          {
+            
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return EventEditing(event: userEvent);
+              },
+            );
+          }
         },
       ),
     );

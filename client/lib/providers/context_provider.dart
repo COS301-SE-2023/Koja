@@ -14,6 +14,7 @@ class ContextProvider extends ChangeNotifier {
   String? _accessToken;
   List<String> userEmails = [];
   List<Event> recommendedEvents = [];
+  List<Event> lockedEvents = [];
 
   void init(String accessToken) {
     _accessToken = accessToken;
@@ -156,6 +157,8 @@ class ContextProvider extends ChangeNotifier {
 
   List<Event> get recomendedEventsSelection => recommendedEvents;
 
+  List<Event> get lockedEventsSelection => lockedEvents;
+
   //This adds an event to the list
   void addEvent(Event event) {
     _events.add(event);
@@ -260,5 +263,20 @@ class ContextProvider extends ChangeNotifier {
 
   void setRecommended(List<Event> list) {
     recommendedEvents = list;
+  }
+
+  void toggleEventLocked(userEvent) {
+    if (lockedEvents.contains(userEvent)) {
+      lockedEvents.remove(userEvent);
+    } else {
+      lockedEvents.add(userEvent);
+    }
+
+    notifyListeners();
+  }
+
+  void clearLockedEvents() {
+    lockedEvents.clear();
+    notifyListeners();
   }
 }

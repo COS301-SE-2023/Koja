@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:koja/Utils/event_util.dart';
+import 'package:koja/providers/context_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -183,21 +184,26 @@ class CalendarStackState extends State<CalendarStack> {
   bool back = false;
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ContextProvider>(context);
+    final allEvents = (provider.lockedEvents.isNotEmpty) 
+    ? widget.mockEventList.where((element) => provider.lockedEvents.every((item) => element.contains(item))).toList()
+    : widget.mockEventList;
+
     if(index > 0 && index < widget.mockEventList.length - 1){
       back = true;
     }
     else{
       back = false;
     }
-    return Stack(
+    return allEvents.isNotEmpty ? Stack(
       children: [
-        CalendarWidget(events: widget.mockEventList[index],),
+        CalendarWidget(events: allEvents[index],),
         Positioned(
           bottom: 15.0,
           left: 50.0,
           child: ElevatedButton(
             onPressed: () async {
-              if (await widget.serviceProvider.setSuggestedCalendar(widget.mockEventList[index])){
+              if (await widget.serviceProvider.setSuggestedCalendar(allEvents[index])){
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Calendar Set Successfully'),
@@ -262,6 +268,20 @@ class CalendarStackState extends State<CalendarStack> {
           ),
         ),
       ],
+    ) : Center(
+      child: Wrap(
+        children: [
+          Column(
+            children: [
+              Text('No permutations exist for your choices.'),
+              ElevatedButton(onPressed: ()
+              {
+                provider.clearLockedEvents();
+              }, child: Text('Start Over'))
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
