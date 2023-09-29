@@ -467,8 +467,8 @@ def decimal_to_float(d):
 
 if __name__ == "__main__":
     load_dotenv()
-    # auto_train_new()
-    # auto_train_new()
+    auto_train_new()
+    auto_train_new()
     port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
     app.run(host="0.0.0.0", port=port, debug=True)

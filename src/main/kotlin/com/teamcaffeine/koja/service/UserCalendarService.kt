@@ -18,7 +18,13 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import java.time.*
+import java.time.DayOfWeek
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 
 @Service
@@ -197,6 +203,12 @@ class UserCalendarService(
                     travelDuration = travelTime
                     eventDTO.setTravelTime(travelTime)
                 }
+
+                val locationCoordinates = locationService.getLocationCoordinates(locationID)
+
+                if (locationCoordinates != null) {
+                    eventDTO.setLocation("${locationCoordinates.first},${locationCoordinates.second}")
+                }
             }
 
             val userAccount = userAccounts[calendarAdapters.indexOf(adapter)]
@@ -218,8 +230,9 @@ class UserCalendarService(
         }
 
         val dynamicFutureEvents = ArrayList<UserEventDTO>()
-
         if (eventDTO.isDynamic()) {
+            handleRecurrence(eventDTO, token)
+
             dynamicFutureEvents.addAll(
                 userEvents.filter {
                     it.isDynamic() && it.getStartTime().isAfter(
@@ -271,6 +284,110 @@ class UserCalendarService(
                 // Do nothing
             }
         }
+    }
+
+    private fun handleRecurrence(eventDTO: UserEventDTO, token: String): UserEventDTO {
+        val recurrence = eventDTO.getRecurrence()
+        if (!recurrence.isNullOrEmpty()) {
+            val interval = recurrence[1].toLong()
+            val endDate = Instant.from(DateTimeFormatter.ISO_INSTANT.parse(recurrence[2])).atOffset(ZoneOffset.UTC).toLocalDate()
+            val startDate = eventDTO.getStartTime().toLocalDate()
+            val originalDate = eventDTO.getStartTime()
+            when (recurrence[0]) {
+                "DAILY" -> {
+                    var date = startDate.plusDays(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusDays(interval)
+                    }
+                }
+                "WEEKLY" -> {
+                    var date = startDate.plusWeeks(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusWeeks(interval)
+                    }
+                }
+                "MONTHLY" -> {
+                    var date = startDate.plusMonths(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusMonths(interval)
+                    }
+                }
+                "YEARLY" -> {
+                    var date = startDate.plusYears(interval)
+                    while (!date.isAfter(endDate)) {
+                        val newEvent = eventDTO.copy()
+                        newEvent.setRecurrence(null)
+                        newEvent.setStartTime(newEvent.getStartTime().with(date))
+                        newEvent.setEndTime(newEvent.getEndTime().with(date))
+                        for (timeFrame in newEvent.getTimeSlots()) {
+                            val difference = Duration.between(timeFrame.startTime, timeFrame.endTime).toHours()
+                            if (difference in 23..25) {
+                                timeFrame.startTime = timeFrame.startTime.with(date)
+                                    .withHour(0).withMinute(0).withSecond(0)
+                                    .withOffsetSameInstant(originalDate.offset)
+                                timeFrame.endTime = timeFrame.endTime.with(date)
+                                    .withHour(23).withMinute(59).withSecond(59)
+                                    .withOffsetSameInstant(originalDate.offset)
+                            }
+                        }
+                        createEvent(token, newEvent)
+                        date = date.plusYears(interval)
+                    }
+                }
+            }
+
+            eventDTO.setRecurrence(null)
+        }
+
+        return eventDTO
     }
 
     private fun anyToPair(any: Any?): Pair<Double, Double> {

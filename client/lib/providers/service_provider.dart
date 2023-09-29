@@ -56,7 +56,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<ServiceProvider> init() async {
-    // startLocationListner(); TODO : FIX THIS
+    startLocationListner();
     _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
     _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
     return this;
@@ -496,7 +496,7 @@ class ServiceProvider with ChangeNotifier {
 
       await http.post(
         url,
-        headers: {'Authorisation': _accessToken!},
+        headers: {'Authorization': _accessToken!},
         body: body,
       );
     }
@@ -512,17 +512,17 @@ class ServiceProvider with ChangeNotifier {
   /// This function will start listening to the location stream
   Future<void> _listenLocationStream() async {
     if (await _checkAndRequestPermission()) {
-      // final LocationSettings locationSettings = LocationSettings(
-      //   accuracy: LocationAccuracy.high,
-      //   distanceFilter: 100,
-      // );
-      // StreamSubscription<Position> positionStream =
-      //     Geolocator.getPositionStream(locationSettings: locationSettings)
-      //         .listen((Position? position) {
-      //   if (position != null) {
-      //     setLocationData(position);
-      //   }
-      // });
+      final LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 100,
+      );
+      StreamSubscription<Position> positionStream =
+          Geolocator.getPositionStream(locationSettings: locationSettings)
+              .listen((Position? position) {
+        if (position != null) {
+          setLocationData(position);
+        }
+      });
     }
   }
 

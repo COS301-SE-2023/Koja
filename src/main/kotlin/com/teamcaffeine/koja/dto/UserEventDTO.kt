@@ -170,6 +170,24 @@ class UserEventDTO(
         return recurrence
     }
 
+    fun copy(): UserEventDTO {
+        return UserEventDTO(
+            id = id,
+            summary = summary,
+            description = description,
+            location = location,
+            startTime = startTime,
+            endTime = endTime,
+            duration = duration,
+            timeSlots = timeSlots.map { it.copy() },
+            priority = priority,
+            dynamic = dynamic,
+            travelTime = travelTime,
+            recurrence = recurrence?.toList()?.toMutableList(),
+        )
+    }
+
+
     companion object {
         private fun toKotlinDate(eventDateTime: GoogleEventDateTime): OffsetDateTime? {
             val dateTime: DateTime? = eventDateTime.dateTime
@@ -196,8 +214,8 @@ class UserEventDTO(
 
 data class TimeSlot(
     val name: String? = null,
-    val startTime: OffsetDateTime,
-    val endTime: OffsetDateTime,
+    var startTime: OffsetDateTime,
+    var endTime: OffsetDateTime,
     val type: TimeBoundaryType = TimeBoundaryType.ALLOWED,
 )
 

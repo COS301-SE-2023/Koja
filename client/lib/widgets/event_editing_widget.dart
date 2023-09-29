@@ -227,8 +227,7 @@ class EventEditingState extends State<EventEditing> {
                 ChooseCategory(onCategorySelected: updateCategory),
                 if (selectedEventType == 'Dynamic')
                   ChoosePriority(onPrioritySelected: updatePriority),
-                if (selectedEventType == 'Fixed')
-                  ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
+                ChooseRecurrence(onRecurrenceSelected: updateRecurrence),
                 location(),
                 TimeEstimationWidget(
                   placeID: placeId,
