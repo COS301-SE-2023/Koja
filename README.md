@@ -32,6 +32,8 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 
 * [Architectural Design](https://docs.google.com/document/d/1hVQcrOcnCRzHyd9Y-aXYuAfyRZxVVZTiJyluJbr_0RY/edit?usp=sharing)
 
+* [Testing Policy](https://docs.google.com/document/d/10JTOApaAbRHdl4zoTkm39UPMgZYwPrVCrqgX5lBN5EA/edit?usp=sharing)
+
 # Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
