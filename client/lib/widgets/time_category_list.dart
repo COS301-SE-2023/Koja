@@ -28,12 +28,13 @@ class _TimeCategoryState extends State<TimeCategory> {
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
           children: [
-            SlidableAction(
-              onPressed: (context) => widget.delete!(context),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              icon: Icons.delete_outline_rounded,
-            ),
+            if(widget.category != 'Bed-Time')
+              SlidableAction(
+                onPressed: (context) => widget.delete!(context),
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                icon: Icons.delete_outline_rounded,
+              ),
             SlidableAction(
               onPressed: (context) => {
                 widget.edit!(context),
@@ -46,6 +47,7 @@ class _TimeCategoryState extends State<TimeCategory> {
           ],
         ),
         child: Container(
+          height: 60,
           width: MediaQuery.of(context).size.width * 0.91,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -56,17 +58,19 @@ class _TimeCategoryState extends State<TimeCategory> {
                 children: [
                   Icon(
                     widget.category == 'School'
-                        ? Bootstrap.book
-                        : widget.category == 'Work'
-                            ? Icons.card_travel_outlined
-                            : widget.category == 'Hobbies'
-                                ? Icons.self_improvement_outlined
-                                : widget.category == 'Resting'
-                                    ? Icons.king_bed_outlined
-                                    : widget.category == 'Chores'
-                                        ? Icons.help
-                                        : LineAwesome.question_circle,
-                    size: 30,
+                    ? Bootstrap.journals
+                    : widget.category == 'Work'
+                    ? LineAwesome.suitcase_rolling_solid
+                    : widget.category == 'Hobbies'
+                    ? Bootstrap.scooter
+                    : widget.category == 'Bed-Time'
+                    ? Icons.king_bed_outlined
+                    : widget.category == 'Chores'
+                    ? Icons.local_laundry_service_outlined
+                    : widget.category == 'Resting'
+                    ? Icons.hotel_outlined
+                    : Icons.help,
+                    size: 23,
                   ),
                   SizedBox(width: 7),
                   Text(
@@ -81,7 +85,8 @@ class _TimeCategoryState extends State<TimeCategory> {
               SizedBox(height: 10),
               Row(children: [
                 Icon(
-                  Icons.watch_later_outlined,
+                  Bootstrap.alarm,
+                  size: 18,
                 ),
                 SizedBox(width: 5),
                 Text(
@@ -93,7 +98,8 @@ class _TimeCategoryState extends State<TimeCategory> {
                 ),
                 SizedBox(width: 10),
                 Icon(
-                  Icons.watch_later_outlined,
+                  Bootstrap.alarm,
+                  size: 18,
                 ),
                 SizedBox(width: 5),
                 Text(

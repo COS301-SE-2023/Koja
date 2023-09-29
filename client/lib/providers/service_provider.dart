@@ -33,7 +33,7 @@ class ServiceProvider with ChangeNotifier {
     // startServer();
     init();
   }
-  
+
   Future<void> startServer() async {
     final server = await HttpServer.bind('127.0.0.1', localServerPort);
 
@@ -56,7 +56,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<ServiceProvider> init() async {
-    // startLocationListner(); TODO : FIX THIS
+    startLocationListner();
     _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
     _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
     return this;
@@ -82,7 +82,7 @@ class ServiceProvider with ChangeNotifier {
 
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
@@ -94,26 +94,31 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will attempt to get all the events which will be used for suggestions
-  Future<List<String>> getEventsForAI() async {
-
+  Future<List<List<Event>>> getEventsForAI(String userID) async {
+    if(!kDebugMode) {
+      userID = "_";
+    }
     final path = '/api/v1/ai/get-user-events';
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
-        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
-        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path, {'userID': userID})
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path, {'userID': userID});
 
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(response.body);
-      return result.map((e) => e.toString()).toList();
+      return result.map((list) => (list as List).map((json) => Event.fromJson(json)).toList()).toList();
     } else {
       return [];
     }
   }
+
+
+
 
   /// This Section deals with all the user related functions (emails, login, etc.)
 
@@ -174,7 +179,6 @@ class ServiceProvider with ChangeNotifier {
   /// From UserAccountController
   Future<void> deleteUserEmail(
       {required String email, required ContextProvider eventProvider}) async {
-
     final path = '/api/v1/user/remove-email';
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
@@ -185,7 +189,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: email,
     );
@@ -206,7 +210,7 @@ class ServiceProvider with ChangeNotifier {
 
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
@@ -230,7 +234,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
     );
 
@@ -255,11 +259,15 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );
 
+    if(kDebugMode) {
+      print(jsonEncode(event.toJson()));
+    }
+    
     return response.statusCode == 200;
   }
 
@@ -274,11 +282,12 @@ class ServiceProvider with ChangeNotifier {
 
     final response = await http.get(
       url,
-      headers: {'Authorisation': _accessToken!},
+      headers: {'Authorization': _accessToken!},
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> eventsJson = jsonDecode(response.body);
+      
       return eventsJson.map((json) => Event.fromJson(json)).toList();
     } else {
       return [];
@@ -292,17 +301,41 @@ class ServiceProvider with ChangeNotifier {
     final url = !serverAddressComponents[0].contains("https")
         ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
         : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
-    
+
     final response = await http.put(
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );
 
     return response.statusCode == 200;
+  }
+
+  ///This function will reschedule the dynamic events
+  Future<bool> rescheduleEvent(Event event) async {
+    final path = '/api/v1/user/calendar/rescheduleEvent';
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': _accessToken!,
+      },
+      body: jsonEncode(event.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /// This function will attempt to delete an event using CalendarController
@@ -317,7 +350,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(event.toJson()),
     );
@@ -343,7 +376,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: jsonEncode(events),
     );
@@ -369,7 +402,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: {
         'placeId': placeID,
@@ -394,7 +427,7 @@ class ServiceProvider with ChangeNotifier {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': _accessToken!,
+        'Authorization': _accessToken!,
       },
       body: {
         'placeId': placeID,
@@ -439,7 +472,7 @@ class ServiceProvider with ChangeNotifier {
         : Uri.https('${serverAddressComponents[1]}:$_serverPort', path, body);
 
     final response =
-        await http.get(url, headers: {'Authorisation': _accessToken!});
+        await http.get(url, headers: {'Authorization': _accessToken!});
 
     if (response.statusCode == 200) {
       String travelTime = response.body;
@@ -463,7 +496,7 @@ class ServiceProvider with ChangeNotifier {
 
       await http.post(
         url,
-        headers: {'Authorisation': _accessToken!},
+        headers: {'Authorization': _accessToken!},
         body: body,
       );
     }
@@ -479,17 +512,16 @@ class ServiceProvider with ChangeNotifier {
   /// This function will start listening to the location stream
   Future<void> _listenLocationStream() async {
     if (await _checkAndRequestPermission()) {
-      // final LocationSettings locationSettings = LocationSettings(
-      //   accuracy: LocationAccuracy.high,
-      //   distanceFilter: 100,
-      // );
-      // StreamSubscription<Position> positionStream =
-      //     Geolocator.getPositionStream(locationSettings: locationSettings)
-      //         .listen((Position? position) {
-      //   if (position != null) {
-      //     setLocationData(position);
-      //   }
-      // });
+      final LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 100,
+      );
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+              .listen((Position? position) {
+        if (position != null) {
+          setLocationData(position);
+        }
+      });
     }
   }
 
@@ -516,15 +548,15 @@ class ServiceProvider with ChangeNotifier {
 
   Future<List<UserTimeBoundaryModel>> getUserTimeBoundaries(
       String accessToken) async {
-      final path = '/api/v1/user/getAllTimeBoundary';
+    final path = '/api/v1/user/getAllTimeBoundary';
 
-      final List<String> serverAddressComponents = _serverAddress.split("//");
-      final url = !serverAddressComponents[0].contains("https")
-          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
-          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
 
     final response =
-        await http.get(url, headers: {'Authorisation': _accessToken!});
+        await http.get(url, headers: {'Authorization': _accessToken!});
 
     if (response.statusCode == 200) {
       final List<dynamic> timeBoundariesJson = jsonDecode(response.body);
@@ -538,12 +570,12 @@ class ServiceProvider with ChangeNotifier {
 
   Future<void> storeTimeFrames(
       String? accessToken, Map<String, TimeSlot?> timeSlots) async {
-      final path = '/api/v1/user/addTimeBoundary';
+    final path = '/api/v1/user/addTimeBoundary';
 
-      final List<String> serverAddressComponents = _serverAddress.split("//");
-      final url = !serverAddressComponents[0].contains("https")
-          ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
-          : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
+    final List<String> serverAddressComponents = _serverAddress.split("//");
+    final url = !serverAddressComponents[0].contains("https")
+        ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path)
+        : Uri.https('${serverAddressComponents[1]}:$_serverPort', path);
 
     if (accessToken != null) {
       for (String key in timeSlots.keys) {
@@ -562,7 +594,7 @@ class ServiceProvider with ChangeNotifier {
 
             await http.post(
               url,
-              headers: {'Authorisation': accessToken},
+              headers: {'Authorization': accessToken},
               body: requestBody,
             );
           });
@@ -588,7 +620,7 @@ class ServiceProvider with ChangeNotifier {
 
       final response = await http.post(
         url,
-        headers: {'Authorisation': _accessToken!},
+        headers: {'Authorization': _accessToken!},
         body: requestBody,
       );
 
@@ -602,11 +634,10 @@ class ServiceProvider with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> getSuggestionsForUser(String user) async {
-
     final path = '/api/v1/location/travel-time';
     final body = {
-        'userID': user,
-      };
+      'userID': user,
+    };
     final List<String> serverAddressComponents = _serverAddress.split("//");
     final url = !serverAddressComponents[0].contains("https")
         ? Uri.http('${serverAddressComponents[1]}:$_serverPort', path, body)
@@ -614,7 +645,7 @@ class ServiceProvider with ChangeNotifier {
 
     final response = await http.get(
       url,
-      headers: {'Authorisation': 'Bearer $_accessToken'},
+      headers: {'Authorization': 'Bearer $_accessToken'},
     );
 
     if (response.statusCode == 200) {

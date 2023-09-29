@@ -3,13 +3,13 @@
 [![Pull Requests](https://img.shields.io/github/issues-pr/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/pulls)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/issues)
 [![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja)
-[![Koja Build Status](https://github.com/COS301-SE-2023/Koja/actions/workflows/main.yml/badge.svg)](https://github.com/COS301-SE-2023/Koja/actions/workflows/main.yml)
+[![Koja Build Status](https://github.com/COS301-SE-2023/Koja/actions/workflows/main2.yml/badge.svg)](https://github.com/COS301-SE-2023/Koja/actions/workflows/main2.yml)
 
 ## Project Description:
 Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
 
 # Documentation
-* [SRSv3](https://www.canva.com/design/DAFm6EdVuUo/d1PDPN7l5k5e_cx3V7UT1A/edit?utm_content=DAFm6EdVuUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [SRSv4](https://www.canva.com/design/DAFm6EdVuUo/d1PDPN7l5k5e_cx3V7UT1A/edit?utm_content=DAFm6EdVuUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 * [Project Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
 ## Demo Videos
@@ -19,7 +19,7 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 
 * [Team Caffeine-Demo3](https://www.canva.com/design/DAFoP47g3sw/_QjN9Yd8liAkDbpPl9SBhg/edit?utm_content=DAFoP47g3sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
-* [Team Caffeine-Demo4 - To be updated](https://www.canva.com/design/DAFoTnSsfUc/hItuOgPZA_6FyTs8TRHYRg/edit?utm_content=DAFoTnSsfUc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Team Caffeine-Demo4](https://www.canva.com/design/DAFuI_vIphg/Ux_tSd2K-evrvKIDnCR8PA/edit?utm_content=DAFuI_vIphg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ## Additional Documentations
 * [Technical Installation Manual](https://docs.google.com/document/d/1pdzUM2YM_lkqxtvTfs2MToCcu3zSB6QwQbP5pfhyjHk/edit?usp=sharing)

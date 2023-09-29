@@ -12,23 +12,7 @@ void main(){
     TestWidgetsFlutterBinding.ensureInitialized();
   });
   testWidgets('Login Modal Widget Test', (WidgetTester tester) async {
-    // await tester.pumpWidget(
-    //   MultiProvider(
-    //     providers: [
-    //       ChangeNotifierProvider<ContextProvider>(
-    //         create: (_) => ContextProvider(),
-    //       ),
-    //       ChangeNotifierProvider<ServiceProvider>(
-    //         create: (_) => ServiceProvider(),
-    //       ),
-    //     ],
-    //     child: MaterialApp(
-    //       home: Scaffold(
-    //         body: LoginModal(),
-    //       ),
-    //     ),
-    //   ),
-    // );
+
     FlutterError.onError = ignoreOverflowErrors;
     final serviceProvider = ServiceProvider();
     final contextProvider = ContextProvider();
@@ -52,10 +36,7 @@ void main(){
     expect(find.byType(LoginModal), findsOneWidget);
     expect(find.text("Debug Mode Route"), findsOneWidget);
 
-    //await tester.tap(find.widgetWithText(ElevatedButton, "Debug Mode Route"));
-    //await tester.pumpAndSettle(Duration(seconds: 2));
 
-    //await tester.enterText(, text)
   });
 }
 
@@ -77,7 +58,7 @@ void ignoreOverflowErrors(
   }
   // Ignore if is overflow error.
   if (ifIsOverflowError || isUnableToLoadAsset) {
-    debugPrint('Ignored Rendering Error');
+    //debugPrint();
   } else {
     FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
   }

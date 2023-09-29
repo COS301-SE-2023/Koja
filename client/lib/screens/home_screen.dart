@@ -72,6 +72,8 @@ class HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: null,
         title: const Text(
           'Home',
           style: TextStyle(

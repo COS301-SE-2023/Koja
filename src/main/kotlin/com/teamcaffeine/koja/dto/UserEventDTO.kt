@@ -19,14 +19,18 @@ class UserEventDTO(
     private var summary: String,
     private var description: String? = null,
     private var location: String,
+    private var placeName: String? = null,
     private var startTime: OffsetDateTime,
     private var endTime: OffsetDateTime,
     private var duration: Long,
     private var timeSlots: List<TimeSlot>,
+    private var category: String? = null,
     private var priority: Int,
     private var dynamic: Boolean = false,
     private var travelTime: Long = 0L,
     private var userID: String = "",
+    private var recurrence: MutableList<String>? = null,
+
 ) {
 
     constructor(googleEvent: GoogleEvent) : this(
@@ -41,6 +45,22 @@ class UserEventDTO(
         priority = googleEvent.extendedProperties?.shared?.get("priority")?.toInt() ?: 0,
         dynamic = googleEvent.extendedProperties?.shared?.get("dynamic") == "true",
         travelTime = googleEvent.extendedProperties?.shared?.get("travelTime")?.toLong() ?: 0L,
+        recurrence = googleEvent.recurrence ?: null,
+    )
+
+    constructor() : this(
+        id = "",
+        summary = "",
+        description = null,
+        location = "",
+        startTime = OffsetDateTime.now(ZoneOffset.UTC),
+        endTime = OffsetDateTime.now(ZoneOffset.UTC),
+        duration = 0L,
+        timeSlots = listOf(),
+        priority = 0,
+        dynamic = false,
+        travelTime = 0L,
+        recurrence = null,
     )
 
     fun getId(): String {
@@ -91,6 +111,9 @@ class UserEventDTO(
         this.endTime = endTime
     }
 
+    fun setRecurrence(recurrence: MutableList<String>?) {
+        this.recurrence = recurrence
+    }
     fun isDynamic(): Boolean {
         return dynamic
     }
@@ -143,6 +166,27 @@ class UserEventDTO(
         this.userID = userID
     }
 
+    fun getRecurrence(): MutableList<String>? {
+        return recurrence
+    }
+
+    fun copy(): UserEventDTO {
+        return UserEventDTO(
+            id = id,
+            summary = summary,
+            description = description,
+            location = location,
+            startTime = startTime,
+            endTime = endTime,
+            duration = duration,
+            timeSlots = timeSlots.map { it.copy() },
+            priority = priority,
+            dynamic = dynamic,
+            travelTime = travelTime,
+            recurrence = recurrence?.toList()?.toMutableList(),
+        )
+    }
+
     companion object {
         private fun toKotlinDate(eventDateTime: GoogleEventDateTime): OffsetDateTime? {
             val dateTime: DateTime? = eventDateTime.dateTime
@@ -169,8 +213,8 @@ class UserEventDTO(
 
 data class TimeSlot(
     val name: String? = null,
-    val startTime: OffsetDateTime,
-    val endTime: OffsetDateTime,
+    var startTime: OffsetDateTime,
+    var endTime: OffsetDateTime,
     val type: TimeBoundaryType = TimeBoundaryType.ALLOWED,
 )
 
