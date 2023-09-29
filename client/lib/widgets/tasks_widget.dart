@@ -10,7 +10,9 @@ import '../providers/context_provider.dart';
 import 'event_editing_widget.dart';
 
 class TasksWidget extends StatefulWidget {
-  const TasksWidget({Key? key}) : super(key: key);
+  final DateTime? date;
+
+  const TasksWidget({Key? key, this.date}) : super(key: key);
 
   @override
   TasksWidgetState createState() => TasksWidgetState();
@@ -20,10 +22,26 @@ class TasksWidgetState extends State<TasksWidget> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ContextProvider>(context);
-    final selectedEvents = provider.eventsOfSelectedDate;
+    final selectedEvents = (widget.date != null) ? provider.recomendedEventsSelection : provider.eventsOfSelectedDate;
 
-    //This checks if the selected date has any events
-    if (selectedEvents.isEmpty) {
+    DateTime selectedDate = DateTime(
+      provider.selectedDate.year,
+      provider.selectedDate.month,
+      provider.selectedDate.day,
+    );
+
+    var count = 0;
+
+    for (var event in selectedEvents) {
+        DateTime eventDate = event.from;
+        DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+
+        if (eventDay == selectedDate) {
+          count++;
+        }
+    }
+
+    if (count == 0) {
       return Column(
         children: [
           const SizedBox(height: 10),
@@ -34,7 +52,7 @@ class TasksWidgetState extends State<TasksWidget> {
                 'No Tasks Found',
                 style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     fontFamily: 'Raleway'),
               ),
             ),
@@ -59,7 +77,7 @@ class TasksWidgetState extends State<TasksWidget> {
         ),
       ),
       child: SfCalendar(
-        dataSource: EventDataSource(provider.events),
+        dataSource: EventDataSource(selectedEvents),
         initialSelectedDate: provider.selectedDate,
 
         timeSlotViewSettings: TimeSlotViewSettings(
@@ -80,14 +98,20 @@ class TasksWidgetState extends State<TasksWidget> {
           if (details.appointments == null) {
             return;
           }
-
           final userEvent = details.appointments!.first;
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return EventEditing(event: userEvent);
-            },
-          );
+          if(widget.date != null) {
+            provider.toggleEventLocked(userEvent);
+          }
+          else
+          {
+            
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return EventEditing(event: userEvent);
+              },
+            );
+          }
         },
       ),
     );

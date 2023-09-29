@@ -14,15 +14,15 @@ class AboutUsWidget extends StatelessWidget {
           Text(
             'Koja',
             style: GoogleFonts.ubuntu(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             'Thanks for choosing Koja, with our application you will get dynamic and personalized recommendations for your next task.',
             style: GoogleFonts.ubuntu(
-              fontSize: 15,
+              fontSize: 14.5,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -42,20 +42,21 @@ class AboutUsWidget extends StatelessWidget {
                 Text(
                   'Learn More',
                   style: GoogleFonts.ubuntu(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 const Icon(
                   Icons.arrow_forward_ios,
+                  size: 14,
                 ),
               ],
             ),
           ),
-          Text("Version 1.0.0",
+          Text("Version 0.0.4",
             style: GoogleFonts.ubuntu(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
             )
           ),
         ],

@@ -42,12 +42,30 @@ String travelTime = "";
 bool isRecurrence = false;
 bool isEndDate = false;
 
-DateTime? recurrenceEndDate;
-int interval = 1;
-String recurrenceString = "";
+DateTime? recurrenceEndDate = DateTime.now();
+// double interval = 20.0;
+List<String> recurrenceString = [];
 String recurrenceType = "Daily";
+String selectedEnd = 'EndDate';
 
-/// Helper variable to when you add a Dynamic event
 bool needsReschedule = false;
 
 const int localServerPort = 43823;
+
+// loading icon on calendar
+bool isLoading = false;
+
+//Date for the recurrence
+DateTime recurrenceDate = DateTime.now();
+bool isOccurrence = false;
+int selOcc = 1;
+String selFor = '';
+
+// for an existing event
+bool isExistingEvent = false;
+String existingType = '';
+String existingCategory = '';
+String existingPriority = '';
+String existingRecurrence = '';
+List<String> existingRecurrenceString = [];
+DateTime recurrenceStart = DateTime.now();

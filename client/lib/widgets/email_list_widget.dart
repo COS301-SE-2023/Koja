@@ -88,7 +88,7 @@ class _EmailListState extends State<EmailList> {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                height: 50,
+                height: 45,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.black,

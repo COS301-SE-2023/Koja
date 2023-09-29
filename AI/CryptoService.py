@@ -17,28 +17,11 @@ class CryptoService:
         self.key_pair = self.get_key_pair()
 
     def get_key_pair(self):
-        if os.path.exists(self.private_key_path):
-            with open(self.private_key_path, 'rb') as f:
-                key_bytes = f.read()
-            iv = key_bytes[:16]
-            actual_encrypted_key_bytes = key_bytes[16:]
-            decrypted_key_bytes = self.decrypt_private_key(actual_encrypted_key_bytes, self.passphrase, iv)
-            private_key = serialization.load_pem_private_key(decrypted_key_bytes, None, default_backend())
-            public_key = private_key.public_key()
-            return private_key, public_key
-        else:
-            private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096, backend=default_backend())
-            public_key = private_key.public_key()
-            private_key_bytes = private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.PKCS8,
-                encryption_algorithm=serialization.NoEncryption()
-            )
-            encrypted_private_key_bytes = self.encrypt_private_key(private_key_bytes, self.passphrase)
-            os.makedirs(self.private_key_dir, exist_ok=True)
-            with open(self.private_key_path, 'wb') as f:
-                f.write(encrypted_private_key_bytes)
-            return private_key, public_key
+        private_key = rsa.generate_private_key(
+            public_exponent=65537, key_size=4096, backend=default_backend()
+        )
+        public_key = private_key.public_key()
+        return private_key, public_key
 
     def get_secret_key(self, passphrase):
         kdf = PBKDF2HMAC(
@@ -46,14 +29,18 @@ class CryptoService:
             length=32,
             salt=self.salt,
             iterations=65536,
-            backend=default_backend()
+            backend=default_backend(),
         )
         key = kdf.derive(passphrase.encode())
         return key
 
     def encrypt_private_key(self, private_key_bytes, passphrase):
         key = self.get_secret_key(passphrase)
-        cipher = Cipher(algorithms.AES(key), modes.CFB8(b'0000000000000000'), backend=default_backend())
+        cipher = Cipher(
+            algorithms.AES(key),
+            modes.CFB8(b"0000000000000000"),
+            backend=default_backend(),
+        )
         encryptor = cipher.encryptor()
         return encryptor.update(private_key_bytes) + encryptor.finalize()
 
@@ -69,8 +56,8 @@ class CryptoService:
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA512()),
                 algorithm=hashes.SHA512(),
-                label=None
-            )
+                label=None,
+            ),
         )
         return cipher_text
 
@@ -82,15 +69,15 @@ class CryptoService:
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA1()),
                 algorithm=hashes.SHA512(),
-                label=None
-            )
+                label=None,
+            ),
         )
-        return plain_text.decode('utf-8')
+        return plain_text.decode("utf-8")
 
     def get_public_key(self):
         _, public_key = self.key_pair
         public_key_bytes = public_key.public_bytes(
             encoding=serialization.Encoding.DER,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
-        return b64encode(public_key_bytes).decode('utf-8')
+        return b64encode(public_key_bytes).decode("utf-8")

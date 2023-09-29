@@ -21,4 +21,15 @@ class DateAndTimeUtil {
   static String toTime(DateTime dateTime){
     return DateFormat.Hm().format(dateTime);
   }
+
+  // 23:59 is manually coded for the recurring events 
+  static String toUTCFormat(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59).toUtc().toIso8601String();
+  }
+
+  static String forRecurrenceStart(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59).toUtc().toIso8601String();
+  }
+
+  // 2023-09-15T07:10:00.000Z
 }

@@ -35,7 +35,7 @@ class LoginModalState extends State<LoginModal> {
                     Navigator.pushAndRemoveUntil(
                       eventProvider.navigationKey.currentContext!,
                       MaterialPageRoute(
-                          builder: (_) => const NavigationScreen()),
+                          builder: (_) =>  NavigationScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } else {
@@ -115,7 +115,7 @@ class LoginModalState extends State<LoginModal> {
                                         eventProvider.navigationKey.currentContext!,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const NavigationScreen(),
+                                              NavigationScreen(),
                                         ),
                                         (Route<dynamic> route) => false,
                                       );

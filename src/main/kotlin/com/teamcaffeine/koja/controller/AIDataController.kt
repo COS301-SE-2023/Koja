@@ -56,7 +56,11 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
             )
             gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
             val gson: Gson = gsonBuilder.setPrettyPrinting().create()
-            val userEvents = userCalendarService.getUserSuggestions(userID)
+            var userIDRequest = userID
+            if (userIDRequest.toIntOrNull() == null) {
+                userIDRequest = TokenManagerController.getUserJWTTokenData(token).userID.toString()
+            }
+            val userEvents = userCalendarService.getUserSuggestions(userIDRequest)
             val jsonObject = gson.toJson(userEvents)
             ResponseEntity.ok(jsonObject)
         }
