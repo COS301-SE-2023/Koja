@@ -6,6 +6,7 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.google.api.services.calendar.model.Events
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
 import com.teamcaffeine.koja.dto.UserEventDTO
 import com.teamcaffeine.koja.entity.UserAccount
@@ -58,15 +59,27 @@ class GoogleCalendarAdapterServiceTest {
     private fun importEnvironmentVariables() {
         dotenv = Dotenv.load()
 
-        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let { setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", it) }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let { setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", it) }
-
-        dotenv["GOOGLE_CLIENT_ID"]?.let { setProperty("GOOGLE_CLIENT_ID", it) }
-        dotenv["GOOGLE_CLIENT_SECRET"]?.let { setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["GOOGLE_MAPS_API_KEY"]?.let { setProperty("GOOGLE_MAPS_API_KEY", it) }
-
-        dotenv["KOJA_JWT_SECRET"]?.let { setProperty("KOJA_JWT_SECRET", it) }
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]?.let {
+            setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL, it)
+        }
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]?.let {
+            setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME, it)
+        }
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]?.let {
+            setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]?.let {
+            setProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]?.let {
+            setProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]?.let {
+            setProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY, it)
+        }
+        dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]?.let {
+            setProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET, it)
+        }
     }
 
     /*

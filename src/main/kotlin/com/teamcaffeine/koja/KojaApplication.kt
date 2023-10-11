@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import io.github.cdimascio.dotenv.Dotenv
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -12,30 +13,69 @@ class KojaApplication
 fun main(args: Array<String>) {
     val dotenv: Dotenv = Dotenv.load()
 
-    setProperty("KOJA_AWS_RDS_DATABASE_URL", dotenv["KOJA_AWS_RDS_DATABASE_URL"]!!)
-    setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]!!)
-    setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
-    setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"]!!)
-    setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"]!!)
-    setProperty("OPENAI_API_KEY", dotenv["OPENAI_API_KEY"]!!)
-    setProperty("SERVER_ADDRESS", dotenv["SERVER_ADDRESS"]!!)
-    if (dotenv["SERVER_PORT"] != null) {
-        setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
-    } else {
-        setProperty("SERVER_PORT", "")
-    }
-
+    setProperty(
+        EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL,
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME,
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD,
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID,
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET,
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.OPENAI_API_KEY,
+        dotenv[EnvironmentVariableConstant.OPENAI_API_KEY]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.SERVER_ADDRESS,
+        dotenv[EnvironmentVariableConstant.SERVER_ADDRESS]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.SERVER_PORT,
+        dotenv[EnvironmentVariableConstant.SERVER_PORT] ?: "",
+    )
     // Set Google Sign In client ID and client secret properties
-    setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
-    setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
-    setProperty("GOOGLE_MAPS_API_KEY", dotenv["GOOGLE_MAPS_API_KEY"]!!)
+    setProperty(
+        EnvironmentVariableConstant.GOOGLE_CLIENT_ID,
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET,
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY,
+        dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]!!,
+    )
 
     // Set JWT secret key property
-    setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
-    setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
-
-    setProperty("KOJA_PRIVATE_KEY_PASS", dotenv["KOJA_PRIVATE_KEY_PASS"]!!)
-    setProperty("KOJA_PRIVATE_KEY_SALT", dotenv["KOJA_PRIVATE_KEY_SALT"]!!)
+    setProperty(
+        EnvironmentVariableConstant.KOJA_JWT_SECRET,
+        dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_ID_SECRET,
+        dotenv[EnvironmentVariableConstant.KOJA_ID_SECRET]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS,
+        dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS]!!,
+    )
+    setProperty(
+        EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT,
+        dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT]!!,
+    )
 
     runApplication<KojaApplication>(*args)
 }
