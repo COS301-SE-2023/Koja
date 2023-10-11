@@ -60,7 +60,7 @@ class LocationService(private val userRepository: UserRepository, private val go
 
     fun getTravelTime(originLat: Double, originLng: Double, placeId: String): Long? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -78,7 +78,7 @@ class LocationService(private val userRepository: UserRepository, private val go
 
     fun getTravelTime(placeIdOrigin: String, placeIdDestination: String): Long? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -115,7 +115,7 @@ class LocationService(private val userRepository: UserRepository, private val go
         vararg futureEventsLocations: String,
     ): DistanceMatrix? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         try {
@@ -147,7 +147,7 @@ class LocationService(private val userRepository: UserRepository, private val go
 
     fun getLocationCoordinates(placeId: String): Pair<Double, Double>? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         val results: Array<GeocodingResult> = GeocodingApi.newRequest(context)

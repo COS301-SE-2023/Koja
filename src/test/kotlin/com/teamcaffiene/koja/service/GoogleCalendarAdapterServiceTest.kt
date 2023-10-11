@@ -64,7 +64,7 @@ class GoogleCalendarAdapterServiceTest {
 
         dotenv["GOOGLE_CLIENT_ID"]?.let { setProperty("GOOGLE_CLIENT_ID", it) }
         dotenv["GOOGLE_CLIENT_SECRET"]?.let { setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["API_KEY"]?.let { setProperty("API_KEY", it) }
+        dotenv["GOOGLE_MAPS_API_KEY"]?.let { setProperty("GOOGLE_MAPS_API_KEY", it) }
 
         dotenv["KOJA_JWT_SECRET"]?.let { setProperty("KOJA_JWT_SECRET", it) }
     }

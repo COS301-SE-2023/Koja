@@ -74,7 +74,7 @@ class UserCalendarServiceTest {
         // Set Google Sign In client ID and client secret properties
         System.setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
         System.setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
-        System.setProperty("API_KEY", dotenv["API_KEY"]!!)
+        System.setProperty("GOOGLE_MAPS_API_KEY", dotenv["GOOGLE_MAPS_API_KEY"]!!)
 
         // Set JWT secret key and other related properties
         System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)

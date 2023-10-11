@@ -109,7 +109,7 @@ LocationController(private val locationService: LocationService) {
 
     fun getDistance(origin: String?, destination: String?): String? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -146,7 +146,7 @@ LocationController(private val locationService: LocationService) {
 
     fun getTravelTime(placeId: String, destLat: Double, destLng: Double): Long? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)

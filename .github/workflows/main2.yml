@@ -25,7 +25,7 @@ jobs:
           echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> client/assets/.env
           echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> client/assets/.env
           echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> client/assets/.env
-          echo API_KEY=${{ secrets.API_KEY }} >> client/assets/.env
+          echo GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} >> client/assets/.env
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> client/assets/.env
           echo KOJA_ID_SECRET=${{ secrets.KOJA_ID_SECRET }} >> client/assets/.env
           echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> client/assets/.env
@@ -79,7 +79,7 @@ jobs:
           echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> .env
           echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> .env
           echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> .env
-          echo API_KEY=${{ secrets.API_KEY }} >> .env
+          echo GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} >> .env
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
           echo KOJA_ID_SECRET=${{ secrets.KOJA_ID_SECRET }} >> .env
           echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> .env

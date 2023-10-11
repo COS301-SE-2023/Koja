@@ -51,7 +51,7 @@ class UserAccountManagerServiceTest {
 
         dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
         dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["API_KEY"]?.let { System.setProperty("API_KEY", it) }
+        dotenv["GOOGLE_MAPS_API_KEY"]?.let { System.setProperty("GOOGLE_MAPS_API_KEY", it) }
 
         dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
     }

@@ -481,7 +481,7 @@ class GoogleCalendarAdapterService(
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
             .build()
 
         val calendarTimezone = getCalendarTimezone(calendarService, "primary")
@@ -899,7 +899,7 @@ class GoogleCalendarAdapterService(
 //    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
 //    fun getTimeOfTimeZone(jwtToken: String): String? {
 //        val context = GeoApiContext.Builder()
-//            .apiKey(System.getProperty("API_KEY"))
+//            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
 //            .build()
 //        val userLocations = LocationService(userRepository, googleCalendarAdapterService)
 //        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
