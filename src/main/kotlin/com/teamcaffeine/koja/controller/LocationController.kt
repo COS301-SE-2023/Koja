@@ -4,6 +4,7 @@ import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.service.LocationService
@@ -109,7 +110,7 @@ LocationController(private val locationService: LocationService) {
 
     fun getDistance(origin: String?, destination: String?): String? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -146,7 +147,7 @@ LocationController(private val locationService: LocationService) {
 
     fun getTravelTime(placeId: String, destLat: Double, destLng: Double): Long? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)

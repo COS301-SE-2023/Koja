@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
@@ -58,39 +59,82 @@ class UserCalendarServiceTest {
     private fun importEnvironmentVariables() {
         val dotenv: Dotenv = Dotenv.load()
 
-        System.setProperty("KOJA_AWS_RDS_DATABASE_URL", dotenv["KOJA_AWS_RDS_DATABASE_URL"]!!)
-        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]!!)
-        System.setProperty("KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD", dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]!!)
-        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"]!!)
-        System.setProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET", dotenv["KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"]!!)
-        System.setProperty("OPENAI_API_KEY", dotenv["OPENAI_API_KEY"]!!)
-        System.setProperty("SERVER_ADDRESS", dotenv["SERVER_ADDRESS"]!!)
-        if (dotenv["SERVER_PORT"] != null) {
-            System.setProperty("SERVER_PORT", dotenv["SERVER_PORT"]!!)
-        } else {
-            System.setProperty("SERVER_PORT", "")
-        }
-
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL,
+            dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME,
+            dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD,
+            dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID,
+            dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET,
+            dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.OPENAI_API_KEY,
+            dotenv[EnvironmentVariableConstant.OPENAI_API_KEY]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.SERVER_ADDRESS,
+            dotenv[EnvironmentVariableConstant.SERVER_ADDRESS]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.SERVER_PORT,
+            dotenv[EnvironmentVariableConstant.SERVER_PORT] ?: "",
+        )
         // Set Google Sign In client ID and client secret properties
-        System.setProperty("GOOGLE_CLIENT_ID", dotenv["GOOGLE_CLIENT_ID"]!!)
-        System.setProperty("GOOGLE_CLIENT_SECRET", dotenv["GOOGLE_CLIENT_SECRET"]!!)
-        System.setProperty("GOOGLE_MAPS_API_KEY", dotenv["GOOGLE_MAPS_API_KEY"]!!)
-
+        System.setProperty(
+            EnvironmentVariableConstant.GOOGLE_CLIENT_ID,
+            dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET,
+            dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY,
+            dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]!!,
+        )
         // Set JWT secret key and other related properties
-        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
-        System.setProperty("KOJA_ID_SECRET", dotenv["KOJA_ID_SECRET"]!!)
-        System.setProperty("KOJA_PRIVATE_KEY_PASS", dotenv["KOJA_PRIVATE_KEY_PASS"]!!)
-        System.setProperty("KOJA_PRIVATE_KEY_SALT", dotenv["KOJA_PRIVATE_KEY_SALT"]!!)
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_JWT_SECRET,
+            dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_ID_SECRET,
+            dotenv[EnvironmentVariableConstant.KOJA_ID_SECRET]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS,
+            dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS]!!,
+        )
+        System.setProperty(
+            EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT,
+            dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT]!!,
+        )
     }
 
-    /*  @BeforeEach
-    fun setup() {
-        val dotenv: Dotenv = Dotenv.load()
-        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
-        userRepository = mockk()
-        userAccountRepository = mockk()
-        userCalendarService = UserCalendarService(userRepository)
-    }*/
+//    @BeforeEach
+//    fun setup() {
+//        val dotenv: Dotenv = Dotenv.load()
+//        System.setProperty(
+//            EnvironmentVariableConstant.KOJA_JWT_SECRET,
+//            dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]!!
+//        )
+//
+//        userRepository = mockk()
+//        userAccountRepository = mockk()
+//        userCalendarService = UserCalendarService(userRepository)
+//    }
 
     @Test
     fun getAllUserEvents_with_null_token_throws_exception() {

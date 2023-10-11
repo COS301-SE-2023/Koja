@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.controller
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.controller.UserAccountManagerController
@@ -51,25 +52,27 @@ class UserAccountManagerControllerIntegrationTest {
     private fun importEnvironmentVariables() {
         dotenv = Dotenv.load()
 
-        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
-                it,
-            )
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL, it)
         }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
-                it,
-            )
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME, it)
         }
-
-        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
-        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["GOOGLE_MAPS_API_KEY"]?.let { System.setProperty("GOOGLE_MAPS_API_KEY", it) }
-
-        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]?.let {
+            System.setProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]?.let {
+            System.setProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]?.let {
+            System.setProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY, it)
+        }
+        dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET, it)
+        }
     }
 
     @Test

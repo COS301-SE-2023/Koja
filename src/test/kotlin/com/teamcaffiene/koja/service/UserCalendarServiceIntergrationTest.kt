@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.service
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.UserController
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.entity.TimeBoundary
@@ -55,48 +56,51 @@ class UserCalendarServiceIntergrationTest {
     private fun importEnvironmentVariables() {
         dotenv = Dotenv.load()
 
-        dotenv["KOJA_AWS_RDS_DATABASE_URL"]?.let { System.setProperty("KOJA_AWS_RDS_DATABASE_URL", it) }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME",
-                it,
-            )
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL, it)
         }
-        dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]?.let {
-            System.setProperty(
-                "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD",
-                it,
-            )
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME, it)
         }
-
-        dotenv["GOOGLE_CLIENT_ID"]?.let { System.setProperty("GOOGLE_CLIENT_ID", it) }
-        dotenv["GOOGLE_CLIENT_SECRET"]?.let { System.setProperty("GOOGLE_CLIENT_SECRET", it) }
-        dotenv["GOOGLE_MAPS_API_KEY"]?.let { System.setProperty("GOOGLE_MAPS_API_KEY", it) }
-
-        dotenv["KOJA_JWT_SECRET"]?.let { System.setProperty("KOJA_JWT_SECRET", it) }
+        dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]?.let {
+            System.setProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]?.let {
+            System.setProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET, it)
+        }
+        dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]?.let {
+            System.setProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY, it)
+        }
+        dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]?.let {
+            System.setProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET, it)
+        }
     }
-/*
-    @Test
-    fun `test addTimeBoundary with valid time boundary`() {
-        val token = "validToken"
-        val userID = "user123"
 
-        // Prepare the user data in the database for the given token
-        val user = User(userID, "John Doe")
-        userRepository.save(user)
+    /*
+        @Test
+        fun `test addTimeBoundary with valid time boundary`() {
+            val token = "validToken"
+            val userID = "user123"
 
-        // Create a valid time boundary
-        val timeBoundary = TimeBoundary("Office hours", "09:00", "17:00", TimeBoundaryType.ALLOWED)
+            // Prepare the user data in the database for the given token
+            val user = User(userID, "John Doe")
+            userRepository.save(user)
 
-        // Perform the function call
-        val result = userCalendarService.addTimeBoundary(token, timeBoundary)
+            // Create a valid time boundary
+            val timeBoundary = TimeBoundary("Office hours", "09:00", "17:00", TimeBoundaryType.ALLOWED)
 
-        // Optionally, verify the database state after adding the time boundary
-        val retrievedUser = userRepository.findById(userID).orElse(null)
-        assertNotNull(retrievedUser)
-        assertTrue(result)
-        assertTrue(retrievedUser.getTimeBoundaries().contains(timeBoundary))
-    }*/
+            // Perform the function call
+            val result = userCalendarService.addTimeBoundary(token, timeBoundary)
+
+            // Optionally, verify the database state after adding the time boundary
+            val retrievedUser = userRepository.findById(userID).orElse(null)
+            assertNotNull(retrievedUser)
+            assertTrue(result)
+            assertTrue(retrievedUser.getTimeBoundaries().contains(timeBoundary))
+        }*/
 
     @Test
     fun `test addTimeBoundary with invalid token`() {

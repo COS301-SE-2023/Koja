@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.controller
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 
 class TokenManagerControllerUnitTest {
@@ -9,7 +10,10 @@ class TokenManagerControllerUnitTest {
 //    @BeforeEach
 //    fun setUp() {
 //        val dotenv: Dotenv = Dotenv.load()
-//        System.setProperty("KOJA_JWT_SECRET", dotenv["KOJA_JWT_SECRET"]!!)
+//        System.setProperty(
+//            EnvironmentVariableConstant.KOJA_JWT_SECRET,
+//            dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]!!
+//        )
 //        tokenManagerController = TokenManagerController()
 //    }
 //

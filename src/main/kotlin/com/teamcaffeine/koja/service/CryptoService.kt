@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
@@ -29,8 +30,8 @@ class CryptoService {
 
     private val privateKeyDir = "keys"
     private val privateKeyPath = "$privateKeyDir/private_key.pem"
-    private val passphrase = System.getProperty("KOJA_PRIVATE_KEY_PASS")
-    private val salt = System.getProperty("KOJA_PRIVATE_KEY_SALT")
+    private val passphrase = System.getProperty(EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS)
+    private val salt = System.getProperty(EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT)
     private val keyPair: KeyPair
 
     init {

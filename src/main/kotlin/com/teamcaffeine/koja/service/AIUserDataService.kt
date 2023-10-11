@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.dto.AIUserEventDataDTO
 import com.teamcaffeine.koja.dto.EncryptedData
 import com.teamcaffeine.koja.dto.TimeSlot
@@ -30,8 +31,8 @@ import java.util.Base64
 @Service
 @Transactional
 class AIUserDataService(private val userRepository: UserRepository, private val userAccountRepository: UserAccountRepository, private val cryptoService: CryptoService) {
-    private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
-    private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
+    private val clientId = System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID)
+    private val clientSecret = System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET)
 
     private fun getTimeslotPairList(
         semester: List<UserEventDTO>,
@@ -198,7 +199,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                                 if (timeSlotDuration / eventDuration >= 2) {
                                     var timeSlotOffset = 0L
                                     while (timeSlot.startTime.plusSeconds(timeSlotOffset)
-                                        .isBefore(timeSlot.endTime)
+                                            .isBefore(timeSlot.endTime)
                                     ) {
                                         tempTimeSlots.add(
                                             TimeSlot(
@@ -238,8 +239,8 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
         val userIdsToDelete = ArrayList<Map<String, AttributeValue>>()
 
         val awsCreds = AwsBasicCredentials.create(
-            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
-            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+            System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID),
+            System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET),
         )
 
         val dynamoDBClient = DynamoDbClient.builder()
@@ -291,7 +292,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
 
     fun validateKojaSecretID(id: String): Boolean {
         val decrypted = decrypt(id)
-        return decrypted == System.getProperty("KOJA_ID_SECRET")
+        return decrypted == System.getProperty(EnvironmentVariableConstant.KOJA_ID_SECRET)
     }
 
     private fun removeOldEntries(
@@ -313,8 +314,8 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
 
     private fun userHasRecommendations(userID: String): Boolean {
         val awsCreds = AwsBasicCredentials.create(
-            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
-            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+            System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID),
+            System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET),
         )
 
         val dynamoDBClient = DynamoDbClient.builder()

@@ -1,5 +1,6 @@
 package com.teamcaffiene.koja.controller
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import io.github.cdimascio.dotenv.Dotenv
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
@@ -26,9 +27,12 @@ class GoogleCalendarControllerTests {
 
     @BeforeEach
     fun setup() {
-        Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_URL"]).thenReturn("your_test_database_url")
-        Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME"]).thenReturn("your_test_username")
-        Mockito.`when`(dotenv["KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD"]).thenReturn("your_test_password")
+        Mockito.`when`(dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL])
+            .thenReturn("your_test_database_url")
+        Mockito.`when`(dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME])
+            .thenReturn("your_test_username")
+        Mockito.`when`(dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD])
+            .thenReturn("your_test_password")
     }
 
 //    @Test

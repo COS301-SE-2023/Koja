@@ -20,6 +20,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.maps.GeoApiContext
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.Frequency
 import com.teamcaffeine.koja.controller.TokenManagerController
@@ -69,9 +70,9 @@ class GoogleCalendarAdapterService(
 ) : CalendarAdapterService(AuthProviderEnum.GOOGLE) {
     private val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
-    private val clientId = System.getProperty("GOOGLE_CLIENT_ID")
-    private val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
-    private val serverAddress = "${System.getProperty("SERVER_ADDRESS")}:${System.getProperty("SERVER_PORT")}"
+    private val clientId = System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID)
+    private val clientSecret = System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET)
+    private val serverAddress = "${System.getProperty(EnvironmentVariableConstant.SERVER_ADDRESS)}:${System.getProperty(EnvironmentVariableConstant.SERVER_PORT)}"
     private val redirectUriBase = "$serverAddress/api/v1/auth"
     private val scopes = listOf(
         "https://www.googleapis.com/auth/calendar",
@@ -148,8 +149,8 @@ class GoogleCalendarAdapterService(
         val parameters = LinkedMultiValueMap<String, String>()
         parameters.add("grant_type", "authorization_code")
         parameters.add("code", authCode)
-        parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
-        parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
+        parameters.add("client_id", System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID))
+        parameters.add("client_secret", System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET))
 
         if (deviceType == CallbackConfigEnum.WEB) {
             parameters.add("redirect_uri", "$serverAddress/api/v1/auth/google/callback")
@@ -224,10 +225,12 @@ class GoogleCalendarAdapterService(
             timeBoundary.user = newUser
             userRepository.save(newUser)
 
+
             val awsCreds = AwsBasicCredentials.create(
-                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
-                System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+                System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID),
+                System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET)
             )
+
 
             val dynamoDBClient = DynamoDbClient.builder()
                 .region(Region.EU_NORTH_1)
@@ -269,8 +272,8 @@ class GoogleCalendarAdapterService(
         val parameters = LinkedMultiValueMap<String, String>()
         parameters.add("grant_type", "authorization_code")
         parameters.add("code", authCode)
-        parameters.add("client_id", System.getProperty("GOOGLE_CLIENT_ID"))
-        parameters.add("client_secret", System.getProperty("GOOGLE_CLIENT_SECRET"))
+        parameters.add("client_id", System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID))
+        parameters.add("client_secret", System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET))
         parameters.add("redirect_uri", "$serverAddress/api/v1/user/auth/add-email/callback")
 
         val requestEntity = HttpEntity(parameters, headers)
@@ -481,7 +484,7 @@ class GoogleCalendarAdapterService(
         val endDateTime = DateTime(eventEndTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         val calendarTimezone = getCalendarTimezone(calendarService, "primary")
@@ -899,7 +902,7 @@ class GoogleCalendarAdapterService(
 //    private lateinit var googleCalendarAdapterService: GoogleCalendarAdapterService
 //    fun getTimeOfTimeZone(jwtToken: String): String? {
 //        val context = GeoApiContext.Builder()
-//            .apiKey(System.getProperty("GOOGLE_MAPS_API_KEY"))
+//            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
 //            .build()
 //        val userLocations = LocationService(userRepository, googleCalendarAdapterService)
 //        val userLocation = userLocations.getUserSavedLocations(jwtToken)["currentLocation"] as Pair<*, *>
