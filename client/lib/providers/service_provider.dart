@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:koja/Utils/environment_variable_constants.dart';
 import 'package:koja/models/user_time_boundary_model.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -57,8 +58,8 @@ class ServiceProvider with ChangeNotifier {
 
   Future<ServiceProvider> init() async {
     startLocationListner();
-    _serverAddress = dotenv.get("SERVER_ADDRESS", fallback: "10.0.2.2");
-    _serverPort = dotenv.get("SERVER_PORT", fallback: "8080");
+    _serverAddress = dotenv.get(EnvironmentVariableConstant.serverAddress, fallback: "10.0.2.2");
+    _serverPort = dotenv.get(EnvironmentVariableConstant.serverPort, fallback: "8080");
     return this;
   }
 
