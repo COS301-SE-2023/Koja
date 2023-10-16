@@ -39,7 +39,7 @@ class UserAccountManagerService(private val userAccountRepository: UserAccountRe
                 val updatedCredentials = refreshAccessToken(
                     System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID),
                     System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET),
-                    userAccount.refreshToken
+                    userAccount.refreshToken,
                 )
                 if (updatedCredentials != null) {
                     userTokens.add(

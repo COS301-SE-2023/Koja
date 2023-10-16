@@ -225,12 +225,10 @@ class GoogleCalendarAdapterService(
             timeBoundary.user = newUser
             userRepository.save(newUser)
 
-
             val awsCreds = AwsBasicCredentials.create(
                 System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID),
-                System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET)
+                System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET),
             )
-
 
             val dynamoDBClient = DynamoDbClient.builder()
                 .region(Region.EU_NORTH_1)

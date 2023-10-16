@@ -1,6 +1,5 @@
 package com.teamcaffiene.koja.controller
 
-import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 
 class TokenManagerControllerUnitTest {
