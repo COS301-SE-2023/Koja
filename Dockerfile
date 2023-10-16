@@ -27,24 +27,8 @@ WORKDIR /app
 COPY --from=builder /home/gradle/project/build/libs/ /app/
 
 # Create .env file based on the environment variables of the environment where the Dockerfile is being built
-RUN echo "KOJA_AWS_RDS_DATABASE_URL=$KOJA_AWS_RDS_DATABASE_URL" >> .env && \
-    echo "KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=$KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME" >> .env && \
-    echo "KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=$KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD" >> .env && \
-    echo "KOJA_AWS_DYNAMODB_ACCESS_KEY_ID=$KOJA_AWS_DYNAMODB_ACCESS_KEY_ID" >> .env && \
-    echo "KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET=$KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET" >> .env && \
-    echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env && \
-    echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env && \
-    echo "KOJA_JWT_SECRET=$KOJA_JWT_SECRET" >> .env && \
-    echo "KOJA_ID_SECRET=$KOJA_AI_SECRET" >> .env && \
-    echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env && \
-    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env && \
-    echo "COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN" >> .env && \
-    echo "KOJA_PRIVATE_KEY_PASS=$KOJA_PRIVATE_KEY_PASS" >> .env && \
-    echo "KOJA_PRIVATE_KEY_SALT=$KOJA_PRIVATE_KEY_SALT" >> .env && \
-    echo "AI_PRIVATE_KEY_PASS=$AI_PRIVATE_KEY_PASS" >> .env && \
-    echo "AI_PRIVATE_KEY_SALT=$AI_PRIVATE_KEY_SALT" >> .env && \
-    echo "SERVER_ADDRESS=$SERVER_ADDRESS" >> .env && \
-    echo "SERVER_PORT=$SERVER_PORT" >> .env
+RUN echo "koja_server_address=$koja_server_address" >> .env && \
+    echo "koja_server_port=$koja_server_port" >> .env
 
 
 # Start the built spring boot project when the Docker container is started
