@@ -594,9 +594,9 @@ class UserCalendarService(
                 if (recommendations != null) {
                     toReturn = recommendations.mapValues { entry ->
                         entry.value.l().map {
-                                value ->
+                            value ->
                             value.m()["week_days"]?.m()?.mapValues {
-                                    attr ->
+                                attr ->
                                 attr.value.l().map {
                                     it.s() ?: ""
                                 }
