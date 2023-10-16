@@ -1,5 +1,6 @@
 package com.teamcaffeine.koja.service
 
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.dto.JWTFunctionality
 import com.teamcaffeine.koja.dto.UserEventDTO
@@ -560,8 +561,8 @@ class UserCalendarService(
 
     fun getUserSuggestions(userID: String): Any {
         val awsCreds = AwsBasicCredentials.create(
-            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_ID"),
-            System.getProperty("KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET"),
+            System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID),
+            System.getProperty(EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET),
         )
 
         val dynamoDBClient = DynamoDbClient.builder()

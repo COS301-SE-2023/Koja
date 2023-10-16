@@ -3,6 +3,7 @@ package com.teamcaffeine.koja.dto
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 import org.springframework.stereotype.Service
@@ -19,7 +20,7 @@ class JWTRealFuntionality : JWTFunctionality {
     }
 
     override fun getUserJWTTokenData(jwtToken: String): UserJWTTokenDataDTO {
-        val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
+        val jwtSecret: String = System.getProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET)
         val algorithm = Algorithm.HMAC512(jwtSecret)
         val verifier = JWT.require(algorithm).build()
         val decodedJWT = verifier.verify(jwtToken)
