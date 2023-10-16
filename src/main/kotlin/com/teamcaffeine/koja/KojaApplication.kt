@@ -26,10 +26,10 @@ fun getSecret(projectId: String, secretId: String, versionId: String): String {
 fun main(args: Array<String>) {
     val dotenv: Dotenv = Dotenv.load()
 
-    EnvironmentVariableConstant.asMap.forEach { (key, secretName) ->
-        val valueFromEnv = dotenv[key]
+    EnvironmentVariableConstant.asMap.forEach { (_, secretName) ->
+        val valueFromEnv = dotenv[secretName]
         val finalValue = valueFromEnv ?: getSecret(projectId, secretName, envSecretVersion)
-        setProperty(key, finalValue)
+        setProperty(secretName, finalValue)
     }
 
     runApplication<KojaApplication>(*args)
