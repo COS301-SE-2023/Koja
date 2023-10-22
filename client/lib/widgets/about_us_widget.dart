@@ -53,7 +53,7 @@ class AboutUsWidget extends StatelessWidget {
               ],
             ),
           ),
-          Text("Version 0.0.4",
+          Text("Version 1.0.0",
             style: GoogleFonts.ubuntu(
               fontSize: 14,
               fontWeight: FontWeight.w400,
