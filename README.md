@@ -13,9 +13,9 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 * [Project Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
 ## Demo Slide & Video
-* [Team Caffeine-Demo Slide](https://www.canva.com/design/DAFuI_vIphg/Ux_tSd2K-evrvKIDnCR8PA/edit?utm_content=DAFuI_vIphg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Team Caffeine - Demo Slide](https://www.canva.com/design/DAFuI_vIphg/Ux_tSd2K-evrvKIDnCR8PA/edit?utm_content=DAFuI_vIphg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
-* [Team Caffeine-Demo Video](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utmcontent=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Team Caffeine - Demo Video](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utmcontent=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 
 ## Additional Documentations
