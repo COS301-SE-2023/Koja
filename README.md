@@ -12,14 +12,11 @@ Koja is a system that enables more efficient time utilisation through dynamic an
 * [SRSv4](https://www.canva.com/design/DAFm6EdVuUo/d1PDPN7l5k5e_cx3V7UT1A/edit?utm_content=DAFm6EdVuUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 * [Project Board](https://github.com/orgs/COS301-SE-2023/projects/37)
 
-## Demo Videos
-* [Team Caffeine-Demo1](https://drive.google.com/file/d/165ckgDKdO0YbYHQ_8qtw9sJ56FZ6jSGC/view?usp=sharing)
+## Demo Slide & Video
+* [Team Caffeine-Demo Slide](https://www.canva.com/design/DAFuI_vIphg/Ux_tSd2K-evrvKIDnCR8PA/edit?utm_content=DAFuI_vIphg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
-* [Team Caffeine-Demo2](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utmcontent=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Team Caffeine-Demo Video](https://www.canva.com/design/DAFmn-ECx6w/1bhJhvtIjHPHMSG7kXUJhA/edit?utmcontent=DAFmn-ECx6w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
-* [Team Caffeine-Demo3](https://www.canva.com/design/DAFoP47g3sw/_QjN9Yd8liAkDbpPl9SBhg/edit?utm_content=DAFoP47g3sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
-
-* [Team Caffeine-Demo4](https://www.canva.com/design/DAFuI_vIphg/Ux_tSd2K-evrvKIDnCR8PA/edit?utm_content=DAFuI_vIphg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ## Additional Documentations
 * [Technical Installation Manual](https://docs.google.com/document/d/1pdzUM2YM_lkqxtvTfs2MToCcu3zSB6QwQbP5pfhyjHk/edit?usp=sharing)
