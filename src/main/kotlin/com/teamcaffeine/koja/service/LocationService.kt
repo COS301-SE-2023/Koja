@@ -6,6 +6,7 @@ import com.google.maps.GeocodingApi
 import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.GeocodingResult
 import com.google.maps.model.TravelMode
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.entity.User
 import com.teamcaffeine.koja.repository.UserRepository
@@ -60,7 +61,7 @@ class LocationService(private val userRepository: UserRepository, private val go
 
     fun getTravelTime(originLat: Double, originLng: Double, placeId: String): Long? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -78,7 +79,7 @@ class LocationService(private val userRepository: UserRepository, private val go
 
     fun getTravelTime(placeIdOrigin: String, placeIdDestination: String): Long? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         val result: DistanceMatrix = DistanceMatrixApi.newRequest(context)
@@ -115,7 +116,7 @@ class LocationService(private val userRepository: UserRepository, private val go
         vararg futureEventsLocations: String,
     ): DistanceMatrix? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         try {
@@ -147,7 +148,7 @@ class LocationService(private val userRepository: UserRepository, private val go
 
     fun getLocationCoordinates(placeId: String): Pair<Double, Double>? {
         val context = GeoApiContext.Builder()
-            .apiKey(System.getProperty("API_KEY"))
+            .apiKey(System.getProperty(EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY))
             .build()
 
         val results: Array<GeocodingResult> = GeocodingApi.newRequest(context)

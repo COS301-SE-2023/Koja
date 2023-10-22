@@ -2,6 +2,7 @@ package com.teamcaffeine.koja.dto
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.enums.AuthProviderEnum
 
 class JWTGoogleDTO(private var accessToken: String, private val refreshToken: String, var expireTimeInSeconds: Long) :
@@ -32,8 +33,8 @@ class JWTGoogleDTO(private var accessToken: String, private val refreshToken: St
 
         val jsonFactory = com.google.api.client.json.jackson2.JacksonFactory.getDefaultInstance()
         val httpTransport = com.google.api.client.http.javanet.NetHttpTransport.Builder().build()
-        val clientId = System.getProperty("GOOGLE_CLIENT_ID")
-        val clientSecret = System.getProperty("GOOGLE_CLIENT_SECRET")
+        val clientId = System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID)
+        val clientSecret = System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET)
 
         val credential = GoogleCredential.Builder()
             .setJsonFactory(jsonFactory)

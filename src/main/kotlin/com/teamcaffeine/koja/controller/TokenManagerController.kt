@@ -3,6 +3,7 @@ package com.teamcaffeine.koja.controller
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
@@ -49,7 +50,7 @@ class TokenManagerController {
 
     companion object {
         private const val oneMinuteInSeconds: Long = 60L
-        private val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
+        private val jwtSecret: String = System.getProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET)
 
         private fun decrypt(text: String, key: SecretKey): String {
             val cipher = Cipher.getInstance("AES")
@@ -109,7 +110,7 @@ class TokenManagerController {
         }
 
         fun getUserJWTTokenData(jwtToken: String, verifyValidity: Boolean = true): UserJWTTokenDataDTO {
-            val jwtSecret: String = System.getProperty("KOJA_JWT_SECRET")
+            val jwtSecret: String = System.getProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET)
             val algorithm = Algorithm.HMAC512(jwtSecret)
             val verifier = JWT.require(algorithm).build()
             val decodedJWT = if (verifyValidity) {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final String apiKey = dotenv.env['API_KEY'] ?? "";
-final String serverAddress = dotenv.env['SERVER_ADDRESS'] ?? "";
+import 'environment_variable_constants.dart';
+
+final String apiKey = dotenv.env[EnvironmentVariableConstant.googleMapsApiKey] ?? "";
+final String serverAddress = dotenv.env[EnvironmentVariableConstant.serverAddress] ?? "";
 const darkBlue = Color(0xFF1976D2);
 
 /// This store the list of locations

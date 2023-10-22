@@ -5,6 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.getUserJWTTokenData
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -35,7 +36,11 @@ class UserAccountManagerService(private val userAccountRepository: UserAccountRe
         val userTokens = emptyArray<JWTAuthDetailsDTO>().toMutableList()
         if (existingUserAccounts != null) {
             for (userAccount in existingUserAccounts) {
-                val updatedCredentials = refreshAccessToken(System.getProperty("GOOGLE_CLIENT_ID"), System.getProperty("GOOGLE_CLIENT_SECRET"), userAccount.refreshToken)
+                val updatedCredentials = refreshAccessToken(
+                    System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_ID),
+                    System.getProperty(EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET),
+                    userAccount.refreshToken,
+                )
                 if (updatedCredentials != null) {
                     userTokens.add(
                         JWTGoogleDTO(

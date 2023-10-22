@@ -17,34 +17,34 @@ jobs:
 
       - name: Create .env
         run: |
-          echo KOJA_AWS_RDS_DATABASE_URL=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> client/assets/.env
-          echo KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> client/assets/.env
-          echo KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> client/assets/.env
-          echo KOJA_AWS_DYNAMODB_ACCESS_KEY_ID=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID }} >> client/assets/.env
-          echo KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET }} >> client/assets/.env
-          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> client/assets/.env
-          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> client/assets/.env
-          echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> client/assets/.env
-          echo API_KEY=${{ secrets.API_KEY }} >> client/assets/.env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> client/assets/.env
-          echo KOJA_ID_SECRET=${{ secrets.KOJA_ID_SECRET }} >> client/assets/.env
-          echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> client/assets/.env
-          echo KOJA_PRIVATE_KEY_PASS=${{ secrets.KOJA_PRIVATE_KEY_PASS }} >> client/assets/.env
-          echo KOJA_PRIVATE_KEY_SALT=${{ secrets.KOJA_PRIVATE_KEY_SALT }} >> client/assets/.env
-          echo AI_PRIVATE_KEY_PASS=${{ secrets.AI_PRIVATE_KEY_PASS }} >> client/assets/.env
-          echo AI_PRIVATE_KEY_SALT=${{ secrets.AI_PRIVATE_KEY_SALT }} >> client/assets/.env
-          echo SERVER_ADDRESS=${{ secrets.SERVER_ADDRESS }} >> client/assets/.env
-          echo SERVER_PORT=${{ secrets.SERVER_PORT }} >> client/assets/.env
+          echo koja_aws_rds_database_url=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> client/assets/.env
+          echo koja_aws_rds_database_admin_username=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> client/assets/.env
+          echo koja_aws_rds_database_admin_password=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> client/assets/.env
+          echo koja_aws_dynamodb_access_key_id=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID }} >> client/assets/.env
+          echo koja_aws_dynamodb_access_key_secret=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET }} >> client/assets/.env
+          echo koja_google_client_id=${{ secrets.GOOGLE_CLIENT_ID }} >> client/assets/.env
+          echo koja_google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }} >> client/assets/.env
+          echo koja_jwt_secret=${{ secrets.KOJA_JWT_SECRET }} >> client/assets/.env
+          echo koja_google_maps_api_key=${{ secrets.GOOGLE_MAPS_API_KEY }} >> client/assets/.env
+          echo koja_openai_api_key=${{ secrets.OPENAI_API_KEY }} >> client/assets/.env
+          echo koja_id_secret=${{ secrets.KOJA_ID_SECRET }} >> client/assets/.env
+          echo koja_coveralls_repo_token=${{ secrets.COVERALLS_REPO_TOKEN }} >> client/assets/.env
+          echo koja_private_key_password=${{ secrets.KOJA_PRIVATE_KEY_PASS }} >> client/assets/.env
+          echo koja_private_key_salt=${{ secrets.KOJA_PRIVATE_KEY_SALT }} >> client/assets/.env
+          echo koja_ai_private_key_password=${{ secrets.AI_PRIVATE_KEY_PASS }} >> client/assets/.env
+          echo koja_ai_private_key_salt=${{ secrets.AI_PRIVATE_KEY_SALT }} >> client/assets/.env
+          echo koja_server_address=${{ secrets.SERVER_ADDRESS }} >> client/assets/.env
+          echo koja_server_port=${{ secrets.SERVER_PORT }} >> client/assets/.env
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v1
         with:
           flutter-version: '3.10'
-          
+
       - name: Install Flutter dependencies
         run: flutter pub get
         working-directory: client
-        
+
       - name: Run Flutter linter
         run: flutter analyze
         working-directory: client
@@ -71,30 +71,30 @@ jobs:
 
       - name: Create .env
         run: |
-          echo KOJA_AWS_RDS_DATABASE_URL=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> .env
-          echo KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> .env
-          echo KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> .env
-          echo KOJA_AWS_DYNAMODB_ACCESS_KEY_ID=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID }} >> .env
-          echo KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET }} >> .env
-          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> .env
-          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> .env
-          echo KOJA_JWT_SECRET=${{ secrets.KOJA_JWT_SECRET }} >> .env
-          echo API_KEY=${{ secrets.API_KEY }} >> .env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
-          echo KOJA_ID_SECRET=${{ secrets.KOJA_ID_SECRET }} >> .env
-          echo COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} >> .env
-          echo KOJA_PRIVATE_KEY_PASS=${{ secrets.KOJA_PRIVATE_KEY_PASS }} >> .env
-          echo KOJA_PRIVATE_KEY_SALT=${{ secrets.KOJA_PRIVATE_KEY_SALT }} >> .env
-          echo AI_PRIVATE_KEY_PASS=${{ secrets.AI_PRIVATE_KEY_PASS }} >> .env
-          echo AI_PRIVATE_KEY_SALT=${{ secrets.AI_PRIVATE_KEY_SALT }} >> .env
-          echo SERVER_ADDRESS=${{ secrets.SERVER_ADDRESS }} >> .env
-          echo SERVER_PORT=${{ secrets.SERVER_PORT }} >> .env
+          echo koja_aws_rds_database_url=${{ secrets.KOJA_AWS_RDS_DATABASE_URL }} >> .env
+          echo koja_aws_rds_database_admin_username=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME }} >> .env
+          echo koja_aws_rds_database_admin_password=${{ secrets.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD }} >> .env
+          echo koja_aws_dynamodb_access_key_id=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID }} >> .env
+          echo koja_aws_dynamodb_access_key_secret=${{ secrets.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET }} >> .env
+          echo koja_google_client_id=${{ secrets.GOOGLE_CLIENT_ID }} >> .env
+          echo koja_google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }} >> .env
+          echo koja_jwt_secret=${{ secrets.KOJA_JWT_SECRET }} >> .env
+          echo koja_google_maps_api_key=${{ secrets.GOOGLE_MAPS_API_KEY }} >> .env
+          echo koja_openai_api_key=${{ secrets.OPENAI_API_KEY }} >> .env
+          echo koja_id_secret=${{ secrets.KOJA_ID_SECRET }} >> .env
+          echo koja_coveralls_repo_token=${{ secrets.COVERALLS_REPO_TOKEN }} >> .env
+          echo koja_private_key_password=${{ secrets.KOJA_PRIVATE_KEY_PASS }} >> .env
+          echo koja_private_key_salt=${{ secrets.KOJA_PRIVATE_KEY_SALT }} >> .env
+          echo koja_ai_private_key_password=${{ secrets.AI_PRIVATE_KEY_PASS }} >> .env
+          echo koja_ai_private_key_salt=${{ secrets.AI_PRIVATE_KEY_SALT }} >> .env
+          echo koja_server_address=${{ secrets.SERVER_ADDRESS }} >> .env
+          echo koja_server_port=${{ secrets.SERVER_PORT }} >> .env
 
       - name: Run Linter
         run: ./gradlew ktlintCheck
 
       - name: Run Tests
         run: ./gradlew test
-      
+
       - name: Build Spring Boot project
         run: ./gradlew build -x test -x check
