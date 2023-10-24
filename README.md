@@ -1,4 +1,4 @@
-<h1 align="center">Team Caffeine-Koja</h1>
+# [Team Caffeine-Koja](https://github.com/COS301-SE-2023/Koja)
 
 [![Pull Requests](https://img.shields.io/github/issues-pr/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/pulls)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/issues)
@@ -36,7 +36,8 @@ https://github.com/COS301-SE-2023/Koja/assets/105129419/1d39ca2c-c081-4534-94d4-
 * [Architectural Design](https://docs.google.com/document/d/1hVQcrOcnCRzHyd9Y-aXYuAfyRZxVVZTiJyluJbr_0RY/edit?usp=sharing)
 
 * [Testing Policy Document](https://docs.google.com/document/d/10JTOApaAbRHdl4zoTkm39UPMgZYwPrVCrqgX5lBN5EA/edit?usp=sharing)
-
+# Technologies
+* Flutter, SpringBoot, Kotlin, Amazon RDS, Amazon DynamoDB
 # Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
