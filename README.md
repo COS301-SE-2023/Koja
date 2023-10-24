@@ -1,9 +1,14 @@
-# [Team Caffeine-Koja](https://github.com/COS301-SE-2023/Koja)
+<h1 align="center">Team Caffeine-Koja</h1>
 
 [![Pull Requests](https://img.shields.io/github/issues-pr/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/pulls)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja/issues)
 [![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja)
 [![Koja Build Status](https://github.com/COS301-SE-2023/Koja/actions/workflows/main2.yml/badge.svg)](https://github.com/COS301-SE-2023/Koja/actions/workflows/main2.yml)
+
+
+<p align="center">
+  <img src="client/assets/icons/koja.png" alt="Koja Icon" style="height: 200px;">
+</p>
 
 ## Project Description:
 Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
