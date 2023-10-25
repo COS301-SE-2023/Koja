@@ -25,10 +25,21 @@ class UserAccountManagerController(
 
     @GetMapping("auth/add-email/google")
     fun authenticateAnotherGoogleEmail(request: HttpServletRequest, @RequestParam token: String?): Any {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            return googleCalendarAdapter.setupConnection(request, CallbackConfigEnum.ADD_EMAIL, addAdditionalAccount = true, token = token)
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                googleCalendarAdapter.setupConnection(
+                    request,
+                    CallbackConfigEnum.ADD_EMAIL,
+                    addAdditionalAccount = true,
+                    token = token,
+                )
+            }
         }
     }
 
@@ -37,11 +48,14 @@ class UserAccountManagerController(
         @RequestParam("code") authCode: String?,
         @RequestParam state: String?,
     ): Any {
-        return if (state == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, state, false)
-            return RedirectView("koja-login-callback://callback?token=$jwt")
+        return when {
+            authCode.isNullOrEmpty() || state.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            else -> {
+                val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, state, true)
+                return RedirectView("koja-login-callback://callback?token=$jwt")
+            }
         }
     }
 
@@ -50,10 +64,16 @@ class UserAccountManagerController(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody email: String?,
     ): Any {
-        return if (token == null || email == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            return userAccountManagerService.deleteGoogleAccount(token, email)
+        return when {
+            token.isNullOrEmpty() || email.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                userAccountManagerService.deleteGoogleAccount(token, email)
+            }
         }
     }
 }

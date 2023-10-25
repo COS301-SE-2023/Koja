@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
 import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.constants.HeaderConstant
+import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO
 import com.teamcaffeine.koja.dto.JWTAuthDetailsDTO.Companion.parseJWTFormatString
 import com.teamcaffeine.koja.dto.JWTGoogleDTO
@@ -31,20 +32,26 @@ class TokenManagerController {
 
     @PostMapping("/renew")
     fun renewToken(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): Any {
-        return if (token == null) {
-            ResponseEntity.badRequest().body("ResponseConstant.REQUIRED_PARAMETERS_NOT_SET")
-        } else {
-            val jwtToken = getUserJWTTokenData(token, false)
-            for (t in jwtToken.userAuthDetails) {
-                t.renewToken()
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            val tokenRequest = TokenRequest(
-                tokens = jwtToken.userAuthDetails,
-                authProvider = AuthProviderEnum.NONE,
-                userId = jwtToken.userID,
-            )
-            val newToken = createToken(tokenRequest)
-            ResponseEntity.ok(newToken)
+            isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val jwtToken = getUserJWTTokenData(token, false)
+                for (t in jwtToken.userAuthDetails) {
+                    t.renewToken()
+                }
+                val tokenRequest = TokenRequest(
+                    tokens = jwtToken.userAuthDetails,
+                    authProvider = AuthProviderEnum.NONE,
+                    userId = jwtToken.userID,
+                )
+                val newToken = createToken(tokenRequest)
+                ResponseEntity.ok(newToken)
+            }
         }
     }
 
@@ -58,6 +65,18 @@ class TokenManagerController {
             val decoded = Base64.getDecoder().decode(text)
             val decrypted = cipher.doFinal(decoded)
             return String(decrypted, Charsets.UTF_8)
+        }
+
+        fun isTokenValid(token: String): Boolean {
+            return try {
+                val jwtSecret: String = System.getProperty(EnvironmentVariableConstant.KOJA_JWT_SECRET)
+                val algorithm = Algorithm.HMAC512(jwtSecret)
+                val verifier = JWT.require(algorithm).build()
+                verifier.verify(token)
+                true
+            } catch (exception: Exception) {
+                false
+            }
         }
 
         fun createToken(tokenRequest: TokenRequest): String {

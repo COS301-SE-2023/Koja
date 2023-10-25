@@ -14,17 +14,22 @@ import com.teamcaffeine.koja.repository.UserAccountRepository
 import com.teamcaffeine.koja.repository.UserRepository
 import com.teamcaffeine.koja.service.UserCalendarService
 import io.github.cdimascio.dotenv.Dotenv
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.unmockkAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import java.util.Optional
@@ -43,84 +48,89 @@ class UserCalendarServiceTest {
     private lateinit var userCalendarService: UserCalendarService
     private lateinit var dotenv: Dotenv
 
-    init {
-        importEnvironmentVariables()
+    companion object {
+        @JvmStatic
+        @BeforeAll
+        fun setupOnce() {
+            val dotenv: Dotenv = Dotenv.load()
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL,
+                dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME,
+                dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD,
+                dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID,
+                dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET,
+                dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.OPENAI_API_KEY,
+                dotenv[EnvironmentVariableConstant.OPENAI_API_KEY]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.SERVER_ADDRESS,
+                dotenv[EnvironmentVariableConstant.SERVER_ADDRESS]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.SERVER_PORT,
+                dotenv[EnvironmentVariableConstant.SERVER_PORT] ?: "",
+            )
+            // Set Google Sign In client ID and client secret properties
+            System.setProperty(
+                EnvironmentVariableConstant.GOOGLE_CLIENT_ID,
+                dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET,
+                dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY,
+                dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]!!,
+            )
+            // Set JWT secret key and other related properties
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_JWT_SECRET,
+                dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_ID_SECRET,
+                dotenv[EnvironmentVariableConstant.KOJA_ID_SECRET]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS,
+                dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS]!!,
+            )
+            System.setProperty(
+                EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT,
+                dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT]!!,
+            )
+        }
     }
 
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
 
-        importEnvironmentVariables()
-
         userCalendarService = spy(UserCalendarService(userRepository, jwtFunctionality))
+
+        val tokenManagerController = mockk<TokenManagerController.Companion>()
+        every { tokenManagerController.isTokenValid(anyString()) } returns true
     }
 
-    private fun importEnvironmentVariables() {
-        val dotenv: Dotenv = Dotenv.load()
-
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL,
-            dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_URL]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME,
-            dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_USERNAME]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD,
-            dotenv[EnvironmentVariableConstant.KOJA_AWS_RDS_DATABASE_ADMIN_PASSWORD]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID,
-            dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_ID]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET,
-            dotenv[EnvironmentVariableConstant.KOJA_AWS_DYNAMODB_ACCESS_KEY_SECRET]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.OPENAI_API_KEY,
-            dotenv[EnvironmentVariableConstant.OPENAI_API_KEY]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.SERVER_ADDRESS,
-            dotenv[EnvironmentVariableConstant.SERVER_ADDRESS]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.SERVER_PORT,
-            dotenv[EnvironmentVariableConstant.SERVER_PORT] ?: "",
-        )
-        // Set Google Sign In client ID and client secret properties
-        System.setProperty(
-            EnvironmentVariableConstant.GOOGLE_CLIENT_ID,
-            dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_ID]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET,
-            dotenv[EnvironmentVariableConstant.GOOGLE_CLIENT_SECRET]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY,
-            dotenv[EnvironmentVariableConstant.GOOGLE_MAPS_API_KEY]!!,
-        )
-        // Set JWT secret key and other related properties
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_JWT_SECRET,
-            dotenv[EnvironmentVariableConstant.KOJA_JWT_SECRET]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_ID_SECRET,
-            dotenv[EnvironmentVariableConstant.KOJA_ID_SECRET]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS,
-            dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_PASS]!!,
-        )
-        System.setProperty(
-            EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT,
-            dotenv[EnvironmentVariableConstant.KOJA_PRIVATE_KEY_SALT]!!,
-        )
+    @AfterEach
+    fun cleanup() {
+        unmockkAll()
     }
 
 //    @BeforeEach
@@ -138,7 +148,6 @@ class UserCalendarServiceTest {
 
     @Test
     fun getAllUserEvents_with_null_token_throws_exception() {
-        // Arrange
         val mockUserID = 1
         val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
         val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)
@@ -151,12 +160,11 @@ class UserCalendarServiceTest {
             ),
         )
         val tokenT = "mockToken"
-        MockitoAnnotations.openMocks(this)
-        whenever(jwtFunctionality.getUserJWTTokenData(eq(jwtToken))).thenReturn(mockUserJWTData)
+        whenever(jwtFunctionality.getUserJWTTokenData(jwtToken)).thenReturn(mockUserJWTData)
         whenever(userAccountRepository.findByUserID(mockUserID)).thenReturn(emptyList())
 
         // Assert
-        assertThrows<Exception> { userCalendarService.getAllUserEvents(eq(jwtToken)) }
+        assertThrows<Exception> { userCalendarService.getAllUserEvents(jwtToken) }
     }
 
     @Test
@@ -338,6 +346,7 @@ class UserCalendarServiceTest {
     @Test
     fun `removeTimeBoundary should return false when the user does not exist`() {
         // Arrange
+
         val mockUserID = Int.MAX_VALUE
         val userAccounts = mutableListOf<JWTAuthDetailsDTO>()
         val mockUserJWTData = UserJWTTokenDataDTO(userAccounts, mockUserID)

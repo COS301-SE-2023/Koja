@@ -29,39 +29,51 @@ class UserController(
     private val timeBoundaryRepository: TimeBoundaryRepository,
 ) {
     @GetMapping("linked-emails")
-    fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<List<String>> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
-        } else {
-            val jwtTokenData = getUserJWTTokenData(token)
-            val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
+    fun getUserEmails(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(listOf(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET))
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val jwtTokenData = getUserJWTTokenData(token)
+                val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
 
-            ResponseEntity.ok(userAccounts.map { it.email })
+                ResponseEntity.ok(userAccounts.map { it.email })
+            }
         }
     }
 
     @PostMapping("delete-account")
     fun deleteUserAccount(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val jwtTokenData = getUserJWTTokenData(token)
-            val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
-            val users = mutableListOf<User>()
-            val timeBoundaries = mutableListOf<TimeBoundary>()
-
-            userAccounts.forEach {
-                it.user?.let { user ->
-                    users.add(user)
-                    timeBoundaries.addAll(user.getUserTimeBoundaries())
-                }
-                userAccountRepository.delete(it)
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val jwtTokenData = getUserJWTTokenData(token)
+                val userAccounts = userAccountRepository.findByUserID(jwtTokenData.userID)
+                val users = mutableListOf<User>()
+                val timeBoundaries = mutableListOf<TimeBoundary>()
 
-            timeBoundaries.forEach { timeBoundaryRepository.delete(it) }
-            users.forEach { userRepository.delete(it) }
+                userAccounts.forEach {
+                    it.user?.let { user ->
+                        users.add(user)
+                        timeBoundaries.addAll(user.getUserTimeBoundaries())
+                    }
+                    userAccountRepository.delete(it)
+                }
 
-            ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
+                timeBoundaries.forEach { timeBoundaryRepository.delete(it) }
+                users.forEach { userRepository.delete(it) }
+
+                ResponseEntity.ok(ResponseConstant.ACCOUNT_DELETED)
+            }
         }
     }
 
@@ -73,54 +85,79 @@ class UserController(
         @RequestParam("endTime")endTime: String?,
         @RequestParam("type")type: String = "allowed",
     ): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val boundary = TimeBoundary(name, startTime, endTime, TimeBoundaryType.ALLOWED)
-            if (userCalendarService.addTimeBoundary(token, boundary)) {
-                return ResponseEntity.ok("Time boundary successfully added")
-            } else {
-                return ResponseEntity.badRequest().body("Something went wrong")
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val boundary = TimeBoundary(name, startTime, endTime, getTimeBoundaryType(type))
+                if (userCalendarService.addTimeBoundary(token, boundary)) {
+                    ResponseEntity.ok(ResponseConstant.SUCCESSFULLY_ADDED_TIME_BOUNDARY)
+                } else {
+                    ResponseEntity.badRequest().body(ResponseConstant.SET_TIME_BOUNDARY_FAILED_INTERNAL_ERROR)
+                }
             }
         }
     }
 
     @PostMapping("/removeTimeBoundary")
     fun removeTimeBoundary(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("name") name: String?): ResponseEntity<String> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            if (userCalendarService.removeTimeBoundary(token, name)) {
-                return ResponseEntity.ok("Time boundary successfully removed")
-            } else {
-                return ResponseEntity.badRequest().body("Something went wrong")
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                if (userCalendarService.removeTimeBoundary(token, name)) {
+                    ResponseEntity.ok(ResponseConstant.SUCCESSFULLY_REMOVED_TIME_BOUNDARY)
+                } else {
+                    ResponseEntity.badRequest().body(ResponseConstant.SET_TIME_BOUNDARY_FAILED_INTERNAL_ERROR)
+                }
             }
         }
     }
 
     @GetMapping("/getAllTimeBoundary")
     fun getTimeBoundaries(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                val gson = GsonBuilder().setLenient().excludeFieldsWithoutExposeAnnotation().create()
-                return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaries(token)))
-            } catch (e: Exception) {
-                return ResponseEntity.badRequest().body("Something went wrong.")
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    val gson = GsonBuilder().setLenient().excludeFieldsWithoutExposeAnnotation().create()
+                    ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaries(token)))
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
             }
         }
     }
 
     @GetMapping("/getTimeBoundaryAndLocation")
     fun getTimeBoundaryAndLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("location") location: String): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val gson = Gson()
-            return ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaryAndLocation(token, location)))
+        return when {
+            token.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val gson = Gson()
+                ResponseEntity.ok(gson.toJson(userCalendarService.getUserTimeBoundaryAndLocation(token, location)))
+            }
         }
     }
+
     private fun getTimeBoundaryType(timeBoundaryType: String): TimeBoundaryType {
         return when (timeBoundaryType) {
             "allowed" -> TimeBoundaryType.ALLOWED

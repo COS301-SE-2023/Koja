@@ -12,6 +12,7 @@ import com.teamcaffeine.koja.dto.AIRequestBodyDTO
 import com.teamcaffeine.koja.service.AIUserDataService
 import com.teamcaffeine.koja.service.CryptoService
 import com.teamcaffeine.koja.service.UserCalendarService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
@@ -27,42 +28,54 @@ class AIDataController(private val aiUserDataService: AIUserDataService, private
 
     @GetMapping("/get-emails")
     fun getUserEmail(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<String> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val returnableMap = mapOf(
-                "502" to "u19012366@tuks.co.za",
-                "552" to "u21566382@tuks.co.za",
-                "553" to "lesibasetsiba02@gmail.com",
-                "602" to "u20505656@tuks.co.za",
-                "603" to "uunarineleo@gmail.com",
-                "652" to "u21609633@tuks.co.za",
-            )
-            val gson = Gson()
-            val jsonObject = gson.toJson(returnableMap)
-            ResponseEntity.ok(jsonObject)
+        return when {
+            token == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val returnableMap = mapOf(
+                    "502" to "u19012366@tuks.co.za",
+                    "552" to "u21566382@tuks.co.za",
+                    "553" to "lesibasetsiba02@gmail.com",
+                    "602" to "u20505656@tuks.co.za",
+                    "603" to "uunarineleo@gmail.com",
+                    "652" to "u21609633@tuks.co.za",
+                )
+                val gson = Gson()
+                val jsonObject = gson.toJson(returnableMap)
+                ResponseEntity.ok(jsonObject)
+            }
         }
     }
 
     @GetMapping("/get-user-events")
     fun getUsersSuggestions(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("userID") userID: String?): ResponseEntity<String> {
-        return if (token == null || userID == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val gsonBuilder = GsonBuilder()
-            gsonBuilder.registerTypeAdapter(
-                OffsetDateTime::class.java,
-                OffsetDateTimeAdapter(),
-            )
-            gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
-            val gson: Gson = gsonBuilder.setPrettyPrinting().create()
-            var userIDRequest = userID
-            if (userIDRequest.toIntOrNull() == null) {
-                userIDRequest = TokenManagerController.getUserJWTTokenData(token).userID.toString()
+        return when {
+            token == null || userID == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            val userEvents = userCalendarService.getUserSuggestions(userIDRequest)
-            val jsonObject = gson.toJson(userEvents)
-            ResponseEntity.ok(jsonObject)
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                val gsonBuilder = GsonBuilder()
+                gsonBuilder.registerTypeAdapter(
+                    OffsetDateTime::class.java,
+                    OffsetDateTimeAdapter(),
+                )
+                gsonBuilder.registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
+                val gson: Gson = gsonBuilder.setPrettyPrinting().create()
+                var userIDRequest = userID
+                if (userIDRequest.toIntOrNull() == null) {
+                    userIDRequest = TokenManagerController.getUserJWTTokenData(token).userID.toString()
+                }
+                val userEvents = userCalendarService.getUserSuggestions(userIDRequest)
+                val jsonObject = gson.toJson(userEvents)
+                ResponseEntity.ok(jsonObject)
+            }
         }
     }
 
