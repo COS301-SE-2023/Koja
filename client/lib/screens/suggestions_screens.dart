@@ -3,6 +3,7 @@ import 'package:koja/Utils/event_util.dart';
 import 'package:koja/providers/context_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:lottie/lottie.dart';
 
 import '../providers/service_provider.dart';
 import '../widgets/calendar_widget.dart';
@@ -125,8 +126,34 @@ class _SuggestionsTasksScreenState extends State<SuggestionsTasksScreen> {
           }
           else
           {
+            // return Center(
+            //   child: Text('Koja\'s suggestion engine is still learning.\nPlease try again soon.'),
+            // );
             return Center(
-              child: Text('Koja\'s suggestion engine is still learning.\nPlease try again soon.'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    child: Lottie.asset(
+                      'assets/animations/ai.json',
+                      height: 200,
+                      width: 300,
+                      repeat: false,
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      'Koja\'s suggestion engine is still learning.\nPlease try again soon.',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Raleway'),
+                           textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             );
           }
         }

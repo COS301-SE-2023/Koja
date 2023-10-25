@@ -582,7 +582,7 @@ class EventEditingState extends State<EventEditing> {
       final date = await showDatePicker(
         context: context,
         initialDate: initialDate,
-        firstDate: DateTime(initialDate.year - 5),
+        firstDate: DateTime.now(),
         lastDate: DateTime(initialDate.year + 10),
       );
 

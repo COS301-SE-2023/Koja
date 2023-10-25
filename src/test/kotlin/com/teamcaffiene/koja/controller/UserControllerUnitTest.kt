@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.constants.ResponseConstant
+import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
 import com.teamcaffeine.koja.controller.UserController
@@ -161,21 +162,28 @@ class UserControllerUnitTest {
     @Test
     fun `test addTimeBoundary with valid parameters`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
         val name = "Play"
         val startTime = "2023-07-30T12:00:00Z"
         val endTime = "2023-07-30T14:00:00Z"
         val timeBoundary = TimeBoundary(name, startTime, endTime)
 
         // Mock the userCalendarService.addTimeBoundary method
-        val expectedResult = "Time boundary successfully added"
-        whenever(userCalendarService.addTimeBoundary(token, timeBoundary)).thenReturn(true)
+        whenever(userCalendarService.addTimeBoundary(mockToken, timeBoundary)).thenReturn(true)
 
         // Call the function and capture the response
-        val response = userController.addTimeBoundary(token, name, startTime, endTime)
+        val response = userController.addTimeBoundary(mockToken, name, startTime, endTime)
         // Check the response status and body
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(expectedResult, response.body)
+        assertEquals(ResponseConstant.SUCCESSFULLY_ADDED_TIME_BOUNDARY, response.body)
     }
 
     @Test
@@ -198,41 +206,57 @@ class UserControllerUnitTest {
     @Test
     fun `test addTimeBoundary with userCalendarService returning false`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
         val name = "Play"
         val startTime = "2023-07-30T12:00:00Z"
         val endTime = "2023-07-30T14:00:00Z"
         val timeBoundary = TimeBoundary(name, startTime, endTime)
 
         // Mock the userCalendarService.removeTimeBoundary method to return false
-        whenever(userCalendarService.addTimeBoundary(token, timeBoundary)).thenReturn(false)
+        whenever(userCalendarService.addTimeBoundary(mockToken, timeBoundary)).thenReturn(false)
 
         // Call the function and capture the response
-        val response = userController.addTimeBoundary(token, name, startTime, endTime)
+        val response = userController.addTimeBoundary(mockToken, name, startTime, endTime)
 
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Something went wrong", response.body)
+        assertEquals(ResponseConstant.SET_TIME_BOUNDARY_FAILED_INTERNAL_ERROR, response.body)
     }
 
     @Test
     fun `test removeTimeBoundary with valid parameters`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
         val name = "Boundary Name"
 
         // Mock the userCalendarService.removeTimeBoundary method
-        whenever(userCalendarService.removeTimeBoundary(eq(token), eq(name))).thenReturn(true)
+        whenever(userCalendarService.removeTimeBoundary(eq(mockToken), eq(name))).thenReturn(true)
 
         // Call the function and capture the response
-        val response = userController.removeTimeBoundary(token, name)
+        val response = userController.removeTimeBoundary(mockToken, name)
 
         // Verify the userCalendarService.removeTimeBoundary method was called with the correct parameters
-        verify(userCalendarService).removeTimeBoundary(eq(token), eq(name))
+        verify(userCalendarService).removeTimeBoundary(eq(mockToken), eq(name))
 
         // Check the response status and body
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals("Time boundary successfully removed", response.body)
+        assertEquals(ResponseConstant.SUCCESSFULLY_REMOVED_TIME_BOUNDARY, response.body)
     }
 
     @Test
@@ -251,39 +275,55 @@ class UserControllerUnitTest {
     @Test
     fun `test removeTimeBoundary with userCalendarService returning false`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
         val name = "Boundary Name"
 
         // Mock the userCalendarService.removeTimeBoundary method to return false
-        whenever(userCalendarService.removeTimeBoundary(eq(token), eq(name))).thenReturn(false)
+        whenever(userCalendarService.removeTimeBoundary(eq(mockToken), eq(name))).thenReturn(false)
 
         // Call the function and capture the response
-        val response = userController.removeTimeBoundary(token, name)
+        val response = userController.removeTimeBoundary(mockToken, name)
 
         // Verify the userCalendarService.removeTimeBoundary method was called with the correct parameters
-        verify(userCalendarService).removeTimeBoundary(eq(token), eq(name))
+        verify(userCalendarService).removeTimeBoundary(eq(mockToken), eq(name))
 
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Something went wrong", response.body)
+        assertEquals(ResponseConstant.SET_TIME_BOUNDARY_FAILED_INTERNAL_ERROR, response.body)
     }
 
     @Test
     fun `test getTimeBoundaries with valid token`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
 
         // Mock the userCalendarService.getUserTimeBoundaries method
         val boundaries = mutableListOf<TimeBoundary>()
         val timeBoundary = TimeBoundary("Boundary1", "2023-07-30T12:00:00Z", "2023-07-30T14:00:00Z")
         boundaries.add(0, timeBoundary)
-        whenever(userCalendarService.getUserTimeBoundaries(eq(token))).thenReturn(boundaries)
+        whenever(userCalendarService.getUserTimeBoundaries(eq(mockToken))).thenReturn(boundaries)
 
         // Call the function and capture the response
-        val response = userController.getTimeBoundaries(token)
+        val response = userController.getTimeBoundaries(mockToken)
 
         // Verify the userCalendarService.getUserTimeBoundaries method was called with the correct token
-        verify(userCalendarService).getUserTimeBoundaries(eq(token))
+        verify(userCalendarService).getUserTimeBoundaries(eq(mockToken))
 
         // Check the response status and body
         assertEquals(HttpStatus.OK, response.statusCode)
@@ -306,32 +346,48 @@ class UserControllerUnitTest {
     @Test
     fun `test getTimeBoundaries with userCalendarService throwing an exception`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
 
         // Mock the userCalendarService.getUserTimeBoundaries method to throw an exception
-        whenever(userCalendarService.getUserTimeBoundaries(eq(token))).thenThrow(RuntimeException("Error fetching boundaries."))
+        whenever(userCalendarService.getUserTimeBoundaries(eq(mockToken))).thenThrow(RuntimeException("Error fetching boundaries."))
 
         // Call the function and capture the response
-        val response = userController.getTimeBoundaries(token)
+        val response = userController.getTimeBoundaries(mockToken)
         // Verify the userCalendarService.getUserTimeBoundaries method was called with the correct token
-        verify(userCalendarService).getUserTimeBoundaries(eq(token))
+        verify(userCalendarService).getUserTimeBoundaries(eq(mockToken))
         // Check the response status and body
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Something went wrong.", response.body)
+        assertEquals(ResponseConstant.GENERIC_INTERNAL_ERROR, response.body)
     }
 
     @Test
     fun `test getTimeBoundaryAndLocation with valid token and location`() {
         // Mock request parameters
-        val token = "your_token_here"
+        val mockUserID = Int.MAX_VALUE
+        val authDetails = JWTGoogleDTO("access", "refresh", 60 * 60)
+        val mockToken = TokenManagerController.createToken(
+            TokenRequest(
+                arrayListOf(authDetails),
+                AuthProviderEnum.GOOGLE,
+                mockUserID,
+            ),
+        )
         val location = "London"
         // Mock the userCalendarService.getUserTimeBoundaryAndLocation method
         val boundary = TimeBoundary("Boundary1", "2023-07-30T12:00:00Z", "2023-07-30T14:00:00Z")
-        whenever(userCalendarService.getUserTimeBoundaryAndLocation(eq(token), eq(location))).thenReturn(Pair(boundary, location))
+        whenever(userCalendarService.getUserTimeBoundaryAndLocation(eq(mockToken), eq(location))).thenReturn(Pair(boundary, location))
         // Call the function and capture the response
-        val response = userController.getTimeBoundaryAndLocation(token, location)
+        val response = userController.getTimeBoundaryAndLocation(mockToken, location)
         // Verify the userCalendarService.getUserTimeBoundaryAndLocation method was called with the correct parameters
-        verify(userCalendarService).getUserTimeBoundaryAndLocation(eq(token), eq(location))
+        verify(userCalendarService).getUserTimeBoundaryAndLocation(eq(mockToken), eq(location))
         // Check the response status and body
         assertEquals(HttpStatus.OK, response.statusCode)
         // Convert the boundaryAndLocation to JSON using Gson and check the response body

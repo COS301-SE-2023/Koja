@@ -63,6 +63,7 @@ class TasksWidgetState extends State<TasksWidget> {
               'assets/animations/empty.json',
               height: 200,
               width: 300,
+              repeat: false,
             ),
           ),
         ],
