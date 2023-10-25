@@ -472,4 +472,3 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
     app.run(host="0.0.0.0", port=port, debug=True)
-    retrain_for_all_users()
