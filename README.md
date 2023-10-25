@@ -5,13 +5,12 @@
 [![Repo Size](https://img.shields.io/github/repo-size/COS301-SE-2023/Koja.svg)](https://github.com/COS301-SE-2023/Koja)
 [![Koja Build Status](https://github.com/COS301-SE-2023/Koja/actions/workflows/main2.yml/badge.svg)](https://github.com/COS301-SE-2023/Koja/actions/workflows/main2.yml)
 
-
 <p align="center">
   <img src="client/assets/icons/koja.png" alt="Koja Icon" style="height: 200px;">
 </p>
 
 ## Project Description:
-Koja is a system that enables more efficient time utilisation through dynamic and fixed time allocation for specific tasks a user wants to complete. Koja's aim is to minimise solve the burden of schedule management while requiring  minimal effort from the user.
+Koja is a system designed to enable more efficient time utilization through dynamic and fixed time allocation for specific tasks a user wants to complete. The primary goal of Koja is to alleviate the challenges of schedule management with minimal effort from the user.
 
 # Advertisement
 https://github.com/COS301-SE-2023/Koja/assets/105129419/1d39ca2c-c081-4534-94d4-7558d399c484
@@ -22,22 +21,18 @@ https://github.com/COS301-SE-2023/Koja/assets/105129419/1d39ca2c-c081-4534-94d4-
 
 ## Demo Slide & Video
 * [Team Caffeine - Demo Slide](https://www.canva.com/design/DAFuI_vIphg/Ux_tSd2K-evrvKIDnCR8PA/edit?utm_content=DAFuI_vIphg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
-
 * [Team Caffeine - Demo Video](https://drive.google.com/file/d/1HWAUgzdQUKvIi33rHqagadPkk6OxEqA-/view?usp=drive_link)
 
-
-## Additional Documentations
+## Additional Documentation
 * [Technical Installation Manual](https://docs.google.com/document/d/1pdzUM2YM_lkqxtvTfs2MToCcu3zSB6QwQbP5pfhyjHk/edit?usp=sharing)
-
 * [User Manual](https://docs.google.com/presentation/d/1cPbn8JxNLQUwRQt_2Euw9KsLvmQ2d15Y-28ukS4Yh1A/edit?usp=drive_link)
-
 * [Coding Standards](https://docs.google.com/document/d/1jZFns50dd7gQlAGJpq--38faijdhuxrOiWK_JtvKXQI/edit?usp=sharing)
-
 * [Architectural Design](https://docs.google.com/document/d/1hVQcrOcnCRzHyd9Y-aXYuAfyRZxVVZTiJyluJbr_0RY/edit?usp=sharing)
-
 * [Testing Policy Document](https://docs.google.com/document/d/10JTOApaAbRHdl4zoTkm39UPMgZYwPrVCrqgX5lBN5EA/edit?usp=sharing)
+
 # Technologies
 * Flutter, SpringBoot, Kotlin, Amazon RDS, Amazon DynamoDB
+
 # Team
 📧 Team email: [teamcaffeine23@gmail.com](mailto:teamcaffeine23@gmail.com)
 
