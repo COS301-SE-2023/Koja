@@ -22,7 +22,7 @@ RUN echo "SERVER_ADDRESS=$SERVER_ADDRESS" >> .env && \
 # Copy the rest of the application's source code into the Docker image
 COPY . .
 
-EXPOSE 6000
+EXPOSE $PORT
 
 # Start the Flask application when the Docker container is started
 # Notice the "./app/Koja-AI.py", it points to your Flask application

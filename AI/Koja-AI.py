@@ -276,7 +276,7 @@ def retrain_for_all_users():
 
 
 def auto_train_new():
-    now = datetime.datetime.now()
+    now = datetime.now()
     next_retrain_time = now.replace(hour=23, minute=59, second=0, microsecond=0)
     if now > next_retrain_time:
         next_retrain_time += datetime.timedelta(days=1)
@@ -291,7 +291,7 @@ def auto_train_new():
 
 
 def auto_train_all():
-    now = datetime.datetime.now()
+    now = datetime.now()
     next_retrain_time = now.replace(
         hour=23, minute=59, second=0, microsecond=0
     ) + datetime.timedelta(days=7)
@@ -467,8 +467,8 @@ def decimal_to_float(d):
 
 if __name__ == "__main__":
     load_dotenv()
+    app.run(host="0.0.0.0", port=os.getenv("PORT"))
     auto_train_new()
     auto_train_new()
-    port = int(os.getenv("PORT", 6000))
     koja_id_secret = os.getenv("KOJA_ID_SECRET")
-    app.run(host="0.0.0.0", port=port, debug=True)
+
