@@ -15,6 +15,7 @@ object ResponseConstant {
     const val INVALID_TOKEN = "Invalid token."
     const val NO_FUTURE_LOCATIONS_FOUND = "No future locations found."
     const val SET_TIME_BOUNDARY_FAILED_INTERNAL_ERROR = "Internal Server Error - Time boundary could not be set."
+    const val USER_ALREADY_EXISTS = "User already exists."
 
     // Response messages where system succeeded
     const val EVENT_CREATED = "Event successfully created."

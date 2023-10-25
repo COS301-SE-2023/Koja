@@ -53,8 +53,15 @@ class UserAccountManagerController(
                 ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
             else -> {
-                val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, state, true)
-                return RedirectView("koja-login-callback://callback?token=$jwt")
+                try {
+                    val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, state, true)
+                    return RedirectView("koja-login-callback://callback?token=$jwt")
+                } catch (e: Exception) {
+                    if (e.message.equals(ResponseConstant.USER_ALREADY_EXISTS)) {
+                        return RedirectView("koja-login-callback://callback?error=${ResponseConstant.USER_ALREADY_EXISTS}")
+                    }
+                    ResponseEntity.internalServerError().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
             }
         }
     }

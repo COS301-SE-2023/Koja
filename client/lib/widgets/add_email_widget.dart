@@ -27,19 +27,30 @@ class _AddEmailModalState extends State<AddEmailModal> {
           children: [
             ElevatedButton(
                 onPressed: () async {
-                  if (await serviceProvider.addEmail(
-                      eventProvider: eventProvider)) {
+                  final addResult = await serviceProvider.addEmail(
+                      eventProvider: eventProvider
+                  );
+                  if (addResult != null && addResult) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Email was added'),
                       ),
                     );
-                  } else {
+                  } else if(addResult != null && !addResult) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Email was not added'),
+                      ),
+                    );
+                  }
+                  else
+                  {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Not added - User email already added'),
                       ),
                     );
                   }
