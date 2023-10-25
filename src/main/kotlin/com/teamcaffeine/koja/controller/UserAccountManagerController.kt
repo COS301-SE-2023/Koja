@@ -6,6 +6,7 @@ import com.teamcaffeine.koja.enums.CallbackConfigEnum
 import com.teamcaffeine.koja.service.GoogleCalendarAdapterService
 import com.teamcaffeine.koja.service.UserAccountManagerService
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -53,8 +54,15 @@ class UserAccountManagerController(
                 ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
             else -> {
-                val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, state, true)
-                return RedirectView("koja-login-callback://callback?token=$jwt")
+                try {
+                    val jwt = googleCalendarAdapter.addAnotherEmailOauth2Callback(authCode, state, true)
+                    RedirectView("koja-login-callback://callback?token=$jwt")
+                } catch (e: Exception) {
+                    if(e.message.equals(ResponseConstant.USER_ALREADY_EXISTS))
+                        ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseConstant.USER_ALREADY_EXISTS)
+                    else ResponseEntity.internalServerError().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
+
             }
         }
     }
