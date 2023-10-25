@@ -53,6 +53,12 @@ jobs:
         run: flutter test
         working-directory: client
 
+      - name: Decode keystore file
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        run: |
+          echo $KEYSTORE | base64 --decode > /home/runner/work/Koja/Koja/client/android/app/mykey.jks
+
       - name: Build Flutter app
         run: flutter build apk
         working-directory: client

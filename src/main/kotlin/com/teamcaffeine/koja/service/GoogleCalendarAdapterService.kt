@@ -23,6 +23,7 @@ import com.google.maps.GeoApiContext
 import com.teamcaffeine.koja.constants.EnvironmentVariableConstant
 import com.teamcaffeine.koja.constants.ExceptionMessageConstant
 import com.teamcaffeine.koja.constants.Frequency
+import com.teamcaffeine.koja.constants.ResponseConstant
 import com.teamcaffeine.koja.controller.TokenManagerController
 import com.teamcaffeine.koja.controller.TokenManagerController.Companion.createToken
 import com.teamcaffeine.koja.controller.TokenRequest
@@ -292,7 +293,7 @@ class GoogleCalendarAdapterService(
 
         val jwtToken: String
         if (existingUser != null) {
-            throw Exception("Email already exits.")
+            throw Exception(ResponseConstant.USER_ALREADY_EXISTS)
         } else {
             if (token == null) {
                 throw Exception("Token is not set.")

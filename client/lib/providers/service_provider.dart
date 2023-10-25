@@ -158,7 +158,7 @@ class ServiceProvider with ChangeNotifier {
   }
 
   /// This function will attempt to add another email using UserAccountController
-  Future<bool> addEmail({required ContextProvider eventProvider}) async {
+  Future<bool?> addEmail({required ContextProvider eventProvider}) async {
     final String authUrl =
         '$_serverAddress:$_serverPort/api/v1/user/auth/add-email/google?token=$_accessToken';
 
@@ -169,11 +169,16 @@ class ServiceProvider with ChangeNotifier {
       callbackUrlScheme: callbackUrlScheme,
     );
 
-    response = Uri.parse(response).queryParameters['token'];
+    final parsedResponse = Uri.parse(response).queryParameters;
 
-    setAccessToken(response, eventProvider);
-
-    return accessToken != null;
+    if(parsedResponse.containsKey("token")) {
+      setAccessToken(parsedResponse["token"], eventProvider);
+      return true;
+    }
+    else if(parsedResponse.containsKey("error"))
+    {
+      return null;
+    } else return false;
   }
 
   /// This function will attempt to delete an email from the user's account

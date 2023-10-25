@@ -25,28 +25,40 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody event: UserEventDTO?,
     ): ResponseEntity<String> {
-        return if (token == null || event == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                userCalendar.createEvent(token, event)
-            } catch (e: Exception) {
-                if (e.message.equals(ExceptionMessageConstant.UNABLE_TO_FIT_EVENT)) {
-                    ResponseEntity.badRequest()
-                        .body(ResponseConstant.EVENT_CREATION_FAILED_COULD_NOT_FIT)
-                }
-                return ResponseEntity.internalServerError().body(e.message)
+        return when {
+            token == null || event == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            ResponseEntity.ok(ResponseConstant.EVENT_CREATED)
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    userCalendar.createEvent(token, event)
+                } catch (e: Exception) {
+                    if (e.message.equals(ExceptionMessageConstant.UNABLE_TO_FIT_EVENT)) {
+                        ResponseEntity.badRequest()
+                            .body(ResponseConstant.EVENT_CREATION_FAILED_COULD_NOT_FIT)
+                    }
+                    return ResponseEntity.internalServerError().body(e.message)
+                }
+                ResponseEntity.ok(ResponseConstant.EVENT_CREATED)
+            }
         }
     }
 
     @GetMapping("/userEvents")
     fun getAllUserEvents(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            ResponseEntity.ok(userCalendar.getAllUserEvents(token))
+        return when {
+            token == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                ResponseEntity.ok(userCalendar.getAllUserEvents(token))
+            }
         }
     }
 
@@ -55,17 +67,23 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody updatedEvent: UserEventDTO?,
     ): ResponseEntity<String> {
-        return if (token == null || updatedEvent == null) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                deleteEvent(token, updatedEvent)
-                addEvent(token, updatedEvent)
-//                userCalendar.updateEvent(token, updatedEvent)
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+        return when {
+            token == null || updatedEvent == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    deleteEvent(token, updatedEvent)
+                    addEvent(token, updatedEvent)
+//                    userCalendar.updateEvent(token, updatedEvent)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+            }
         }
     }
 
@@ -74,17 +92,22 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody event: UserEventDTO?,
     ): ResponseEntity<String> {
-        if (event == null || token == null) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        return when {
+            token == null || event == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    userCalendar.deleteEvent(token, event.getId())
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.EVENT_DELETION_FAILED_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.EVENT_DELETED)
+            }
         }
-
-        try {
-            userCalendar.deleteEvent(token, event.getId())
-        } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(ResponseConstant.EVENT_DELETION_FAILED_INTERNAL_ERROR)
-        }
-
-        return ResponseEntity.ok(ResponseConstant.EVENT_DELETED)
     }
 
     @PostMapping("/rescheduleEvent")
@@ -92,25 +115,32 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody event: UserEventDTO?,
     ): ResponseEntity<String> {
-        if (event == null || token == null) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        }
-        try {
-            // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
-            val timeZoneId = ZoneId.of("Africa/Johannesburg")
-            val currentTime = OffsetDateTime.now(timeZoneId)
-            userCalendar.deleteEvent(token, event.getId())
-            event.setStartTime(currentTime)
-            event.setEndTime(currentTime.plusSeconds(event.getDurationInSeconds()))
-            val events = userCalendar.getAllUserEvents(token)
-            if (checkAvailability(events)) {
-                userCalendar.createEvent(token, event)
-                return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+        return when {
+            token == null || event == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-        } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(e.stackTraceToString())
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
+                    val timeZoneId = ZoneId.of("Africa/Johannesburg")
+                    val currentTime = OffsetDateTime.now(timeZoneId)
+                    userCalendar.deleteEvent(token, event.getId())
+                    event.setStartTime(currentTime)
+                    event.setEndTime(currentTime.plusSeconds(event.getDurationInSeconds()))
+                    val events = userCalendar.getAllUserEvents(token)
+                    if (checkAvailability(events)) {
+                        userCalendar.createEvent(token, event)
+                        return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+                    }
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+            }
         }
-        return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
     }
 
     @PostMapping("/rescheduleTimeSlot")
@@ -118,24 +148,31 @@ class CalendarController(private val userCalendar: UserCalendarService) {
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
         @RequestBody event: UserEventDTO?,
     ): ResponseEntity<String> {
-        if (event == null || token == null) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        return when {
+            event == null || token == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
+                    val timeZoneId = ZoneId.of("Africa/Johannesburg")
+                    val currentTime = OffsetDateTime.now(timeZoneId)
+                    userCalendar.deleteEvent(token, event.getId())
+                    val events = userCalendar.getAllUserEvents(token)
+                    val timeslot = userCalendar.findEarliestTimeSlot(events, event)
+                    event.setStartTime(timeslot.first)
+                    event.setEndTime(timeslot.second)
+                    userCalendar.createEvent(token, event)
+                    ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
+            }
         }
-        try {
-            // val timeZoneId = ZoneId.of(TimezoneUtility(userRepository, googleCalendarAdapterService).getTimeOfTimeZone(token))
-            val timeZoneId = ZoneId.of("Africa/Johannesburg")
-            val currentTime = OffsetDateTime.now(timeZoneId)
-            userCalendar.deleteEvent(token, event.getId())
-            val events = userCalendar.getAllUserEvents(token)
-            val timeslot = userCalendar.findEarliestTimeSlot(events, event)
-            event.setStartTime(timeslot.first)
-            event.setEndTime(timeslot.second)
-            userCalendar.createEvent(token, event)
-            return ResponseEntity.ok(ResponseConstant.EVENT_UPDATED)
-        } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(e.stackTraceToString())
-        }
-        return ResponseEntity.badRequest().body(ResponseConstant.EVENT_UPDATE_FAILED_INTERNAL_ERROR)
     }
 
     fun checkAvailability(events: List<UserEventDTO>): Boolean {
@@ -150,26 +187,38 @@ class CalendarController(private val userCalendar: UserCalendarService) {
     @PostMapping("/setSuggestedCalendar")
     fun setSuggestedCalendar(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
-        @RequestBody eventList: List<UserEventDTO>,
+        @RequestBody eventList: List<UserEventDTO>?,
     ): ResponseEntity<out Any> {
-        if (eventList == null || token == null) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                userCalendar.createNewCalendar(token, eventList)
-            } catch (e: Exception) {
-                return ResponseEntity.badRequest().body(e.printStackTrace())
+        return when {
+            eventList == null || token == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            return ResponseEntity.ok("New calendar successfully created.")
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    userCalendar.createNewCalendar(token, eventList)
+                } catch (e: Exception) {
+                    return ResponseEntity.badRequest().body(ResponseConstant.SET_USER_CALENDAR_FAILED_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.USER_CALENDAR_SET)
+            }
         }
     }
 
     @GetMapping("/userEventsKojaSuggestions")
     fun getAllUserEventsKojaSuggestions(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            ResponseEntity.ok(userCalendar.getAllUserEventsKojaSuggestions(token))
+        return when {
+            token == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                ResponseEntity.ok(userCalendar.getAllUserEventsKojaSuggestions(token))
+            }
         }
     }
 }

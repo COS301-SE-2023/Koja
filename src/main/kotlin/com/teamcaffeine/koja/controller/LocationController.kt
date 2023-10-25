@@ -43,33 +43,45 @@ LocationController(private val locationService: LocationService) {
 
     @PostMapping("/HomeLocationUpdater")
     fun updateUserHomeLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                locationService.setHomeLocation(token, placeId)
-            } catch (e: IllegalArgumentException) {
-                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+        return when {
+            token == null || placeId == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            ResponseEntity.ok(ResponseConstant.HOME_LOCATION_SET)
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    locationService.setHomeLocation(token, placeId)
+                } catch (e: IllegalArgumentException) {
+                    ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.HOME_LOCATION_SET)
+            }
         }
     }
 
     @PostMapping("/WorkLocationUpdater")
     fun updateUserWorkLocation(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?, @RequestParam("placeId") placeId: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                locationService.setWorkLocation(token, placeId)
-            } catch (e: IllegalArgumentException) {
-                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+        return when {
+            token == null || placeId == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
             }
-            ResponseEntity.ok(ResponseConstant.WORK_LOCATION_SET)
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    locationService.setWorkLocation(token, placeId)
+                } catch (e: IllegalArgumentException) {
+                    ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
+                ResponseEntity.ok(ResponseConstant.WORK_LOCATION_SET)
+            }
         }
     }
 
@@ -79,12 +91,24 @@ LocationController(private val locationService: LocationService) {
         @RequestParam("origin") origin: String?,
         @RequestParam("destination") destination: String?,
     ): ResponseEntity<String> {
-        if (token == null || origin == null || destination == null || origin.isEmpty() || destination.isEmpty()) {
-            return ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+        return when {
+            token == null || origin.isNullOrEmpty() || destination.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    val distance = getDistance(origin, destination)
+                    ResponseEntity.ok(distance)
+                } catch (e: IllegalArgumentException) {
+                    ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
+            }
         }
-
-        val distance = getDistance(origin, destination)
-        return ResponseEntity.ok(distance)
     }
 
     @GetMapping("/listOfLocationTravelTime")
@@ -93,17 +117,29 @@ LocationController(private val locationService: LocationService) {
         @RequestParam("originLat") originLat: String?,
         @RequestParam("originLng") originLng: String?,
     ): ResponseEntity<out Any> {
-        return if (token == null || originLng == null || originLat == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            val originLatDouble = originLat.toDouble()
-            val originLngDouble = originLng.toDouble()
-            val travelTimeList = locationService.getLocationTravelTimes(token, originLatDouble, originLngDouble)
+        return when {
+            token == null || originLat.isNullOrEmpty() || originLng.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    val originLatDouble = originLat.toDouble()
+                    val originLngDouble = originLng.toDouble()
+                    val travelTimeList = locationService.getLocationTravelTimes(token, originLatDouble, originLngDouble)
 
-            if (travelTimeList.isNotEmpty()) {
-                ResponseEntity.ok(travelTimeList)
-            } else {
-                ResponseEntity.ok("There are no future locations.")
+                    if (travelTimeList.isNotEmpty()) {
+                        ResponseEntity.ok(travelTimeList)
+                    } else {
+                        ResponseEntity.ok(ResponseConstant.NO_FUTURE_LOCATIONS_FOUND)
+                    }
+                } catch (e: IllegalArgumentException) {
+                    ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
             }
         }
     }
@@ -129,18 +165,24 @@ LocationController(private val locationService: LocationService) {
         @RequestParam("destLat") destLat: String?,
         @RequestParam("destLng") destLng: String?,
     ): ResponseEntity<out Any> {
-        return if (token == null || placeId == null || destLat == null || destLng == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                val destLatDouble = destLat.toDouble()
-                val destLngDouble = destLng.toDouble()
-                val result = getTravelTime(placeId, destLatDouble, destLngDouble)
-                ResponseEntity.ok().body(result ?: 0L)
-            } catch (e: NumberFormatException) {
-                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+        return when {
+            token.isNullOrEmpty() || placeId.isNullOrEmpty() || destLat.isNullOrEmpty() || destLng.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    val destLatDouble = destLat.toDouble()
+                    val destLngDouble = destLng.toDouble()
+                    val result = getTravelTime(placeId, destLatDouble, destLngDouble)
+                    ResponseEntity.ok().body(result ?: 0L)
+                } catch (e: NumberFormatException) {
+                    ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
             }
         }
     }
@@ -162,30 +204,44 @@ LocationController(private val locationService: LocationService) {
     @PostMapping("/updateLocation")
     fun updateCurrentUserLocation(
         @RequestHeader(HeaderConstant.AUTHORISATION) token: String?,
-        @RequestParam("latitude") latitude: String,
-        @RequestParam("longitude") longitude: String,
+        @RequestParam("latitude") latitude: String?,
+        @RequestParam("longitude") longitude: String?,
     ): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            try {
-                val destLatDouble = latitude.toDouble()
-                val destLngDouble = longitude.toDouble()
-                ResponseEntity.ok(locationService.updateUserLocation(token, destLatDouble, destLngDouble))
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.INVALID_PARAMETERS)
-            } catch (e: Exception) {
-                ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+        return when {
+            token.isNullOrEmpty() || latitude.isNullOrEmpty() || longitude.isNullOrEmpty() -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    val destLatDouble = latitude.toDouble()
+                    val destLngDouble = longitude.toDouble()
+                    ResponseEntity.ok(locationService.updateUserLocation(token, destLatDouble, destLngDouble))
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
             }
         }
     }
 
     @GetMapping("/savedLocations")
     fun getUserSavedLocations(@RequestHeader(HeaderConstant.AUTHORISATION) token: String?): ResponseEntity<out Any> {
-        return if (token == null) {
-            ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
-        } else {
-            ResponseEntity.ok(locationService.getUserSavedLocations(token))
+        return when {
+            token == null -> {
+                ResponseEntity.badRequest().body(ResponseConstant.REQUIRED_PARAMETERS_NOT_SET)
+            }
+            !TokenManagerController.isTokenValid(token) -> {
+                ResponseEntity.badRequest().body(ResponseConstant.INVALID_TOKEN)
+            }
+            else -> {
+                try {
+                    ResponseEntity.ok(locationService.getUserSavedLocations(token))
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(ResponseConstant.GENERIC_INTERNAL_ERROR)
+                }
+            }
         }
     }
 }
