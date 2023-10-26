@@ -22,7 +22,7 @@ abstract class CalendarAdapterService(authProvider: AuthProviderEnum) {
     ): RedirectView
     abstract fun authorize(): String?
     abstract fun oauth2Callback(authCode: String?, deviceType: CallbackConfigEnum): String
-    abstract fun getUserEvents(accessToken: String): Map<String, UserEventDTO>
+    abstract fun getUserEvents(accessToken: String, emailAddress: String): Map<String, UserEventDTO>
     abstract fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO>
 
     abstract fun getUserEventsInRange(accessToken: String?, startDate: OffsetDateTime?, endDate: OffsetDateTime?): List<UserEventDTO>
