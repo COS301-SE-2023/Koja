@@ -54,7 +54,7 @@ class UserCalendarService(
             for (authDetails in userAuthDetails) {
                 if (authDetails.getRefreshToken() == userAccount.refreshToken) {
                     val accessToken = authDetails.getAccessToken()
-                    userEvents.putAll(adapter.getUserEvents(accessToken))
+                    userEvents.putAll(adapter.getUserEvents(accessToken, userAccount.email))
                 }
             }
         }
@@ -794,7 +794,7 @@ class UserCalendarService(
             for (authDetails in userAuthDetails) {
                 if (authDetails.getRefreshToken() == userAccount.refreshToken) {
                     val accessToken = authDetails.getAccessToken()
-                    userEvents.putAll(adapter.getUserEvents(accessToken))
+                    userEvents.putAll(adapter.getUserEvents(accessToken, userAccount.email))
                 }
             }
         }

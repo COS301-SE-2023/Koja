@@ -373,32 +373,45 @@ class GoogleCalendarAdapterService(
         userRepository.save(storedUser)
     }
 
-    override fun getUserEvents(accessToken: String): Map<String, UserEventDTO> {
+    override fun getUserEvents(accessToken: String, emailAddress: String): Map<String, UserEventDTO> {
         try {
             val calendar = buildCalendarService(accessToken)
 
-            val request = calendar.events().list("primary")
-                .setOrderBy("startTime")
-                .setSingleEvents(true)
-                .setMaxResults(1000)
+            var events = fetchEventsFromCalendar(calendar, emailAddress.trim())
 
-            val events: Events? = request.execute()
-
-            val userEvents = mutableMapOf<String, UserEventDTO>()
-
-            events?.items?.map {
-                val eventSummary = it.summary ?: ""
-                val eventStartTime = it.start.dateTime ?: it.start.date
-                val eventEndTime = it.end.dateTime ?: it.end.date
-                val key = Base64.getEncoder()
-                    .encodeToString("${eventSummary.trim()}${eventStartTime}$eventEndTime".trim().toByteArray())
-                userEvents[key] = UserEventDTO(it)
+            if (events.isNullOrEmpty()) {
+                events = fetchEventsFromCalendar(calendar, "primary")
             }
 
-            return userEvents
+            if (events.isNullOrEmpty()) {
+                val userCalendars = calendar.calendarList().list().execute().items
+                events = if (userCalendars.isNotEmpty()) {
+                    fetchEventsFromCalendar(calendar, userCalendars.first().id)
+                } else {
+                    null
+                }
+            }
+
+            return events?.items?.mapNotNull {
+                it?.let { event ->
+                    val eventSummary = event.summary ?: ""
+                    val eventStartTime = event.start.dateTime ?: event.start.date
+                    val eventEndTime = event.end.dateTime ?: event.end.date
+                    val key = Base64.getEncoder().encodeToString("$eventSummary$eventStartTime$eventEndTime".trim().toByteArray())
+                    key to UserEventDTO(event)
+                }
+            }?.toMap() ?: emptyMap()
         } catch (e: ExpiredJwtException) {
             return emptyMap()
         }
+    }
+
+    fun fetchEventsFromCalendar(calendar: com.google.api.services.calendar.Calendar, calendarId: String): Events? {
+        return calendar.events().list(calendarId)
+            .setOrderBy("startTime")
+            .setSingleEvents(true)
+            .setMaxResults(1000)
+            .execute()
     }
 
     override fun getUserEventsKojaSuggestions(accessToken: String): Map<String, UserEventDTO> {
@@ -759,6 +772,8 @@ class GoogleCalendarAdapterService(
 
             val startDateTime = DateTime(startDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
             val endDateTime = DateTime(endDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+
+            val userCalendars = calendar.calendarList().list().execute().items
 
             val request = calendar.events().list("primary")
                 .setTimeMin(startDateTime)
