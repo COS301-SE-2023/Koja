@@ -98,7 +98,7 @@ class AIUserDataService(private val userRepository: UserRepository, private val 
                     OffsetDateTime.now(),
                 )
             } else {
-                adapter.getUserEvents(it.getAccessToken()).values.toList()
+                adapter.getUserEvents(it.getAccessToken(), userAccount.email).values.toList()
             }
         }
         return events
